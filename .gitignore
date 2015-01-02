@@ -1,0 +1,7 @@
+/*
+!/src
+!/src/*
+!/*.md
+!.gitignore
+!pom.xml
+!LICENSE
