@@ -46,7 +46,7 @@ public class CommandResponseParser {
     }
 
     private static String parseTerm(String userNick, int count, String[] args, String word) throws InvalidTermException {
-        // [{user}->modifier]
+        // [{user.modifier}]
         if (word.matches("^user(\\.\\p{Alpha}*)?$")) {
             return doModifier(userNick, word);
         }
@@ -54,11 +54,15 @@ public class CommandResponseParser {
         else if (word.matches("^count(\\.\\p{Alpha}*)?$")) {
             return Integer.toString(count);
         }
-        // [{quote}->modifier] - can have a modifier, but it's unclear why you want one
+        // [{quote.modifier}] - can have a modifier, but it's unclear why you want one
         else if (word.matches("^quote(\\.\\p{Alpha}*)?$")) {
             return "[Quotes are not yet implemented]"; // TODO fix when quotes implemented
         }
-        // [{args}->modifier|default]
+        // [{game.modifier}]
+        else if (word.matches("^game(\\.\\p{Alpha}*)?$")) {
+            return "a game"; // TODO fix when able to get game name from twitch
+        }
+        // [{args.modifier<<default>>}]
         else if (word.matches("^args(\\.\\p{Alpha}*)?(<<.*>>)?$")) {
             // If no args, parse default
             if (args.length == 0) {
@@ -66,7 +70,7 @@ public class CommandResponseParser {
             }
             return doModifier(String.join(" ", args), word);
         }
-        // [{argN}->modifier|default] - N is a natural number
+        // [{argN.modifier<<default>>}] - N is a natural number
         else if (word.matches("^arg\\p{Digit}+(\\.\\p{Alpha}*)?(<<.*>>)?$")) {
             // Gets arg number
             String argNumStr = word.replaceFirst("arg", "").split("<<", 2)[0].split("\\.", 2)[0];
@@ -98,10 +102,16 @@ public class CommandResponseParser {
             return toModify.toUpperCase();
         }
         if (modifier.equals(ModifierTypes.FIRST_CAP)) {
-            return ResponseParserUtil.firstCap(toModify);
+            return ResponseParserUtil.firstCap(toModify, true);
         }
         if (modifier.equals(ModifierTypes.WORD_CAP)) {
-            return ResponseParserUtil.wordCap(toModify);
+            return ResponseParserUtil.wordCap(toModify, true);
+        }
+        if (modifier.equals(ModifierTypes.FIRST_CAP_SOFT)) {
+            return ResponseParserUtil.firstCap(toModify, false);
+        }
+        if (modifier.equals(ModifierTypes.WORD_CAP_SOFT)) {
+            return ResponseParserUtil.wordCap(toModify, false);
         }
 
         // Else return unmodified word
