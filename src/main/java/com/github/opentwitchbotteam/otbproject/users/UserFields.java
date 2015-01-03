@@ -1,4 +1,4 @@
-package com.github.OpenTwitchBotTeam.OpenTwitchBotProject.users;
+package com.github.opentwitchbotteam.otbproject.users;
 
 public class UserFields {
     public static final String NICK = "nick";

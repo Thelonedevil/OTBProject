@@ -1,4 +1,4 @@
-package com.github.OpenTwitchBotTeam.OpenTwitchBotProject;
+package com.github.opentwitchbotteam.otbproject;
 
 /**
  * Created by justin on 02/01/2015.

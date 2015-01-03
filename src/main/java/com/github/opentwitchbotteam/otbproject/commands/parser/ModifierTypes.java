@@ -1,4 +1,4 @@
-package com.github.OpenTwitchBotTeam.OpenTwitchBotProject.commands.parser;
+package com.github.opentwitchbotteam.otbproject.commands.parser;
 
 public class ModifierTypes {
     /*
