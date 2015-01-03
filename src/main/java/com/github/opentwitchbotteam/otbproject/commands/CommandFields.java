@@ -1,4 +1,4 @@
-package com.github.OpenTwitchBotTeam.OpenTwitchBotProject.commands;
+package com.github.opentwitchbotteam.otbproject.commands;
 
 
 public class CommandFields {

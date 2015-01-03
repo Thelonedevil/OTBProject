@@ -1,7 +1,7 @@
-package com.github.OpenTwitchBotTeam.OpenTwitchBotProject.commands;
+package com.github.opentwitchbotteam.otbproject.commands;
 
-import com.github.OpenTwitchBotTeam.OpenTwitchBotProject.database.DatabaseWrapper;
-import com.github.OpenTwitchBotTeam.OpenTwitchBotProject.database.TableNames;
+import com.github.opentwitchbotteam.otbproject.database.DatabaseWrapper;
+import com.github.opentwitchbotteam.otbproject.database.TableNames;
 
 import java.sql.SQLException;
 import java.util.HashMap;

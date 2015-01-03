@@ -1,4 +1,4 @@
-package com.github.OpenTwitchBotTeam.OpenTwitchBotProject.database;
+package com.github.opentwitchbotteam.otbproject.database;
 
 import java.io.File;
 import java.io.IOException;
