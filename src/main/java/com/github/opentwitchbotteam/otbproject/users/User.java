@@ -5,7 +5,7 @@ import com.github.opentwitchbotteam.otbproject.database.DatabaseWrapper;
 import java.sql.SQLException;
 import java.util.HashMap;
 
-public class ChatUser {
+public class User {
     /**
      *
      * @param userNick
