@@ -1,7 +1,6 @@
 package com.github.opentwitchbotteam.otbproject.commands;
 
 import com.github.opentwitchbotteam.otbproject.database.DatabaseWrapper;
-import com.github.opentwitchbotteam.otbproject.database.TableNames;
 
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -9,12 +8,16 @@ import java.util.HashMap;
 public class Alias {
     /**
      *
-     * @param command
+     * @param aliasName
      * @return
      * @throws java.sql.SQLException
      */
-    public static HashMap<String, Object> getDetails(DatabaseWrapper db, String command) throws SQLException {
-        return db.getRow(TableNames.ALIASES, command, AliasFields.NAME);
+    public static HashMap<String, Object> getDetails(DatabaseWrapper db, String aliasName) throws SQLException {
+        return db.getRow(AliasFields.TABLE_NAME, aliasName, AliasFields.NAME);
+    }
+
+    public static Object get(DatabaseWrapper db, String aliasName, String fieldToGet) throws SQLException {
+        return db.getValue(AliasFields.TABLE_NAME, aliasName, AliasFields.NAME, fieldToGet);
     }
 
     /**
@@ -23,17 +26,17 @@ public class Alias {
      * @throws SQLException
      */
     public static void update(DatabaseWrapper db, HashMap map) throws SQLException {
-        db.updateRow(TableNames.ALIASES, (String) map.get(AliasFields.NAME), AliasFields.NAME, map);
+        db.updateRow(AliasFields.TABLE_NAME, (String) map.get(AliasFields.NAME), AliasFields.NAME, map);
     }
 
-    public static void update(DatabaseWrapper db, String command, String fieldName, Object fieldValue) throws SQLException {
-        HashMap<String,Object> map = getDetails(db, command);
+    public static void update(DatabaseWrapper db, String aliasName, String fieldName, Object fieldValue) throws SQLException {
+        HashMap<String,Object> map = getDetails(db, aliasName);
         map.replace(fieldName,fieldValue);
         update(db, map);
     }
 
-    public static boolean exists(DatabaseWrapper db, String command) throws SQLException {
-        return db.exists(TableNames.ALIASES, command, AliasFields.NAME);
+    public static boolean exists(DatabaseWrapper db, String aliasName) throws SQLException {
+        return db.exists(AliasFields.TABLE_NAME, aliasName, AliasFields.NAME);
     }
 
     /**
@@ -42,10 +45,10 @@ public class Alias {
      * @throws SQLException
      */
     public static void add(DatabaseWrapper db, HashMap map) throws SQLException {
-        db.insertRow(TableNames.ALIASES, (String) map.get(AliasFields.NAME), AliasFields.NAME, map);
+        db.insertRow(AliasFields.TABLE_NAME, (String) map.get(AliasFields.NAME), AliasFields.NAME, map);
     }
 
-    public static void remove(DatabaseWrapper db, String command) throws SQLException {
-        db.removeRow(TableNames.ALIASES, command, AliasFields.NAME);
+    public static void remove(DatabaseWrapper db, String aliasName) throws SQLException {
+        db.removeRow(AliasFields.TABLE_NAME, aliasName, AliasFields.NAME);
     }
 }

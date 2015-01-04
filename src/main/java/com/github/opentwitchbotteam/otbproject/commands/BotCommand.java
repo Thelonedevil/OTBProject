@@ -2,27 +2,23 @@ package com.github.opentwitchbotteam.otbproject.commands;
 
 
 import com.github.opentwitchbotteam.otbproject.database.DatabaseWrapper;
-import com.github.opentwitchbotteam.otbproject.database.TableNames;
 
 import java.sql.SQLException;
 import java.util.HashMap;
 
 public class BotCommand {
-
-    public static final String RUN = "run";
-
     /**
      *
-     * @param command
+     * @param commandName
      * @return
      * @throws java.sql.SQLException
      */
-    public static HashMap<String, Object> getDetails(DatabaseWrapper db, String command) throws SQLException {
-        return db.getRow(TableNames.COMMANDS, command, CommandFields.NAME);
+    public static HashMap<String, Object> getDetails(DatabaseWrapper db, String commandName) throws SQLException {
+        return db.getRow(CommandFields.TABLE_NAME, commandName, CommandFields.NAME);
     }
 
-    public static Object get(DatabaseWrapper db, String command, String fieldToGet) throws SQLException {
-        return db.getValue(TableNames.COMMANDS, command, CommandFields.NAME, fieldToGet);
+    public static Object get(DatabaseWrapper db, String commandName, String fieldToGet) throws SQLException {
+        return db.getValue(CommandFields.TABLE_NAME, commandName, CommandFields.NAME, fieldToGet);
     }
 
     /**
@@ -31,17 +27,17 @@ public class BotCommand {
      * @throws SQLException
      */
     public static void update(DatabaseWrapper db, HashMap map) throws SQLException {
-        db.updateRow(TableNames.COMMANDS, (String) map.get(CommandFields.NAME), CommandFields.NAME, map);
+        db.updateRow(CommandFields.TABLE_NAME, (String) map.get(CommandFields.NAME), CommandFields.NAME, map);
     }
 
-    public static void update(DatabaseWrapper db, String command, String fieldName, Object fieldValue) throws SQLException {
-        HashMap<String,Object> map = getDetails(db, command);
+    public static void update(DatabaseWrapper db, String commandName, String fieldName, Object fieldValue) throws SQLException {
+        HashMap<String,Object> map = getDetails(db, commandName);
         map.replace(fieldName,fieldValue);
         update(db, map);
     }
 
-    public static boolean exists(DatabaseWrapper db, String command) throws SQLException {
-        return db.exists(TableNames.COMMANDS, command, CommandFields.NAME);
+    public static boolean exists(DatabaseWrapper db, String commandName) throws SQLException {
+        return db.exists(CommandFields.TABLE_NAME, commandName, CommandFields.NAME);
     }
 
     /**
@@ -50,18 +46,18 @@ public class BotCommand {
      * @throws SQLException
      */
     public static void add(DatabaseWrapper db, HashMap map) throws SQLException {
-        db.insertRow(TableNames.COMMANDS, (String) map.get(CommandFields.NAME), CommandFields.NAME, map);
+        db.insertRow(CommandFields.TABLE_NAME, (String) map.get(CommandFields.NAME), CommandFields.NAME, map);
     }
 
-    public static void remove(DatabaseWrapper db, String command) throws SQLException {
-        db.removeRow(TableNames.COMMANDS, command, CommandFields.NAME);
+    public static void remove(DatabaseWrapper db, String commandName) throws SQLException {
+        db.removeRow(CommandFields.TABLE_NAME, commandName, CommandFields.NAME);
     }
 
-    public static void incrementCount(DatabaseWrapper db, String command) throws SQLException {
-        update(db, command, CommandFields.COUNT, ((Integer) getDetails(db, command).get(CommandFields.COUNT) + 1));
+    public static void incrementCount(DatabaseWrapper db, String commandName) throws SQLException {
+        update(db, commandName, CommandFields.COUNT, ((Integer) getDetails(db, commandName).get(CommandFields.COUNT) + 1));
     }
 
-    public static void resetCount(DatabaseWrapper db, String command) throws SQLException{
-        update(db, command, CommandFields.COUNT, 0);
+    public static void resetCount(DatabaseWrapper db, String commandName) throws SQLException{
+        update(db, commandName, CommandFields.COUNT, 0);
     }
 }
