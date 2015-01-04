@@ -14,9 +14,11 @@ public class DatabaseWrapper {
 
     /**
      *
-     * @param path
+     * @param path path to the database
+     * @param tableMap a HashMap of table names and HashMaps of table fields
+     *                 and field types for each table.
      */
-    public DatabaseWrapper(String path) {
+    public DatabaseWrapper(String path, HashMap<String, HashMap<String, String>> tableMap) {
         try {
             File f = new File(path);
             if (f.getParentFile() != null) {
@@ -25,18 +27,10 @@ public class DatabaseWrapper {
             f.createNewFile();
             connect = connect(path);
             statement = state(connect);
-            HashMap<String, String> commandFields = new HashMap<String, String>();
-            commandFields.put(FieldNames.NAME, "Text");
-            commandFields.put(FieldNames.EXECUSERLEVEL, "Text");
-            commandFields.put(FieldNames.NAMEMODIFYINGUL, "Text");
-            commandFields.put(FieldNames.RESPONSEMODIFYINGUL, "Text");
-            commandFields.put(FieldNames.USERLEVELMODYFINGUL, "Text");
-            commandFields.put(FieldNames.RESPONSE, "Text");
-            commandFields.put(FieldNames.COUNT, "INTEGER");
-            commandFields.put(FieldNames.ENABLED, "INTEGER");
-            commandFields.put(FieldNames.SCRIPT, "TEXT");
-            commandFields.put(FieldNames.MINARGS, "INTEGER");
-            createTable(TableNames.COMMANDS, commandFields);
+
+            for (String tableName : tableMap.keySet()) {
+                createTable(tableName, tableMap.get(tableName));
+            }
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -45,7 +39,6 @@ public class DatabaseWrapper {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 
     /**
@@ -222,54 +215,4 @@ public class DatabaseWrapper {
         String update = "DELETE FROM "+ table + " WHERE "+ fieldName+"="+identifier;
         statement.executeUpdate(update);
     }
-
-    // TODO remove past this
-    /**
-     *
-     * @param command
-     * @return
-     * @throws SQLException
-     */
-    public HashMap<String, Object> getCommandDetails(String command) throws SQLException {
-        return this.getRow(TableNames.COMMANDS, command, FieldNames.NAME);
-    }
-
-    /**
-     *
-     * @param command
-     * @return
-     * @throws SQLException
-     */
-    public boolean isCommand(String command) throws SQLException {
-        return this.exists(TableNames.COMMANDS, command, FieldNames.NAME);
-    }
-
-    /**
-     *
-     * @param map
-     * @throws SQLException
-     */
-    public void updateCommand(HashMap map) throws SQLException {
-        this.updateRow(TableNames.COMMANDS, (String) map.get(FieldNames.NAME), FieldNames.NAME, map);
-    }
-
-    public void updateComamnd(String command,String fieldName, String fieldValue) throws SQLException {
-        HashMap<String,Object> map = this.getCommandDetails(command);
-        map.replace(fieldName,fieldValue);
-        updateCommand(map);
-    }
-
-    /**
-     *
-     * @param map
-     * @throws SQLException
-     */
-    public void addCommand(HashMap map) throws SQLException {
-        this.insertRow(TableNames.COMMANDS, (String) map.get(FieldNames.NAME), FieldNames.NAME, map);
-    }
-
-    public void removeCommand(String command) throws SQLException {
-        this.removeRow(TableNames.COMMANDS,command,FieldNames.NAME);
-    }
-
 }
