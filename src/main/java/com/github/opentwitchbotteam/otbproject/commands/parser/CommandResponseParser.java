@@ -3,8 +3,11 @@ package com.github.opentwitchbotteam.otbproject.commands.parser;
 import java.util.ArrayList;
 
 public class CommandResponseParser {
-    private static final String TERM_START = "\\[\\{";
-    private static final String TERM_END = "\\}\\]";
+    private static final String TERM_START = "\\[\\[";
+    private static final String TERM_END = "\\]\\]";
+    private static final String MODIFIER_DELIM = "\\.";
+    private static final String DEFAULT_START = "\\{\\{";
+    private static final String DEFAULT_END = "\\}\\}";
 
 
     public static String parse(String userNick, int count, String[] args, String rawResponse) {
@@ -47,23 +50,23 @@ public class CommandResponseParser {
 
     private static String parseTerm(String userNick, int count, String[] args, String word) throws InvalidTermException {
         // [{user.modifier}]
-        if (word.matches("^user(\\.\\p{Alpha}*)?$")) {
+        if (word.matches("^user(" + MODIFIER_DELIM + "\\p{Alpha}*)?$")) {
             return doModifier(userNick, word);
         }
         // [{count}] - ignores modifier (because no effect)
-        else if (word.matches("^count(\\.\\p{Alpha}*)?$")) {
+        else if (word.matches("^count(" + MODIFIER_DELIM + "\\p{Alpha}*)?$")) {
             return Integer.toString(count);
         }
         // [{quote.modifier}] - can have a modifier, but it's unclear why you want one
-        else if (word.matches("^quote(\\.\\p{Alpha}*)?$")) {
+        else if (word.matches("^quote(" + MODIFIER_DELIM + "\\p{Alpha}*)?$")) {
             return "[Quotes are not yet implemented]"; // TODO fix when quotes implemented
         }
         // [{game.modifier}]
-        else if (word.matches("^game(\\.\\p{Alpha}*)?$")) {
+        else if (word.matches("^game(" + MODIFIER_DELIM + "\\p{Alpha}*)?$")) {
             return "a game"; // TODO fix when able to get game name from twitch
         }
         // [{args.modifier<<default>>}]
-        else if (word.matches("^args(\\.\\p{Alpha}*)?(<<.*>>)?$")) {
+        else if (word.matches("^args(" + MODIFIER_DELIM + "\\p{Alpha}*)?(" + DEFAULT_START + ".*" + DEFAULT_END + ")?$")) {
             // If no args, parse default
             if (args.length == 0) {
                 return getDefault(word);
@@ -71,9 +74,9 @@ public class CommandResponseParser {
             return doModifier(String.join(" ", args), word);
         }
         // [{argN.modifier<<default>>}] - N is a natural number
-        else if (word.matches("^arg\\p{Digit}+(\\.\\p{Alpha}*)?(<<.*>>)?$")) {
+        else if (word.matches("^arg\\p{Digit}+(" + MODIFIER_DELIM + "\\p{Alpha}*)?(" + DEFAULT_START + ".*" + DEFAULT_END + ")?$")) {
             // Gets arg number
-            String argNumStr = word.replaceFirst("arg", "").split("<<", 2)[0].split("\\.", 2)[0];
+            String argNumStr = word.replaceFirst("arg", "").split(DEFAULT_START, 2)[0].split(MODIFIER_DELIM, 2)[0];
             int argNum = Integer.parseInt(argNumStr);
 
             // If argNum is 0, invalid term
@@ -120,10 +123,10 @@ public class CommandResponseParser {
 
     private static String getModifier(String word) {
         // Split away default arg, if exists
-        String[] temp = word.split("<<");
+        String[] temp = word.split(DEFAULT_START);
 
         // Check if modifier exists; return empty string if not
-        temp = temp[0].split("\\.");
+        temp = temp[0].split(MODIFIER_DELIM);
         if (temp.length == 1) {
             return "";
         }
@@ -132,7 +135,7 @@ public class CommandResponseParser {
 
     private static String getDefault(String word) {
         // Check if default exists; return empty string if not
-        String[] temp = word.split("<<", 2);
+        String[] temp = word.split(DEFAULT_START, 2);
         if (temp.length == 1) {
             return "";
         }
