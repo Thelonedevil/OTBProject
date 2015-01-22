@@ -38,9 +38,13 @@ public class CommandProcessor {
         return message;
     }
 
-    // Returns an empty string if script command
     private static String checkCommand(DatabaseWrapper db, String message, String execChannel, String targetChannel, String user, boolean subscriber) {
         UserLevel userLevel = Util.getUserLevel(db, targetChannel, user, subscriber);
+        return checkCommand(db, message, execChannel, targetChannel, user, userLevel);
+    }
+
+    // Returns an empty string if script command
+    private static String checkCommand(DatabaseWrapper db, String message, String execChannel, String targetChannel, String user, UserLevel userLevel) {
         String[] splitMsg = message.split(" ", 2);
 
         try {
@@ -52,8 +56,13 @@ public class CommandProcessor {
                     }
                     return CommandResponseParser.parse(user, (Integer)Command.get(db, splitMsg[0], CommandFields.COUNT), splitMsg[1].split(" "), (String)Command.get(db, splitMsg[0], CommandFields.RESPONSE));
                 }
-                // Else script command
-                // TODO run script
+                // Else run script command
+                if (splitMsg.length == 1) {
+                    ScriptProcessor.processScript(scriptPath, db, new String[0], execChannel, targetChannel, user, userLevel);
+                }
+                else {
+                    ScriptProcessor.processScript(scriptPath, db, splitMsg[1].split(" "), execChannel, targetChannel, user, userLevel);
+                }
             }
         }
         catch (SQLException e) {
