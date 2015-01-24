@@ -11,61 +11,69 @@ import com.github.opentwitchbotteam.otbproject.users.UserLevel;
 import java.sql.SQLException;
 
 public class CommandProcessor {
-    public static void processCommand(DatabaseWrapper db, String message, String execChannel, String targetChannel, String user, boolean subscriber) {
-        String command = checkAlias(db, message, "");
-
-
+    public static String processCommand(DatabaseWrapper db, String message, String channel, String user, UserLevel userLevel, boolean debug) {
+        String commandMsg = checkAlias(db, message, "");
+        return checkCommand(db, commandMsg, channel, user, userLevel, debug);
     }
 
     private static String checkAlias(DatabaseWrapper db, String message, String originalAlias) {
         String[] splitMsg = message.split(" ", 2);
+        String aliasName = splitMsg[0];
+
         if (originalAlias.equals("")) {
-            originalAlias = splitMsg[0];
+            originalAlias = aliasName;
+        }
+        // Prevent alias loop
+        else if (aliasName.equals(originalAlias)) {
+            return message;
         }
 
         try {
-            if (Alias.exists(db, splitMsg[0]) && ((Integer)Alias.get(db, splitMsg[0], AliasFields.ENABLED) == 1)) {
+            if (Alias.exists(db, aliasName) && ((Integer)Alias.get(db, aliasName, AliasFields.ENABLED) == 1)) {
                 if (splitMsg.length == 1) {
-                    return checkAlias(db, (String)Alias.get(db, splitMsg[0], AliasFields.COMMAND), originalAlias);
+                    return checkAlias(db, (String)Alias.get(db, aliasName, AliasFields.COMMAND), originalAlias);
                 }
-                return checkAlias(db, ((String)Alias.get(db, splitMsg[0], AliasFields.COMMAND) + " " + splitMsg[1]), originalAlias);
+                return checkAlias(db, ((String)Alias.get(db, aliasName, AliasFields.COMMAND) + " " + aliasName), originalAlias);
             }
         }
         catch (SQLException e) {
+            // TODO log
             e.printStackTrace();
         }
 
+        // Return message if not an alias
         return message;
     }
 
-    private static String checkCommand(DatabaseWrapper db, String message, String execChannel, String targetChannel, String user, boolean subscriber) {
-        UserLevel userLevel = Util.getUserLevel(db, targetChannel, user, subscriber);
-        return checkCommand(db, message, execChannel, targetChannel, user, userLevel);
-    }
-
     // Returns an empty string if script command
-    private static String checkCommand(DatabaseWrapper db, String message, String execChannel, String targetChannel, String user, UserLevel userLevel) {
+    private static String checkCommand(DatabaseWrapper db, String message, String execChannel, String user, UserLevel userLevel, boolean debug) {
         String[] splitMsg = message.split(" ", 2);
+        String cmdName = splitMsg[0];
 
         try {
-            if (Command.exists(db, splitMsg[0]) && ((Integer)Command.get(db, splitMsg[0], CommandFields.ENABLED) == 1) && (userLevel.getValue() >= UserLevel.valueOf((String)Command.get(db, splitMsg[0], CommandFields.EXEC_USER_LEVEL)).getValue())) {
-                String scriptPath = (String)Command.get(db, splitMsg[0], CommandFields.SCRIPT);
-                if (scriptPath == null) {
+            if (Command.exists(db, cmdName) && ((Integer)Command.get(db, cmdName, CommandFields.ENABLED) == 1) && (userLevel.getValue() >= UserLevel.valueOf((String)Command.get(db, cmdName, CommandFields.EXEC_USER_LEVEL)).getValue())) {
+                String scriptPath = (String)Command.get(db, cmdName, CommandFields.SCRIPT);
+                // Run script command
+                if (!(scriptPath == null)) {
                     if (splitMsg.length == 1) {
-                        return CommandResponseParser.parse(user, (Integer)Command.get(db, splitMsg[0], CommandFields.COUNT), new String[0], (String)Command.get(db, splitMsg[0], CommandFields.RESPONSE));
+                        ScriptProcessor.processScript(scriptPath, db, new String[0], execChannel, user, userLevel);
                     }
-                    return CommandResponseParser.parse(user, (Integer)Command.get(db, splitMsg[0], CommandFields.COUNT), splitMsg[1].split(" "), (String)Command.get(db, splitMsg[0], CommandFields.RESPONSE));
+                    else {
+                        ScriptProcessor.processScript(scriptPath, db, splitMsg[1].split(" "), execChannel, user, userLevel);
+                    }
                 }
-                // Else run script command
-                if (splitMsg.length == 1) {
-                    ScriptProcessor.processScript(scriptPath, db, new String[0], execChannel, targetChannel, user, userLevel);
-                }
-                else {
-                    ScriptProcessor.processScript(scriptPath, db, splitMsg[1].split(" "), execChannel, targetChannel, user, userLevel);
+                // Else non-script command
+                // Check if command is debug
+                else if ((int)Command.get(db, cmdName, CommandFields.DEBUG) == 0 || debug) {
+                    if (splitMsg.length == 1) {
+                        return CommandResponseParser.parse(user, (Integer)Command.get(db, cmdName, CommandFields.COUNT), new String[0], (String)Command.get(db, cmdName, CommandFields.RESPONSE));
+                    }
+                    return CommandResponseParser.parse(user, (Integer)Command.get(db, cmdName, CommandFields.COUNT), splitMsg[1].split(" "), (String)Command.get(db, cmdName, CommandFields.RESPONSE));
                 }
             }
         }
         catch (SQLException e) {
+            // TODO log
             e.printStackTrace();
         }
 
