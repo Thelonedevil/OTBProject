@@ -23,7 +23,7 @@ public class CommandProcessor {
         if (originalAlias.equals("")) {
             originalAlias = aliasName;
         }
-        // Prevent alias loop
+        // Prevent infinite alias loop
         else if (aliasName.equals(originalAlias)) {
             return message;
         }
@@ -54,7 +54,7 @@ public class CommandProcessor {
             if (Command.exists(db, cmdName) && ((Integer)Command.get(db, cmdName, CommandFields.ENABLED) == 1) && (userLevel.getValue() >= UserLevel.valueOf((String)Command.get(db, cmdName, CommandFields.EXEC_USER_LEVEL)).getValue())) {
                 String scriptPath = (String)Command.get(db, cmdName, CommandFields.SCRIPT);
                 // Run script command
-                if (!(scriptPath == null)) {
+                if (scriptPath != null) {
                     if (splitMsg.length == 1) {
                         ScriptProcessor.processScript(scriptPath, db, new String[0], execChannel, user, userLevel);
                     }
