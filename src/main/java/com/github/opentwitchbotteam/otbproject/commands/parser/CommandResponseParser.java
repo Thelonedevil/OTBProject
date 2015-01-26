@@ -49,23 +49,23 @@ public class CommandResponseParser {
     }
 
     private static String parseTerm(String userNick, int count, String[] args, String word) throws InvalidTermException {
-        // [{user.modifier}]
+        // [[user.modifier]]
         if (word.matches("^user(" + MODIFIER_DELIM + "\\p{Alpha}*)?$")) {
             return doModifier(userNick, word);
         }
-        // [{count}] - ignores modifier (because no effect)
+        // [[count]] - ignores modifier (because no effect)
         else if (word.matches("^count(" + MODIFIER_DELIM + "\\p{Alpha}*)?$")) {
             return Integer.toString(count);
         }
-        // [{quote.modifier}] - can have a modifier, but it's unclear why you want one
+        // [[quote.modifier]] - can have a modifier, but it's unclear why you want one
         else if (word.matches("^quote(" + MODIFIER_DELIM + "\\p{Alpha}*)?$")) {
             return "[Quotes are not yet implemented]"; // TODO fix when quotes implemented
         }
-        // [{game.modifier}]
+        // [[game.modifier]]
         else if (word.matches("^game(" + MODIFIER_DELIM + "\\p{Alpha}*)?$")) {
             return "a game"; // TODO fix when able to get game name from twitch
         }
-        // [{args.modifier<<default>>}]
+        // [[args.modifier{{default}}]]
         else if (word.matches("^args(" + MODIFIER_DELIM + "\\p{Alpha}*)?(" + DEFAULT_START + ".*" + DEFAULT_END + ")?$")) {
             // If no args, parse default
             if (args.length == 0) {
@@ -73,7 +73,7 @@ public class CommandResponseParser {
             }
             return doModifier(String.join(" ", args), word);
         }
-        // [{argN.modifier<<default>>}] - N is a natural number
+        // [[argN.modifier{{default}}]] - N is a natural number
         else if (word.matches("^arg\\p{Digit}+(" + MODIFIER_DELIM + "\\p{Alpha}*)?(" + DEFAULT_START + ".*" + DEFAULT_END + ")?$")) {
             // Gets arg number
             String argNumStr = word.replaceFirst("arg", "").split(DEFAULT_START, 2)[0].split(MODIFIER_DELIM, 2)[0];
