@@ -4,8 +4,8 @@ public class CommandResponseParser {
     private static final String TERM_START = "[[";        // Not a regex
     private static final String TERM_END = "]]";          // Not a regex
     private static final String MODIFIER_DELIM = "\\.";   // regex
-    private static final String DEFAULT_START = "\\{\\{"; // regex
-    private static final String DEFAULT_END = "\\}\\}";   //regex
+    private static final String EMBED_START = "\\{\\{"; // regex
+    private static final String EMBED_END = "\\}\\}";   //regex
 
 
     public static String parse(String userNick, String channel, int count, String[] args, String rawResponse) {
@@ -58,26 +58,26 @@ public class CommandResponseParser {
             return "a game"; // TODO fix when able to get game name from twitch
         }
         // [[args.modifier{{default}}]]
-        else if (term.matches("^args(" + MODIFIER_DELIM + "\\p{Alpha}*)?(" + DEFAULT_START + ".*" + DEFAULT_END + ")?$")) {
+        else if (term.matches("^args(" + MODIFIER_DELIM + "\\p{Alpha}*)?(" + EMBED_START + ".*" + EMBED_END + ")?$")) {
             // If no args, parse default
             if (args.length == 0) {
-                return getDefault(term);
+                return getEmbeddedString(term);
             }
             return doModifier(String.join(" ", args), term);
         }
         // [[ifargs{{string}}]] - ignores modifier
-        else if (term.matches("^ifargs(" + MODIFIER_DELIM + "\\p{Alpha}*)?(" + DEFAULT_START + ".*" + DEFAULT_END + ")?$")) {
+        else if (term.matches("^ifargs(" + MODIFIER_DELIM + "\\p{Alpha}*)?(" + EMBED_START + ".*" + EMBED_END + ")?$")) {
             // If no args, return empty string
             if (args.length == 0) {
                 return "";
             }
             // Gets conditionally printed string
-            return getDefault(term);
+            return getEmbeddedString(term);
         }
         // [[argN.modifier{{default}}]] - N is a natural number
-        else if (term.matches("^arg\\p{Digit}+(" + MODIFIER_DELIM + "\\p{Alpha}*)?(" + DEFAULT_START + ".*" + DEFAULT_END + ")?$")) {
+        else if (term.matches("^arg\\p{Digit}+(" + MODIFIER_DELIM + "\\p{Alpha}*)?(" + EMBED_START + ".*" + EMBED_END + ")?$")) {
             // Gets arg number
-            String argNumStr = term.replaceFirst("arg", "").split(DEFAULT_START, 2)[0].split(MODIFIER_DELIM, 2)[0];
+            String argNumStr = term.replaceFirst("arg", "").split(EMBED_START, 2)[0].split(MODIFIER_DELIM, 2)[0];
             int argNum = Integer.parseInt(argNumStr);
 
             // If argNum is 0 (or max int overflow), invalid term
@@ -86,14 +86,14 @@ public class CommandResponseParser {
             }
             // If insufficient args, parse default
             if (args.length < argNum) {
-                return getDefault(term);
+                return getEmbeddedString(term);
             }
             return doModifier(args[argNum], term);
         }
         // [[ifargN{{string}}]] - N is a natural number; ignores modifier
-        else if (term.matches("^ifarg\\p{Digit}+(" + MODIFIER_DELIM + "\\p{Alpha}*)?(" + DEFAULT_START + ".*" + DEFAULT_END + ")?$")) {
+        else if (term.matches("^ifarg\\p{Digit}+(" + MODIFIER_DELIM + "\\p{Alpha}*)?(" + EMBED_START + ".*" + EMBED_END + ")?$")) {
             // Gets arg number
-            String argNumStr = term.replaceFirst("ifarg", "").split(DEFAULT_START, 2)[0].split(MODIFIER_DELIM, 2)[0];
+            String argNumStr = term.replaceFirst("ifarg", "").split(EMBED_START, 2)[0].split(MODIFIER_DELIM, 2)[0];
             int argNum = Integer.parseInt(argNumStr);
 
             // If argNum is 0 (or max int overflow)-, invalid term
@@ -105,7 +105,18 @@ public class CommandResponseParser {
                 return "";
             }
             // Gets conditionally printed string
-            return getDefault(term);
+            return getEmbeddedString(term);
+        }
+        // [[foreach.modifier{{prepend}}{{append}}]]
+        else if (term.matches("^foreach(" + MODIFIER_DELIM + "\\p{Alpha}*)?(" + EMBED_START + ".*" + EMBED_END + "){0,2}$")) {
+            String prepend = getEmbeddedString(term);
+            String append = getEmbeddedString(term, 2);
+            String result = "";
+
+            for (String arg : args) {
+                result = result + prepend + doModifier(arg, term) + append;
+            }
+            return result;
         }
 
         else {
@@ -141,7 +152,7 @@ public class CommandResponseParser {
 
     private static String getModifier(String word) {
         // Split away default arg, if exists
-        String[] temp = word.split(DEFAULT_START);
+        String[] temp = word.split(EMBED_START);
 
         // Check if modifier exists; return empty string if not
         temp = temp[0].split(MODIFIER_DELIM);
@@ -151,11 +162,23 @@ public class CommandResponseParser {
         return temp[1];
     }
 
-    private static String getDefault(String word) {
-        // Check if default exists; return empty string if not
-        String[] temp = word.split(DEFAULT_START, 2);
+    // Check if embedded string exists; return empty string if not
+    private static String getEmbeddedString(String term) {
+        return getEmbeddedString(term, 1);
+    }
+
+    // Check if given index embedded string exists; return empty string if not
+    private static String getEmbeddedString(String term, int index) {
+        String[] temp = term.split(EMBED_START, 2);
         if (temp.length == 1) {
             return "";
+        }
+
+        for (int i = 1; i < index; i++) {
+            temp = temp[1].split(EMBED_START, 2);
+            if (temp.length == 1) {
+                return "";
+            }
         }
 
         return temp[1].substring(0, (temp[1].length() - 2));
