@@ -1,7 +1,5 @@
 package com.github.opentwitchbotteam.otbproject.commands.parser;
 
-import java.util.ArrayList;
-
 public class CommandResponseParser {
     private static final String TERM_START = "[[";        // Not a regex
     private static final String TERM_END = "]]";          // Not a regex
