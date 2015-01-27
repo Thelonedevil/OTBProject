@@ -5,7 +5,7 @@ public class CommandResponseParser {
     private static final String TERM_END = "]]";          // Not a regex
     private static final String MODIFIER_DELIM = "\\.";   // regex
     private static final String EMBED_START = "\\{\\{";   // regex
-    private static final String EMBED_END = "\\}\\}";     //regex
+    private static final String EMBED_END = "\\}\\}";     // regex
 
 
     public static String parse(String userNick, String channel, int count, String[] args, String rawResponse) {
