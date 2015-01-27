@@ -9,8 +9,8 @@ public class ParserTest {
     private static final String TS = "[[";  // Term Start
     private static final String TE = "]]";  // Term End
     private static final String MD = ".";   // Modifier Delimiter
-    private static final String DS = "{{";  // Default Start
-    private static final String DE = "}}";  // Default End
+    private static final String ES = "{{";  // Embedded String Start
+    private static final String EE = "}}";  // Embedded String End
 
     private static final String USER = "nthportal";
     private static final int COUNT = 1;
@@ -95,10 +95,10 @@ public class ParserTest {
         String parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, "Hi "+TS+"args"+TE+".");
         assertEquals("Hi .", parsed);
 
-        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, "Hi "+TS+"args"+DS+"person"+DE+TE+".");
+        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, "Hi "+TS+"args"+ ES +"person"+ EE +TE+".");
         assertEquals("Hi person.", parsed);
 
-        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, "Hi "+TS+"args"+DS+TS+"user"+TE+DE+TE+".");
+        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, "Hi "+TS+"args"+ ES +TS+"user"+TE+ EE +TE+".");
         assertEquals("Hi nthportal.", parsed);
 
         // 1 arg
@@ -108,10 +108,10 @@ public class ParserTest {
         parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, "Hi "+TS+"args"+TE+".");
         assertEquals("Hi Justin.", parsed);
 
-        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, "Hi "+TS+"args"+DS+"person"+DE+TE+".");
+        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, "Hi "+TS+"args"+ ES +"person"+ EE +TE+".");
         assertEquals("Hi Justin.", parsed);
 
-        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, "Hi "+TS+"args"+DS+TS+"user"+TE+DE+TE+".");
+        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, "Hi "+TS+"args"+ ES +TS+"user"+TE+ EE +TE+".");
         assertEquals("Hi Justin.", parsed);
 
         // 2 args
@@ -122,10 +122,10 @@ public class ParserTest {
         parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, "Hi "+TS+"args"+TE+".");
         assertEquals("Hi awesome people.", parsed);
 
-        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, "Hi "+TS+"args"+DS+"person"+DE+TE+".");
+        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, "Hi "+TS+"args"+ ES +"person"+ EE +TE+".");
         assertEquals("Hi awesome people.", parsed);
 
-        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, "Hi "+TS+"args"+DS+TS+"user"+TE+DE+TE+".");
+        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, "Hi "+TS+"args"+ ES +TS+"user"+TE+ EE +TE+".");
         assertEquals("Hi awesome people.", parsed);
     }
 
