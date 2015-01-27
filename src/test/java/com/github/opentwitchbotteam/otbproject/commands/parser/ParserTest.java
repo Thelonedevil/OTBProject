@@ -99,14 +99,7 @@ public class ParserTest {
         assertEquals("Hi person.", parsed);
 
         parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, "Hi "+TS+"args"+DS+TS+"user"+TE+DE+TE+".");
-        assertEquals("Hi NthPortal.", parsed);
-
-        // Defaults (can't have a space)
-        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, "Hi "+TS+"args"+DS+"lovely person"+DE+TE+".");
-        assertNotEquals("Hi lovely person.", parsed);
-
-        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, "Hi "+TS+"args"+DS+"person "+DE+TE+".");
-        assertNotEquals("Hi person .", parsed);
+        assertEquals("Hi nthportal.", parsed);
 
         // 1 arg
         args = new String[1];
