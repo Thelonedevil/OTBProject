@@ -4,8 +4,8 @@ public class CommandResponseParser {
     private static final String TERM_START = "[[";        // Not a regex
     private static final String TERM_END = "]]";          // Not a regex
     private static final String MODIFIER_DELIM = "\\.";   // regex
-    private static final String EMBED_START = "\\{\\{"; // regex
-    private static final String EMBED_END = "\\}\\}";   //regex
+    private static final String EMBED_START = "\\{\\{";   // regex
+    private static final String EMBED_END = "\\}\\}";     //regex
 
 
     public static String parse(String userNick, String channel, int count, String[] args, String rawResponse) {
@@ -27,7 +27,7 @@ public class CommandResponseParser {
 
             // Check if valid term, and replace if so
             try {
-                temp = parseTerm(userNick, channel, count, args, rawResponse.substring(innerStartIndex + 2, innerEndIndex));
+                temp = postProcessor(parseTerm(userNick, channel, count, args, rawResponse.substring(innerStartIndex + 2, innerEndIndex)));
             }
             catch (InvalidTermException e) {
                 return rawResponse;
@@ -38,27 +38,31 @@ public class CommandResponseParser {
 
     private static String parseTerm(String userNick, String channel, int count, String[] args, String term) throws InvalidTermException {
         // [[user.modifier]]
-        if (term.matches("^user(" + MODIFIER_DELIM + "\\p{Alpha}*)?$")) {
+        if (term.matches("^user(" + MODIFIER_DELIM + "\\w*)?$")) {
             return doModifier(userNick, term);
         }
         // [[channel.modifier]]
-        if (term.matches("^channel(" + MODIFIER_DELIM + "\\p{Alpha}*)?$")) {
+        else if (term.matches("^channel(" + MODIFIER_DELIM + "\\w*)?$")) {
             return doModifier(channel, term);
         }
         // [[count]] - ignores modifier (because no effect)
-        else if (term.matches("^count(" + MODIFIER_DELIM + "\\p{Alpha}*)?$")) {
+        else if (term.matches("^count(" + MODIFIER_DELIM + "\\w*)?$")) {
             return Integer.toString(count);
         }
         // [[quote.modifier]] - can have a modifier, but it's unclear why you want one
-        else if (term.matches("^quote(" + MODIFIER_DELIM + "\\p{Alpha}*)?$")) {
+        else if (term.matches("^quote(" + MODIFIER_DELIM + "\\w*)?$")) {
             return "[Quotes are not yet implemented]"; // TODO fix when quotes implemented
         }
         // [[game.modifier]]
-        else if (term.matches("^game(" + MODIFIER_DELIM + "\\p{Alpha}*)?$")) {
+        else if (term.matches("^game(" + MODIFIER_DELIM + "\\w*)?$")) {
             return "a game"; // TODO fix when able to get game name from twitch
         }
+        // [[numargs]] - ignores modifier (because no effect)
+        else if (term.matches("^numargs(" + MODIFIER_DELIM + "\\w*)?$")) {
+            return Integer.toString(args.length);
+        }
         // [[args.modifier{{default}}]]
-        else if (term.matches("^args(" + MODIFIER_DELIM + "\\p{Alpha}*)?(" + EMBED_START + ".*" + EMBED_END + ")?$")) {
+        else if (term.matches("^args(" + MODIFIER_DELIM + "\\w*)?(" + EMBED_START + ".*" + EMBED_END + ")?$")) {
             // If no args, parse default
             if (args.length == 0) {
                 return getEmbeddedString(term);
@@ -66,7 +70,7 @@ public class CommandResponseParser {
             return doModifier(String.join(" ", args), term);
         }
         // [[ifargs{{string}}]] - ignores modifier
-        else if (term.matches("^ifargs(" + MODIFIER_DELIM + "\\p{Alpha}*)?(" + EMBED_START + ".*" + EMBED_END + ")?$")) {
+        else if (term.matches("^ifargs(" + MODIFIER_DELIM + "\\w*)?(" + EMBED_START + ".*" + EMBED_END + ")?$")) {
             // If no args, return empty string
             if (args.length == 0) {
                 return "";
@@ -75,7 +79,7 @@ public class CommandResponseParser {
             return getEmbeddedString(term);
         }
         // [[argN.modifier{{default}}]] - N is a natural number
-        else if (term.matches("^arg\\p{Digit}+(" + MODIFIER_DELIM + "\\p{Alpha}*)?(" + EMBED_START + ".*" + EMBED_END + ")?$")) {
+        else if (term.matches("^arg\\p{Digit}+(" + MODIFIER_DELIM + "\\w*)?(" + EMBED_START + ".*" + EMBED_END + ")?$")) {
             // Gets arg number
             String argNumStr = term.replaceFirst("arg", "").split(EMBED_START, 2)[0].split(MODIFIER_DELIM, 2)[0];
             int argNum = Integer.parseInt(argNumStr);
@@ -88,10 +92,10 @@ public class CommandResponseParser {
             if (args.length < argNum) {
                 return getEmbeddedString(term);
             }
-            return doModifier(args[argNum], term);
+            return doModifier(args[argNum - 1], term);
         }
         // [[ifargN{{string}}]] - N is a natural number; ignores modifier
-        else if (term.matches("^ifarg\\p{Digit}+(" + MODIFIER_DELIM + "\\p{Alpha}*)?(" + EMBED_START + ".*" + EMBED_END + ")?$")) {
+        else if (term.matches("^ifarg\\p{Digit}+(" + MODIFIER_DELIM + "\\w*)?(" + EMBED_START + ".*" + EMBED_END + ")?$")) {
             // Gets arg number
             String argNumStr = term.replaceFirst("ifarg", "").split(EMBED_START, 2)[0].split(MODIFIER_DELIM, 2)[0];
             int argNum = Integer.parseInt(argNumStr);
@@ -108,7 +112,7 @@ public class CommandResponseParser {
             return getEmbeddedString(term);
         }
         // [[foreach.modifier{{prepend}}{{append}}]]
-        else if (term.matches("^foreach(" + MODIFIER_DELIM + "\\p{Alpha}*)?(" + EMBED_START + ".*" + EMBED_END + "){0,2}$")) {
+        else if (term.matches("^foreach(" + MODIFIER_DELIM + "\\w*)?(" + EMBED_START + ".*" + EMBED_END + "){0,2}$")) {
             String prepend = getEmbeddedString(term);
             String append = getEmbeddedString(term, 2);
             String result = "";
@@ -122,6 +126,19 @@ public class CommandResponseParser {
         else {
             throw new InvalidTermException();
         }
+    }
+
+    // Prevents terms from being passed into the parser as arguments to a command
+    // (this could lead to infinite looping if, for example, [[args]] is passed in)
+    // Regex hard-coded
+    private static String postProcessor(String parsedTerm) {
+        while (parsedTerm.contains(TERM_START)) {
+            parsedTerm = parsedTerm.replaceAll("\\[\\[", "[ [");
+        }
+        while (parsedTerm.contains(TERM_END)) {
+            parsedTerm = parsedTerm.replaceAll("\\]\\]", "] ]");
+        }
+        return parsedTerm;
     }
 
     private static String doModifier(String toModify, String rawResponseWord) {
@@ -181,6 +198,10 @@ public class CommandResponseParser {
             }
         }
 
-        return temp[1].substring(0, (temp[1].length() - 2));
+        // Handle empty embedded string
+        if (temp[1].matches("^"+EMBED_END)) {
+            return "";
+        }
+        return temp[1].split(EMBED_END)[0];
     }
 }

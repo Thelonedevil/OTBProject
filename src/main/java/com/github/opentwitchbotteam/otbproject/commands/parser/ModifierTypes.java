@@ -3,8 +3,8 @@ package com.github.opentwitchbotteam.otbproject.commands.parser;
 public class ModifierTypes {
     /*
      * NOTE: Be careful modifying these values. In certain instances,
-     * they are tested for using hard-coded regexps, which check for alphabetical
-     * characters, and will fail if other characters are used.
+     * they are tested for using hard-coded regexps, which check for word
+     * characters (\w), and will fail if other characters are used.
      */
 
     public static final String LOWER = "lower";
