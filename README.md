@@ -7,6 +7,6 @@ Documentation can be found <a href="https://docs.google.com/document/d/1pFqzB8w1
 
 Issues and feature requests should be submitted to the <a href="../../issues">Issue Tracker</a>.
 
-The latest successful build can be found <a href="http://tldcode.uk:8080/job/OTBProject/lastSuccessfulBuild/">here</a>.
+The latest successful build can be found <a href="https://drone.io/github.com/OpenTwitchBotTeam/OpenTwitchBotProject/files">here</a>.
 
-[![Build Status](http://tldcode.uk:8080/job/OTBProject/badge/icon)](http://tldcode.uk:8080/job/OTBProject/)
+[![Build Status](https://drone.io/github.com/OpenTwitchBotTeam/OpenTwitchBotProject/status.png)](https://drone.io/github.com/OpenTwitchBotTeam/OpenTwitchBotProject/latest)
