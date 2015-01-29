@@ -13,8 +13,10 @@ public class IrcListener extends ListenerAdapter {
     public void onMessage(MessageEvent event) throws Exception {
         //TODO stuff for messages
     }
+
     @Override
     public void onJoin(JoinEvent event){
         //TODO join stuff
     }
+
 }

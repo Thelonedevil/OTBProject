@@ -14,9 +14,9 @@ import java.util.HashSet;
  * Created by justin on 02/01/2015.
  */
 public class App {
-    static HashSet<String> channels = new HashSet<>();
+    public static HashSet<String> channels = new HashSet<>();
     static Listener listener = new IrcListener();
-    static PircBotX bot;
+    public static PircBotX bot;
     public static void main(String[] args) {
         Configuration.Builder configurationBuilder = new Configuration.Builder().setName("Lone_Bot").setAutoNickChange(false).setCapEnabled(false).addListener(listener).setServerHostname("irc.twitch.tv")
                 .setServerPort(6667).setServerPassword("").setEncoding(Charset.forName("UTF-8"));
