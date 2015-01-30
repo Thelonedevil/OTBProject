@@ -1,14 +1,14 @@
-package com.github.opentwitchbotteam.otbproject.config;
+package com.github.opentwitchbotteam.otbproject.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
 import java.io.IOException;
 
-public class ConfigHandler {
+public class JsonHandler {
     private static ObjectMapper mapper= new ObjectMapper();
 
     // Returns null if can't read object
-    public static <T extends IConfig> T readValue(String path, Class<T> className) {
+    public static <T> T readValue(String path, Class<T> className) {
         try {
             return mapper.readValue(new File(path), className);
         } catch (IOException e) {
@@ -19,7 +19,7 @@ public class ConfigHandler {
     }
 
     // Returns null if can't read object
-    public static <T extends IConfig> void writeValue(String path, T object) {
+    public static <T> void writeValue(String path, T object) {
         try {
             mapper.writeValue(new File(path), object);
         } catch (IOException e) {

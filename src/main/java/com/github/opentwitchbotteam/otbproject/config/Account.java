@@ -1,6 +1,6 @@
 package com.github.opentwitchbotteam.otbproject.config;
 
-public class Account implements IConfig {
+public class Account {
     private String name;
     private String oauth;
 

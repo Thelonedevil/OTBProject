@@ -1,9 +1,9 @@
 package com.github.opentwitchbotteam.otbproject.config;
 
-public class ChannelConfig implements IConfig {
+public class ChannelConfig {
     private int commandCooldown;
 
-    public static class UserCooldowns {
+    public class UserCooldowns {
         private int ul_broadcaster;
         private int ul_super_moderator;
         private int ul_moderator;
