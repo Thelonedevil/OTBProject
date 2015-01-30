@@ -8,11 +8,9 @@ import org.pircbotx.PircBotX;
 import org.pircbotx.exception.IrcException;
 import org.pircbotx.hooks.Listener;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+
 import java.util.HashSet;
 
 /**
@@ -29,6 +27,7 @@ public class App {
                 .setServerPort(6667).setServerPassword("").setEncoding(Charset.forName("UTF-8"));
         channels.forEach(configurationBuilder::addAutoJoinChannel);
         Configuration configuration = configurationBuilder.buildConfiguration();
+        logger.info("Bot configuration built");
         bot = new PircBotX(configuration);
         try {
             logger.info("Bot Started");
@@ -36,7 +35,7 @@ public class App {
         } catch (IOException e) {
             logger.catching(e);
         } catch (IrcException e) {
-            e.printStackTrace();
+            logger.catching(e);
         }
     }
 }
