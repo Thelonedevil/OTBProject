@@ -1,6 +1,9 @@
 package com.github.opentwitchbotteam.otbproject.eventlistener;
 
+import com.github.opentwitchbotteam.otbproject.App;
 import org.pircbotx.hooks.ListenerAdapter;
+import org.pircbotx.hooks.events.ConnectEvent;
+import org.pircbotx.hooks.events.DisconnectEvent;
 import org.pircbotx.hooks.events.JoinEvent;
 import org.pircbotx.hooks.events.MessageEvent;
 
@@ -17,6 +20,10 @@ public class IrcListener extends ListenerAdapter {
     @Override
     public void onJoin(JoinEvent event){
         //TODO join stuff
+    }
+    @Override
+    public void onDisconnect(DisconnectEvent event){
+        App.logger.info("Disconnected From Twitch");
     }
 
 }
