@@ -1,6 +1,5 @@
 package com.github.opentwitchbotteam.otbproject.config;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 
 public class BotConfig implements IConfig {
