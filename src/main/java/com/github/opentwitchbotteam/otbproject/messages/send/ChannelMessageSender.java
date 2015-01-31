@@ -1,5 +1,7 @@
 package com.github.opentwitchbotteam.otbproject.messages.send;
 
+import com.github.opentwitchbotteam.otbproject.App;
+
 public class ChannelMessageSender implements Runnable {
     private String channel;
 
@@ -17,13 +19,13 @@ public class ChannelMessageSender implements Runnable {
                 Thread.sleep(2000); // TODO store as constant somewhere
             }
         } catch (InterruptedException e) {
-            // TODO log something?
-            e.printStackTrace();
-            // TODO possibly Thread.currentThread().interrupt();
-        } catch (NonexistentChannelException e) {
-            // TODO log something
-            // This shouldn't happen
-            // TODO possibly Thread.currentThread().interrupt();
+            // TODO tidy up
+            App.logger.info("Stopped message sender for channel " + channel);
+        }
+        // This shouldn't happen
+        catch (NonexistentChannelException e) {
+            // TODO log more info
+            App.logger.catching(e);
         }
     }
 }

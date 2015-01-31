@@ -1,5 +1,6 @@
 package com.github.opentwitchbotteam.otbproject.channels;
 
+import com.github.opentwitchbotteam.otbproject.App;
 import com.github.opentwitchbotteam.otbproject.database.DatabaseHelper;
 import com.github.opentwitchbotteam.otbproject.database.DatabaseWrapper;
 import com.github.opentwitchbotteam.otbproject.messages.send.MessageSendQueue;
@@ -23,11 +24,10 @@ public class Channel {
         try {
             messageSender = new ChannelMessageSender(name);
         }
+        // shouldn't happen
         catch (NonexistentChannelException e) {
-            // TODO log
-            e.printStackTrace();
-            // cleanup
-            MessageSendQueue.removeChannel(name);
+            // TODO log more info
+            App.logger.catching(e);
             // TODO throw some sort of exception
         }
         messageSenderThread = new Thread(messageSender);
@@ -43,8 +43,8 @@ public class Channel {
         inChannel = false;
 
         db = null;
-        messageSenderThread.interrupt(); // TODO kill thread if this doesn't
-        // TODO possibly set thread to null?
+        messageSenderThread.interrupt();
+        messageSenderThread = null;
         messageSender = null;
         MessageSendQueue.removeChannel(name);
 
