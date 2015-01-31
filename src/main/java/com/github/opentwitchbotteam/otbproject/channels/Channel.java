@@ -3,13 +3,13 @@ package com.github.opentwitchbotteam.otbproject.channels;
 import com.github.opentwitchbotteam.otbproject.database.DatabaseHelper;
 import com.github.opentwitchbotteam.otbproject.database.DatabaseWrapper;
 import com.github.opentwitchbotteam.otbproject.messages.send.MessageSendQueue;
-import com.github.opentwitchbotteam.otbproject.messages.send.MessageSender;
+import com.github.opentwitchbotteam.otbproject.messages.send.ChannelMessageSender;
 import com.github.opentwitchbotteam.otbproject.messages.send.NonexistentChannelException;
 
 public class Channel {
     private String name;
     private DatabaseWrapper db;
-    private MessageSender messageSender;
+    private ChannelMessageSender messageSender;
     private Thread messageSenderThread;
     private boolean inChannel;
 
@@ -21,7 +21,7 @@ public class Channel {
     public void join() {
         MessageSendQueue.addChannel(name);
         try {
-            messageSender = new MessageSender(name);
+            messageSender = new ChannelMessageSender(name);
         }
         catch (NonexistentChannelException e) {
             // TODO log

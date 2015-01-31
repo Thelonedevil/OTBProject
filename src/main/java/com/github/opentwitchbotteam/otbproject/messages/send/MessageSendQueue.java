@@ -25,10 +25,13 @@ public class MessageSendQueue {
         return true;
     }
 
-
-    public static void removeChannel(String channel) throws NonexistentChannelException {
-        checkChannel(channel);
-        queueMap.remove(channel);
+    // Returns false if channel does not exist
+    public static boolean removeChannel(String channel) {
+        if (hasChannel(channel)) {
+            queueMap.remove(channel);
+            return true;
+        }
+        return false;
     }
 
     public static MessageOut take(String channel) throws NonexistentChannelException, InterruptedException {

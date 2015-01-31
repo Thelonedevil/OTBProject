@@ -1,9 +1,9 @@
 package com.github.opentwitchbotteam.otbproject.messages.send;
 
-public class MessageSender implements Runnable {
+public class ChannelMessageSender implements Runnable {
     private String channel;
 
-    public MessageSender(String channel) throws NonexistentChannelException {
+    public ChannelMessageSender(String channel) throws NonexistentChannelException {
         this.channel = channel;
     }
 
@@ -12,7 +12,6 @@ public class MessageSender implements Runnable {
 
         try {
             while (true) {
-                //message = queue.take();
                 message = MessageSendQueue.take(channel);
                 // TODO send message
                 Thread.sleep(2000); // TODO store as constant somewhere
