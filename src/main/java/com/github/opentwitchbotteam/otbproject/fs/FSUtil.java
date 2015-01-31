@@ -25,5 +25,7 @@ public class FSUtil {
     public static final String DATA_DIR = BASE_DIR + File.separator + DATA_DIR_NAME;
     public static final String SCRIPT_DIR = BASE_DIR + File.separator + SCRIPT_DIR_NAME;
 
+    public static final String DATABASE_NAMES_MAIN = "main.db";
+
     public static final String ERROR_MSG = "Failed to create directory: ";
 }
