@@ -132,12 +132,28 @@ public class CommandResponseParser {
     // (this could lead to infinite looping if, for example, [[args]] is passed in)
     // Regex hard-coded
     private static String postProcessor(String parsedTerm) {
+        // Handle term delimiters
         while (parsedTerm.contains(TERM_START)) {
             parsedTerm = parsedTerm.replaceAll("\\[\\[", "[ [");
         }
         while (parsedTerm.contains(TERM_END)) {
             parsedTerm = parsedTerm.replaceAll("\\]\\]", "] ]");
         }
+        // Handle embedded string delimiters
+        while (parsedTerm.contains("{{")) {
+            parsedTerm = parsedTerm.replaceAll(EMBED_START, "{ {");
+        }
+        while (parsedTerm.contains("}}")) {
+            parsedTerm = parsedTerm.replaceAll(EMBED_END, "} }");
+        }
+        // Handle single curly brace at beginning and end
+        if (parsedTerm.startsWith("{")) {
+            parsedTerm = " " + parsedTerm;
+        }
+        if (parsedTerm.endsWith("}")) {
+            parsedTerm = parsedTerm + " ";
+        }
+
         return parsedTerm;
     }
 
