@@ -58,4 +58,8 @@ public class Channel {
     public boolean isInChannel() {
         return inChannel;
     }
+
+    public DatabaseWrapper getDatabaseWrapper() {
+        return db;
+    }
 }
