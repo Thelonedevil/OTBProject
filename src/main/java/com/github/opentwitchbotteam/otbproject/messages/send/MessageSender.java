@@ -2,11 +2,9 @@ package com.github.opentwitchbotteam.otbproject.messages.send;
 
 public class MessageSender implements Runnable {
     private String channel;
-    //private PriorityBlockingQueue<MessageOut> queue;
 
     public MessageSender(String channel) throws NonexistentChannelException {
         this.channel = channel;
-        //queue = MessageSendQueue.getQueue(channel);
     }
 
     public void run() {

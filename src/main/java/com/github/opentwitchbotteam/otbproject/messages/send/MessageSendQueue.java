@@ -17,7 +17,6 @@ public class MessageSendQueue {
     }
 
     // Returns false if channel already exists
-    // TODO modify?
     public static boolean addChannel(String channel) {
         if (hasChannel(channel)) {
             return false;
@@ -26,14 +25,10 @@ public class MessageSendQueue {
         return true;
     }
 
-    // Returns false if channel does not exist
-    // TODO modify?
-    public static boolean removeChannel(String channel) {
-        if (hasChannel(channel)) {
-            queueMap.remove(channel);
-            return true;
-        }
-        return false;
+
+    public static void removeChannel(String channel) throws NonexistentChannelException {
+        checkChannel(channel);
+        queueMap.remove(channel);
     }
 
     public static MessageOut take(String channel) throws NonexistentChannelException, InterruptedException {
@@ -55,13 +50,4 @@ public class MessageSendQueue {
         checkChannel(channel);
         return queueMap.get(channel).size();
     }
-
-    /*
-    public static PriorityBlockingQueue<MessageOut> getQueue(String channel) throws NonexistantChannelException {
-        if (!queueMap.containsKey(channel)) {
-            throw new NonexistantChannelException();
-        }
-        return queueMap.get(channel);
-    }
-    */
 }
