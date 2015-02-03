@@ -1,5 +1,6 @@
 package com.github.opentwitchbotteam.otbproject.proc;
 
+import com.github.opentwitchbotteam.otbproject.App;
 import com.github.opentwitchbotteam.otbproject.commands.Alias;
 import com.github.opentwitchbotteam.otbproject.commands.AliasFields;
 import com.github.opentwitchbotteam.otbproject.commands.Command;
@@ -37,8 +38,7 @@ public class CommandProcessor {
             }
         }
         catch (SQLException e) {
-            // TODO log
-            e.printStackTrace();
+            App.logger.catching(e);
         }
 
         // Return message if not an alias
@@ -46,7 +46,7 @@ public class CommandProcessor {
     }
 
     // Returns an empty string if script command
-    private static String checkCommand(DatabaseWrapper db, String message, String execChannel, String user, UserLevel userLevel, boolean debug) {
+    private static String checkCommand(DatabaseWrapper db, String message, String channel, String user, UserLevel userLevel, boolean debug) {
         String[] splitMsg = message.split(" ", 2);
         String cmdName = splitMsg[0];
 
@@ -58,25 +58,24 @@ public class CommandProcessor {
                 // Run script command
                 if (scriptPath != null) {
                     if (splitMsg.length == 1) {
-                        ScriptProcessor.processScript(scriptPath, db, new String[0], execChannel, user, userLevel);
+                        ScriptProcessor.process(scriptPath, db, new String[0], channel, user, userLevel);
                     }
                     else {
-                        ScriptProcessor.processScript(scriptPath, db, splitMsg[1].split(" "), execChannel, user, userLevel);
+                        ScriptProcessor.process(scriptPath, db, splitMsg[1].split(" "), channel, user, userLevel);
                     }
                 }
                 // Else non-script command
                 // Check if command is debug
                 else if ((int)Command.get(db, cmdName, CommandFields.DEBUG) == 0 || debug) {
                     if (splitMsg.length == 1) {
-                        return CommandResponseParser.parse(user, (Integer)Command.get(db, cmdName, CommandFields.COUNT), new String[0], (String)Command.get(db, cmdName, CommandFields.RESPONSE));
+                        return CommandResponseParser.parse(user, channel, (Integer)Command.get(db, cmdName, CommandFields.COUNT), new String[0], (String)Command.get(db, cmdName, CommandFields.RESPONSE));
                     }
-                    return CommandResponseParser.parse(user, (Integer)Command.get(db, cmdName, CommandFields.COUNT), splitMsg[1].split(" "), (String)Command.get(db, cmdName, CommandFields.RESPONSE));
+                    return CommandResponseParser.parse(user, channel, (Integer)Command.get(db, cmdName, CommandFields.COUNT), splitMsg[1].split(" "), (String)Command.get(db, cmdName, CommandFields.RESPONSE));
                 }
             }
         }
         catch (SQLException e) {
-            // TODO log
-            e.printStackTrace();
+            App.logger.catching(e);
         }
 
         return "";
