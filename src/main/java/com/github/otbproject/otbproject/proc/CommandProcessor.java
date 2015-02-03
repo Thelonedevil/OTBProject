@@ -50,27 +50,31 @@ public class CommandProcessor {
         String[] splitMsg = message.split(" ", 2);
         String cmdName = splitMsg[0];
 
+        String[] args;
+        if (splitMsg.length == 1) {
+            args = new String[0];
+        }
+        else {
+            args = splitMsg[1].split(" ");
+        }
+
         // TODO check rate limit for command and ignore if not enough time has passed
 
         try {
-            if (Command.exists(db, cmdName) && ((Integer)Command.get(db, cmdName, CommandFields.ENABLED) == 1) && (userLevel.getValue() >= UserLevel.valueOf((String)Command.get(db, cmdName, CommandFields.EXEC_USER_LEVEL)).getValue())) {
+            if (Command.exists(db, cmdName)
+                    && ((Integer)Command.get(db, cmdName, CommandFields.ENABLED) == 1)
+                    && (userLevel.getValue() >= UserLevel.valueOf((String)Command.get(db, cmdName, CommandFields.EXEC_USER_LEVEL)).getValue())
+                    && ((Integer)Command.get(db, cmdName, CommandFields.MIN_ARGS) <= args.length)) {
+
                 String scriptPath = (String)Command.get(db, cmdName, CommandFields.SCRIPT);
                 // Run script command
                 if (scriptPath != null) {
-                    if (splitMsg.length == 1) {
-                        ScriptProcessor.process(scriptPath, db, new String[0], channel, user, userLevel);
-                    }
-                    else {
-                        ScriptProcessor.process(scriptPath, db, splitMsg[1].split(" "), channel, user, userLevel);
-                    }
+                    ScriptProcessor.process(scriptPath, db, args, channel, user, userLevel);
                 }
                 // Else non-script command
                 // Check if command is debug
                 else if ((int)Command.get(db, cmdName, CommandFields.DEBUG) == 0 || debug) {
-                    if (splitMsg.length == 1) {
-                        return CommandResponseParser.parse(user, channel, (Integer) Command.get(db, cmdName, CommandFields.COUNT), new String[0], (String) Command.get(db, cmdName, CommandFields.RESPONSE));
-                    }
-                    return CommandResponseParser.parse(user, channel, (Integer)Command.get(db, cmdName, CommandFields.COUNT), splitMsg[1].split(" "), (String)Command.get(db, cmdName, CommandFields.RESPONSE));
+                    return CommandResponseParser.parse(user, channel, (Integer)Command.get(db, cmdName, CommandFields.COUNT), args, (String)Command.get(db, cmdName, CommandFields.RESPONSE));
                 }
             }
         }
