@@ -160,13 +160,13 @@ public class ParserTest {
         args[0] = TS+"user"+TE;
         args[1] = TS+"channel"+TE;
         parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, TS+"args"+TE);
-        assertNotEquals(USER + " " + CHANNEL, parsed);
+        assertEquals(TS + "user" + TE + " " + TS + "channel" + TE, parsed);
 
         // Embedded string as args
         args[0] = ES+"string"+EE;
         args[1] = ES+"thing"+EE;
         parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, "start-"+TS+"args"+TE+"-end");
-        assertEquals("start- { {string} } { {thing} } -end", parsed);
+        assertEquals("start-" + ES + "string" + EE + " " + ES + "thing" + EE + "-end", parsed);
     }
 
     @Test

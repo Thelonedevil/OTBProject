@@ -9,6 +9,10 @@ public class CommandResponseParser {
 
 
     public static String parse(String userNick, String channel, int count, String[] args, String rawResponse) {
+        return postUnProcessor(parseMessage(userNick, channel, count, args, rawResponse));
+    }
+
+    private static String parseMessage(String userNick, String channel, int count, String[] args, String rawResponse) {
         int innerStartIndex;
         int innerEndIndex;
         String temp;
@@ -128,33 +132,23 @@ public class CommandResponseParser {
         }
     }
 
-    // Prevents terms from being passed into the parser as arguments to a command
-    // (this could lead to infinite looping if, for example, [[args]] is passed in)
-    // Regex hard-coded
+    // Prevents terms and embedded strings from being passed into the parser as
+    // arguments to a command (this could lead to infinite looping if, for
+    // example, [[args]] is passed in)
+    // Regex and strings hard-coded
     private static String postProcessor(String parsedTerm) {
-        // Handle term delimiters
-        while (parsedTerm.contains(TERM_START)) {
-            parsedTerm = parsedTerm.replaceAll("\\[\\[", "[ [");
-        }
-        while (parsedTerm.contains(TERM_END)) {
-            parsedTerm = parsedTerm.replaceAll("\\]\\]", "] ]");
-        }
-        // Handle embedded string delimiters
-        while (parsedTerm.contains("{{")) {
-            parsedTerm = parsedTerm.replaceAll(EMBED_START, "{ {");
-        }
-        while (parsedTerm.contains("}}")) {
-            parsedTerm = parsedTerm.replaceAll(EMBED_END, "} }");
-        }
-        // Handle single curly brace at beginning and end
-        if (parsedTerm.startsWith("{")) {
-            parsedTerm = " " + parsedTerm;
-        }
-        if (parsedTerm.endsWith("}")) {
-            parsedTerm = parsedTerm + " ";
-        }
+        parsedTerm = parsedTerm.replaceAll("\\[", "\t[");
+        parsedTerm = parsedTerm.replaceAll("\\]", "]\t");
+        parsedTerm = parsedTerm.replaceAll("\\{", "\t{");
+        parsedTerm = parsedTerm.replaceAll("\\}", "}\t");
 
         return parsedTerm;
+    }
+
+    // Removes characters added by postProcessor immediately before returning
+    // fully processed message
+    private static String postUnProcessor(String message) {
+        return message.replaceAll("\t", "");
     }
 
     private static String doModifier(String toModify, String rawResponseWord) {
