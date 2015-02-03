@@ -3,7 +3,7 @@ package com.github.otbproject.otbproject.fs;
 import java.io.File;
 
 public class FSUtil {
-    private static final String BASE_DIR_NAME = ".opentwitchbot";
+    private static final String BASE_DIR_NAME = ".otb";
 
     private static final String COMMANDS_DIR_NAME = "commands";
     private static final String CONFIG_DIR_NAME = "config";
