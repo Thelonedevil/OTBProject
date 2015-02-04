@@ -5,3 +5,4 @@
 !.gitignore
 !pom.xml
 !LICENSE
+!travis.yml
