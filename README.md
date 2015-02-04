@@ -1,7 +1,7 @@
 OTBProject
 ====================
 
-An open source chat bot for Twitch (www.twitch.tv)
+An open source chat bot for <a href="http://www.twitch.tv" target="_blank">Twitch</a>.
 
 Documentation can be found <a target="_blank" href="https://docs.google.com/document/d/1pFqzB8w1HBM5JhYL2ThUCR6oiSKhva_TN_iIHyIowy8">here</a>.
 
