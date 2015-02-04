@@ -3,5 +3,5 @@ jdk: oraclejdk8
 script: 
  - mvn clean install -q -DskipTests=true
  - mvn test
-after-success:
+after_success:
  - '[[ "$TRAVIS_PULL_REQUEST" == "false" ]] && [[ "$TRAVIS_REPO_SLUG" == "OTBProject/OTBProject" ]] && [[ "$TRAVIS_BRANCH" == "master"]] && mvn deploy'
