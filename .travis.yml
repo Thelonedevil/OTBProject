@@ -1,0 +1,5 @@
+language: java
+jdk: oraclejdk8
+install: mvn clean install -q -DskipTests=true
+after-success:
+ - "[[ $TRAVIS_PULL_REQUEST == false ]] && [[ $TRAVIS_REPO_SLUG == OTBPoject/OTBProject ]] && [[ $TRAVIS_BRANCH == master ]] && mvn deploy"
