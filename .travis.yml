@@ -4,4 +4,4 @@ script:
  - mvn clean install -q -DskipTests=true
  - mvn test
 after-success:
- - "[[ $TRAVIS_PULL_REQUEST == false ]] && [[ $TRAVIS_REPO_SLUG == OTBProject/OTBProject ]] && [[ $TRAVIS_BRANCH == master ]] && mvn deploy"
+ - '[[ "$TRAVIS_PULL_REQUEST" == "false" ]] && [[ "$TRAVIS_REPO_SLUG" == "OTBProject/OTBProject" ]] && [[ "$TRAVIS_BRANCH" == "master"]] && mvn deploy'
