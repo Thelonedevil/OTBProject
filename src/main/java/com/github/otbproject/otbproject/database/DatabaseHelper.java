@@ -23,8 +23,8 @@ public class DatabaseHelper {
         return tables;
     }
 
-    public static DatabaseWrapper getChannelDatabase(String channel, String databaseName) {
-        String path = FSUtil.dataDir() + File.separator + FSUtil.DirNames.CHANNELS + File.separator + channel + File.separator + databaseName;
+    public static DatabaseWrapper getChannelDatabase(String channel) {
+        String path = FSUtil.dataDir() + File.separator + FSUtil.DirNames.CHANNELS + File.separator + channel + File.separator + FSUtil.DatabaseNames.MAIN;
         return new DatabaseWrapper(path, getTablesHashMap());
     }
 

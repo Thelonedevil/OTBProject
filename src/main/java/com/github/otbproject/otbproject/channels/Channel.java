@@ -33,7 +33,7 @@ public class Channel {
         }
         messageSenderThread = new Thread(messageSender);
         messageSenderThread.start();
-        db = DatabaseHelper.getChannelDatabase(name, FSUtil.DatabaseNames.MAIN);
+        db = DatabaseHelper.getChannelDatabase(name);
 
         inChannel = true;
 
