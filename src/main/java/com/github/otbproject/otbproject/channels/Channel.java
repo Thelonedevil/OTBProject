@@ -3,6 +3,7 @@ package com.github.otbproject.otbproject.channels;
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.database.DatabaseHelper;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
+import com.github.otbproject.otbproject.fs.FSUtil;
 import com.github.otbproject.otbproject.messages.send.MessageSendQueue;
 import com.github.otbproject.otbproject.messages.send.ChannelMessageSender;
 import com.github.otbproject.otbproject.messages.send.NonexistentChannelException;
@@ -32,7 +33,7 @@ public class Channel {
         }
         messageSenderThread = new Thread(messageSender);
         messageSenderThread.start();
-        db = DatabaseHelper.getChannelDatabase(name);
+        db = DatabaseHelper.getChannelDatabase(name, FSUtil.DatabaseNames.MAIN);
 
         inChannel = true;
 

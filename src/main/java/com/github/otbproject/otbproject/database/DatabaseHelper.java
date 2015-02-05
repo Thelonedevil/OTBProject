@@ -23,13 +23,13 @@ public class DatabaseHelper {
         return tables;
     }
 
-    public static DatabaseWrapper getChannelDatabase(String channel) {
-        String path = FSUtil.DATA_DIR + File.separator + FSUtil.CHANNELS_DIR_NAME + File.separator + channel + File.separator + FSUtil.DATABASE_NAMES_MAIN;
+    public static DatabaseWrapper getChannelDatabase(String channel, String databaseName) {
+        String path = FSUtil.dataDir() + File.separator + FSUtil.DirNames.CHANNELS + File.separator + channel + File.separator + databaseName;
         return new DatabaseWrapper(path, getTablesHashMap());
     }
 
     public static DatabaseWrapper getBotDatabase() {
-        String path = FSUtil.DATA_DIR + File.separator + FSUtil.BOT_CHANNEL_DIR_NAME + File.separator + FSUtil.DATABASE_NAMES_MAIN;
+        String path = FSUtil.dataDir() + File.separator + FSUtil.DirNames.BOT_CHANNEL + File.separator + FSUtil.DatabaseNames.MAIN;
         return new DatabaseWrapper(path, getTablesHashMap());
     }
 }
