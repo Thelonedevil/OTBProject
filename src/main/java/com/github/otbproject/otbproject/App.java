@@ -23,7 +23,7 @@ public class App {
     public static PircBotX bot;
     public static final Logger logger = LogManager.getLogger();
     public static void main(String[] args) {
-        System.setProperty("OTBCONF", FSUtil.BASE_DIR);
+        System.setProperty("OTBCONF", FSUtil.logsDir());
         Configuration.Builder configurationBuilder = new Configuration.Builder().setName("Lone_Bot").setAutoNickChange(false).setCapEnabled(false).addListener(listener).setServerHostname("irc.twitch.tv")
                 .setServerPort(6667).setServerPassword("").setEncoding(Charset.forName("UTF-8"));
         channels.forEach(configurationBuilder::addAutoJoinChannel);
