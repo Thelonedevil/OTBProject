@@ -23,10 +23,10 @@ public class IrcListener extends ListenerAdapter {
         String channel = event.getChannel().getName().replace("#","");
         ProcessedMessage processedMessage = MessageProcessor.process(App.bot.channels.get(channel).getDatabaseWrapper(),event.getMessage(),channel,event.getUser().getNick(),false, false);
         String message = processedMessage.getResponse();
-            if (!message.isEmpty()) {
-                MessageOut messageOut = new MessageOut(message);
-                MessageSendQueue.add(channel, messageOut);
-            }
+        if (!message.isEmpty()) {
+            MessageOut messageOut = new MessageOut(message);
+            MessageSendQueue.add(channel, messageOut);
+        }
     }
 
     @Override
