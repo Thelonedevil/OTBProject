@@ -1,6 +1,8 @@
 package com.github.otbproject.otbproject.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.otbproject.otbproject.App;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -12,19 +14,17 @@ public class JsonHandler {
         try {
             return mapper.readValue(new File(path), className);
         } catch (IOException e) {
-            // TODO handle
-            e.printStackTrace();
+            App.logger.catching(e);
         }
         return null;
     }
 
-    // Returns null if can't read object
+    // Logs exception if can't write object
     public static <T> void writeValue(String path, T object) {
         try {
-            mapper.writeValue(new File(path), object);
+            mapper.writerWithDefaultPrettyPrinter().writeValue(new File(path), object);
         } catch (IOException e) {
-            // TODO handle
-            e.printStackTrace();
+            App.logger.catching(e);
         }
     }
 }

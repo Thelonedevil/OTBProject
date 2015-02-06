@@ -1,11 +1,12 @@
 package com.github.otbproject.otbproject.config;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 
 public class BotConfig {
     private ChannelJoinSetting channelJoinSetting;
-    private HashSet<String> whitelist;
-    private HashSet<String> blacklist;
+    public ArrayList<String> whitelist;
+    public ArrayList<String> blacklist;
+    public ArrayList<String> currentChannels;
 
     public ChannelJoinSetting getChannelJoinSetting() {
         return channelJoinSetting;
@@ -13,13 +14,5 @@ public class BotConfig {
 
     public void setChannelJoinSetting(ChannelJoinSetting channelJoinSetting) {
         this.channelJoinSetting = channelJoinSetting;
-    }
-
-    public HashSet<String> getWhitelist() {
-        return whitelist;
-    }
-
-    public HashSet<String> getBlacklist() {
-        return blacklist;
     }
 }

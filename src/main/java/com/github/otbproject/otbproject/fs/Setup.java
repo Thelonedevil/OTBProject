@@ -22,6 +22,9 @@ public class Setup {
         createDirs(FSUtil.dataDir() + File.separator + FSUtil.DirNames.BOT_CHANNEL);
         createDirs(FSUtil.dataDir() + File.separator + FSUtil.DirNames.CHANNELS);
 
+        // Defaults Directory
+        createDirs(FSUtil.defaultsDir());
+
         // Logs Directory
         createDirs(FSUtil.logsDir());
 
@@ -44,7 +47,8 @@ public class Setup {
     }
 
     private static void createDirs(String path) throws IOException {
-        if (! new File(path).mkdirs()) {
+        File dirPath = new File(path);
+        if ((!dirPath.exists()) && (!dirPath.mkdirs())) {
             throw new IOException(FSUtil.ERROR_MSG + path);
         }
     }

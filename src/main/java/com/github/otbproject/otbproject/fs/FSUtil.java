@@ -10,6 +10,7 @@ public class FSUtil {
     private static final String COMMANDS_DIR_NAME = "commands";
     private static final String CONFIG_DIR_NAME = "config";
     private static final String DATA_DIR_NAME = "data";
+    private static final String DEFAULTS_DIR_NAME = "defaults";
     private static final String LOGS_DIR_NAME = "logs";
     private static final String SCRIPT_DIR_NAME = "scripts";
 
@@ -52,6 +53,10 @@ public class FSUtil {
 
     public static String dataDir() {
         return baseDir + File.separator + DATA_DIR_NAME;
+    }
+
+    public static String defaultsDir() {
+        return baseDir + File.separator + DEFAULTS_DIR_NAME;
     }
 
     public static String logsDir() {

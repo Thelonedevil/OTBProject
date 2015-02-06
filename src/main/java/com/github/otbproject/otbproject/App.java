@@ -2,6 +2,7 @@ package com.github.otbproject.otbproject;
 
 import com.github.otbproject.otbproject.eventlistener.IrcListener;
 import com.github.otbproject.otbproject.fs.FSUtil;
+import com.github.otbproject.otbproject.util.dev.DevHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.pircbotx.Configuration;
@@ -23,6 +24,9 @@ public class App {
     public static PircBotX bot;
     public static final Logger logger = LogManager.getLogger();
     public static void main(String[] args) {
+        // TODO remove before release
+        DevHelper.run(args);
+
         System.setProperty("OTBCONF", FSUtil.logsDir());
         Configuration.Builder configurationBuilder = new Configuration.Builder().setName("Lone_Bot").setAutoNickChange(false).setCapEnabled(false).addListener(listener).setServerHostname("irc.twitch.tv")
                 .setServerPort(6667).setServerPassword("").setEncoding(Charset.forName("UTF-8"));
