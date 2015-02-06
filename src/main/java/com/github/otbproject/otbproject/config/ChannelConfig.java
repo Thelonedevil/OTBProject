@@ -2,6 +2,7 @@ package com.github.otbproject.otbproject.config;
 
 public class ChannelConfig {
     private int commandCooldown;
+    public UserCooldowns userCooldowns;
 
     public class UserCooldowns {
         private int ul_broadcaster;
