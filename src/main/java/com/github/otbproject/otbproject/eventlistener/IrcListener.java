@@ -22,7 +22,7 @@ public class IrcListener extends ListenerAdapter {
         //TODO replace booleans with lookups
         ProcessedMessage processedMessage = MessageProcessor.process(App.bot.channels.get(event.getChannel().getName()).getDatabaseWrapper(),event.getMessage(),event.getChannel().getName(),event.getUser().getNick(),false, false);
             String message = processedMessage.getResponse();
-            if (message.isEmpty()) {
+            if (!message.isEmpty()) {
                 MessageOut messageOut = new MessageOut(message);
                 MessageSendQueue.add(event.getChannel().getName(), messageOut);
             }
