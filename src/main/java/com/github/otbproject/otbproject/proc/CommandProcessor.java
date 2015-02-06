@@ -12,7 +12,7 @@ import com.github.otbproject.otbproject.users.UserLevel;
 import java.sql.SQLException;
 
 public class CommandProcessor {
-    public static String processCommand(DatabaseWrapper db, String message, String channel, String user, UserLevel userLevel, boolean debug) {
+    public static ProcessedCommand process(DatabaseWrapper db, String message, String channel, String user, UserLevel userLevel, boolean debug) {
         String commandMsg = checkAlias(db, message, "");
         return checkCommand(db, commandMsg, channel, user, userLevel, debug);
     }
@@ -46,7 +46,7 @@ public class CommandProcessor {
     }
 
     // Returns an empty string if script command
-    private static String checkCommand(DatabaseWrapper db, String message, String channel, String user, UserLevel userLevel, boolean debug) {
+    private static ProcessedCommand checkCommand(DatabaseWrapper db, String message, String channel, String user, UserLevel userLevel, boolean debug) {
         String[] splitMsg = message.split(" ", 2);
         String cmdName = splitMsg[0];
 
@@ -74,7 +74,8 @@ public class CommandProcessor {
                 // Else non-script command
                 // Check if command is debug
                 else if ((int)Command.get(db, cmdName, CommandFields.DEBUG) == 0 || debug) {
-                    return CommandResponseParser.parse(user, channel, (Integer)Command.get(db, cmdName, CommandFields.COUNT), args, (String)Command.get(db, cmdName, CommandFields.RESPONSE));
+                    String response = CommandResponseParser.parse(user, channel, (Integer) Command.get(db, cmdName, CommandFields.COUNT), args, (String) Command.get(db, cmdName, CommandFields.RESPONSE));
+                    return new ProcessedCommand(response, cmdName);
                 }
             }
         }
@@ -82,6 +83,6 @@ public class CommandProcessor {
             App.logger.catching(e);
         }
 
-        return "";
+        return new ProcessedCommand("", "");
     }
 }
