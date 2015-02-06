@@ -21,11 +21,11 @@ public class IrcListener extends ListenerAdapter {
     public void onMessage(MessageEvent event) throws Exception {
         //TODO replace booleans with lookups
         ProcessedMessage processedMessage = MessageProcessor.process(App.bot.channels.get(event.getChannel().getName()).getDatabaseWrapper(),event.getMessage(),event.getChannel().getName(),event.getUser().getNick(),false, false);
-        if (!processedMessage.wasTimedOut()) {
             String message = processedMessage.getResponse();
-            MessageOut messageOut = new MessageOut(message);
-            MessageSendQueue.add(event.getChannel().getName(), messageOut);
-        }
+            if (message.isEmpty()) {
+                MessageOut messageOut = new MessageOut(message);
+                MessageSendQueue.add(event.getChannel().getName(), messageOut);
+            }
     }
 
     @Override
