@@ -30,7 +30,7 @@ public class App {
     public static final Logger logger = LogManager.getLogger();
     public static void main(String[] args) {
         // TODO remove before release
-        //DevHelper.run(args);
+        DevHelper.run(args);
 
         System.setProperty("OTBCONF", FSUtil.logsDir());
         Account account = JsonHandler.readValue(FSUtil.configDir()+ File.separator+"account.json", Account.class);
@@ -43,13 +43,16 @@ public class App {
                 .setServerPort(6667).setServerPassword(account.getOauth()).setEncoding(Charset.forName("UTF-8"));
         for (String channel : channels) {
             configurationBuilder.addAutoJoinChannel("#" + channel);
+        }
+        Configuration configuration = configurationBuilder.buildConfiguration();
+
+        logger.info("Bot configuration built");
+        bot = new CustomBot(configuration);
+        for (String channel :channels){
             Channel channel1 = new Channel(channel);
             channel1.join();
             App.bot.channels.put(channel1.getName(),channel1);
         }
-        Configuration configuration = configurationBuilder.buildConfiguration();
-        logger.info("Bot configuration built");
-        bot = new CustomBot(configuration);
         try {
             logger.info("Bot Started");
             bot.startBot();
