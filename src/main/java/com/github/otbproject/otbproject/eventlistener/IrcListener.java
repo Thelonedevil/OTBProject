@@ -20,25 +20,25 @@ public class IrcListener extends ListenerAdapter {
     @Override
     public void onMessage(MessageEvent event) throws Exception {
         //TODO replace booleans with lookups
-        ProcessedMessage processedMessage = MessageProcessor.process(App.bot.channels.get(event.getChannel().getName()).getDatabaseWrapper(),event.getMessage(),event.getChannel().getName(),event.getUser().getNick(),false, false);
+        String channel = event.getChannel().getName().replace("#","");
+        ProcessedMessage processedMessage = MessageProcessor.process(App.bot.channels.get(channel).getDatabaseWrapper(),event.getMessage(),channel,event.getUser().getNick(),false, false);
             String message = processedMessage.getResponse();
             if (!message.isEmpty()) {
                 MessageOut messageOut = new MessageOut(message);
-                MessageSendQueue.add(event.getChannel().getName(), messageOut);
+                MessageSendQueue.add(channel, messageOut);
             }
     }
 
     @Override
     public void onJoin(JoinEvent event){
-        Channel channel = new Channel(event.getChannel().getName());
-        channel.join();
-        App.bot.channels.put(channel.getName(),channel);
     }
 
     @Override
     public void onPart(PartEvent event){
-        App.bot.channels.get(event.getChannel().getName()).leave();
-        App.bot.channels.remove(event.getChannel().getName());
+        //TODO move this to somewhere else (probably be in the CLI leave command executor)
+        if(event.getUser().getNick().equalsIgnoreCase(event.getBot().getNick())){
+            App.bot.channels.remove(event.getChannel().getName().replace("#","")).leave();
+        }
     }
 
     @Override

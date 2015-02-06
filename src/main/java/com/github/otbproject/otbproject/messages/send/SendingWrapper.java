@@ -8,6 +8,6 @@ import com.github.otbproject.otbproject.App;
 public class SendingWrapper {
 
     public static void send(String channel, String message){
-        App.bot.getUserChannelDao().getChannel(channel).send().message(message);
+        App.bot.getUserChannelDao().getChannel("#"+channel).send().message(message);
     }
 }

@@ -24,6 +24,7 @@ public class DatabaseHelper {
     }
 
     public static DatabaseWrapper getChannelDatabase(String channel) {
+        channel = channel.replace("#","");
         String path = FSUtil.dataDir() + File.separator + FSUtil.DirNames.CHANNELS + File.separator + channel + File.separator + FSUtil.DatabaseNames.MAIN;
         return new DatabaseWrapper(path, getTablesHashMap());
     }
