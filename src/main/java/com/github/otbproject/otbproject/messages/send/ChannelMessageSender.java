@@ -15,7 +15,7 @@ public class ChannelMessageSender implements Runnable {
         try {
             while (true) {
                 message = MessageSendQueue.take(channel);
-                // TODO send message
+                SendingWrapper.send(channel,message.getMessage());
                 Thread.sleep(2000); // TODO store as constant somewhere
             }
         } catch (InterruptedException e) {
