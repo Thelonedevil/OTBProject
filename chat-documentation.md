@@ -3,7 +3,7 @@
 
 ##Version
 
-Version 0.1.2 (WIP - TODO add more examples for new terms)
+Version 0.1.2
 
 ####Changelog
 
@@ -65,7 +65,7 @@ The following are terms which are significantly more useful when given embedded 
 | Term | Description |
 |:-----|:------------|
 |`[[ifargs{{string}}]]`|Prints the specified string only if there is at least one argument. If no string is supplied, it does nothing.|
-|`[[ifargN{{string}}]]`|Prints the specified string only if at least N arguments were given. If no string is supplied, it does nothing.|
+|`[[ifargN{{string}}]]`|Prints the specified string only if at least `N` arguments were given. If no string is supplied, it does nothing. `N` must be greater than 0.|
 |`[[foreach{{prepend}}{{append}}]]`|For each argument provided, prints the string specified as ‘prepend’, the argument, and then the string specified as ‘append’. If a modifier (described later) is used, it is applied to each argument (but not to ‘prepend’ or ‘append’). If only one string is provided, it is ‘prepend’. If both are left out, the arguments are printed unmodified (and without spaces).|
 
 ####Examples
@@ -89,6 +89,8 @@ Here are some examples of special terms and modifiers:
 |!bar4|[[args.word_cap_soft]]|
 |!words|words [[arg1{{something}}]] words [[arg2{{[[arg1]]}}]] words [[arg3{{[[arg2{{[[arg1{{dunno}}]]}}]]}}]] words [[arg4{{[[arg2]]}}]] words|
 |!multi|Watch [[foreach{{}}{{, }}]] and me at the same time! example.com/multistream/[[channel]]/[[foreach.lower{{}}{{/}}]]|
+|!ifargs|A secret message appears if you run this command with args.[[ifargs{{ I mean, I suppose it's a secret, but it's not a very interesting one :P}}]]|
+|!ifarg2|More args are [[ifarg2{{not }}]]needed. You need[[ifarg2{{ed}}]] 2 args.|
 
 ######Running the commands in chat
 
@@ -125,3 +127,8 @@ All commands are run by a user named “fred”, and responded to by a bot named
 |fred: !multi|Bot: Watch MaddiieManeater, MKtheWorst, and me at the same time! example.com/multistream/the_lone_devil/|
 |fred: !multi MaddiieManeater|Bot: Watch MaddiieManeater, MKtheWorst, and me at the same time! example.com/multistream/the_lone_devil/maddiiemaneater/|
 |fred: !multi MaddiieManeater MKtheWorst|Bot: Watch MaddiieManeater, MKtheWorst, and me at the same time! example.com/multistream/the_lone_devil/maddiiemaneater/mktheworst/|
+|fred: !ifargs|Bot: A secret message appears if you run this command with args.|
+|fred: !ifargs some args|Bot: A secret message appears if you run this command with args. I mean, I suppose it's a secret, but it's not a very interesting one :P|
+|fred: !ifarg2|Bot: More args are needed. You need 2 args.|
+|fred: !ifarg2 one|Bot: More args are needed. You need. 2 args.|
+|fred: !ifarg2 one two|Bot: More args are not needed. You needed 2 args.|
