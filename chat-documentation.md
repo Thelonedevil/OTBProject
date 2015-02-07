@@ -130,5 +130,5 @@ All commands are run by a user named “fred”, and responded to by a bot named
 |fred: !ifargs|Bot: A secret message appears if you run this command with args.|
 |fred: !ifargs some args|Bot: A secret message appears if you run this command with args. I mean, I suppose it's a secret, but it's not a very interesting one :P|
 |fred: !ifarg2|Bot: More args are needed. You need 2 args.|
-|fred: !ifarg2 one|Bot: More args are needed. You need. 2 args.|
+|fred: !ifarg2 one|Bot: More args are needed. You need 2 args.|
 |fred: !ifarg2 one two|Bot: More args are not needed. You needed 2 args.|
