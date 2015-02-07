@@ -3,7 +3,7 @@ OTBProject
 
 An open source chat bot for <a href="http://www.twitch.tv" target="_blank">Twitch</a>.
 
-Documentation can be found <a href="chat-documentation.md">here</a>.
+Documentation for how to interact with the bot in chat can be found <a href="chat-documentation.md">here</a>.
 
 Issues and feature requests should be submitted to the <a href="../../issues">Issue Tracker</a>.
 
