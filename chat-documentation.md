@@ -4,14 +4,14 @@
 ##Table of Contents
 
 
-- [Version](#)
-	- [Changelog](#)
-- [Commands](#)
-- [Special Terms](#)
-	- [Terms](#)
-	- [Modifiers](#)
-	- [Embedded Strings](#)
-	- [Examples](#)
+- [Version](#version)
+	- [Changelog](#changelog)
+- [Commands](#commands)
+- [Special Terms](#special-terms)
+	- [Terms](#terms)
+	- [Modifiers](#modifiers)
+	- [Embedded Strings](#embedded-strings)
+	- [Examples](#examples)
 
 ##Version
 
