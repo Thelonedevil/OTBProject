@@ -1,6 +1,18 @@
 #OTB Project Documentation
 ###Interacting with a bot in chat
 
+##Table of Contents
+
+
+- [Version](#)
+	- [Changelog](#)
+- [Commands](#)
+- [Special Terms](#)
+	- [Terms](#)
+	- [Modifiers](#)
+	- [Embedded Strings](#)
+	- [Examples](#)
+
 ##Version
 
 Version 0.1.2
@@ -72,7 +84,7 @@ The following are terms which are significantly more useful when given embedded 
 
 Here are some examples of special terms and modifiers:
 
-######Commands
+**Commands**
 
 | Name | Response |
 |:-----|:---------|
@@ -92,7 +104,7 @@ Here are some examples of special terms and modifiers:
 |!ifargs|A secret message appears if you run this command with args.[[ifargs{{ I mean, I suppose it's a secret, but it's not a very interesting one :P}}]]|
 |!ifarg2|More args are [[ifarg2{{not }}]]needed. You need[[ifarg2{{ed}}]] 2 args.|
 
-######Running the commands in chat
+**Running the commands in chat**
 
 All commands are run by a user named “fred”, and responded to by a bot named “Bot”.
 
