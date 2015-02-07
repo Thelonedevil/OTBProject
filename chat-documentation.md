@@ -88,7 +88,7 @@ Here are some examples of special terms and modifiers:
 |!bar3|[[args.first_cap_soft]]|
 |!bar4|[[args.word_cap_soft]]|
 |!words|words [[arg1{{something}}]] words [[arg2{{[[arg1]]}}]] words [[arg3{{[[arg2{{[[arg1{{dunno}}]]}}]]}}]] words [[arg4{{[[arg2]]}}]] words|
-|!multi|Watch [[foreach.first_cap{{}}{{, }}]] and me at the same time! ht<span>tp://</span>kadgar.net/live/[[channel]]/[[foreach{{}}{{/}}]]|
+|!multi|Watch [[foreach.first_cap{{}}{{, }}]] and me at the same time! example.com/multistream/[[channel]]/[[foreach{{}}{{/}}]]|
 
 ######Running the commands in chat
 
