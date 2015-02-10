@@ -17,6 +17,8 @@ If you find a bug in the bot, we would be happy for you to tell us; however, ple
 
 Please refer to <a href="http://www.chiark.greenend.org.uk/~sgtatham/bugs.html" target="_blank">this essay</a> for more information about submitting helpful bug reports.
 
+If you're submitting a feature request (or other non-bug issue) to the Issue Tracker, please make sure to describe it as clearly and in as much detail as possible.
+
 ##Code
 
 We would love for you to contribute code to the project. When doing so, however, please conform to the following guidelines.
