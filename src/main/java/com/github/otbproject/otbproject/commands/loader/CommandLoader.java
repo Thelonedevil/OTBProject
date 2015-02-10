@@ -11,7 +11,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 
 public class CommandLoader {
-    public static void addCommandFromLoadedCommand(DatabaseWrapper db, LoadedCommand loadedCommand) {
+    public static boolean addCommandFromLoadedCommand(DatabaseWrapper db, LoadedCommand loadedCommand) {
         HashMap<String, Object> map = new HashMap<String, Object>();
 
         map.put(CommandFields.NAME, loadedCommand.getName());
@@ -27,15 +27,21 @@ public class CommandLoader {
         map.put(CommandFields.DEBUG, loadedCommand.isDebug());
 
         try {
-            Command.update(db, map);
+            if (Command.exists(db, loadedCommand.getName())) {
+                Command.update(db, map);
+            }
+            else {
+                Command.add(db, map);
+            }
         }
         catch (SQLException e) {
             App.logger.catching(e);
-            // TODO handle failure
+            return false;
         }
+        return true;
     }
 
-    public static void addAliasFromLoadedAlias(DatabaseWrapper db, LoadedAlias loadedAlias) {
+    public static boolean addAliasFromLoadedAlias(DatabaseWrapper db, LoadedAlias loadedAlias) {
         HashMap<String, Object> map = new HashMap<String, Object>();
 
         map.put(AliasFields.NAME, loadedAlias.getName());
@@ -44,11 +50,16 @@ public class CommandLoader {
         map.put(AliasFields.ENABLED, loadedAlias.isEnabled());
 
         try {
-            Alias.update(db, map);
+            if (Alias.exists(db, loadedAlias.getName())) {
+                Alias.update(db, map);
+            } else {
+                Alias.add(db, map);
+            }
         }
         catch (SQLException e) {
             App.logger.catching(e);
-            // TODO handle failure
+            return false;
         }
+        return true;
     }
 }
