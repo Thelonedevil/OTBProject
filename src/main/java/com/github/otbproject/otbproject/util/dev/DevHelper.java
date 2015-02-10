@@ -1,6 +1,7 @@
 package com.github.otbproject.otbproject.util.dev;
 
 import com.github.otbproject.otbproject.fs.Setup;
+import com.github.otbproject.otbproject.util.CommandFileGenerator;
 import com.github.otbproject.otbproject.util.ConfigFileGenerator;
 
 import java.io.IOException;
@@ -15,9 +16,19 @@ public class DevHelper {
             return;
         }
 
+        //generateConfigFiles();
+        generateCommandFiles();
+    }
+
+    private static void generateConfigFiles() {
         ConfigFileGenerator.generateAccountConfig();
         ConfigFileGenerator.generateBotConfig();
         ConfigFileGenerator.generateChannelConfig();
         ConfigFileGenerator.generateGeneralConfig();
+    }
+
+    private static void generateCommandFiles() {
+        CommandFileGenerator.generateCommandFile();
+        CommandFileGenerator.generateAliasFile();
     }
 }
