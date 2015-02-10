@@ -1,5 +1,7 @@
 package com.github.otbproject.otbproject.database;
 
+import com.github.otbproject.otbproject.App;
+
 import java.io.File;
 import java.io.IOException;
 import java.sql.*;
@@ -184,9 +186,10 @@ public class DatabaseWrapper {
     public void updateRow(String table, String identifier, String fieldName, HashMap<String, Object> map) throws SQLException {
         String update = "UPDATE " + table + " SET  ";
         for (String key : map.keySet()) {
-            update = update + ", " + key + "=" + map.get(key);
+            update = update + key + "='" + map.get(key) + "', ";
         }
-        update = update + " WHERE " + fieldName + "=" + identifier + " ";
+        update = update.substring(0,update.length()-2);
+        update = update + " WHERE " + fieldName + "='" + identifier + "';";
         statement.executeUpdate(update);
     }
 
@@ -202,7 +205,7 @@ public class DatabaseWrapper {
         String last = "VALUES ('" + identifier + "'";
         for (String key : map.keySet()) {
             first = first + (", " + key);
-            last = last + (", " + map.get(key));
+            last = last + (", '" + map.get(key)+"'");
         }
         first = first + ") ";
         last = last + ")";
@@ -212,7 +215,7 @@ public class DatabaseWrapper {
     }
 
     public void removeRow(String table, String identifier, String fieldName) throws SQLException {
-        String update = "DELETE FROM "+ table + " WHERE "+ fieldName+"="+identifier;
+        String update = "DELETE FROM "+ table + " WHERE "+ fieldName+"="+"'"+identifier+"'";
         statement.executeUpdate(update);
     }
 }
