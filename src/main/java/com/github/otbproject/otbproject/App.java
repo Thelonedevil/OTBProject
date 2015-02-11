@@ -28,6 +28,7 @@ public class App {
     static Listener listener = new IrcListener();
     public static CustomBot bot;
     public static final Logger logger = LogManager.getLogger();
+
     public static void main(String[] args) {
         System.setProperty("OTBCONF", FSUtil.logsDir());
 
