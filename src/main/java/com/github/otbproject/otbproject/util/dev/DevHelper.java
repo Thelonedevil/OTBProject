@@ -34,7 +34,7 @@ public class DevHelper {
         //testMissingCommandField();
         //testMissingChannelConfigField();
 
-        stopProgramExecution();
+        //stopProgramExecution();
     }
 
     private static void generateConfigFiles() {
