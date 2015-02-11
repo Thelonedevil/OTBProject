@@ -8,12 +8,12 @@ import java.io.File;
 
 public class CommandFileGenerator {
     public static void generateCommandFile() {
-        LoadedCommand command = ExampleCommandGenerator.createExampleCommand();
+        LoadedCommand command = DefaultCommandGenerator.createDefaultCommand();
         JsonHandler.writeValue(FSUtil.defaultsDir() + File.separator + "example-command.json", command);
     }
 
     public static void generateAliasFile() {
-        LoadedAlias alias = ExampleCommandGenerator.createExampleAlias();
+        LoadedAlias alias = DefaultCommandGenerator.createDefaultAlias();
         JsonHandler.writeValue(FSUtil.defaultsDir() + File.separator + "example-alias.json", alias);
     }
 }

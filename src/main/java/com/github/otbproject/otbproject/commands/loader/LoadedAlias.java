@@ -6,7 +6,7 @@ public class LoadedAlias {
     private String name;
     private String command;
     private UserLevel modifyingUserLevel;
-    private boolean enabled;
+    private Boolean enabled;
 
     public String getName() {
         return name;
@@ -32,11 +32,22 @@ public class LoadedAlias {
         this.modifyingUserLevel = modifyingUserLevel;
     }
 
-    public boolean isEnabled() {
+    public Boolean isEnabled() {
         return enabled;
     }
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+
+    public LoadedAlias getCopy() {
+        LoadedAlias copy = new LoadedAlias();
+
+        copy.name = this.name;
+        copy.command = this.command;
+        copy.modifyingUserLevel = this.modifyingUserLevel;
+        copy.enabled = this.enabled;
+
+        return copy;
     }
 }

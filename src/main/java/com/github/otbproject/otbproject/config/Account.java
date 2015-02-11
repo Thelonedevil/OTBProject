@@ -19,4 +19,13 @@ public class Account {
     public void setOauth(String oauth) {
         this.oauth = oauth;
     }
+
+    public Account getCopy() {
+        Account copy = new Account();
+
+        copy.name = this.name;
+        copy.oauth = this.oauth;
+
+        return copy;
+    }
 }
