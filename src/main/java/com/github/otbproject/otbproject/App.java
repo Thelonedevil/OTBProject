@@ -3,6 +3,7 @@ package com.github.otbproject.otbproject;
 import com.github.otbproject.otbproject.channels.Channel;
 import com.github.otbproject.otbproject.config.Account;
 import com.github.otbproject.otbproject.config.BotConfig;
+import com.github.otbproject.otbproject.config.ConfigValidator;
 import com.github.otbproject.otbproject.eventlistener.IrcListener;
 import com.github.otbproject.otbproject.fs.FSUtil;
 import com.github.otbproject.otbproject.util.DefaultConfigGenerator;
@@ -36,9 +37,8 @@ public class App {
         DevHelper.run(args);
 
         Account account = JsonHandler.readValue(FSUtil.configDir()+ File.separator+"account.json", Account.class);
-        if (account == null){
-            account = DefaultConfigGenerator.createAccountConfig();
-        }
+        account = ConfigValidator.validateAccount(account);
+        
         channels = new HashSet<>(JsonHandler.readValue(FSUtil.dataDir()+ File.separator+FSUtil.DirNames.BOT_CHANNEL+ File.separator+"bot-config.json", BotConfig.class).currentChannels);
         //TODO get botname and oauth from config asell as possible server address and port
         Configuration.Builder configurationBuilder = new Configuration.Builder().setName(account.getName()).setAutoNickChange(false).setCapEnabled(false).addListener(listener).setServerHostname("irc.twitch.tv")

@@ -4,8 +4,13 @@ import com.github.otbproject.otbproject.util.DefaultConfigGenerator;
 
 public class ConfigValidator {
     public static Account validateAccount(Account account) {
-        Account validatedAccount = account.getCopy();
         Account defaultAccount = DefaultConfigGenerator.createAccountConfig();
+
+        if (account == null) {
+            return defaultAccount;
+        }
+
+        Account validatedAccount = account.getCopy();
 
         if (validatedAccount.getName() == null) {
             validatedAccount.setName(defaultAccount.getName());
@@ -19,8 +24,13 @@ public class ConfigValidator {
     }
 
     public static GeneralConfig validateGeneralConfig(GeneralConfig config) {
-        GeneralConfig validatedConfig = config.getCopy();
         GeneralConfig defaultConfig = DefaultConfigGenerator.createGeneralConfig();
+
+        if (config == null) {
+            return defaultConfig;
+        }
+
+        GeneralConfig validatedConfig = config.getCopy();
 
         if (validatedConfig.getIp_binding() == null) {
             validatedConfig.setIp_binding(defaultConfig.getIp_binding());
@@ -32,8 +42,13 @@ public class ConfigValidator {
     }
 
     public static BotConfig validateBotConfig(BotConfig config) {
-        BotConfig validatedConfig = config.getCopy();
         BotConfig defaultConfig = DefaultConfigGenerator.createBotConfig();
+
+        if (config == null) {
+            return defaultConfig;
+        }
+
+        BotConfig validatedConfig = config.getCopy();
 
         if (validatedConfig.getChannelJoinSetting() == null) {
             validatedConfig.setChannelJoinSetting(defaultConfig.getChannelJoinSetting());
@@ -45,8 +60,13 @@ public class ConfigValidator {
     }
 
     public static ChannelConfig validateChannelConfig(ChannelConfig config) {
-        ChannelConfig validatedConfig = config.getCopy();
         ChannelConfig defaultConfig = DefaultConfigGenerator.createChannelConfig();
+
+        if (config == null) {
+            return defaultConfig;
+        }
+
+        ChannelConfig validatedConfig = config.getCopy();
 
         if (validatedConfig.getCommandCooldown() == null) {
             validatedConfig.setCommandCooldown(defaultConfig.getCommandCooldown());
