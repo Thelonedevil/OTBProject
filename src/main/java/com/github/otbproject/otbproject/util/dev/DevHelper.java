@@ -4,6 +4,7 @@ import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.commands.Command;
 import com.github.otbproject.otbproject.commands.loader.CommandLoader;
 import com.github.otbproject.otbproject.commands.loader.LoadedCommand;
+import com.github.otbproject.otbproject.config.ChannelConfig;
 import com.github.otbproject.otbproject.database.DatabaseHelper;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.fs.FSUtil;
@@ -30,6 +31,8 @@ public class DevHelper {
         //generateConfigFiles();
         //generateCommandFiles();
         testCommandLoading();
+        //testMissingCommandField();
+        //testMissingChannelConfigField();
 
         //stopProgramExecution();
     }
@@ -47,8 +50,6 @@ public class DevHelper {
     }
 
     private static void testCommandLoading() {
-        String COMMAND_NAME = "!example-command-name";
-
         LoadedCommand command = JsonHandler.readValue(FSUtil.defaultsDir() + File.separator + "example-command.json", LoadedCommand.class);
         DatabaseWrapper db = DatabaseHelper.getChannelDatabase("the_lone_devil");
         CommandLoader.addCommandFromLoadedCommand(db, command);
@@ -57,14 +58,48 @@ public class DevHelper {
 
         App.logger.info("Command was successfully loaded:");
         try {
-            App.logger.info(Command.exists(db, COMMAND_NAME));
-            map = Command.getDetails(db, COMMAND_NAME);
+            App.logger.info(Command.exists(db, command.getName()));
+            map = Command.getDetails(db, command.getName());
             System.out.println(map.keySet());
             Command.remove(db, command.getName());
             App.logger.info("Command still exists:");
-            App.logger.info(Command.exists(db, COMMAND_NAME));
+            App.logger.info(Command.exists(db, command.getName()));
         } catch (SQLException e) {
             App.logger.catching(e);
+        }
+    }
+
+    private static void testMissingCommandField() {
+        LoadedCommand command = JsonHandler.readValue(FSUtil.defaultsDir() + File.separator + "bad-command.json", LoadedCommand.class);
+        if (command == null) {
+            App.logger.info("Command read in as null.");
+            return;
+        }
+        App.logger.info("Command object loaded.");
+
+        if (command.getName() == null) {
+            App.logger.info("Missing field: 'name'");
+        }
+        else {
+            App.logger.info("Name is: " + command.getName());
+        }
+
+        App.logger.info("MinArgs: " + command.getMinArgs());
+    }
+
+    private static void testMissingChannelConfigField() {
+        ChannelConfig config = JsonHandler.readValue(FSUtil.defaultsDir() + File.separator + "bad-channel-config.json", ChannelConfig.class);
+        if (config == null) {
+            App.logger.info("ChannelConfig read in as null.");
+            return;
+        }
+        App.logger.info("ChannelConfig object loaded.");
+
+        if (config.getCommandCooldown() == null) {
+            App.logger.info("Missing field: 'commandCooldown'");
+        }
+        else {
+            App.logger.info("Command cooldown is: " + config.getCommandCooldown());
         }
     }
 

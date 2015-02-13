@@ -30,6 +30,7 @@ public class DefaultConfigGenerator {
         channelConfig.userCooldowns.setUl_regular(15);
         channelConfig.userCooldowns.setUl_subscriber(30);
         channelConfig.userCooldowns.setUl_default(30);
+        channelConfig.setDebug(false);
 
         return channelConfig;
     }

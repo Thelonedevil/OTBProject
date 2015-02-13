@@ -41,16 +41,8 @@ public class LoadedCommand {
     }
 
     private String script;
-    private boolean enabled;
+    private Boolean enabled;
     private boolean debug;
-
-    public boolean isDebug() {
-        return debug;
-    }
-
-    public void setDebug(boolean debug) {
-        this.debug = debug;
-    }
 
     public String getName() {
         return name;
@@ -84,14 +76,6 @@ public class LoadedCommand {
         this.minArgs = minArgs;
     }
 
-    public ModifyingUserLevels getModifyingUserLevels() {
-        return modifyingUserLevels;
-    }
-
-    public void setModifyingUserLevels(ModifyingUserLevels modifyingUserLevels) {
-        this.modifyingUserLevels = modifyingUserLevels;
-    }
-
     public String getScript() {
         return script;
     }
@@ -100,11 +84,36 @@ public class LoadedCommand {
         this.script = script;
     }
 
-    public boolean isEnabled() {
+    public Boolean isEnabled() {
         return enabled;
     }
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+
+    public boolean isDebug() {
+        return debug;
+    }
+
+    public void setDebug(boolean debug) {
+        this.debug = debug;
+    }
+
+    public LoadedCommand getCopy() {
+        LoadedCommand copy = new LoadedCommand();
+
+        copy.name = this.name;
+        copy.response = this.response;
+        copy.execUserLevel = this.execUserLevel;
+        copy.minArgs = this.minArgs;
+        copy.modifyingUserLevels.nameModifyingUL = this.modifyingUserLevels.nameModifyingUL;
+        copy.modifyingUserLevels.responseModifyingUL = this.modifyingUserLevels.responseModifyingUL;
+        copy.modifyingUserLevels.userLevelModifyingUL = this.modifyingUserLevels.userLevelModifyingUL;
+        copy.script = this.script;
+        copy.enabled = this.enabled;
+        copy.debug = this.debug;
+
+        return copy;
     }
 }

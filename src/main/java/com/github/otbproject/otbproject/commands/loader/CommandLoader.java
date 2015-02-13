@@ -23,7 +23,7 @@ public class CommandLoader {
         map.put(CommandFields.RESPONSE_MODIFYING_UL, loadedCommand.modifyingUserLevels.getResponseModifyingUL());
         map.put(CommandFields.USER_LEVEL_MODIFYING_UL, loadedCommand.modifyingUserLevels.getUserLevelModifyingUL());
         map.put(CommandFields.SCRIPT, loadedCommand.getScript());
-        map.put(CommandFields.ENABLED, loadedCommand.isEnabled());
+        map.put(CommandFields.ENABLED, true);
         map.put(CommandFields.DEBUG, loadedCommand.isDebug());
 
         try {
@@ -47,7 +47,7 @@ public class CommandLoader {
         map.put(AliasFields.NAME, loadedAlias.getName());
         map.put(AliasFields.COMMAND, loadedAlias.getCommand());
         map.put(AliasFields.MODIFYING_UL, loadedAlias.getModifyingUserLevel());
-        map.put(AliasFields.ENABLED, loadedAlias.isEnabled());
+        map.put(AliasFields.ENABLED, true);
 
         try {
             if (Alias.exists(db, loadedAlias.getName())) {

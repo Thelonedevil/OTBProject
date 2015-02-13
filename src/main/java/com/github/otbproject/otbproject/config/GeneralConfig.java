@@ -22,4 +22,20 @@ public class GeneralConfig {
     public void setIp_binding(String ip_binding) {
         this.ip_binding = ip_binding;
     }
+
+    public GeneralConfig getCopy() {
+        GeneralConfig copy = new GeneralConfig();
+
+        copy.portNumber = this.portNumber;
+        copy.ip_binding = this.ip_binding;
+
+        if (this.permanently_enabled_commands == null) {
+            copy.permanently_enabled_commands = null;
+        }
+        else {
+            copy.permanently_enabled_commands = new ArrayList<String>(this.permanently_enabled_commands);
+        }
+
+        return copy;
+    }
 }
