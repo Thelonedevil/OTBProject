@@ -1,6 +1,7 @@
 package com.github.otbproject.otbproject;
 
 import com.github.otbproject.otbproject.channels.Channel;
+import com.github.otbproject.otbproject.cli.ArgParser;
 import com.github.otbproject.otbproject.config.Account;
 import com.github.otbproject.otbproject.config.BotConfig;
 import com.github.otbproject.otbproject.eventlistener.IrcListener;
@@ -8,6 +9,9 @@ import com.github.otbproject.otbproject.fs.FSUtil;
 import com.github.otbproject.otbproject.util.DefaultConfigGenerator;
 import com.github.otbproject.otbproject.util.JsonHandler;
 import com.github.otbproject.otbproject.util.dev.DevHelper;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.ParseException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.pircbotx.Configuration;
@@ -29,6 +33,30 @@ public class App {
     public static CustomBot bot;
     public static final Logger logger = LogManager.getLogger();
     public static void main(String[] args) {
+        CommandLine cmd = null;
+        try {
+            cmd = ArgParser.parse(args);
+        } catch (ParseException e) {
+            System.out.println(e.getMessage());
+            new HelpFormatter().printHelp("java -jar otbproject.jar [OPTIONS]", ArgParser.getMainOptions());
+            return;
+        }
+
+        if ((cmd == null) || cmd.hasOption(ArgParser.Opts.HELP)) {
+            new HelpFormatter().printHelp("java -jar otbproject.jar [OPTIONS]", ArgParser.getMainOptions());
+            return;
+        }
+
+        if (cmd.hasOption(ArgParser.Opts.BASE_DIR)) {
+            String path = cmd.getOptionValue(ArgParser.Opts.BASE_DIR);
+            if (new File(path).isDirectory()) {
+                if (path.endsWith(File.separator)) {
+                    path = path.substring(0, path.length() -1);
+                }
+                FSUtil.setBaseDirPath(path);
+            }
+        }
+
         System.setProperty("OTBCONF", FSUtil.logsDir());
 
         // TODO remove before release
