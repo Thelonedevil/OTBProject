@@ -21,7 +21,6 @@ public class ArgParser {
     private static Options getMainOptions() {
         Options options = new Options();
 
-        // TODO add options
         options.addOption(Opts.HELP_SHORT, Opts.HELP, false, "Prints this help message");
         options.addOption(Opts.BASE_DIR_SHORT, Opts.BASE_DIR, true, "The directory in which to find or create a '.otbproject' directory");
 
