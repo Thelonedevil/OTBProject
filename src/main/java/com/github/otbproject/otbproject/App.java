@@ -38,12 +38,12 @@ public class App {
             cmd = ArgParser.parse(args);
         } catch (ParseException e) {
             System.out.println(e.getMessage());
-            new HelpFormatter().printHelp("java -jar otbproject.jar [OPTIONS]", ArgParser.getMainOptions());
+            ArgParser.printHelp();
             return;
         }
 
         if ((cmd == null) || cmd.hasOption(ArgParser.Opts.HELP)) {
-            new HelpFormatter().printHelp("java -jar otbproject.jar [OPTIONS]", ArgParser.getMainOptions());
+            ArgParser.printHelp();
             return;
         }
 
@@ -54,6 +54,14 @@ public class App {
                     path = path.substring(0, path.length() -1);
                 }
                 FSUtil.setBaseDirPath(path);
+            }
+            else {
+                System.out.println("Error setting base directory.");
+                System.out.println("\t" + path);
+                System.out.println("does not exist or is not a directory.");
+                System.out.println();
+                ArgParser.printHelp();
+                return;
             }
         }
 

@@ -18,7 +18,7 @@ public class ArgParser {
         return parser.parse(options, args);
     }
 
-    public static Options getMainOptions() {
+    private static Options getMainOptions() {
         Options options = new Options();
 
         // TODO add options
@@ -26,5 +26,9 @@ public class ArgParser {
         options.addOption(Opts.BASE_DIR_SHORT, Opts.BASE_DIR, true, "The directory in which to find or create a '.otbproject' directory");
 
         return options;
+    }
+
+    public static void printHelp() {
+        new HelpFormatter().printHelp("java -jar otbproject.jar [OPTIONS]", ArgParser.getMainOptions());
     }
 }
