@@ -57,7 +57,7 @@ public class App {
             }
             else {
                 System.out.println("Error setting base directory.");
-                System.out.println("\t" + path);
+                System.out.println("The path:\t" + path);
                 System.out.println("does not exist or is not a directory.");
                 System.out.println();
                 ArgParser.printHelp();

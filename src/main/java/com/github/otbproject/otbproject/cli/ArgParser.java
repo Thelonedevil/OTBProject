@@ -22,7 +22,14 @@ public class ArgParser {
         Options options = new Options();
 
         options.addOption(Opts.HELP_SHORT, Opts.HELP, false, "Prints this help message");
-        options.addOption(Opts.BASE_DIR_SHORT, Opts.BASE_DIR, true, "The directory in which to find or create a '.otbproject' directory");
+
+        // --base-dir
+        OptionBuilder.withLongOpt(Opts.BASE_DIR);
+        OptionBuilder.withDescription("The directory in which to find or create a '.otbproject' directory");
+        OptionBuilder.hasArg();
+        OptionBuilder.withArgName("PATH");
+        Option baseDir = OptionBuilder.create();
+        options.addOption(baseDir);
 
         return options;
     }
