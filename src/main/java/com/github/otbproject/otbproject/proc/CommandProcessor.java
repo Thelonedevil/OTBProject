@@ -58,8 +58,6 @@ public class CommandProcessor {
             args = splitMsg[1].split(" ");
         }
 
-        // TODO check rate limit for command and ignore if not enough time has passed
-
         try {
             if (Command.exists(db, cmdName)
                     && ((Integer)Command.get(db, cmdName, CommandFields.ENABLED) == 1)

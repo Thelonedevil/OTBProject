@@ -31,8 +31,8 @@ public class ChannelMessageReceiver implements Runnable {
                 UserLevel ul = UserLevel.DEFAULT;
                 ProcessedMessage processedMsg = MessageProcessor.process(channel.getDatabaseWrapper(), event.getMessage(), channelName, user, ul, channel.getConfig().isDebug());
                 String message = processedMsg.getResponse();
-                String commmand = processedMsg.getCommandName();
-                if ((processedMsg.isScript() || !message.isEmpty()) && !channel.commandCooldownSet.contains(commmand) && !channel.userCooldownSet.contains(user)) {
+                String command = processedMsg.getCommandName();
+                if ((processedMsg.isScript() || !message.isEmpty()) && !channel.commandCooldownSet.contains(command) && !channel.userCooldownSet.contains(user)) {
                     // Do script (processedMsg.getResponse is the script path)
                     if (processedMsg.isScript()) {
                         boolean success = ScriptProcessor.process(processedMsg.getResponse(), channel.getDatabaseWrapper(), processedMsg.getArgs(), channelName, user, ul);
@@ -49,7 +49,7 @@ public class ChannelMessageReceiver implements Runnable {
                     // Handles command cooldowns
                     int commandCooldown = channel.getConfig().getCommandCooldown();
                     if (commandCooldown > 0) {
-                        channel.commandCooldownSet.add(commmand, commandCooldown);
+                        channel.commandCooldownSet.add(command, commandCooldown);
                     }
                     // Handles user cooldowns
                     int userCooldown = ChannelConfigHelper.getCooldown(channel.getConfig(), ul);
