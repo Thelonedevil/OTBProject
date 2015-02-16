@@ -7,6 +7,9 @@ public class CommandValidator {
         if ((command == null) || (command.getName() == null) || (command.getResponse() == null)) {
             throw new InvalidCommandException();
         }
+        if (command.getName().contains(" ")) {
+            throw new InvalidCommandException();
+        }
 
         LoadedCommand validatedCommand = command.getCopy();
         LoadedCommand defaultCommand = DefaultCommandGenerator.createDefaultCommand();
@@ -36,6 +39,9 @@ public class CommandValidator {
 
     public static LoadedAlias validateAlias(LoadedAlias alias) throws InvalidAliasException {
         if ((alias == null) || (alias.getName() == null) || (alias.getCommand() == null)) {
+            throw new InvalidAliasException();
+        }
+        if (alias.getName().contains(" ")) {
             throw new InvalidAliasException();
         }
 

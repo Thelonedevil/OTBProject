@@ -92,6 +92,7 @@ public class ChannelConfig {
         ChannelConfig copy = new ChannelConfig();
 
         copy.commandCooldown = this.commandCooldown;
+        copy.userCooldowns = new UserCooldowns();
         copy.userCooldowns.ul_broadcaster = this.userCooldowns.ul_broadcaster;
         copy.userCooldowns.ul_super_moderator = this.userCooldowns.ul_super_moderator;
         copy.userCooldowns.ul_moderator = this.userCooldowns.ul_moderator;

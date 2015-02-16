@@ -5,6 +5,15 @@ import java.io.IOException;
 
 public class Setup {
     public static void setup() throws IOException {
+        // Aliases Directory
+        createDirs(FSUtil.aliasesDir() + File.separator + FSUtil.DirNames.ALL_CHANNELS + File.separator + FSUtil.DirNames.LOADED);
+        createDirs(FSUtil.aliasesDir() + File.separator + FSUtil.DirNames.ALL_CHANNELS + File.separator + FSUtil.DirNames.TO_LOAD);
+        createDirs(FSUtil.aliasesDir() + File.separator + FSUtil.DirNames.ALL_CHANNELS + File.separator + FSUtil.DirNames.FAILED);
+        createDirs(FSUtil.aliasesDir() + File.separator + FSUtil.DirNames.BOT_CHANNEL + File.separator + FSUtil.DirNames.LOADED);
+        createDirs(FSUtil.aliasesDir() + File.separator + FSUtil.DirNames.BOT_CHANNEL + File.separator + FSUtil.DirNames.TO_LOAD);
+        createDirs(FSUtil.aliasesDir() + File.separator + FSUtil.DirNames.BOT_CHANNEL + File.separator + FSUtil.DirNames.FAILED);
+        createDirs(FSUtil.aliasesDir() + File.separator + FSUtil.DirNames.CHANNELS);
+
         // Commands Directory
         createDirs(FSUtil.commandsDir() + File.separator + FSUtil.DirNames.ALL_CHANNELS + File.separator + FSUtil.DirNames.LOADED);
         createDirs(FSUtil.commandsDir() + File.separator + FSUtil.DirNames.ALL_CHANNELS + File.separator + FSUtil.DirNames.TO_LOAD);
@@ -38,9 +47,17 @@ public class Setup {
             setup(); // Because presumably it's not set up properly
         }
 
+        // Aliases
+        createDirs(FSUtil.aliasesDir() + File.separator + FSUtil.DirNames.CHANNELS + File.separator + channel + File.separator + FSUtil.DirNames.LOADED);
+        createDirs(FSUtil.aliasesDir() + File.separator + FSUtil.DirNames.CHANNELS + File.separator + channel + File.separator + FSUtil.DirNames.TO_LOAD);
+        createDirs(FSUtil.aliasesDir() + File.separator + FSUtil.DirNames.CHANNELS + File.separator + channel + File.separator + FSUtil.DirNames.FAILED);
+
+        // Commands
         createDirs(FSUtil.commandsDir() + File.separator + FSUtil.DirNames.CHANNELS + File.separator + channel + File.separator + FSUtil.DirNames.LOADED);
         createDirs(FSUtil.commandsDir() + File.separator + FSUtil.DirNames.CHANNELS + File.separator + channel + File.separator + FSUtil.DirNames.TO_LOAD);
         createDirs(FSUtil.commandsDir() + File.separator + FSUtil.DirNames.CHANNELS + File.separator + channel + File.separator + FSUtil.DirNames.FAILED);
+
+        // Data
         createDirs(FSUtil.dataDir() + File.separator + FSUtil.DirNames.CHANNELS + File.separator + channel);
 
         // TODO create config file
