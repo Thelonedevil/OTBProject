@@ -25,7 +25,7 @@ public class IrcListener extends ListenerAdapter {
         String message = processedMessage.getResponse();
         if (!message.isEmpty()) {
             MessageOut messageOut = new MessageOut(message);
-            MessageSendQueue.add(channel, messageOut);
+            App.bot.channels.get(channel).getMessageSendQueue().add(messageOut);
         }
     }
 

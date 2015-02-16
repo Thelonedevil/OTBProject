@@ -5,15 +5,14 @@ import com.github.otbproject.otbproject.fs.FSUtil
 import com.github.otbproject.otbproject.database.DatabaseWrapper
 import com.github.otbproject.otbproject.users.UserLevel
 
-
 class ScriptProcessor {
     private static final String METHOD_NAME = "execute";
-    public static void process(String path, DatabaseWrapper db, String[] commandArgs, String channel, String user, UserLevel userLevel) {
+    public static boolean process(String path, DatabaseWrapper db, String[] commandArgs, String channel, String user, UserLevel userLevel) {
         Object[] args = [db, commandArgs, channel, user, userLevel];
 
-        String fullPath = FSUtil.SCRIPT_DIR + File.separator + path;
+        String fullPath = FSUtil.scriptDir() + File.separator + path;
 
-        boolean success = true;
+        boolean success;
         try {
             success = new GroovyShell().parse(new File(fullPath)).invokeMethod(METHOD_NAME, args);
         } catch (Exception e) {
@@ -21,5 +20,7 @@ class ScriptProcessor {
             App.logger.catching(e);
             success = false;
         }
+
+        return success;
     }
 }

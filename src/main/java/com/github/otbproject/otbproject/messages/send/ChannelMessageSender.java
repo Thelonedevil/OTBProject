@@ -3,10 +3,12 @@ package com.github.otbproject.otbproject.messages.send;
 import com.github.otbproject.otbproject.App;
 
 public class ChannelMessageSender implements Runnable {
-    private String channel;
+    private final String channel;
+    private MessageSendQueue queue;
 
-    public ChannelMessageSender(String channel) throws NonexistentChannelException {
+    public ChannelMessageSender(String channel, MessageSendQueue queue) {
         this.channel = channel;
+        this.queue = queue;
     }
 
     public void run() {
@@ -14,18 +16,13 @@ public class ChannelMessageSender implements Runnable {
 
         try {
             while (true) {
-                message = MessageSendQueue.take(channel);
-                SendingWrapper.send(channel,message.getMessage());
+                message = queue.take();
+                SendingWrapper.send(channel, message.getMessage());
                 Thread.sleep(2000); // TODO store as constant somewhere
             }
         } catch (InterruptedException e) {
             // TODO tidy up
-            App.logger.info("Stopped message sender for channel " + channel);
-        }
-        // This shouldn't happen
-        catch (NonexistentChannelException e) {
-            // TODO log more info
-            App.logger.catching(e);
+            App.logger.info("Stopped message sender for queue " + channel);
         }
     }
 }
