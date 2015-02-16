@@ -3,6 +3,7 @@ package com.github.otbproject.otbproject.users;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class User {
@@ -18,6 +19,13 @@ public class User {
 
     public static Object get(DatabaseWrapper db, String userNick, String fieldToGet) throws SQLException {
         return db.getValue(UserFields.TABLE_NAME, userNick, UserFields.NICK, fieldToGet);
+    }
+    public static HashMap<String,HashMap<String,Object>> getUsersWithInfo(DatabaseWrapper db) throws SQLException {
+        return db.getRecords(UserFields.TABLE_NAME,UserFields.NICK);
+    }
+
+    public static ArrayList<String> getUsers(DatabaseWrapper db) throws SQLException {
+        return db.getRecordsList(UserFields.TABLE_NAME, UserFields.NICK);
     }
 
     /**

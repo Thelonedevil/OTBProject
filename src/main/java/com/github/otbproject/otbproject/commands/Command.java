@@ -4,6 +4,7 @@ package com.github.otbproject.otbproject.commands;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Command {
@@ -19,6 +20,14 @@ public class Command {
 
     public static Object get(DatabaseWrapper db, String commandName, String fieldToGet) throws SQLException {
         return db.getValue(CommandFields.TABLE_NAME, commandName, CommandFields.NAME, fieldToGet);
+    }
+
+    public static HashMap<String,HashMap<String,Object>> getCommandsWithInfo(DatabaseWrapper db) throws SQLException {
+        return db.getRecords(AliasFields.TABLE_NAME,AliasFields.NAME);
+    }
+
+    public static ArrayList<String> getCommands(DatabaseWrapper db) throws SQLException {
+        return db.getRecordsList(CommandFields.TABLE_NAME,CommandFields.NAME);
     }
 
     /**
