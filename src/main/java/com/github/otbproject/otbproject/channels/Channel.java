@@ -1,35 +1,39 @@
 package com.github.otbproject.otbproject.channels;
 
+import com.github.otbproject.otbproject.config.ChannelConfig;
 import com.github.otbproject.otbproject.database.DatabaseHelper;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.messages.receive.ChannelMessageReceiver;
 import com.github.otbproject.otbproject.messages.receive.MessageReceiveQueue;
 import com.github.otbproject.otbproject.messages.send.MessageSendQueue;
 import com.github.otbproject.otbproject.messages.send.ChannelMessageSender;
+import com.github.otbproject.otbproject.proc.CooldownSet;
 
 public class Channel {
-    private String name;
+    private final String name;
+    private ChannelConfig config;
     private DatabaseWrapper db;
-    private MessageSendQueue sendQueue;
     private ChannelMessageSender messageSender;
     private Thread messageSenderThread;
-    private MessageReceiveQueue receiveQueue;
     private ChannelMessageReceiver messageReceiver;
     private Thread messageReceiverThread;
     private boolean inChannel;
+    public final MessageSendQueue sendQueue = new MessageSendQueue();
+    public final MessageReceiveQueue receiveQueue = new MessageReceiveQueue();
+    public final CooldownSet commandCooldownSet = new CooldownSet();
+    public final CooldownSet userCooldownSet = new CooldownSet();
 
-    public Channel(String name) {
+    public Channel(String name, ChannelConfig config) {
         this.name = name;
+        this.config = config;
         this.inChannel = false;
     }
 
     public void join() {
-        sendQueue = new MessageSendQueue();
         messageSender = new ChannelMessageSender(this, sendQueue);
         messageSenderThread = new Thread(messageSender);
         messageSenderThread.start();
 
-        receiveQueue = new MessageReceiveQueue();
         messageReceiver = new ChannelMessageReceiver(this, receiveQueue);
         messageReceiverThread = new Thread(messageReceiver);
         messageReceiverThread.start();
@@ -37,8 +41,6 @@ public class Channel {
         db = DatabaseHelper.getChannelDatabase(name);
 
         inChannel = true;
-
-        // TODO trigger some ChannelJoinEvent
     }
 
     public void leave() {
@@ -49,14 +51,15 @@ public class Channel {
         messageSenderThread.interrupt();
         messageSenderThread = null;
         messageSender = null;
-        sendQueue = null;
+        sendQueue.clear();
 
         messageReceiverThread.interrupt();
         messageReceiverThread = null;
         messageReceiver = null;
-        receiveQueue = null;
+        receiveQueue.clear();
 
-        // TODO trigger some ChannelLeaveEvent
+        commandCooldownSet.clear();
+        userCooldownSet.clear();
     }
 
     public String getName() {
@@ -71,11 +74,7 @@ public class Channel {
         return db;
     }
 
-    public MessageSendQueue getSendQueue() {
-        return sendQueue;
-    }
-
-    public MessageReceiveQueue getReceiveQueue() {
-        return receiveQueue;
+    public ChannelConfig getConfig() {
+        return config;
     }
 }

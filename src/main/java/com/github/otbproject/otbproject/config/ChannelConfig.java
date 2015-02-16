@@ -5,12 +5,21 @@ public class ChannelConfig {
     public UserCooldowns userCooldowns;
 
     public class UserCooldowns {
+        private int ul_internal;
         private int ul_broadcaster;
         private int ul_super_moderator;
         private int ul_moderator;
         private Integer ul_regular;
         private Integer ul_subscriber;
         private Integer ul_default;
+
+        public int getUl_internal() {
+            return ul_internal;
+        }
+
+        public void setUl_internal(int ul_internal) {
+            this.ul_internal = ul_internal;
+        }
 
         public int getUl_broadcaster() {
             return ul_broadcaster;
