@@ -24,6 +24,7 @@ public class DefaultConfigGenerator {
         ChannelConfig channelConfig = new ChannelConfig();
         channelConfig.setCommandCooldown(10);
         channelConfig.userCooldowns = channelConfig.new UserCooldowns();
+        channelConfig.userCooldowns.setUl_internal(0);
         channelConfig.userCooldowns.setUl_broadcaster(0);
         channelConfig.userCooldowns.setUl_super_moderator(0);
         channelConfig.userCooldowns.setUl_moderator(0);

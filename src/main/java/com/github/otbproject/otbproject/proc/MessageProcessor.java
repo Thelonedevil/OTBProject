@@ -13,14 +13,13 @@ public class MessageProcessor {
     }
 
     public static ProcessedMessage process(DatabaseWrapper db, String message, String channel, String user, UserLevel userLevel, boolean debug) {
-        // TODO possibly return if timeout occurred for !at command
         if (!TimeoutProcessor.doTimeouts(db, message, channel, user, userLevel)) {
             // TODO check user rate limit and ignore if not enough time has passed
             // Check for aliases and commands, and get appropriate parsed response
             ProcessedCommand processedCmd = CommandProcessor.process(db, message, channel, user, userLevel, debug);
-            return new ProcessedMessage(processedCmd.getResponse(), processedCmd.getCommandName(), false);
+            return new ProcessedMessage(processedCmd, false);
         }
         // If timed out, return empty string
-        return new ProcessedMessage("", "", true);
+        return new ProcessedMessage("", "", false, new String[0], true);
     }
 }

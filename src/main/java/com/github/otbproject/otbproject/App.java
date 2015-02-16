@@ -11,7 +11,6 @@ import com.github.otbproject.otbproject.util.DefaultConfigGenerator;
 import com.github.otbproject.otbproject.util.JsonHandler;
 import com.github.otbproject.otbproject.util.dev.DevHelper;
 import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.ParseException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -86,10 +85,11 @@ public class App {
 
         logger.info("Bot configuration built");
         bot = new CustomBot(configuration);
-        for (String channel :channels){
-            Channel channel1 = new Channel(channel);
-            channel1.join();
-            App.bot.channels.put(channel1.getName(),channel1);
+        for (String channelName :channels){
+            // TODO load actual config
+            Channel channel = new Channel(channelName, DefaultConfigGenerator.createChannelConfig());
+            channel.join();
+            App.bot.channels.put(channel.getName(), channel);
         }
         try {
             logger.info("Bot Started");

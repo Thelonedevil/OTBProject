@@ -67,15 +67,15 @@ public class CommandProcessor {
                     && ((Integer)Command.get(db, cmdName, CommandFields.MIN_ARGS) <= args.length)) {
 
                 String scriptPath = (String)Command.get(db, cmdName, CommandFields.SCRIPT);
-                // Run script command
+                // Return script path
                 if (scriptPath != null) {
-                    ScriptProcessor.process(scriptPath, db, args, channel, user, userLevel);
+                    return new ProcessedCommand(scriptPath, cmdName, true, args);
                 }
                 // Else non-script command
                 // Check if command is debug
                 else if ((int)Command.get(db, cmdName, CommandFields.DEBUG) == 0 || debug) {
                     String response = CommandResponseParser.parse(user, channel, (Integer) Command.get(db, cmdName, CommandFields.COUNT), args, (String) Command.get(db, cmdName, CommandFields.RESPONSE));
-                    return new ProcessedCommand(response, cmdName);
+                    return new ProcessedCommand(response, cmdName, false, args);
                 }
             }
         }
@@ -83,6 +83,6 @@ public class CommandProcessor {
             App.logger.catching(e);
         }
 
-        return new ProcessedCommand("", "");
+        return new ProcessedCommand("", "", false, args);
     }
 }
