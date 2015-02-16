@@ -20,11 +20,11 @@ public class User {
     public static Object get(DatabaseWrapper db, String userNick, String fieldToGet) throws SQLException {
         return db.getValue(UserFields.TABLE_NAME, userNick, UserFields.NICK, fieldToGet);
     }
-    public static HashMap<String,HashMap<String,Object>> getUserssWithInfo(DatabaseWrapper db) throws SQLException {
+    public static HashMap<String,HashMap<String,Object>> getUsersWithInfo(DatabaseWrapper db) throws SQLException {
         return db.getRecords(UserFields.TABLE_NAME,UserFields.NICK);
     }
 
-    public static ArrayList<String> getUserss(DatabaseWrapper db) throws SQLException {
+    public static ArrayList<String> getUsers(DatabaseWrapper db) throws SQLException {
         return db.getRecordsList(UserFields.TABLE_NAME, UserFields.NICK);
     }
 

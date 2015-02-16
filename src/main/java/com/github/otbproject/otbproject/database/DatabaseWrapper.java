@@ -226,10 +226,10 @@ public class DatabaseWrapper {
 
             int columns = rs1.getMetaData().getColumnCount();
             HashMap<String,Object> map1 = new HashMap<>();
-            // Yes i know normally you start loops at 0 but the colomn indices start at 1
+            // Yes i know normally you start loops at 0 but the column indices start at 1
             for (int i = 1; i == columns ; i++) {
                 String columnName = rs1.getMetaData().getColumnLabel(i);
-                Object data= rs1.getObject(i);
+                Object data = rs1.getObject(i);
                 map1.put(columnName,data);
             }
             map.put((String)map1.get(key),map1);
