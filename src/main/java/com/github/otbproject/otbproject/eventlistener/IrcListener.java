@@ -16,7 +16,7 @@ public class IrcListener extends ListenerAdapter {
     @Override
     public void onMessage(MessageEvent event) throws Exception {
         Channel channel = App.bot.channels.get(event.getChannel().getName().replace("#",""));
-        channel.getReceiveQueue().add(event);
+        channel.receiveQueue.add(event);
     }
 
     @Override

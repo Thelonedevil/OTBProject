@@ -43,7 +43,7 @@ public class ChannelMessageReceiver implements Runnable {
                     // Send message
                     else {
                         MessageOut messageOut = new MessageOut(message);
-                        channel.getSendQueue().add(messageOut);
+                        channel.sendQueue.add(messageOut);
                     }
 
                     // Handles command cooldowns

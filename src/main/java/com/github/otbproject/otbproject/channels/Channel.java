@@ -13,13 +13,13 @@ public class Channel {
     private final String name;
     private ChannelConfig config;
     private DatabaseWrapper db;
-    private final MessageSendQueue sendQueue = new MessageSendQueue();
     private ChannelMessageSender messageSender;
     private Thread messageSenderThread;
-    private final MessageReceiveQueue receiveQueue = new MessageReceiveQueue();
     private ChannelMessageReceiver messageReceiver;
     private Thread messageReceiverThread;
     private boolean inChannel;
+    public final MessageSendQueue sendQueue = new MessageSendQueue();
+    public final MessageReceiveQueue receiveQueue = new MessageReceiveQueue();
     public final CooldownSet commandCooldownSet = new CooldownSet();
     public final CooldownSet userCooldownSet = new CooldownSet();
 
@@ -72,14 +72,6 @@ public class Channel {
 
     public DatabaseWrapper getDatabaseWrapper() {
         return db;
-    }
-
-    public MessageSendQueue getSendQueue() {
-        return sendQueue;
-    }
-
-    public MessageReceiveQueue getReceiveQueue() {
-        return receiveQueue;
     }
 
     public ChannelConfig getConfig() {
