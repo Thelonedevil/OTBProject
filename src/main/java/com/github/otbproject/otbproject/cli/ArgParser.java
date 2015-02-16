@@ -7,7 +7,6 @@ public class ArgParser {
         public static final String HELP = "help";
         public static final String HELP_SHORT = "h";
         public static final String BASE_DIR = "base-dir";
-        public static final String BASE_DIR_SHORT = "d";
     }
 
     public static CommandLine parse(String[] args) throws ParseException {
