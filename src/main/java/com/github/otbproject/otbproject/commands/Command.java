@@ -22,7 +22,7 @@ public class Command {
         return db.getValue(CommandFields.TABLE_NAME, commandName, CommandFields.NAME, fieldToGet);
     }
 
-    public static HashMap<String,HashMap<String,Object>> getCommandssWithInfo(DatabaseWrapper db) throws SQLException {
+    public static HashMap<String,HashMap<String,Object>> getCommandsWithInfo(DatabaseWrapper db) throws SQLException {
         return db.getRecords(AliasFields.TABLE_NAME,AliasFields.NAME);
     }
 

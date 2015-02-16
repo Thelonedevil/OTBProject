@@ -14,8 +14,7 @@ public class DatabaseWrapper {
     Statement statement;
 
     /**
-     *
-     * @param path path to the database
+     * @param path     path to the database
      * @param tableMap a HashMap of table names and HashMaps of table fields
      *                 and field types for each table.
      */
@@ -157,7 +156,6 @@ public class DatabaseWrapper {
     }
 
     /**
-     *
      * @param table
      * @param identifier
      * @param fieldName
@@ -187,7 +185,7 @@ public class DatabaseWrapper {
         for (String key : map.keySet()) {
             update = update + key + "='" + map.get(key) + "', ";
         }
-        update = update.substring(0,update.length()-2);
+        update = update.substring(0, update.length() - 2);
         update = update + " WHERE " + fieldName + "='" + identifier + "';";
         statement.executeUpdate(update);
     }
@@ -204,7 +202,7 @@ public class DatabaseWrapper {
         String last = "VALUES ('" + identifier + "'";
         for (String key : map.keySet()) {
             first = first + (", " + key);
-            last = last + (", '" + map.get(key)+"'");
+            last = last + (", '" + map.get(key) + "'");
         }
         first = first + ") ";
         last = last + ")";
@@ -214,34 +212,35 @@ public class DatabaseWrapper {
     }
 
     public void removeRow(String table, String identifier, String fieldName) throws SQLException {
-        String update = "DELETE FROM "+ table + " WHERE "+ fieldName+"="+"'"+identifier+"'";
+        String update = "DELETE FROM " + table + " WHERE " + fieldName + "=" + "'" + identifier + "'";
         statement.executeUpdate(update);
     }
 
-    public HashMap<String,HashMap<String,Object>> getRecords(String table, String key) throws SQLException {
-        HashMap<String,HashMap<String,Object>> map = new HashMap<>();
+    public HashMap<String, HashMap<String, Object>> getRecords(String table, String key) throws SQLException {
+        HashMap<String, HashMap<String, Object>> map = new HashMap<>();
         String query = "SELECT * FROM " + table;
         ResultSet rs1 = rs(query);
         while (rs1.next()) {
 
             int columns = rs1.getMetaData().getColumnCount();
-            HashMap<String,Object> map1 = new HashMap<>();
+            HashMap<String, Object> map1 = new HashMap<>();
             // Yes i know normally you start loops at 0 but the column indices start at 1
-            for (int i = 1; i == columns ; i++) {
+            for (int i = 1; i == columns; i++) {
                 String columnName = rs1.getMetaData().getColumnLabel(i);
                 Object data = rs1.getObject(i);
-                map1.put(columnName,data);
+                map1.put(columnName, data);
             }
-            map.put((String)map1.get(key),map1);
+            map.put((String) map1.get(key), map1);
         }
         return map;
     }
+
     public ArrayList<String> getRecordsList(String table, String key) throws SQLException {
         ArrayList<String> list = new ArrayList<>();
         String query = "SELECT * FROM " + table;
         ResultSet rs1 = rs(query);
         while (rs1.next()) {
-            list.add((String)rs1.getObject(key));
+            list.add((String) rs1.getObject(key));
         }
         return list;
     }
