@@ -1,12 +1,13 @@
 package com.github.otbproject.otbproject.messages.send;
 
 import com.github.otbproject.otbproject.App;
+import com.github.otbproject.otbproject.channels.Channel;
 
 public class ChannelMessageSender implements Runnable {
-    private final String channel;
+    private final Channel channel;
     private MessageSendQueue queue;
 
-    public ChannelMessageSender(String channel, MessageSendQueue queue) {
+    public ChannelMessageSender(Channel channel, MessageSendQueue queue) {
         this.channel = channel;
         this.queue = queue;
     }
@@ -17,12 +18,12 @@ public class ChannelMessageSender implements Runnable {
         try {
             while (true) {
                 message = queue.take();
-                SendingWrapper.send(channel, message.getMessage());
+                SendingWrapper.send(channel.getName(), message.getMessage());
                 Thread.sleep(2000); // TODO store as constant somewhere
             }
         } catch (InterruptedException e) {
             // TODO tidy up
-            App.logger.info("Stopped message sender for queue " + channel);
+            App.logger.info("Stopped message sender for " + channel.getName());
         }
     }
 }
