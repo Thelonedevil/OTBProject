@@ -23,8 +23,7 @@ import java.util.HashMap;
 public class DevHelper {
     public static void run(String[] args) {
         doSetup();
-        loadCommands();
-        stopProgramExecution();
+        //stopProgramExecution();
     }
 
     private static void doSetup() {
