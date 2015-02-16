@@ -3,6 +3,7 @@ package com.github.otbproject.otbproject.commands;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Alias {
@@ -18,6 +19,14 @@ public class Alias {
 
     public static Object get(DatabaseWrapper db, String aliasName, String fieldToGet) throws SQLException {
         return db.getValue(AliasFields.TABLE_NAME, aliasName, AliasFields.NAME, fieldToGet);
+    }
+
+    public static HashMap<String,HashMap<String,Object>> getAliasesWithInfo(DatabaseWrapper db) throws SQLException {
+        return db.getRecords(AliasFields.TABLE_NAME,AliasFields.NAME);
+    }
+
+    public static ArrayList<String> getAliases(DatabaseWrapper db) throws SQLException {
+        return db.getRecordsList(AliasFields.TABLE_NAME,AliasFields.NAME);
     }
 
     /**
