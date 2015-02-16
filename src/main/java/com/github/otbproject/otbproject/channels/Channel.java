@@ -1,17 +1,21 @@
 package com.github.otbproject.otbproject.channels;
 
-import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.database.DatabaseHelper;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
+import com.github.otbproject.otbproject.messages.receive.ChannelMessageReceiver;
+import com.github.otbproject.otbproject.messages.receive.MessageReceiveQueue;
 import com.github.otbproject.otbproject.messages.send.MessageSendQueue;
 import com.github.otbproject.otbproject.messages.send.ChannelMessageSender;
-import com.github.otbproject.otbproject.messages.send.NonexistentChannelException;
 
 public class Channel {
     private String name;
     private DatabaseWrapper db;
+    private MessageSendQueue sendQueue;
     private ChannelMessageSender messageSender;
     private Thread messageSenderThread;
+    private MessageReceiveQueue receiveQueue;
+    private ChannelMessageReceiver messageReceiver;
+    private Thread messageReceiverThread;
     private boolean inChannel;
 
     public Channel(String name) {
@@ -20,18 +24,16 @@ public class Channel {
     }
 
     public void join() {
-        MessageSendQueue.addChannel(name);
-        try {
-            messageSender = new ChannelMessageSender(name);
-        }
-        // shouldn't happen
-        catch (NonexistentChannelException e) {
-            // TODO log more info
-            App.logger.catching(e);
-            // TODO throw some sort of exception
-        }
+        sendQueue = new MessageSendQueue();
+        messageSender = new ChannelMessageSender(this, sendQueue);
         messageSenderThread = new Thread(messageSender);
         messageSenderThread.start();
+
+        receiveQueue = new MessageReceiveQueue();
+        messageReceiver = new ChannelMessageReceiver(this, receiveQueue);
+        messageReceiverThread = new Thread(messageReceiver);
+        messageReceiverThread.start();
+
         db = DatabaseHelper.getChannelDatabase(name);
 
         inChannel = true;
@@ -43,10 +45,16 @@ public class Channel {
         inChannel = false;
 
         db = null;
+
         messageSenderThread.interrupt();
         messageSenderThread = null;
         messageSender = null;
-        MessageSendQueue.removeChannel(name);
+        sendQueue = null;
+
+        messageReceiverThread.interrupt();
+        messageReceiverThread = null;
+        messageReceiver = null;
+        receiveQueue = null;
 
         // TODO trigger some ChannelLeaveEvent
     }
@@ -61,5 +69,13 @@ public class Channel {
 
     public DatabaseWrapper getDatabaseWrapper() {
         return db;
+    }
+
+    public MessageSendQueue getSendQueue() {
+        return sendQueue;
+    }
+
+    public MessageReceiveQueue getReceiveQueue() {
+        return receiveQueue;
     }
 }
