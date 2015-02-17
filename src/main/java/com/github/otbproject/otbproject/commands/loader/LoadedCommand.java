@@ -107,6 +107,7 @@ public class LoadedCommand {
         copy.response = this.response;
         copy.execUserLevel = this.execUserLevel;
         copy.minArgs = this.minArgs;
+        copy.modifyingUserLevels = new ModifyingUserLevels();
         copy.modifyingUserLevels.nameModifyingUL = this.modifyingUserLevels.nameModifyingUL;
         copy.modifyingUserLevels.responseModifyingUL = this.modifyingUserLevels.responseModifyingUL;
         copy.modifyingUserLevels.userLevelModifyingUL = this.modifyingUserLevels.userLevelModifyingUL;

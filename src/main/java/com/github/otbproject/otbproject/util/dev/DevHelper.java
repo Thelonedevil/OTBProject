@@ -1,8 +1,10 @@
 package com.github.otbproject.otbproject.util.dev;
 
 import com.github.otbproject.otbproject.App;
+import com.github.otbproject.otbproject.commands.Alias;
 import com.github.otbproject.otbproject.commands.Command;
 import com.github.otbproject.otbproject.commands.loader.CommandLoader;
+import com.github.otbproject.otbproject.commands.loader.FSCommandLoader;
 import com.github.otbproject.otbproject.commands.loader.LoadedCommand;
 import com.github.otbproject.otbproject.config.ChannelConfig;
 import com.github.otbproject.otbproject.database.DatabaseHelper;
@@ -20,21 +22,37 @@ import java.util.HashMap;
 
 public class DevHelper {
     public static void run(String[] args) {
+        doSetup();
+        //stopProgramExecution();
+    }
+
+    private static void doSetup() {
         try {
             Setup.setup();
             Setup.setupChannel("the_lone_devil");
         } catch (IOException e) {
-            e.printStackTrace();
-            return;
+            App.logger.catching(e);
         }
+    }
 
-        //generateConfigFiles();
-        //generateCommandFiles();
-        testCommandLoading();
-        //testMissingCommandField();
-        //testMissingChannelConfigField();
+    private static void loadAliases() {
+        FSCommandLoader.LoadAliases();
+        DatabaseWrapper db = DatabaseHelper.getChannelDatabase("the_lone_devil");
+        try {
+            App.logger.info(Alias.getAliases(db));
+        } catch (SQLException e) {
+            App.logger.catching(e);
+        }
+    }
 
-        //stopProgramExecution();
+    private static void loadCommands() {
+        FSCommandLoader.LoadCommands();
+        DatabaseWrapper db = DatabaseHelper.getChannelDatabase("the_lone_devil");
+        try {
+            App.logger.info(Command.getCommands(db));
+        } catch (SQLException e) {
+            App.logger.catching(e);
+        }
     }
 
     private static void generateConfigFiles() {

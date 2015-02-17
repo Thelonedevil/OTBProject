@@ -1,12 +1,11 @@
 package com.github.otbproject.otbproject.fs;
 
-import com.github.otbproject.otbproject.util.dev.Flags;
-
 import java.io.File;
 
 public class FSUtil {
     private static final String BASE_DIR_NAME = ".otbproject";
 
+    private static final String ALIASES_DIR_NAME = "aliases";
     private static final String COMMANDS_DIR_NAME = "commands";
     private static final String CONFIG_DIR_NAME = "config";
     private static final String DATA_DIR_NAME = "data";
@@ -43,6 +42,10 @@ public class FSUtil {
         baseDir = path + File.separator + BASE_DIR_NAME;
     }
 
+    public static String aliasesDir() {
+        return baseDir + File.separator + ALIASES_DIR_NAME;
+    }
+
     public static String commandsDir() {
         return baseDir + File.separator + COMMANDS_DIR_NAME;
     }
@@ -64,10 +67,6 @@ public class FSUtil {
     }
 
     public static String scriptDir() {
-        // TODO remove for release
-        if (Flags.DEV) {
-            return System.getProperty("user.home") + File.separator + "script-dir-link";
-        }
         return baseDir + File.separator + SCRIPT_DIR_NAME;
     }
 }
