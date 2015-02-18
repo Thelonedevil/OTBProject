@@ -2,6 +2,7 @@ package com.github.otbproject.otbproject;
 
 import com.github.otbproject.otbproject.channels.Channel;
 import com.github.otbproject.otbproject.cli.ArgParser;
+import com.github.otbproject.otbproject.cli.CmdParser;
 import com.github.otbproject.otbproject.config.Account;
 import com.github.otbproject.otbproject.config.BotConfig;
 import com.github.otbproject.otbproject.config.ConfigValidator;
@@ -97,29 +98,11 @@ public class App {
         botThread.start();
         Scanner scanner = new Scanner(System.in);
         while(scanner.hasNext()){
-            String in = scanner.nextLine();
+            String in = scanner.nextLine().toLowerCase();
             logger.info(in);
-            switch(in.toLowerCase()){
-                case "stop":
-                    if(bot.isConnected()) {
-                        bot.shutdown();
-                    }
-                    System.exit(0);
-                    break;
-                case "restart":
-                    bot.shutdown();
-                    while(botThread.isAlive()){}
-                    try {
-                        botThread = new BotThread();
-                        botThread.start();
-                    }catch (IllegalThreadStateException e){
-                        logger.catching(e);
-                    }
-                    break;
-                case "":
-                    break;
-                default:
-            }
+            String[] words = in.split(" ");
+            CmdParser.SuperParse(words);
+
         }
     }
     public static class BotThread extends Thread{
