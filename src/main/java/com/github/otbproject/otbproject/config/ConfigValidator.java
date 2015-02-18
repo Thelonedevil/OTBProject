@@ -8,7 +8,7 @@ public class ConfigValidator {
             return defaultAccount;
         }
 
-        Account validatedAccount = account.getCopy();
+        Account validatedAccount = AccountHelper.getCopy(account);
 
         if (validatedAccount.getName() == null) {
             validatedAccount.setName(defaultAccount.getName());
@@ -28,7 +28,7 @@ public class ConfigValidator {
             return defaultConfig;
         }
 
-        GeneralConfig validatedConfig = config.getCopy();
+        GeneralConfig validatedConfig = GeneralConfigHelper.getCopy(config);
 
         if (validatedConfig.getIp_binding() == null) {
             validatedConfig.setIp_binding(defaultConfig.getIp_binding());
@@ -46,7 +46,7 @@ public class ConfigValidator {
             return defaultConfig;
         }
 
-        BotConfig validatedConfig = config.getCopy();
+        BotConfig validatedConfig = BotConfigHelper.getCopy(config);
 
         if (validatedConfig.getChannelJoinSetting() == null) {
             validatedConfig.setChannelJoinSetting(defaultConfig.getChannelJoinSetting());
@@ -64,7 +64,7 @@ public class ConfigValidator {
             return defaultConfig;
         }
 
-        ChannelConfig validatedConfig = config.getCopy();
+        ChannelConfig validatedConfig = ChannelConfigHelper.getCopy(config);
 
         if (validatedConfig.getCommandCooldown() == null) {
             validatedConfig.setCommandCooldown(defaultConfig.getCommandCooldown());

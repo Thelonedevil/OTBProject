@@ -39,15 +39,4 @@ public class LoadedAlias {
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
-
-    public LoadedAlias getCopy() {
-        LoadedAlias copy = new LoadedAlias();
-
-        copy.name = this.name;
-        copy.command = this.command;
-        copy.modifyingUserLevel = this.modifyingUserLevel;
-        copy.enabled = this.enabled;
-
-        return copy;
-    }
 }
