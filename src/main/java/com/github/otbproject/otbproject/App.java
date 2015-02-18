@@ -98,7 +98,7 @@ public class App {
         botThread.start();
         Scanner scanner = new Scanner(System.in);
         while(scanner.hasNext()){
-            String in = scanner.nextLine().toLowerCase();
+            String in = scanner.nextLine();
             logger.info(in);
             String[] words = in.split(" ");
             CmdParser.SuperParse(words);
