@@ -1,6 +1,4 @@
-package com.github.otbproject.otbproject.util;
-
-import com.github.otbproject.otbproject.config.*;
+package com.github.otbproject.otbproject.config;
 
 public class DefaultConfigGenerator {
 

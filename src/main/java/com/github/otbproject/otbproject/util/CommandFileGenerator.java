@@ -1,5 +1,6 @@
 package com.github.otbproject.otbproject.util;
 
+import com.github.otbproject.otbproject.commands.loader.DefaultCommandGenerator;
 import com.github.otbproject.otbproject.commands.loader.LoadedAlias;
 import com.github.otbproject.otbproject.commands.loader.LoadedCommand;
 import com.github.otbproject.otbproject.fs.FSUtil;

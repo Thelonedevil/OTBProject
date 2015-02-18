@@ -2,8 +2,7 @@ package com.github.otbproject.otbproject.util;
 
 import com.github.otbproject.otbproject.config.*;
 import com.github.otbproject.otbproject.fs.FSUtil;
-import com.github.otbproject.otbproject.util.DefaultConfigGenerator;
-import com.github.otbproject.otbproject.util.JsonHandler;
+import com.github.otbproject.otbproject.config.DefaultConfigGenerator;
 
 import java.io.File;
 

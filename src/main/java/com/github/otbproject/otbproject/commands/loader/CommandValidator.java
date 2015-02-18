@@ -1,7 +1,5 @@
 package com.github.otbproject.otbproject.commands.loader;
 
-import com.github.otbproject.otbproject.util.DefaultCommandGenerator;
-
 public class CommandValidator {
     public static LoadedCommand validateCommand(LoadedCommand command) throws InvalidCommandException {
         if ((command == null) || (command.getName() == null) || (command.getResponse() == null)) {

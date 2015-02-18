@@ -1,7 +1,5 @@
 package com.github.otbproject.otbproject.config;
 
-import com.github.otbproject.otbproject.util.DefaultConfigGenerator;
-
 public class ConfigValidator {
     public static Account validateAccount(Account account) {
         Account defaultAccount = DefaultConfigGenerator.createAccountConfig();
