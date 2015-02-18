@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 
 import java.util.HashSet;
+import java.util.Scanner;
 
 /**
  * Created by justin on 02/01/2015.
@@ -32,6 +33,7 @@ public class App {
     static Listener listener = new IrcListener();
     public static CustomBot bot;
     public static final Logger logger = LogManager.getLogger();
+    public static Thread botThread;
 
     public static void main(String[] args) {
         CommandLine cmd = null;
@@ -91,13 +93,47 @@ public class App {
             channel.join();
             App.bot.channels.put(channel.getName(), channel);
         }
-        try {
-            logger.info("Bot Started");
-            bot.startBot();
-        } catch (IOException e) {
-            logger.catching(e);
-        } catch (IrcException e) {
-            logger.catching(e);
+        botThread = new BotThread();
+        botThread.start();
+        Scanner scanner = new Scanner(System.in);
+        while(scanner.hasNext()){
+            String in = scanner.nextLine();
+            logger.info(in);
+            switch(in.toLowerCase()){
+                case "stop":
+                    if(bot.isConnected()) {
+                        bot.shutdown();
+                    }
+                    System.exit(0);
+                    break;
+                case "restart":
+                    bot.shutdown();
+                    while(botThread.isAlive()){}
+                    try {
+                        botThread = new BotThread();
+                        botThread.start();
+                    }catch (IllegalThreadStateException e){
+                        logger.catching(e);
+                    }
+                    break;
+                case "":
+                    break;
+                default:
+            }
+        }
+    }
+    public static class BotThread extends Thread{
+        @Override
+        public void run(){
+            try {
+                logger.info("Bot Started");
+                bot.startBot();
+                logger.info("Bot Stopped");
+            } catch (IOException e) {
+                logger.catching(e);
+            } catch (IrcException e) {
+                logger.catching(e);
+            }
         }
     }
 }

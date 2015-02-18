@@ -18,4 +18,8 @@ public class CustomBot extends PircBotX {
     public CustomBot(Configuration<? extends PircBotX> configuration) {
         super(configuration);
     }
+
+    public void shutdown(){
+        super.shutdown(true);
+    }
 }
