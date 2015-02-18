@@ -80,8 +80,10 @@ public class App {
 
         Account account = JsonHandler.readValue(FSUtil.configDir()+ File.separator+"account.json", Account.class);
         account = ConfigValidator.validateAccount(account);
-        
-        channels = new HashSet<>(JsonHandler.readValue(FSUtil.dataDir()+ File.separator+FSUtil.DirNames.BOT_CHANNEL+ File.separator+"bot-config.json", BotConfig.class).currentChannels);
+
+        // TODO store bot config
+        BotConfig botConfig = ConfigValidator.validateBotConfig(JsonHandler.readValue(FSUtil.dataDir()+ File.separator+FSUtil.DirNames.BOT_CHANNEL+ File.separator+"bot-config.json", BotConfig.class));
+        channels = new HashSet<>(botConfig.currentChannels);
         //TODO get botname and oauth from config asell as possible server address and port
         Configuration.Builder configurationBuilder = new Configuration.Builder().setName(account.getName()).setAutoNickChange(false).setCapEnabled(false).addListener(listener).setServerHostname("irc.twitch.tv")
                 .setServerPort(6667).setServerPassword(account.getOauth()).setEncoding(Charset.forName("UTF-8"));
