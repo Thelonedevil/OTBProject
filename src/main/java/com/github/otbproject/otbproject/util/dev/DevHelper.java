@@ -22,7 +22,6 @@ import java.util.HashMap;
 
 public class DevHelper {
     public static void run(String[] args) {
-        doSetup();
         //stopProgramExecution();
     }
 
