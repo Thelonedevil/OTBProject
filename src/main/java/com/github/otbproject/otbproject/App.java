@@ -2,12 +2,10 @@ package com.github.otbproject.otbproject;
 
 import com.github.otbproject.otbproject.channels.Channel;
 import com.github.otbproject.otbproject.cli.ArgParser;
-import com.github.otbproject.otbproject.config.Account;
-import com.github.otbproject.otbproject.config.BotConfig;
-import com.github.otbproject.otbproject.config.ConfigValidator;
+import com.github.otbproject.otbproject.config.*;
 import com.github.otbproject.otbproject.eventlistener.IrcListener;
 import com.github.otbproject.otbproject.fs.FSUtil;
-import com.github.otbproject.otbproject.config.DefaultConfigGenerator;
+import com.github.otbproject.otbproject.fs.Setup;
 import com.github.otbproject.otbproject.util.JsonHandler;
 import com.github.otbproject.otbproject.util.dev.DevHelper;
 import org.apache.commons.cli.CommandLine;
@@ -68,6 +66,15 @@ public class App {
 
         System.setProperty("OTBCONF", FSUtil.logsDir());
 
+        // Ensure directory tree is setup
+        try {
+            Setup.setup();
+        } catch (IOException e) {
+            App.logger.error("Unable to setup main directory tree at:\t" + FSUtil.getBaseDir());
+            App.logger.catching(e);
+            System.exit(1);
+        }
+
         // TODO remove before release
         DevHelper.run(args);
 
@@ -86,8 +93,17 @@ public class App {
         logger.info("Bot configuration built");
         bot = new CustomBot(configuration);
         for (String channelName :channels){
-            // TODO load actual config
-            Channel channel = new Channel(channelName, DefaultConfigGenerator.createChannelConfig());
+            try {
+                Setup.setupChannel(channelName);
+            } catch (IOException e) {
+                logger.error("Failed to setup channel: " + channelName);
+                logger.catching(e);
+                continue;
+            }
+            String path = FSUtil.dataDir() + File.separator + FSUtil.DirNames.CHANNELS + File.separator + channelName + File.separator + "config.json";
+            ChannelConfig channelConfig = ConfigValidator.validateChannelConfig(JsonHandler.readValue(path, ChannelConfig.class));
+            JsonHandler.writeValue(path, channelConfig);
+            Channel channel = new Channel(channelName, channelConfig);
             channel.join();
             App.bot.channels.put(channel.getName(), channel);
         }
