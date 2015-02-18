@@ -82,8 +82,11 @@ public class App {
         account = ConfigValidator.validateAccount(account);
 
         // TODO store bot config
-        BotConfig botConfig = ConfigValidator.validateBotConfig(JsonHandler.readValue(FSUtil.dataDir()+ File.separator+FSUtil.DirNames.BOT_CHANNEL+ File.separator+"bot-config.json", BotConfig.class));
+        String botConfPath = FSUtil.dataDir()+ File.separator+FSUtil.DirNames.BOT_CHANNEL+ File.separator+"bot-config.json";
+        BotConfig botConfig = ConfigValidator.validateBotConfig(JsonHandler.readValue(botConfPath, BotConfig.class));
+        JsonHandler.writeValue(botConfPath, botConfig);
         channels = new HashSet<>(botConfig.currentChannels);
+
         //TODO get botname and oauth from config asell as possible server address and port
         Configuration.Builder configurationBuilder = new Configuration.Builder().setName(account.getName()).setAutoNickChange(false).setCapEnabled(false).addListener(listener).setServerHostname("irc.twitch.tv")
                 .setServerPort(6667).setServerPassword(account.getOauth()).setEncoding(Charset.forName("UTF-8"));
@@ -102,9 +105,9 @@ public class App {
                 logger.catching(e);
                 continue;
             }
-            String path = FSUtil.dataDir() + File.separator + FSUtil.DirNames.CHANNELS + File.separator + channelName + File.separator + "config.json";
-            ChannelConfig channelConfig = ConfigValidator.validateChannelConfig(JsonHandler.readValue(path, ChannelConfig.class));
-            JsonHandler.writeValue(path, channelConfig);
+            String channelConfPath = FSUtil.dataDir() + File.separator + FSUtil.DirNames.CHANNELS + File.separator + channelName + File.separator + "config.json";
+            ChannelConfig channelConfig = ConfigValidator.validateChannelConfig(JsonHandler.readValue(channelConfPath, ChannelConfig.class));
+            JsonHandler.writeValue(channelConfPath, channelConfig);
             Channel channel = new Channel(channelName, channelConfig);
             channel.join();
             App.bot.channels.put(channel.getName(), channel);
