@@ -1,7 +1,5 @@
-package com.github.otbproject.otbproject.util;
+package com.github.otbproject.otbproject.commands.loader;
 
-import com.github.otbproject.otbproject.commands.loader.LoadedAlias;
-import com.github.otbproject.otbproject.commands.loader.LoadedCommand;
 import com.github.otbproject.otbproject.users.UserLevel;
 
 public class DefaultCommandGenerator {

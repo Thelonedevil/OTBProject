@@ -7,7 +7,7 @@ import com.github.otbproject.otbproject.config.BotConfig;
 import com.github.otbproject.otbproject.config.ConfigValidator;
 import com.github.otbproject.otbproject.eventlistener.IrcListener;
 import com.github.otbproject.otbproject.fs.FSUtil;
-import com.github.otbproject.otbproject.util.DefaultConfigGenerator;
+import com.github.otbproject.otbproject.config.DefaultConfigGenerator;
 import com.github.otbproject.otbproject.util.JsonHandler;
 import com.github.otbproject.otbproject.util.dev.DevHelper;
 import org.apache.commons.cli.CommandLine;
