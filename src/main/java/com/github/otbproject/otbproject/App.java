@@ -2,7 +2,8 @@ package com.github.otbproject.otbproject;
 
 import com.github.otbproject.otbproject.channels.Channel;
 import com.github.otbproject.otbproject.cli.ArgParser;
-import com.github.otbproject.otbproject.cli.CmdParser;
+import com.github.otbproject.otbproject.cli.commands.CmdParser;
+import com.github.otbproject.otbproject.cli.commands.InvalidCLICommandException;
 import com.github.otbproject.otbproject.config.Account;
 import com.github.otbproject.otbproject.config.BotConfig;
 import com.github.otbproject.otbproject.config.ConfigValidator;
@@ -13,6 +14,7 @@ import com.github.otbproject.otbproject.fs.FSUtil;
 import com.github.otbproject.otbproject.fs.Setup;
 import com.github.otbproject.otbproject.util.JsonHandler;
 import com.github.otbproject.otbproject.util.dev.DevHelper;
+import com.sun.javaws.exceptions.InvalidArgumentException;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.ParseException;
 import org.apache.logging.log4j.LogManager;
@@ -129,9 +131,17 @@ public class App {
             String in = scanner.nextLine();
             logger.info(in);
             String[] words = in.split(" ");
-            CmdParser.SuperParse(words);
+            try {
+                CmdParser.SuperParse(words);
+            } catch (InvalidArgumentException e) {
+                logger.catching(e);
+            } catch (InvalidCLICommandException e) {
+                logger.info(e.getMessage());
+                CmdParser.printHelp();
+            }
 
         }
+        scanner.close();
     }
     public static class BotThread extends Thread{
         @Override
