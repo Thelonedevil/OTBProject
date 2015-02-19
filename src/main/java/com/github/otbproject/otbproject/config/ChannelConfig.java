@@ -87,20 +87,4 @@ public class ChannelConfig {
     public void setDebug(boolean debug) {
         this.debug = debug;
     }
-
-    public ChannelConfig getCopy() {
-        ChannelConfig copy = new ChannelConfig();
-
-        copy.commandCooldown = this.commandCooldown;
-        copy.userCooldowns = new UserCooldowns();
-        copy.userCooldowns.ul_broadcaster = this.userCooldowns.ul_broadcaster;
-        copy.userCooldowns.ul_super_moderator = this.userCooldowns.ul_super_moderator;
-        copy.userCooldowns.ul_moderator = this.userCooldowns.ul_moderator;
-        copy.userCooldowns.ul_regular = this.userCooldowns.ul_regular;
-        copy.userCooldowns.ul_subscriber = this.userCooldowns.ul_subscriber;
-        copy.userCooldowns.ul_default = this.userCooldowns.ul_default;
-        copy.debug = this.debug;
-
-        return copy;
-    }
 }

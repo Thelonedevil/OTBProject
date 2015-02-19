@@ -30,7 +30,7 @@ public class CommandProcessor {
         }
 
         try {
-            if (Alias.exists(db, aliasName) && ((Integer)Alias.get(db, aliasName, AliasFields.ENABLED) == 1)) {
+            if (Alias.exists(db, aliasName) && Boolean.valueOf((String)Alias.get(db, aliasName, AliasFields.ENABLED))) {
                 if (splitMsg.length == 1) {
                     return checkAlias(db, (String)Alias.get(db, aliasName, AliasFields.COMMAND), originalAlias);
                 }
@@ -60,18 +60,18 @@ public class CommandProcessor {
 
         try {
             if (Command.exists(db, cmdName)
-                    && ((Integer)Command.get(db, cmdName, CommandFields.ENABLED) == 1)
+                    && Boolean.valueOf((String)Command.get(db, cmdName, CommandFields.ENABLED))
                     && (userLevel.getValue() >= UserLevel.valueOf((String)Command.get(db, cmdName, CommandFields.EXEC_USER_LEVEL)).getValue())
                     && ((Integer)Command.get(db, cmdName, CommandFields.MIN_ARGS) <= args.length)) {
 
                 String scriptPath = (String)Command.get(db, cmdName, CommandFields.SCRIPT);
                 // Return script path
-                if (scriptPath != null) {
+                if (!scriptPath.equals("null")) {
                     return new ProcessedCommand(scriptPath, cmdName, true, args);
                 }
                 // Else non-script command
                 // Check if command is debug
-                else if ((int)Command.get(db, cmdName, CommandFields.DEBUG) == 0 || debug) {
+                else if (!Boolean.valueOf((String)Command.get(db, cmdName, CommandFields.DEBUG)) || debug) {
                     String response = CommandResponseParser.parse(user, channel, (Integer) Command.get(db, cmdName, CommandFields.COUNT), args, (String) Command.get(db, cmdName, CommandFields.RESPONSE));
                     return new ProcessedCommand(response, cmdName, false, args);
                 }

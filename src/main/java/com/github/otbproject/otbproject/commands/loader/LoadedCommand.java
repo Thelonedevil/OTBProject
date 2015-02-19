@@ -88,7 +88,7 @@ public class LoadedCommand {
         return enabled;
     }
 
-    public void setEnabled(boolean enabled) {
+    public void setEnabled(Boolean enabled) {
         this.enabled = enabled;
     }
 
@@ -98,23 +98,5 @@ public class LoadedCommand {
 
     public void setDebug(boolean debug) {
         this.debug = debug;
-    }
-
-    public LoadedCommand getCopy() {
-        LoadedCommand copy = new LoadedCommand();
-
-        copy.name = this.name;
-        copy.response = this.response;
-        copy.execUserLevel = this.execUserLevel;
-        copy.minArgs = this.minArgs;
-        copy.modifyingUserLevels = new ModifyingUserLevels();
-        copy.modifyingUserLevels.nameModifyingUL = this.modifyingUserLevels.nameModifyingUL;
-        copy.modifyingUserLevels.responseModifyingUL = this.modifyingUserLevels.responseModifyingUL;
-        copy.modifyingUserLevels.userLevelModifyingUL = this.modifyingUserLevels.userLevelModifyingUL;
-        copy.script = this.script;
-        copy.enabled = this.enabled;
-        copy.debug = this.debug;
-
-        return copy;
     }
 }

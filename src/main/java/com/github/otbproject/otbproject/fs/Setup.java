@@ -59,8 +59,6 @@ public class Setup {
 
         // Data
         createDirs(FSUtil.dataDir() + File.separator + FSUtil.DirNames.CHANNELS + File.separator + channel);
-
-        // TODO create config file
     }
 
     private static void createDirs(String path) throws IOException {

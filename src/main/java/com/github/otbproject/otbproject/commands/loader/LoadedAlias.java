@@ -36,18 +36,7 @@ public class LoadedAlias {
         return enabled;
     }
 
-    public void setEnabled(boolean enabled) {
+    public void setEnabled(Boolean enabled) {
         this.enabled = enabled;
-    }
-
-    public LoadedAlias getCopy() {
-        LoadedAlias copy = new LoadedAlias();
-
-        copy.name = this.name;
-        copy.command = this.command;
-        copy.modifyingUserLevel = this.modifyingUserLevel;
-        copy.enabled = this.enabled;
-
-        return copy;
     }
 }

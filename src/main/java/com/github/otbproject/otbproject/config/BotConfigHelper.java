@@ -74,4 +74,33 @@ public class BotConfigHelper {
     public static boolean isInChannel(BotConfig botConfig, String channel) {
         return botConfig.currentChannels.contains(channel);
     }
+
+    public static BotConfig getCopy(BotConfig config) {
+        BotConfig copy = new BotConfig();
+
+        copy.setChannelJoinSetting(config.getChannelJoinSetting());
+
+        if (config.whitelist == null) {
+            copy.whitelist = null;
+        }
+        else {
+            copy.whitelist = new ArrayList<String>(config.whitelist);
+        }
+
+        if (config.blacklist == null) {
+            copy.blacklist = null;
+        }
+        else {
+            copy.blacklist = new ArrayList<String>(config.blacklist);
+        }
+
+        if (config.currentChannels == null) {
+            copy.currentChannels = null;
+        }
+        else {
+            copy.currentChannels = new ArrayList<String>(config.currentChannels);
+        }
+
+        return copy;
+    }
 }
