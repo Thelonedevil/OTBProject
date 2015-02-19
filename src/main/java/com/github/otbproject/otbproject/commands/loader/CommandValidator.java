@@ -9,7 +9,7 @@ public class CommandValidator {
             throw new InvalidCommandException();
         }
 
-        LoadedCommand validatedCommand = command.getCopy();
+        LoadedCommand validatedCommand = LoadedCommandHelper.getCopy(command);
         LoadedCommand defaultCommand = DefaultCommandGenerator.createDefaultCommand();
 
         if (validatedCommand.getExecUserLevel() == null) {
@@ -43,7 +43,7 @@ public class CommandValidator {
             throw new InvalidAliasException();
         }
 
-        LoadedAlias validatedAlias = alias.getCopy();
+        LoadedAlias validatedAlias = LoadedCommandHelper.getCopy(alias);
         LoadedAlias defaultAlias = DefaultCommandGenerator.createDefaultAlias();
 
         if (validatedAlias.getModifyingUserLevel() == null) {
