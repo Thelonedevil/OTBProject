@@ -7,8 +7,8 @@ import com.github.otbproject.otbproject.users.UserLevel
 
 class ScriptProcessor {
     private static final String METHOD_NAME = "execute";
-    public static boolean process(String path, DatabaseWrapper db, String[] commandArgs, String channel, String user, UserLevel userLevel) {
-        Object[] args = [db, commandArgs, channel, user, userLevel];
+    public static boolean process(String path, DatabaseWrapper db, String[] commandArgs, String channel, String destinationChannel, String user, UserLevel userLevel) {
+        Object[] args = [db, commandArgs, channel, destinationChannel, user, userLevel];
 
         String fullPath = FSUtil.scriptDir() + File.separator + path;
 

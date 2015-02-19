@@ -36,6 +36,7 @@ public class ChannelConfigHelper {
         copy.userCooldowns.setUl_subscriber(config.userCooldowns.getUl_subscriber());
         copy.userCooldowns.setUl_default(config.userCooldowns.getUl_default());
         copy.setDebug(config.isDebug());
+        copy.setEnabled(config.isEnabled());
         return copy;
     }
 }

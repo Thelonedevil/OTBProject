@@ -85,7 +85,12 @@ public class App {
         Account account = JsonHandler.readValue(FSUtil.configDir()+ File.separator+"account.json", Account.class);
         account = ConfigValidator.validateAccount(account);
 
-        // TODO store bot config
+        // Load general config
+        String generalConfPath = FSUtil.configDir() + File.separator + "general-config.json";
+        GeneralConfig generalConfig = ConfigValidator.validateGeneralConfig(JsonHandler.readValue(generalConfPath, GeneralConfig.class));
+        JsonHandler.writeValue(generalConfPath, generalConfig);
+
+        // Load bot config
         String botConfPath = FSUtil.dataDir()+ File.separator+FSUtil.DirNames.BOT_CHANNEL+ File.separator+"bot-config.json";
         BotConfig botConfig = ConfigValidator.validateBotConfig(JsonHandler.readValue(botConfPath, BotConfig.class));
         JsonHandler.writeValue(botConfPath, botConfig);
@@ -101,6 +106,12 @@ public class App {
 
         logger.info("Bot configuration built");
         bot = new CustomBot(configuration);
+
+        // Store configs
+        bot.configManager.setGeneralConfig(generalConfig);
+        bot.configManager.setBotConfig(botConfig);
+
+        // Load channels
         for (String channelName :channels){
             try {
                 Setup.setupChannel(channelName);

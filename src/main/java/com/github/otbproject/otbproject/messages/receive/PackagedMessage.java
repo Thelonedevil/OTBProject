@@ -7,15 +7,21 @@ public class PackagedMessage {
     private String message;
     private String user;
     private String channel;
+    private String destinationChannel;
     private boolean subscriber;
     private MessagePriority messagePriority;
 
-    public PackagedMessage(String message, String user, String channel, boolean subscriber, MessagePriority messagePriority) {
+    public PackagedMessage(String message, String user, String channel, String destinationChannel, boolean subscriber, MessagePriority messagePriority) {
         this.message = message;
         this.user = user;
         this.channel = channel;
+        this.destinationChannel = destinationChannel;
         this.subscriber = subscriber;
         this.messagePriority = messagePriority;
+    }
+
+    public PackagedMessage(String message, String user, String channel, boolean subscriber, MessagePriority messagePriority) {
+        this(message, user, channel, channel, subscriber, messagePriority);
     }
 
     public PackagedMessage(MessageEvent event) {
@@ -33,6 +39,10 @@ public class PackagedMessage {
 
     public String getChannel() {
         return channel;
+    }
+
+    public String getDestinationChannel() {
+        return destinationChannel;
     }
 
     public boolean isSubscriber() {
