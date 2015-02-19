@@ -2,13 +2,16 @@ package com.github.otbproject.otbproject.messages.receive;
 
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.channels.Channel;
+import com.github.otbproject.otbproject.commands.Command;
 import com.github.otbproject.otbproject.config.ChannelConfigHelper;
+import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.messages.send.MessageOut;
 import com.github.otbproject.otbproject.proc.MessageProcessor;
 import com.github.otbproject.otbproject.proc.ProcessedMessage;
 import com.github.otbproject.otbproject.proc.ScriptProcessor;
 import com.github.otbproject.otbproject.users.UserLevel;
-import org.pircbotx.hooks.events.MessageEvent;
+
+import java.sql.SQLException;
 
 public class ChannelMessageReceiver implements Runnable {
     private final Channel channel;
@@ -20,30 +23,39 @@ public class ChannelMessageReceiver implements Runnable {
     }
 
     public void run() {
-        MessageEvent event;
+        PackagedMessage packagedMessage;
 
         try {
             while (true) {
-                event = queue.take();
-                String channelName = event.getChannel().getName().replace("#","");
-                String user = event.getUser().getNick();
+                packagedMessage = queue.take();
+                String channelName = packagedMessage.getChannel();
+                String user = packagedMessage.getUser();
+                DatabaseWrapper db = channel.getDatabaseWrapper();
                 // TODO get actual user level
                 UserLevel ul = UserLevel.DEFAULT;
-                ProcessedMessage processedMsg = MessageProcessor.process(channel.getDatabaseWrapper(), event.getMessage(), channelName, user, ul, channel.getConfig().isDebug());
+                ProcessedMessage processedMsg = MessageProcessor.process(db, packagedMessage.getMessage(), channelName, user, ul, channel.getConfig().isDebug());
                 String message = processedMsg.getResponse();
                 String command = processedMsg.getCommandName();
                 if ((processedMsg.isScript() || !message.isEmpty()) && !channel.commandCooldownSet.contains(command) && !channel.userCooldownSet.contains(user)) {
                     // Do script (processedMsg.getResponse is the script path)
                     if (processedMsg.isScript()) {
-                        boolean success = ScriptProcessor.process(processedMsg.getResponse(), channel.getDatabaseWrapper(), processedMsg.getArgs(), channelName, user, ul);
+                        boolean success = ScriptProcessor.process(processedMsg.getResponse(), db, processedMsg.getArgs(), channelName, user, ul);
                         if (!success) {
                             continue;
                         }
                     }
                     // Send message
                     else {
-                        MessageOut messageOut = new MessageOut(message);
+                        MessageOut messageOut = new MessageOut(message, packagedMessage.getMessagePriority());
                         channel.sendQueue.add(messageOut);
+                    }
+
+                    // I inncrement count
+                    try {
+                        Command.incrementCount(db, command);
+                    } catch (SQLException e) {
+                        App.logger.error("Failed to increment count for command: " + command);
+                        App.logger.catching(e);
                     }
 
                     // Handles command cooldowns

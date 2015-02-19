@@ -18,7 +18,7 @@ public class CommandLoader {
         map.put(CommandFields.RESPONSE, loadedCommand.getResponse());
         map.put(CommandFields.EXEC_USER_LEVEL, loadedCommand.getExecUserLevel());
         map.put(CommandFields.MIN_ARGS, loadedCommand.getMinArgs());
-        map.put(CommandFields.COUNT, 0);
+        map.put(CommandFields.COUNT, 1);
         map.put(CommandFields.NAME_MODIFYING_UL, loadedCommand.modifyingUserLevels.getNameModifyingUL());
         map.put(CommandFields.RESPONSE_MODIFYING_UL, loadedCommand.modifyingUserLevels.getResponseModifyingUL());
         map.put(CommandFields.USER_LEVEL_MODIFYING_UL, loadedCommand.modifyingUserLevels.getUserLevelModifyingUL());
