@@ -2,6 +2,7 @@ package com.github.otbproject.otbproject;
 
 import com.github.otbproject.otbproject.channels.Channel;
 import com.github.otbproject.otbproject.cli.ArgParser;
+import com.github.otbproject.otbproject.commands.loader.FSCommandLoader;
 import com.github.otbproject.otbproject.config.*;
 import com.github.otbproject.otbproject.eventlistener.IrcListener;
 import com.github.otbproject.otbproject.fs.FSUtil;
@@ -74,6 +75,9 @@ public class App {
             App.logger.catching(e);
             System.exit(1);
         }
+
+        FSCommandLoader.LoadCommands();
+        FSCommandLoader.LoadAliases();
 
         // TODO remove before release
         DevHelper.run(args);
