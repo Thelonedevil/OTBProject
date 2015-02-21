@@ -14,7 +14,6 @@ public class MessageProcessor {
 
     public static ProcessedMessage process(DatabaseWrapper db, String message, String channel, String user, UserLevel userLevel, boolean debug) {
         if (!TimeoutProcessor.doTimeouts(db, message, channel, user, userLevel)) {
-            // TODO check user rate limit and ignore if not enough time has passed
             // Check for aliases and commands, and get appropriate parsed response
             ProcessedCommand processedCmd = CommandProcessor.process(db, message, channel, user, userLevel, debug);
             return new ProcessedMessage(processedCmd, false);

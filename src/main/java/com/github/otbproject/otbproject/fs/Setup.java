@@ -25,7 +25,6 @@ public class Setup {
 
         // Config Directory
         createDirs(FSUtil.configDir());
-        // TODO create config stuff
 
         // Data Directory
         createDirs(FSUtil.dataDir() + File.separator + FSUtil.DirNames.BOT_CHANNEL);

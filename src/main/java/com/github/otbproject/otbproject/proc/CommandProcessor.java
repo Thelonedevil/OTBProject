@@ -72,7 +72,7 @@ public class CommandProcessor {
                 // Else non-script command
                 // Check if command is debug
                 else if (!Boolean.valueOf((String)Command.get(db, cmdName, CommandFields.DEBUG)) || debug) {
-                    String response = CommandResponseParser.parse(user, channel, (Integer) Command.get(db, cmdName, CommandFields.COUNT), args, (String) Command.get(db, cmdName, CommandFields.RESPONSE));
+                    String response = CommandResponseParser.parse(user, channel, ((Integer) Command.get(db, cmdName, CommandFields.COUNT) + 1), args, (String) Command.get(db, cmdName, CommandFields.RESPONSE));
                     return new ProcessedCommand(response, cmdName, false, args);
                 }
             }

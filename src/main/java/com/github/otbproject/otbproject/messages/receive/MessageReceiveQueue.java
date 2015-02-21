@@ -1,17 +1,15 @@
 package com.github.otbproject.otbproject.messages.receive;
 
-import org.pircbotx.hooks.events.MessageEvent;
-
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class MessageReceiveQueue {
-    private final LinkedBlockingQueue<MessageEvent> queue = new LinkedBlockingQueue<MessageEvent>();
+    private final LinkedBlockingQueue<PackagedMessage> queue = new LinkedBlockingQueue<PackagedMessage>();
 
-    public MessageEvent take() throws InterruptedException {
+    public PackagedMessage take() throws InterruptedException {
         return queue.take();
     }
 
-    public void add(MessageEvent message) {
+    public void add(PackagedMessage message) {
         queue.add(message);
     }
 

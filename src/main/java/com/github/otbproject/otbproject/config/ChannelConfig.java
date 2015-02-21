@@ -71,6 +71,7 @@ public class ChannelConfig {
     }
 
     private boolean debug;
+    private Boolean enabled;
 
     public Integer getCommandCooldown() {
         return commandCooldown;
@@ -86,5 +87,13 @@ public class ChannelConfig {
 
     public void setDebug(boolean debug) {
         this.debug = debug;
+    }
+
+    public Boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
     }
 }

@@ -2,6 +2,7 @@ package com.github.otbproject.otbproject.eventlistener;
 
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.channels.Channel;
+import com.github.otbproject.otbproject.messages.receive.PackagedMessage;
 import org.pircbotx.hooks.ListenerAdapter;
 import org.pircbotx.hooks.events.DisconnectEvent;
 import org.pircbotx.hooks.events.JoinEvent;
@@ -16,7 +17,7 @@ public class IrcListener extends ListenerAdapter {
     @Override
     public void onMessage(MessageEvent event) throws Exception {
         Channel channel = App.bot.channels.get(event.getChannel().getName().replace("#",""));
-        channel.receiveQueue.add(event);
+        channel.receiveQueue.add(new PackagedMessage(event));
     }
 
     @Override

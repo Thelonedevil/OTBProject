@@ -82,6 +82,10 @@ public class ConfigValidator {
             validatedConfig.userCooldowns.setUl_default(defaultConfig.userCooldowns.getUl_default());
         }
 
+        if (validatedConfig.isEnabled() == null) {
+            validatedConfig.setEnabled(defaultConfig.isEnabled());
+        }
+
         return validatedConfig;
     }
 }

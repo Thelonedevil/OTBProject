@@ -13,7 +13,7 @@ import java.util.HashMap;
 public class CustomBot extends PircBotX {
 
     public HashMap<String,Channel> channels = new HashMap<>();
-    public static final ConfigManager configManager = new ConfigManager();
+    public final ConfigManager configManager = new ConfigManager();
 
     public CustomBot(Configuration<? extends PircBotX> configuration) {
         super(configuration);

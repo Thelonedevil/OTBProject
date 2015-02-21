@@ -6,7 +6,7 @@ public class AliasFields {
     public static final String NAME = "name";
     public static final String COMMAND = "command";
     public static final String MODIFYING_UL = "modifyingUL";
-    public static final String ENABLED = "enabled"; // TODO keep?
+    public static final String ENABLED = "enabled";
 
     public static final String TABLE_NAME = "tblAliases";
 
@@ -16,8 +16,7 @@ public class AliasFields {
         commandFields.put(NAME, "Text");
         commandFields.put(COMMAND, "Text");
         commandFields.put(MODIFYING_UL, "Text");
-
-        commandFields.put(ENABLED, "Integer"); // TODO possibly remove
+        commandFields.put(ENABLED, "Integer");
 
         return commandFields;
     }
