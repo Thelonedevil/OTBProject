@@ -37,6 +37,10 @@ public class ChannelConfigHelper {
         copy.userCooldowns.setUl_default(config.userCooldowns.getUl_default());
         copy.setDebug(config.isDebug());
         copy.setEnabled(config.isEnabled());
+        copy.queueLimits = copy.new QueueLimits();
+        copy.queueLimits.setHighPriorityLimit(config.queueLimits.getHighPriorityLimit());
+        copy.queueLimits.setDefaultPriorityLimit(config.queueLimits.getDefaultPriorityLimit());
+        copy.queueLimits.setLowPriorityLimit(config.queueLimits.getLowPriorityLimit());
         return copy;
     }
 }

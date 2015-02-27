@@ -93,7 +93,10 @@ public class ChannelMessageReceiver implements Runnable {
         // Send message
         else {
             MessageOut messageOut = new MessageOut(message, priority);
-            destinationChannel.sendQueue.add(messageOut);
+            // If queue rejects message because it's too full, return
+            if (!destinationChannel.sendQueue.add(messageOut)) {
+                return;
+            }
         }
 
         // Increment count

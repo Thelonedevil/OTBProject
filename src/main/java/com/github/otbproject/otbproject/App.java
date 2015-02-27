@@ -82,8 +82,10 @@ public class App {
         // TODO remove before release
         DevHelper.run(args);
 
-        Account account = JsonHandler.readValue(FSUtil.configDir()+ File.separator+"account.json", Account.class);
-        account = ConfigValidator.validateAccount(account);
+        // Load account details
+        String accountPath = FSUtil.configDir()+ File.separator+"account.json";
+        Account account = ConfigValidator.validateAccount(JsonHandler.readValue(accountPath, Account.class));
+        JsonHandler.writeValue(accountPath, account);
 
         // Load general config
         String generalConfPath = FSUtil.configDir() + File.separator + "general-config.json";
