@@ -38,7 +38,7 @@ public class App {
         }
         catch (Throwable t) {
             try {
-                System.err.print("Fatal problem has occurred.");
+                System.err.println("A fatal problem has occurred.");
                 t.printStackTrace();
                 System.err.println("Attempting to log problem.");
                 // TODO log throwable
