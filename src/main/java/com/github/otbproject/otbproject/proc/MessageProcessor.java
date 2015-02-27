@@ -4,14 +4,6 @@ import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.users.UserLevel;
 
 public class MessageProcessor {
-    // Returns the response to the message (does not send messages itself)
-    // Returns empty string if no response
-    public static ProcessedMessage process(DatabaseWrapper db, String message, String channel, String user, boolean subscriber, boolean debug) {
-        // TODO find out if user is mod
-        UserLevel userLevel = Util.getUserLevel(db, channel, user, subscriber);
-        return process(db, message, channel, user, userLevel, debug);
-    }
-
     public static ProcessedMessage process(DatabaseWrapper db, String message, String channel, String user, UserLevel userLevel, boolean debug) {
         if (!TimeoutProcessor.doTimeouts(db, message, channel, user, userLevel)) {
             // Check for aliases and commands, and get appropriate parsed response

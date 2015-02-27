@@ -52,6 +52,13 @@ public class ConfigValidator {
             validatedConfig.setChannelJoinSetting(defaultConfig.getChannelJoinSetting());
         }
 
+        if (validatedConfig.getMessageSendDelayInMilliseconds() == null) {
+            validatedConfig.setMessageSendDelayInMilliseconds(defaultConfig.getMessageSendDelayInMilliseconds());
+        }
+        else if (validatedConfig.getMessageSendDelayInMilliseconds() < 0) {
+            validatedConfig.setMessageSendDelayInMilliseconds(0);
+        }
+
         BotConfigHelper.initialize(validatedConfig);
 
         return validatedConfig;

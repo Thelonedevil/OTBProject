@@ -101,6 +101,8 @@ public class BotConfigHelper {
             copy.currentChannels = new ArrayList<String>(config.currentChannels);
         }
 
+        copy.setMessageSendDelayInMilliseconds(config.getMessageSendDelayInMilliseconds());
+
         return copy;
     }
 }

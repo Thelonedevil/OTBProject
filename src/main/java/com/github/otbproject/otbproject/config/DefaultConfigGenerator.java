@@ -13,6 +13,7 @@ public class DefaultConfigGenerator {
     public static BotConfig createBotConfig() {
         BotConfig botConfig = new BotConfig();
         botConfig.setChannelJoinSetting(ChannelJoinSetting.NONE);
+        botConfig.setMessageSendDelayInMilliseconds(1600);
         BotConfigHelper.initialize(botConfig);
 
         return botConfig;
