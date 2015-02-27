@@ -33,6 +33,23 @@ public class App {
     public static final Logger logger = LogManager.getLogger();
 
     public static void main(String[] args) {
+        try {
+            doMain(args);
+        }
+        catch (Throwable t) {
+            try {
+                System.err.print("Fatal problem has occurred.");
+                t.printStackTrace();
+                System.err.println("Attempting to log problem.");
+                // TODO log throwable
+            }
+            finally {
+                System.exit(-10);
+            }
+        }
+    }
+
+    public static void doMain(String[] args) {
         CommandLine cmd = null;
         try {
             cmd = ArgParser.parse(args);
