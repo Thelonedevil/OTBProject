@@ -73,6 +73,38 @@ public class ChannelConfig {
     private boolean debug;
     private Boolean enabled;
 
+    public QueueLimits queueLimits;
+
+    public class QueueLimits {
+        private Integer highPriorityLimit;
+        private Integer defaultPriorityLimit;
+        private int lowPriorityLimit;
+
+        public Integer getHighPriorityLimit() {
+            return highPriorityLimit;
+        }
+
+        public void setHighPriorityLimit(Integer highPriorityLimit) {
+            this.highPriorityLimit = highPriorityLimit;
+        }
+
+        public Integer getDefaultPriorityLimit() {
+            return defaultPriorityLimit;
+        }
+
+        public void setDefaultPriorityLimit(Integer defaultPriorityLimit) {
+            this.defaultPriorityLimit = defaultPriorityLimit;
+        }
+
+        public int getLowPriorityLimit() {
+            return lowPriorityLimit;
+        }
+
+        public void setLowPriorityLimit(int lowPriorityLimit) {
+            this.lowPriorityLimit = lowPriorityLimit;
+        }
+    }
+
     public Integer getCommandCooldown() {
         return commandCooldown;
     }

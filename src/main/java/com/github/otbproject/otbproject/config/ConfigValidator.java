@@ -86,6 +86,10 @@ public class ConfigValidator {
             validatedConfig.setEnabled(defaultConfig.isEnabled());
         }
 
+        if (validatedConfig.queueLimits.getHighPriorityLimit() == null) {
+            validatedConfig.queueLimits.setHighPriorityLimit(defaultConfig.queueLimits.getHighPriorityLimit());
+        }
+
         return validatedConfig;
     }
 }
