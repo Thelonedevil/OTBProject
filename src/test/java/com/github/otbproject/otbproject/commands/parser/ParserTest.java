@@ -24,8 +24,8 @@ public class ParserTest {
         args[1] = "bar";
 
         // InvalidTerm
-        String parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, TS+"foo"+TE);
-        assertEquals(TS+"foo"+TE, parsed);
+        String parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, TS + "foo" + TE);
+        assertEquals(TS + "foo" + TE, parsed);
     }
 
     @Test
@@ -37,34 +37,34 @@ public class ParserTest {
 
         // Basic Test
         // Term at beginning of string
-        String parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, TS+"user"+TE+" says hi.");
+        String parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, TS + "user" + TE + " says hi.");
         assertEquals("nthportal says hi.", parsed);
 
         // Term at end of string
-        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, "Go to twitch.tv/"+TS+"user"+TE);
+        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, "Go to twitch.tv/" + TS + "user" + TE);
         assertEquals("Go to twitch.tv/nthportal", parsed);
 
         // Term in middle of string
-        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, "start-"+TS +"user"+TE +"-end");
+        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, "start-" + TS + "user" + TE + "-end");
         assertEquals("start-nthportal-end", parsed);
 
         // Multiple times in one string, next to each other
-        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, TS+"user"+TE+TS +"user"+TE);
+        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, TS + "user" + TE + TS + "user" + TE);
         assertEquals("nthportalnthportal", parsed);
 
         // Multiple times in one string, apart
-        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, TS+"user"+TE+"-foo-"+TS +"user"+TE);
+        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, TS + "user" + TE + "-foo-" + TS + "user" + TE);
         assertEquals("nthportal-foo-nthportal", parsed);
 
         // Space in term
-        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, TS+"user "+TE+TS +"user"+TE);
+        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, TS + "user " + TE + TS + "user" + TE);
         assertNotEquals("nthportalnthportal", parsed);
 
-        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, TS+"user"+TE+TS +"user "+TE);
+        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, TS + "user" + TE + TS + "user " + TE);
         assertNotEquals("nthportalnthportal", parsed);
 
         // Modifiers work for term in general
-        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, TS+"user"+MD+ModifierTypes.UPPER+TE);
+        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, TS + "user" + MD + ModifierTypes.UPPER + TE);
         assertEquals("NTHPORTAL", parsed);
     }
 
@@ -75,11 +75,11 @@ public class ParserTest {
         args[0] = "foo";
         args[1] = "bar";
 
-        String parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, "You are in "+TS+"channel"+TE+"'s channel.");
+        String parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, "You are in " + TS + "channel" + TE + "'s channel.");
         assertEquals("You are in the_lone_devil's channel.", parsed);
 
         // Modifiers work for term in general
-        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, TS+"channel"+MD+ModifierTypes.UPPER+TE);
+        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, TS + "channel" + MD + ModifierTypes.UPPER + TE);
         assertEquals("THE_LONE_DEVIL", parsed);
     }
 
@@ -92,17 +92,17 @@ public class ParserTest {
 
         // count == 0
         int count = 0;
-        String parsed = CommandResponseParser.parse(USER, CHANNEL, count, args, "This command has been run "+TS+"count"+TE+" times.");
+        String parsed = CommandResponseParser.parse(USER, CHANNEL, count, args, "This command has been run " + TS + "count" + TE + " times.");
         assertEquals("This command has been run 0 times.", parsed);
 
         // large count
         count = 30000;
-        parsed = CommandResponseParser.parse(USER, CHANNEL, count, args, "This command has been run "+TS+"count"+TE+" times.");
+        parsed = CommandResponseParser.parse(USER, CHANNEL, count, args, "This command has been run " + TS + "count" + TE + " times.");
         assertEquals("This command has been run 30000 times.", parsed);
 
         // negative count (shouldn't ever happen, but testing for it anyway)
         count = -30000;
-        parsed = CommandResponseParser.parse(USER, CHANNEL, count, args, "This command has been run "+TS+"count"+TE+" times.");
+        parsed = CommandResponseParser.parse(USER, CHANNEL, count, args, "This command has been run " + TS + "count" + TE + " times.");
         assertEquals("This command has been run -30000 times.", parsed);
     }
 
@@ -112,30 +112,30 @@ public class ParserTest {
     public void argsTest() {
         // Empty args
         String[] args = new String[0];
-        String parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, "Hi "+TS+"args"+TE+".");
+        String parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, "Hi " + TS + "args" + TE + ".");
         assertEquals("Hi .", parsed);
 
-        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, "Hi "+TS+"args"+ ES +"person"+ EE +TE+".");
+        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, "Hi " + TS + "args" + ES + "person" + EE + TE + ".");
         assertEquals("Hi person.", parsed);
 
-        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, "Hi "+TS+"args"+ ES +TS+"user"+TE+ EE +TE+".");
+        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, "Hi " + TS + "args" + ES + TS + "user" + TE + EE + TE + ".");
         assertEquals("Hi nthportal.", parsed);
 
         // Empty default (tests for any empty embedded string)
-        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, "Hi "+TS+"args"+ES+EE+TE+".");
+        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, "Hi " + TS + "args" + ES + EE + TE + ".");
         assertEquals("Hi .", parsed);
 
         // 1 arg
         args = new String[1];
         args[0] = "Justin";
 
-        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, "Hi "+TS+"args"+TE+".");
+        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, "Hi " + TS + "args" + TE + ".");
         assertEquals("Hi Justin.", parsed);
 
-        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, "Hi "+TS+"args"+ ES +"person"+ EE +TE+".");
+        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, "Hi " + TS + "args" + ES + "person" + EE + TE + ".");
         assertEquals("Hi Justin.", parsed);
 
-        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, "Hi "+TS+"args"+ ES +TS+"user"+TE+ EE +TE+".");
+        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, "Hi " + TS + "args" + ES + TS + "user" + TE + EE + TE + ".");
         assertEquals("Hi Justin.", parsed);
 
         // 2 args
@@ -143,29 +143,29 @@ public class ParserTest {
         args[0] = "awesome";
         args[1] = "people";
 
-        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, "Hi "+TS+"args"+TE+".");
+        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, "Hi " + TS + "args" + TE + ".");
         assertEquals("Hi awesome people.", parsed);
 
-        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, "Hi "+TS+"args"+ ES +"person"+ EE +TE+".");
+        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, "Hi " + TS + "args" + ES + "person" + EE + TE + ".");
         assertEquals("Hi awesome people.", parsed);
 
-        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, "Hi "+TS+"args"+ ES +TS+"user"+TE+ EE +TE+".");
+        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, "Hi " + TS + "args" + ES + TS + "user" + TE + EE + TE + ".");
         assertEquals("Hi awesome people.", parsed);
 
         // Modifiers work for term in general
-        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, TS+"args"+MD+ModifierTypes.UPPER+TE);
+        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, TS + "args" + MD + ModifierTypes.UPPER + TE);
         assertEquals("AWESOME PEOPLE", parsed);
 
         // Terms as args (should not be parsed)
-        args[0] = TS+"user"+TE;
-        args[1] = TS+"channel"+TE;
-        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, TS+"args"+TE);
+        args[0] = TS + "user" + TE;
+        args[1] = TS + "channel" + TE;
+        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, TS + "args" + TE);
         assertEquals(TS + "user" + TE + " " + TS + "channel" + TE, parsed);
 
         // Embedded string as args
-        args[0] = ES+"string"+EE;
-        args[1] = ES+"thing"+EE;
-        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, "start-"+TS+"args"+TE+"-end");
+        args[0] = ES + "string" + EE;
+        args[1] = ES + "thing" + EE;
+        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, "start-" + TS + "args" + TE + "-end");
         assertEquals("start-" + ES + "string" + EE + " " + ES + "thing" + EE + "-end", parsed);
     }
 
@@ -174,29 +174,29 @@ public class ParserTest {
     public void ifargsTest() {
         // Empty args
         String[] args = new String[0];
-        String parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, "Hi"+TS+"ifargs"+ES+" "+EE+TE+TS+"args"+TE+".");
+        String parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, "Hi" + TS + "ifargs" + ES + " " + EE + TE + TS + "args" + TE + ".");
         assertEquals("Hi.", parsed);
 
         // 1 arg
         args = new String[1];
         args[0] = "Justin";
-        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, "Hi"+TS+"ifargs"+ES+" "+EE+TE+TS+"args"+TE+".");
+        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, "Hi" + TS + "ifargs" + ES + " " + EE + TE + TS + "args" + TE + ".");
         assertEquals("Hi Justin.", parsed);
 
         // 2 args
         args = new String[2];
         args[0] = "awesome";
         args[1] = "people";
-        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, "Hi"+TS+"ifargs"+ES+" "+EE+TE+TS+"args"+TE+".");
+        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, "Hi" + TS + "ifargs" + ES + " " + EE + TE + TS + "args" + TE + ".");
         assertEquals("Hi awesome people.", parsed);
     }
 
     @Test
     // Test [[ifargN{{string}}]] term (N is a natural number)
     public void ifargNTest() {
-        String rawMsg = "Watch all perspectives at http://kadgar.net/live/"+TS+"channel"+TE+"/"
-                +TS+"arg1"+TE+TS+"ifarg1"+ES+"/"+EE+TE+TS+"arg2"+TE+TS+"ifarg2"+ES+"/"+EE+TE
-                +TS+"arg3"+TE+TS+"ifarg3"+ES+"/"+EE+TE+TS+"arg4"+TE+TS+"ifarg4"+ES+"/"+EE+TE;
+        String rawMsg = "Watch all perspectives at http://kadgar.net/live/" + TS + "channel" + TE + "/"
+                + TS + "arg1" + TE + TS + "ifarg1" + ES + "/" + EE + TE + TS + "arg2" + TE + TS + "ifarg2" + ES + "/" + EE + TE
+                + TS + "arg3" + TE + TS + "ifarg3" + ES + "/" + EE + TE + TS + "arg4" + TE + TS + "ifarg4" + ES + "/" + EE + TE;
 
         // 0 args
         String[] args = new String[0];
@@ -239,10 +239,10 @@ public class ParserTest {
     public void argNTest() {
         // Empty args
         String[] args = new String[0];
-        String rawMsg = "words "+TS+"arg1"+ES+"something"+EE+TE+" words "+TS+"arg2"+ES
-                +TS+"arg1"+TE+EE+TE+" words "+TS+"arg3"+ES+TS+"arg2"+ES
-                +TS+"arg1"+ES+"dunno"+EE+TE+EE+TE+EE+TE
-                +" words "+TS+"arg4"+ES+TS+"arg2"+TE+EE+TE+" words";
+        String rawMsg = "words " + TS + "arg1" + ES + "something" + EE + TE + " words " + TS + "arg2" + ES
+                + TS + "arg1" + TE + EE + TE + " words " + TS + "arg3" + ES + TS + "arg2" + ES
+                + TS + "arg1" + ES + "dunno" + EE + TE + EE + TE + EE + TE
+                + " words " + TS + "arg4" + ES + TS + "arg2" + TE + EE + TE + " words";
         String parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, rawMsg);
         assertEquals("words something words  words dunno words  words", parsed);
 
@@ -279,15 +279,15 @@ public class ParserTest {
         // 2 digit arg number (11)
         args = "1 2 3 4 5 6 7 8 9 10 11".split(" ");
         assertEquals(11, args.length);
-        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, TS+"arg11"+TE);
+        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, TS + "arg11" + TE);
         assertEquals("11", parsed);
     }
 
     @Test
     // Test [[foreach{{prepend}}{{append}}]]
     public void foreachTest() {
-        String rawMsg = "Watch all perspectives at http://kadgar.net/live/"+TS+"channel"+TE+"/"
-                +TS+"foreach"+ES+EE+ES+"/"+EE+TE;
+        String rawMsg = "Watch all perspectives at http://kadgar.net/live/" + TS + "channel" + TE + "/"
+                + TS + "foreach" + ES + EE + ES + "/" + EE + TE;
 
         // 0 args
         String[] args = new String[0];
@@ -306,12 +306,12 @@ public class ParserTest {
         parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, rawMsg);
         assertEquals("Watch all perspectives at http://kadgar.net/live/the_lone_devil/maddiiemaneater/mktheworst/", parsed);
 
-        rawMsg = "Here are some channels: ["+TS+"channel"+TE+"]"+TS+"foreach"+ES+" ["+EE+ES+"]"+EE+TE;
+        rawMsg = "Here are some channels: [" + TS + "channel" + TE + "]" + TS + "foreach" + ES + " [" + EE + ES + "]" + EE + TE;
         parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, rawMsg);
         assertEquals("Here are some channels: [the_lone_devil] [maddiiemaneater] [mktheworst]", parsed);
 
         // Modifiers work for term in general
-        rawMsg = "Here are some channels: ["+TS+"channel"+TE+"]"+TS+"foreach"+MD+ModifierTypes.FIRST_CAP+ES+" ["+EE+ES+"]"+EE+TE;
+        rawMsg = "Here are some channels: [" + TS + "channel" + TE + "]" + TS + "foreach" + MD + ModifierTypes.FIRST_CAP + ES + " [" + EE + ES + "]" + EE + TE;
         parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, rawMsg);
         assertEquals("Here are some channels: [the_lone_devil] [Maddiiemaneater] [Mktheworst]", parsed);
     }
@@ -321,25 +321,25 @@ public class ParserTest {
     public void numargsTest() {
         // 0 args
         String[] args = new String[0];
-        String parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, "There are "+TS+"numargs"+TE+" args.");
+        String parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, "There are " + TS + "numargs" + TE + " args.");
         assertEquals("There are 0 args.", parsed);
 
         // 1 arg
         args = "maddiiemaneater".split(" ");
         assertEquals(1, args.length);
-        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, "There is "+TS+"numargs"+TE+" arg.");
+        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, "There is " + TS + "numargs" + TE + " arg.");
         assertEquals("There is 1 arg.", parsed);
 
         // 2 args
         args = "maddiiemaneater mktheworst".split(" ");
         assertEquals(2, args.length);
-        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, "There are "+TS+"numargs"+TE+" args.");
+        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, "There are " + TS + "numargs" + TE + " args.");
         assertEquals("There are 2 args.", parsed);
 
         // 3 args
         args = "maddiiemaneater mktheworst aureylian".split(" ");
         assertEquals(3, args.length);
-        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, "There are "+TS+"numargs"+TE+" args.");
+        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, "There are " + TS + "numargs" + TE + " args.");
         assertEquals("There are 3 args.", parsed);
     }
 
@@ -349,27 +349,27 @@ public class ParserTest {
         String[] args = "this is a TEST sentence.".split(" ");
 
         // lower
-        String parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, TS+"args"+MD+ModifierTypes.LOWER+TE);
+        String parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, TS + "args" + MD + ModifierTypes.LOWER + TE);
         assertEquals("this is a test sentence.", parsed);
 
         // upper
-        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, TS+"args"+MD+ModifierTypes.UPPER+TE);
+        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, TS + "args" + MD + ModifierTypes.UPPER + TE);
         assertEquals("THIS IS A TEST SENTENCE.", parsed);
 
         // first_cap
-        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, TS+"args"+MD+ModifierTypes.FIRST_CAP+TE);
+        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, TS + "args" + MD + ModifierTypes.FIRST_CAP + TE);
         assertEquals("This is a test sentence.", parsed);
 
         // word_cap
-        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, TS+"args"+MD+ModifierTypes.WORD_CAP+TE);
+        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, TS + "args" + MD + ModifierTypes.WORD_CAP + TE);
         assertEquals("This Is A Test Sentence.", parsed);
 
         // first_cap_soft
-        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, TS+"args"+MD+ModifierTypes.FIRST_CAP_SOFT+TE);
+        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, TS + "args" + MD + ModifierTypes.FIRST_CAP_SOFT + TE);
         assertEquals("This is a TEST sentence.", parsed);
 
         // word_cap_soft
-        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, TS+"args"+MD+ModifierTypes.WORD_CAP_SOFT+TE);
+        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, TS + "args" + MD + ModifierTypes.WORD_CAP_SOFT + TE);
         assertEquals("This Is A TEST Sentence.", parsed);
     }
 }

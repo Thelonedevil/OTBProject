@@ -11,7 +11,6 @@ import java.util.HashSet;
 
 public class DatabaseHelper {
     /**
-     *
      * @return a HashMap used to create all the tables by the DatabaseWrapper.
      * Tables are hard-coded into the method.
      */
@@ -31,6 +30,6 @@ public class DatabaseHelper {
 
     public static DatabaseWrapper getBotDatabase() {
         String path = FSUtil.dataDir() + File.separator + FSUtil.DirNames.BOT_CHANNEL + File.separator + FSUtil.DatabaseNames.MAIN;
-        return  DatabaseWrapper.createDataBase(path, getTablesHashMap());
+        return DatabaseWrapper.createDataBase(path, getTablesHashMap());
     }
 }

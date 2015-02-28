@@ -13,8 +13,7 @@ public class CooldownSet {
         boolean contains;
         try {
             contains = set.contains(name);
-        }
-        finally {
+        } finally {
             lock.readLock().unlock();
         }
         return contains;
@@ -25,8 +24,7 @@ public class CooldownSet {
         boolean added;
         try {
             added = set.add(name);
-        }
-        finally {
+        } finally {
             lock.writeLock().unlock();
         }
         new Thread(new CooldownRemover(name, timeInSeconds, this)).start();
@@ -38,8 +36,7 @@ public class CooldownSet {
         boolean removed;
         try {
             removed = set.remove(name);
-        }
-        finally {
+        } finally {
             lock.writeLock().unlock();
         }
         return removed;
@@ -49,8 +46,7 @@ public class CooldownSet {
         lock.writeLock().lock();
         try {
             set.clear();
-        }
-        finally {
+        } finally {
             lock.writeLock().unlock();
         }
     }

@@ -54,8 +54,7 @@ public class ConfigValidator {
 
         if (validatedConfig.getMessageSendDelayInMilliseconds() == null) {
             validatedConfig.setMessageSendDelayInMilliseconds(defaultConfig.getMessageSendDelayInMilliseconds());
-        }
-        else if (validatedConfig.getMessageSendDelayInMilliseconds() < 0) {
+        } else if (validatedConfig.getMessageSendDelayInMilliseconds() < 0) {
             validatedConfig.setMessageSendDelayInMilliseconds(0);
         }
 

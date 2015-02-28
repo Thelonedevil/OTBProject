@@ -17,7 +17,6 @@ import com.github.otbproject.otbproject.util.JsonHandler;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
 
 public class DevHelper {
     public static void run(String[] args) {

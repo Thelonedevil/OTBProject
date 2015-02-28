@@ -37,8 +37,7 @@ public class GeneralConfigHelper {
 
         if (config.permanently_enabled_commands == null) {
             copy.permanently_enabled_commands = null;
-        }
-        else {
+        } else {
             copy.permanently_enabled_commands = new ArrayList<String>(config.permanently_enabled_commands);
         }
 

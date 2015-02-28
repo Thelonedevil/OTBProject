@@ -14,9 +14,9 @@ import java.util.HashMap;
 
 public class Command {
 
-    public static LoadedCommand get(DatabaseWrapper db, String commandName){
+    public static LoadedCommand get(DatabaseWrapper db, String commandName) {
         LoadedCommand loadedCommand = new LoadedCommand();
-        if(db.exists(CommandFields.TABLE_NAME, commandName, CommandFields.NAME)) {
+        if (db.exists(CommandFields.TABLE_NAME, commandName, CommandFields.NAME)) {
             ResultSet rs = db.getRecord(CommandFields.TABLE_NAME, commandName, CommandFields.NAME);
             try {
                 loadedCommand.setName(rs.getString(CommandFields.NAME));
@@ -39,32 +39,32 @@ public class Command {
     }
 
     public static ArrayList<String> getCommands(DatabaseWrapper db) {
-        return db.getRecordsList(CommandFields.TABLE_NAME,CommandFields.NAME);
+        return db.getRecordsList(CommandFields.TABLE_NAME, CommandFields.NAME);
     }
 
-    public static boolean update(DatabaseWrapper db, HashMap map){
-       return db.updateRecord(CommandFields.TABLE_NAME, (String) map.get(CommandFields.NAME), CommandFields.NAME, map);
+    public static boolean update(DatabaseWrapper db, HashMap map) {
+        return db.updateRecord(CommandFields.TABLE_NAME, (String) map.get(CommandFields.NAME), CommandFields.NAME, map);
     }
 
     public static boolean exists(DatabaseWrapper db, String commandName) {
         return db.exists(CommandFields.TABLE_NAME, commandName, CommandFields.NAME);
     }
 
-    public static boolean add(DatabaseWrapper db, HashMap map){
+    public static boolean add(DatabaseWrapper db, HashMap map) {
         return db.insertRecord(CommandFields.TABLE_NAME, (String) map.get(CommandFields.NAME), CommandFields.NAME, map);
     }
 
-    public static boolean remove(DatabaseWrapper db, String commandName){
+    public static boolean remove(DatabaseWrapper db, String commandName) {
         return db.removeRecord(CommandFields.TABLE_NAME, commandName, CommandFields.NAME);
     }
 
     public static void incrementCount(DatabaseWrapper db, String commandName) throws SQLException {
         LoadedCommand loadedCommand = get(db, commandName);
-        loadedCommand.setCount(loadedCommand.getCount()+1);
+        loadedCommand.setCount(loadedCommand.getCount() + 1);
         CommandLoader.addCommandFromLoadedCommand(db, loadedCommand);
     }
 
-    public static void resetCount(DatabaseWrapper db, String commandName) throws SQLException{
+    public static void resetCount(DatabaseWrapper db, String commandName) throws SQLException {
         LoadedCommand loadedCommand = get(db, commandName);
         loadedCommand.setCount(0);
         CommandLoader.addCommandFromLoadedCommand(db, loadedCommand);

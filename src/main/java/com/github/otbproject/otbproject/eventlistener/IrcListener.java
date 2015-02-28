@@ -16,24 +16,24 @@ public class IrcListener extends ListenerAdapter {
 
     @Override
     public void onMessage(MessageEvent event) throws Exception {
-        Channel channel = App.bot.channels.get(event.getChannel().getName().replace("#",""));
+        Channel channel = App.bot.channels.get(event.getChannel().getName().replace("#", ""));
         channel.receiveQueue.add(new PackagedMessage(event));
     }
 
     @Override
-    public void onJoin(JoinEvent event){
+    public void onJoin(JoinEvent event) {
     }
 
     @Override
-    public void onPart(PartEvent event){
+    public void onPart(PartEvent event) {
         //TODO move this to somewhere else (probably be in the CLI leave command executor)
-        if(event.getUser().getNick().equalsIgnoreCase(event.getBot().getNick())){
-            App.bot.channels.remove(event.getChannel().getName().replace("#","")).leave();
+        if (event.getUser().getNick().equalsIgnoreCase(event.getBot().getNick())) {
+            App.bot.channels.remove(event.getChannel().getName().replace("#", "")).leave();
         }
     }
 
     @Override
-    public void onDisconnect(DisconnectEvent event){
+    public void onDisconnect(DisconnectEvent event) {
         App.logger.info("Disconnected From Twitch");
     }
 

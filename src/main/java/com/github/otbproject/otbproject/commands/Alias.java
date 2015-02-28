@@ -2,7 +2,6 @@ package com.github.otbproject.otbproject.commands;
 
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.commands.loader.LoadedAlias;
-import com.github.otbproject.otbproject.commands.loader.LoadedCommand;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.users.UserLevel;
 
@@ -13,9 +12,9 @@ import java.util.HashMap;
 
 public class Alias {
 
-    public static LoadedAlias get(DatabaseWrapper db, String aliasName){
+    public static LoadedAlias get(DatabaseWrapper db, String aliasName) {
         LoadedAlias loadedAlias = new LoadedAlias();
-        if(db.exists(AliasFields.TABLE_NAME, aliasName, AliasFields.NAME)) {
+        if (db.exists(AliasFields.TABLE_NAME, aliasName, AliasFields.NAME)) {
             ResultSet rs = db.getRecord(AliasFields.TABLE_NAME, aliasName, AliasFields.NAME);
             try {
                 loadedAlias.setName(rs.getString(AliasFields.NAME));
@@ -28,12 +27,12 @@ public class Alias {
         }
         return loadedAlias;
     }
-    
-    public static ArrayList<String> getAliases(DatabaseWrapper db){
-        return db.getRecordsList(AliasFields.TABLE_NAME,AliasFields.NAME);
+
+    public static ArrayList<String> getAliases(DatabaseWrapper db) {
+        return db.getRecordsList(AliasFields.TABLE_NAME, AliasFields.NAME);
     }
-    
-    public static boolean update(DatabaseWrapper db, HashMap map){
+
+    public static boolean update(DatabaseWrapper db, HashMap map) {
         return db.updateRecord(AliasFields.TABLE_NAME, (String) map.get(AliasFields.NAME), AliasFields.NAME, map);
     }
 
@@ -41,11 +40,11 @@ public class Alias {
         return db.exists(AliasFields.TABLE_NAME, aliasName, AliasFields.NAME);
     }
 
-    public static boolean add(DatabaseWrapper db, HashMap map){
+    public static boolean add(DatabaseWrapper db, HashMap map) {
         return db.insertRecord(AliasFields.TABLE_NAME, (String) map.get(AliasFields.NAME), AliasFields.NAME, map);
     }
 
-    public static boolean remove(DatabaseWrapper db, String aliasName){
+    public static boolean remove(DatabaseWrapper db, String aliasName) {
         return db.removeRecord(AliasFields.TABLE_NAME, aliasName, AliasFields.NAME);
     }
 }

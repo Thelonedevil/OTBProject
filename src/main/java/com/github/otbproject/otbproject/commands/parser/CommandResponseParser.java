@@ -32,8 +32,7 @@ public class CommandResponseParser {
             // Check if valid term, and replace if so
             try {
                 temp = postProcessor(parseTerm(userNick, channel, count, args, rawResponse.substring(innerStartIndex + 2, innerEndIndex)));
-            }
-            catch (InvalidTermException e) {
+            } catch (InvalidTermException e) {
                 return rawResponse;
             }
             rawResponse = rawResponse.substring(0, innerStartIndex) + temp + rawResponse.substring(innerEndIndex + 2);
@@ -125,9 +124,7 @@ public class CommandResponseParser {
                 result = result + prepend + doModifier(arg, term) + append;
             }
             return result;
-        }
-
-        else {
+        } else {
             throw new InvalidTermException();
         }
     }
@@ -209,7 +206,7 @@ public class CommandResponseParser {
         }
 
         // Handle empty embedded string
-        if (temp[1].matches("^"+EMBED_END)) {
+        if (temp[1].matches("^" + EMBED_END)) {
             return "";
         }
         return temp[1].split(EMBED_END)[0];
