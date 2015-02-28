@@ -81,8 +81,7 @@ public class FSCommandLoader {
         String loadPath;
         if (set == LoadingSet.ALL_CHANNELS) {
             loadPath = FSUtil.commandsDir() + File.separator + FSUtil.DirNames.ALL_CHANNELS + File.separator + FSUtil.DirNames.LOADED;
-        }
-        else {
+        } else {
             loadPath = channelPath + File.separator + FSUtil.DirNames.LOADED;
         }
 
@@ -120,8 +119,7 @@ public class FSCommandLoader {
         String loadPath;
         if (set == LoadingSet.ALL_CHANNELS) {
             loadPath = FSUtil.aliasesDir() + File.separator + FSUtil.DirNames.ALL_CHANNELS + File.separator + FSUtil.DirNames.LOADED;
-        }
-        else {
+        } else {
             loadPath = channelPath + File.separator + FSUtil.DirNames.LOADED;
         }
 
@@ -141,8 +139,7 @@ public class FSCommandLoader {
                     loadedCommand = CommandValidator.validateCommand(loadedCommand);
                     loadedCommands.add(loadedCommand);
                     handleSuccessfulLoad(command);
-                }
-                catch (InvalidCommandException e) {
+                } catch (InvalidCommandException e) {
                     handleFailedLoad(command);
                 }
             }
@@ -160,8 +157,7 @@ public class FSCommandLoader {
                     loadedAlias = CommandValidator.validateAlias(loadedAlias);
                     loadedAliases.add(loadedAlias);
                     handleSuccessfulLoad(alias);
-                }
-                catch (InvalidAliasException e) {
+                } catch (InvalidAliasException e) {
                     handleFailedLoad(alias);
                 }
             }

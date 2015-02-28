@@ -5,8 +5,8 @@ import com.github.otbproject.otbproject.database.DatabaseHelper;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.messages.receive.ChannelMessageReceiver;
 import com.github.otbproject.otbproject.messages.receive.MessageReceiveQueue;
-import com.github.otbproject.otbproject.messages.send.MessageSendQueue;
 import com.github.otbproject.otbproject.messages.send.ChannelMessageSender;
+import com.github.otbproject.otbproject.messages.send.MessageSendQueue;
 import com.github.otbproject.otbproject.proc.CooldownSet;
 
 public class Channel {

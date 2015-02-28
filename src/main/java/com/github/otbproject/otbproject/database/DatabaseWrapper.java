@@ -10,7 +10,7 @@ import java.util.HashSet;
 /**
  * Created by justin on 23/12/2014.
  */
-public class DatabaseWrapper extends Object {
+public class DatabaseWrapper {
     final Connection connection;
 
     private DatabaseWrapper(String path, HashMap<String, HashSet<String>> tables) throws SQLException, ClassNotFoundException {
@@ -42,9 +42,9 @@ public class DatabaseWrapper extends Object {
         String sql = "CREATE TABLE IF NOT EXISTS " + name + " (";
         for (String key : table) {
             if (key.equals(primaryKey)) {
-                sql = sql + key +" PRIMARY KEY TEXT, ";
+                sql = sql + key + " PRIMARY KEY TEXT, ";
             } else {
-                sql = sql + key +" TEXT, ";
+                sql = sql + key + " TEXT, ";
             }
         }
         sql = sql.substring(0, sql.length() - 2) + ")";
@@ -103,9 +103,9 @@ public class DatabaseWrapper extends Object {
             connection.setAutoCommit(false);
             preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setString(1, identifier);
-            ResultSet rs =  preparedStatement.executeQuery();
-            while (rs.next()){
-                if(rs.getString(fieldName).equals(identifier)){
+            ResultSet rs = preparedStatement.executeQuery();
+            while (rs.next()) {
+                if (rs.getString(fieldName).equals(identifier)) {
                     bool = true;
                 }
             }
@@ -132,7 +132,7 @@ public class DatabaseWrapper extends Object {
         PreparedStatement preparedStatement = null;
         String sql = "UPDATE " + table + " SET ";
         for (String key : map.keySet()) {
-            sql += key+"=?, ";
+            sql += key + "=?, ";
         }
         sql = sql.substring(0, sql.length() - 2);
         sql += " WHERE " + fieldName + "= ?";
@@ -146,8 +146,8 @@ public class DatabaseWrapper extends Object {
                 index++;
             }
             preparedStatement.setString(index, identifier);
-            int i =  preparedStatement.executeUpdate();
-            if(i > 0) {
+            int i = preparedStatement.executeUpdate();
+            if (i > 0) {
                 bool = true;
             }
             connection.commit();
@@ -185,8 +185,8 @@ public class DatabaseWrapper extends Object {
                 preparedStatement.setString(index, map.get(key));
                 index++;
             }
-            int i =  preparedStatement.executeUpdate();
-            if(i > 0) {
+            int i = preparedStatement.executeUpdate();
+            if (i > 0) {
                 bool = true;
             }
             connection.commit();
@@ -215,8 +215,8 @@ public class DatabaseWrapper extends Object {
             connection.setAutoCommit(false);
             preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setString(1, identifier);
-            int i =  preparedStatement.executeUpdate();
-            if(i > 0) {
+            int i = preparedStatement.executeUpdate();
+            if (i > 0) {
                 bool = true;
             }
             connection.commit();

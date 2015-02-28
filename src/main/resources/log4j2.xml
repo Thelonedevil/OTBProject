@@ -1,7 +1,7 @@
 <Configuration status="INFO">
     <Appenders>
         <Console name="Console" target="SYSTEM_OUT">
-            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %class{36} %L %M - %msg%n" />
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %class{36} %L %M - %msg%n"/>
         </Console>
         <routing name="Routing">
             <routes pattern="*">
@@ -13,7 +13,7 @@
                             <!-- <Pattern>%d %p %c{1.} [%t] %m%n</Pattern> -->
                         </PatternLayout>
                         <Policies>
-                            <OnStartupTriggeringPolicy />
+                            <OnStartupTriggeringPolicy/>
                         </Policies>
                     </RollingFile>
                 </route>
@@ -23,7 +23,7 @@
     </Appenders>
     <Loggers>
         <Root level="info">
-            <AppenderRef ref="Console" />
+            <AppenderRef ref="Console"/>
             <AppenderRef ref="Routing"/>
         </Root>
     </Loggers>

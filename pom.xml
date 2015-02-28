@@ -11,7 +11,8 @@
     <properties>
         <gmavenVersion>1.4</gmavenVersion>
         <gmavenProviderSelection>2.0</gmavenProviderSelection>
-        <groovy.sources.generated>${project.build.directory}/generated-sources/groovy-stubs/main</groovy.sources.generated>
+        <groovy.sources.generated>${project.build.directory}/generated-sources/groovy-stubs/main
+        </groovy.sources.generated>
     </properties>
 
     <dependencies>

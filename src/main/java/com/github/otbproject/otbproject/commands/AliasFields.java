@@ -1,6 +1,5 @@
 package com.github.otbproject.otbproject.commands;
 
-import java.util.HashMap;
 import java.util.HashSet;
 
 public class AliasFields {
@@ -11,7 +10,7 @@ public class AliasFields {
 
     public static final String TABLE_NAME = "tblAliases";
 
-    public static HashSet<String> getTableHashSet(){
+    public static HashSet<String> getTableHashSet() {
         HashSet<String> commandFields = new HashSet<>();
         commandFields.add(NAME);
         commandFields.add(COMMAND);

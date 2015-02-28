@@ -23,11 +23,9 @@ public class MessageSendQueue {
 
         if (priority == MessagePriority.HIGH) {
             limit = channel.getConfig().queueLimits.getHighPriorityLimit();
-        }
-        else if (priority == MessagePriority.DEFAULT) {
+        } else if (priority == MessagePriority.DEFAULT) {
             limit = channel.getConfig().queueLimits.getDefaultPriorityLimit();
-        }
-        else if (priority == MessagePriority.LOW) {
+        } else if (priority == MessagePriority.LOW) {
             limit = channel.getConfig().queueLimits.getLowPriorityLimit();
         }
 
