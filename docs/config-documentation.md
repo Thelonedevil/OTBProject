@@ -19,6 +19,10 @@ Version 0.1.0
 
 * 0.1.0 - Account, general config, bot config, and channel config documentation added
 
+## Warning
+
+Be careful when modifying configuration files. If a configuration file is not in valid JSON format when it is loaded, it will be overwritten with the default configuration file. You can check whether JSON is formatted correctly <a href="http://jsonlint.com/" target="_blank">here</a>.
+
 ## Account
 
 #### Path
@@ -96,11 +100,11 @@ The bot configuration file can be found at:
 
 | Field | Description |
 |:-----------|:------------|
-|`channelJoinSetting`||
-|`whitelist`||
-|`blacklist`||
-|`currentChannels`||
-|`messageSendDelayInMilliseconds`||
+|`channelJoinSetting`|Controls how the bot is allowed to join channels when the `!join` command is run in the bot's channel. Valid options for the `channeJoinSetting` are: `"NONE"`, `"WHITELIST"`, and `"BLACKLIST"`.<br>`"WHITELIST"` allows the bot to join only channels listed in the `whitelist`.<br>`"BLACKLIST"` prevents the bot from joining channels listed in the `blacklist`.<br>`"NONE"` allow the bot to join any channel.|
+|`whitelist`|A list of channels the bot is allowed to join if the `channelJoinSetting` is `"WHITELIST"`|
+|`blacklist`|A list of channels the bot is not allowed to join if the `channeJoinSetting` is `"BLACKLIST"`|
+|`currentChannels`|The channels the bot was in when it was last shut down. These channels will be joined when the bot starts.|
+|`messageSendDelayInMilliseconds`|The minimum delay in milliseconds between when the bot can send two messages in a channel. Be careful modifying this value, as the bot may send too many messages in too short a duration if it is not sufficiently high. If the bot sends too many messages too quickly, it may be IP banned from Twitch for 8 hours.|
 
 ## Channel Config
 
