@@ -7,6 +7,10 @@
 - [Version](#version)
 	- [Changelog](#changelog)
 - [Commands](#commands)
+	- [Built-in Commands](#built-in-commands)
+	- [Flags](#flags)
+	- [User Levels](#user-levels)
+	- [Aliases](#aliases)
 - [Special Terms](#special-terms)
 	- [Terms](#terms)
 	- [Modifiers](#modifiers)
@@ -15,10 +19,12 @@
 
 ##Version
 
-Version 0.1.2
+Version 0.2.0 [WIP]
 
 ####Changelog
 
+* 0.2.0
+  - Added descriptions of commands that come with
 * 0.1.2
   - Special terms can contain spaces in defaults and other embedded strings
   - More special terms added
@@ -28,6 +34,47 @@ Version 0.1.2
   - Described special terms and their modifiers; gave examples of both
 
 ##Commands
+
+#### Built-in Commands
+
+| Command | Flags | Arguments | Description |
+|:--------|:------|:----------|:------------|
+|`!command` `add | new`|`ul`, `ma`|`<command>` `<response>`||
+|`!command` `set`|`ul`, `ma`|`<command>` `<response>`||
+|`!command` `remove | delete | rm | del`||`<command>`||
+|`!command` `list`||||
+|`!command` `raw`||`<command>`||
+|`!alias-meta` `add | new`||`<alias>` `<command>`||
+|`!alias-meta` `remove | delete | rm | del`||`<alias>`||
+|`!alias-meta` `list`||||
+|`!alias-meta` `getCommand`||`<alias>`||
+|`!disable`||`<command>`||
+|`!enable`||`<command>`||
+|`!setExecUL`||`<command>` `<user level>`||
+|`!setMinArgs`||`<command>` `<min args>`||
+|`!rename`||`<old command name>` `<new command name>`||
+|`!resetCount`||`<command>`||
+|`!silence` `on | off`||||
+|`!leave`||`<bot name>`||
+|`!assignUserLevel`||`<user>` `<user level>`||
+
+
+#### Flags
+| Flag | Usage | Option(s) | Description |
+|:-----|:------|:----------|:------------|
+|`ul`|`--ul=<option>`|A user level marker as described in the table below||
+|`ma`|`--ma=<option>`|An integer greater than 0||
+
+#### User Levels
+| User Level | Marker(s) |
+|:-----------|:----------|
+|Subscriber|`subscriber | sub`|
+|Regular|`regular | reg`|
+|Moderator|`moderator | mod`|
+|Super Moderator|`super-moderator | super_moderator | smod | sm`|
+|Broadcaster|`broadcaster | bc`|
+
+#### Aliases
 
 ##Special Terms
 
