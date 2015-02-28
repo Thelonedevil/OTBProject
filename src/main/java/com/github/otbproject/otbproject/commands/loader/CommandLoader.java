@@ -34,12 +34,12 @@ public class CommandLoader {
     }
 
     public static boolean addAliasFromLoadedAlias(DatabaseWrapper db, LoadedAlias loadedAlias) {
-        HashMap<String, Object> map = new HashMap<String, Object>();
+        HashMap<String, String> map = new HashMap<String, String>();
 
         map.put(AliasFields.NAME, loadedAlias.getName());
         map.put(AliasFields.COMMAND, loadedAlias.getCommand());
-        map.put(AliasFields.MODIFYING_UL, loadedAlias.getModifyingUserLevel());
-        map.put(AliasFields.ENABLED, true);
+        map.put(AliasFields.MODIFYING_UL, loadedAlias.getModifyingUserLevel().name());
+        map.put(AliasFields.ENABLED, String.valueOf(loadedAlias.isEnabled()));
         if (Alias.exists(db, loadedAlias.getName())) {
             return Alias.update(db, map);
         } else {

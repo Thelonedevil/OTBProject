@@ -22,8 +22,8 @@ public class Command {
                 loadedCommand.setName(rs.getString(CommandFields.NAME));
                 loadedCommand.setResponse(rs.getString(CommandFields.RESPONSE));
                 loadedCommand.setCount(Integer.parseInt(rs.getString(CommandFields.COUNT)));
-                loadedCommand.setEnabled(Boolean.getBoolean(rs.getString(CommandFields.ENABLED)));
-                loadedCommand.setDebug((Boolean.getBoolean(rs.getString(CommandFields.DEBUG))));
+                loadedCommand.setEnabled(Boolean.valueOf(rs.getString(CommandFields.ENABLED)));
+                loadedCommand.setDebug((Boolean.valueOf(rs.getString(CommandFields.DEBUG))));
                 loadedCommand.setExecUserLevel(UserLevel.valueOf(rs.getString(CommandFields.EXEC_USER_LEVEL)));
                 loadedCommand.setMinArgs(Integer.parseInt(rs.getString(CommandFields.MIN_ARGS)));
                 loadedCommand.setScript(rs.getString(CommandFields.SCRIPT));
