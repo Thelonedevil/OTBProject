@@ -17,7 +17,6 @@ import com.github.otbproject.otbproject.util.JsonHandler;
 
 import java.io.File;
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.HashMap;
 
 public class DevHelper {
@@ -40,21 +39,13 @@ public class DevHelper {
     private static void loadAliases() {
         FSCommandLoader.LoadAliases();
         DatabaseWrapper db = DatabaseHelper.getChannelDatabase("the_lone_devil");
-        try {
-            App.logger.info(Alias.getAliases(db));
-        } catch (SQLException e) {
-            App.logger.catching(e);
-        }
+        App.logger.info(Alias.getAliases(db));
     }
 
     private static void loadCommands() {
         FSCommandLoader.LoadCommands();
         DatabaseWrapper db = DatabaseHelper.getChannelDatabase("the_lone_devil");
-        try {
-            App.logger.info(Command.getCommands(db));
-        } catch (SQLException e) {
-            App.logger.catching(e);
-        }
+        App.logger.info(Command.getCommands(db));
     }
 
     private static void generateConfigFiles() {
@@ -74,19 +65,12 @@ public class DevHelper {
         DatabaseWrapper db = DatabaseHelper.getChannelDatabase("the_lone_devil");
         CommandLoader.addCommandFromLoadedCommand(db, command);
 
-        HashMap<String, Object> map;
-
         App.logger.info("Command was successfully loaded:");
-        try {
-            App.logger.info(Command.exists(db, command.getName()));
-            map = Command.getDetails(db, command.getName());
-            System.out.println(map.keySet());
-            Command.remove(db, command.getName());
-            App.logger.info("Command still exists:");
-            App.logger.info(Command.exists(db, command.getName()));
-        } catch (SQLException e) {
-            App.logger.catching(e);
-        }
+        App.logger.info(Command.exists(db, command.getName()));
+
+        Command.remove(db, command.getName());
+        App.logger.info("Command still exists:");
+        App.logger.info(Command.exists(db, command.getName()));
     }
 
     private static void testMissingCommandField() {
@@ -99,8 +83,7 @@ public class DevHelper {
 
         if (command.getName() == null) {
             App.logger.info("Missing field: 'name'");
-        }
-        else {
+        } else {
             App.logger.info("Name is: " + command.getName());
         }
 
@@ -117,8 +100,7 @@ public class DevHelper {
 
         if (config.getCommandCooldown() == null) {
             App.logger.info("Missing field: 'commandCooldown'");
-        }
-        else {
+        } else {
             App.logger.info("Command cooldown is: " + config.getCommandCooldown());
         }
     }

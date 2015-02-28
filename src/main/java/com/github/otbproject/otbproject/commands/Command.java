@@ -1,72 +1,72 @@
 package com.github.otbproject.otbproject.commands;
 
 
+import com.github.otbproject.otbproject.App;
+import com.github.otbproject.otbproject.commands.loader.CommandLoader;
+import com.github.otbproject.otbproject.commands.loader.LoadedCommand;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
+import com.github.otbproject.otbproject.users.UserLevel;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Command {
-    /**
-     *
-     * @param commandName
-     * @return
-     * @throws java.sql.SQLException
-     */
-    public static HashMap<String, Object> getDetails(DatabaseWrapper db, String commandName) throws SQLException {
-        return db.getRow(CommandFields.TABLE_NAME, commandName, CommandFields.NAME);
+
+    public static LoadedCommand get(DatabaseWrapper db, String commandName){
+        LoadedCommand loadedCommand = new LoadedCommand();
+        if(db.exists(CommandFields.TABLE_NAME, commandName, CommandFields.NAME)) {
+            ResultSet rs = db.getRecord(CommandFields.TABLE_NAME, commandName, CommandFields.NAME);
+            try {
+                loadedCommand.setName(rs.getString(CommandFields.NAME));
+                loadedCommand.setResponse(rs.getString(CommandFields.RESPONSE));
+                loadedCommand.setCount(Integer.parseInt(rs.getString(CommandFields.COUNT)));
+                loadedCommand.setEnabled(Boolean.valueOf(rs.getString(CommandFields.ENABLED)));
+                loadedCommand.setDebug((Boolean.valueOf(rs.getString(CommandFields.DEBUG))));
+                loadedCommand.setExecUserLevel(UserLevel.valueOf(rs.getString(CommandFields.EXEC_USER_LEVEL)));
+                loadedCommand.setMinArgs(Integer.parseInt(rs.getString(CommandFields.MIN_ARGS)));
+                loadedCommand.setScript(rs.getString(CommandFields.SCRIPT));
+                loadedCommand.modifyingUserLevels = loadedCommand.new ModifyingUserLevels();
+                loadedCommand.modifyingUserLevels.setNameModifyingUL(UserLevel.valueOf(rs.getString(CommandFields.NAME_MODIFYING_UL)));
+                loadedCommand.modifyingUserLevels.setResponseModifyingUL(UserLevel.valueOf(rs.getString(CommandFields.RESPONSE_MODIFYING_UL)));
+                loadedCommand.modifyingUserLevels.setUserLevelModifyingUL(UserLevel.valueOf(rs.getString(CommandFields.USER_LEVEL_MODIFYING_UL)));
+            } catch (SQLException e) {
+                App.logger.catching(e);
+            }
+        }
+        return loadedCommand;
     }
 
-    public static Object get(DatabaseWrapper db, String commandName, String fieldToGet) throws SQLException {
-        return db.getValue(CommandFields.TABLE_NAME, commandName, CommandFields.NAME, fieldToGet);
-    }
-
-    public static HashMap<String,HashMap<String,Object>> getCommandsWithInfo(DatabaseWrapper db) throws SQLException {
-        return db.getRecords(CommandFields.TABLE_NAME,CommandFields.NAME);
-    }
-
-    public static ArrayList<String> getCommands(DatabaseWrapper db) throws SQLException {
+    public static ArrayList<String> getCommands(DatabaseWrapper db) {
         return db.getRecordsList(CommandFields.TABLE_NAME,CommandFields.NAME);
     }
 
-    /**
-     *
-     * @param map
-     * @throws SQLException
-     */
-    public static void update(DatabaseWrapper db, HashMap map) throws SQLException {
-        db.updateRow(CommandFields.TABLE_NAME, (String) map.get(CommandFields.NAME), CommandFields.NAME, map);
+    public static boolean update(DatabaseWrapper db, HashMap map){
+       return db.updateRecord(CommandFields.TABLE_NAME, (String) map.get(CommandFields.NAME), CommandFields.NAME, map);
     }
 
-    public static void update(DatabaseWrapper db, String commandName, String fieldName, Object fieldValue) throws SQLException {
-        HashMap<String,Object> map = getDetails(db, commandName);
-        map.replace(fieldName,fieldValue);
-        update(db, map);
-    }
-
-    public static boolean exists(DatabaseWrapper db, String commandName) throws SQLException {
+    public static boolean exists(DatabaseWrapper db, String commandName) {
         return db.exists(CommandFields.TABLE_NAME, commandName, CommandFields.NAME);
     }
 
-    /**
-     *
-     * @param map
-     * @throws SQLException
-     */
-    public static void add(DatabaseWrapper db, HashMap map) throws SQLException {
-        db.insertRow(CommandFields.TABLE_NAME, (String) map.get(CommandFields.NAME), CommandFields.NAME, map);
+    public static boolean add(DatabaseWrapper db, HashMap map){
+        return db.insertRecord(CommandFields.TABLE_NAME, (String) map.get(CommandFields.NAME), CommandFields.NAME, map);
     }
 
-    public static void remove(DatabaseWrapper db, String commandName) throws SQLException {
-        db.removeRow(CommandFields.TABLE_NAME, commandName, CommandFields.NAME);
+    public static boolean remove(DatabaseWrapper db, String commandName){
+        return db.removeRecord(CommandFields.TABLE_NAME, commandName, CommandFields.NAME);
     }
 
     public static void incrementCount(DatabaseWrapper db, String commandName) throws SQLException {
-        update(db, commandName, CommandFields.COUNT, ((Integer) getDetails(db, commandName).get(CommandFields.COUNT) + 1));
+        LoadedCommand loadedCommand = get(db, commandName);
+        loadedCommand.setCount(loadedCommand.getCount()+1);
+        CommandLoader.addCommandFromLoadedCommand(db, loadedCommand);
     }
 
     public static void resetCount(DatabaseWrapper db, String commandName) throws SQLException{
-        update(db, commandName, CommandFields.COUNT, 0);
+        LoadedCommand loadedCommand = get(db, commandName);
+        loadedCommand.setCount(0);
+        CommandLoader.addCommandFromLoadedCommand(db, loadedCommand);
     }
 }

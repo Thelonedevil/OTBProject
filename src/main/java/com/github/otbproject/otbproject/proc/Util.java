@@ -1,23 +1,14 @@
 package com.github.otbproject.otbproject.proc;
 
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
-import com.github.otbproject.otbproject.users.User;
-import com.github.otbproject.otbproject.users.UserFields;
 import com.github.otbproject.otbproject.users.UserLevel;
-
-import java.sql.SQLException;
+import com.github.otbproject.otbproject.users.Users;
 
 public class Util {
     public static UserLevel getUserLevel(DatabaseWrapper db, String channel, String user, boolean subscriber) {
-        try {
-            if (User.exists(db, user)) {
-                return UserLevel.valueOf((String)User.get(db, user, UserFields.USER_LEVEL));
-            }
+        if (Users.exists(db, user)) {
+            return Users.get(db, user).getUserLevel();
         }
-        catch (SQLException e) {
-            e.printStackTrace();
-        }
-
         if (subscriber) {
             return UserLevel.SUBSCRIBER;
         }
