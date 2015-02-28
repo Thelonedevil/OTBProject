@@ -1,247 +1,267 @@
 package com.github.otbproject.otbproject.database;
 
-import java.io.File;
-import java.io.IOException;
+import com.github.otbproject.otbproject.App;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
 /**
  * Created by justin on 23/12/2014.
  */
 public class DatabaseWrapper {
-    Connection connect;
-    Statement statement;
+    final Connection connection;
 
-    /**
-     * @param path     path to the database
-     * @param tableMap a HashMap of table names and HashMaps of table fields
-     *                 and field types for each table.
-     */
-    public DatabaseWrapper(String path, HashMap<String, HashMap<String, String>> tableMap) {
-        try {
-            File f = new File(path);
-            if (f.getParentFile() != null) {
-                f.getParentFile().mkdirs();
-            }
-            f.createNewFile();
-            connect = connect(path);
-            statement = state(connect);
-
-            for (String tableName : tableMap.keySet()) {
-                createTable(tableName, tableMap.get(tableName));
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * @param path , path to the .sqlite file
-     * @return
-     * @throws SQLException
-     * @throws ClassNotFoundException
-     * @throws NullPointerException
-     */
-    Connection connect(String path) throws SQLException, ClassNotFoundException, NullPointerException {
+    private DatabaseWrapper(String path, HashMap<String, HashSet<String>> tables) throws SQLException, ClassNotFoundException {
         Class.forName("org.sqlite.JDBC");
-        Connection connection = DriverManager.getConnection("jdbc:sqlite:" + path);
-        return connection;
+        connection = DriverManager.getConnection("jdbc:sqlite:" + path);
+        for (String key : tables.keySet()) {
+            createTable(key, tables.get(key));
+        }
     }
 
-    /**
-     * @param connection , the connection to a database, {@link #connect(String)}
-     * @param timeout    , the timeout for the query
-     *                   {@link Statement#setQueryTimeout(int)}
-     * @return Returns a {@link Statement}
-     * @throws SQLException
-     */
-    public Statement state(Connection connection, int timeout) {
+    public static DatabaseWrapper createDataBase(String path, HashMap<String, HashSet<String>> tables) {
         try {
-            Statement statement = connection.createStatement();
-            statement.setQueryTimeout(timeout); // set timeout to 30 sec.
-            return statement;
+            return new DatabaseWrapper(path, tables);
         } catch (SQLException e) {
-            e.printStackTrace();
+            App.logger.catching(e);
+            return null;
+        } catch (ClassNotFoundException e) {
+            App.logger.catching(e);
+            return null;
         }
-        return null;
     }
 
-    /**
-     * @param connection , the connection to a database, {@link #connect(String)}
-     * @return Returns a {@link Statement}
-     * @throws SQLException
-     */
-    public Statement state(Connection connection) {
-        return state(connection, 30); // set timeout to 30 sec.
-
+    public boolean createTable(String name, HashSet<String> table) {
+        return createTable(name, table, null);
     }
 
-    /**
-     * @param table_name
-     * @param fields
-     * @throws SQLException
-     */
-    void createTable(String table_name, HashMap<String, String> fields) throws SQLException {
-        String query = "create table if not exists " + table_name + " (";
-        for (String key : fields.keySet()) {
-            query = query + key + " " + fields.get(key) + ", ";
+    public boolean createTable(String name, HashSet<String> table, String primaryKey) {
+        PreparedStatement preparedStatement = null;
+        String sql = "CREATE TABLE IF NOT EXISTS " + name + " (";
+        for (String key : table) {
+            if (key.equals(primaryKey)) {
+                sql = sql + key + " PRIMARY KEY TEXT, ";
+            } else {
+                sql = sql + key + " TEXT, ";
+            }
         }
-        query = query.substring(0, query.length() - 2);
-        query = query + ")";
-        statement.executeUpdate(query);
+        sql = sql.substring(0, sql.length() - 2) + ")";
+        boolean bool = true;
+        try {
+            connection.setAutoCommit(false);
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.executeUpdate();
+            connection.commit();
+        } catch (SQLException e) {
+            App.logger.catching(e);
+            bool = false;
+        } finally {
+            try {
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+                connection.setAutoCommit(true);
+            } catch (SQLException e) {
+                App.logger.catching(e);
+                bool = false;
+            }
+
+        }
+        return bool;
     }
 
-    /**
-     * @param query
-     * @return
-     * @throws SQLException
-     */
-    public ResultSet rs(String query) throws SQLException {
-        ResultSet rs = statement.executeQuery(query);
+    public ResultSet getRecord(String table, String identifier, String fieldName) {
+        PreparedStatement preparedStatement = null;
+        String sql = "SELECT * FROM " + table + " WHERE " + fieldName + "= ?";
+        ResultSet rs = null;
+        try {
+            connection.setAutoCommit(false);
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, identifier);
+            rs = preparedStatement.executeQuery();
+            connection.commit();
+        } catch (SQLException e) {
+            App.logger.catching(e);
+        } finally {
+            try {
+                connection.setAutoCommit(true);
+            } catch (SQLException e) {
+                App.logger.catching(e);
+            }
+
+        }
         return rs;
     }
 
-    /**
-     * @param table
-     * @param identifier
-     * @param fieldName
-     * @return A HashMap<Column_label,Value> for the row_label if the row
-     * exists, otherwise returns an empty HashMap<String,Object>
-     * @throws SQLException
-     */
-    public HashMap<String, Object> getRow(String table, String identifier, String fieldName) throws SQLException {
-        HashMap<String, Object> row = new HashMap<String, Object>();
-        String query = "SELECT * FROM " + table;
-        ResultSet rs1 = rs(query);
-        while (rs1.next()) {
-            if (rs1.getString(fieldName).equalsIgnoreCase(identifier)) {
-                ResultSetMetaData rsmd = rs1.getMetaData();
-                int columnsNumber = rsmd.getColumnCount();
-                int index = 1;
-                while (index <= columnsNumber) {
-                    String Column_Label = rsmd.getColumnName(index);
-                    row.put(Column_Label, rs1.getObject(index));
-                    index++;
+    public boolean exists(String table, String identifier, String fieldName) {
+        PreparedStatement preparedStatement = null;
+        String sql = "SELECT " + fieldName + " FROM " + table + " WHERE " + fieldName + "= ?";
+        boolean bool = false;
+        try {
+            connection.setAutoCommit(false);
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, identifier);
+            ResultSet rs = preparedStatement.executeQuery();
+            while (rs.next()) {
+                if (rs.getString(fieldName).equals(identifier)) {
+                    bool = true;
                 }
             }
-        }
-        rs1.close();
-        return row;
-    }
-
-    public Object getValue(String table, String identifier, String fieldName, String fieldToGet) throws SQLException {
-        String query = "SELECT * FROM " + table;
-        ResultSet rs1 = rs(query);
-        while (rs1.next()) {
-            if (rs1.getString(fieldName).equalsIgnoreCase(identifier)) {
-                ResultSetMetaData rsmd = rs1.getMetaData();
-                int columnsNumber = rsmd.getColumnCount();
-                int index = 1;
-                while (index <= columnsNumber) {
-                    String Column_Label = rsmd.getColumnName(index);
-                    if (Column_Label.equalsIgnoreCase(fieldToGet)) {
-                        return rs1.getObject(index);
-                    }
-                    index++;
+            connection.commit();
+        } catch (SQLException e) {
+            App.logger.catching(e);
+            bool = false;
+        } finally {
+            try {
+                if (preparedStatement != null) {
+                    preparedStatement.close();
                 }
+                connection.setAutoCommit(true);
+            } catch (SQLException e) {
+                bool = false;
+                App.logger.catching(e);
             }
+
         }
-        return null;
+        return bool;
     }
 
-    /**
-     * @param table
-     * @param identifier
-     * @param fieldName
-     * @return
-     * @throws SQLException
-     */
-    public boolean exists(String table, String identifier, String fieldName) throws SQLException {
-        String query = "SELECT " + fieldName + " FROM " + table;
-        ResultSet rs1 = rs(query);
-        while (rs1.next()) {
-            if (rs1.getString(fieldName).equalsIgnoreCase(identifier)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * @param table
-     * @param identifier
-     * @param fieldName
-     * @param map
-     * @throws SQLException
-     */
-    public void updateRow(String table, String identifier, String fieldName, HashMap<String, Object> map) throws SQLException {
-        String update = "UPDATE " + table + " SET  ";
+    public boolean updateRecord(String table, String identifier, String fieldName, HashMap<String, String> map) {
+        PreparedStatement preparedStatement = null;
+        String sql = "UPDATE " + table + " SET ";
         for (String key : map.keySet()) {
-            update = update + key + "='" + map.get(key) + "', ";
+            sql += key + "=?, ";
         }
-        update = update.substring(0, update.length() - 2);
-        update = update + " WHERE " + fieldName + "='" + identifier + "';";
-        statement.executeUpdate(update);
-    }
-
-    /**
-     * @param table
-     * @param identifier
-     * @param fieldName
-     * @param map
-     * @throws SQLException
-     */
-    public void insertRow(String table, String identifier, String fieldName, HashMap<String, Object> map) throws SQLException {
-        String first = "INSERT INTO " + table + " (" + fieldName;
-        String last = "VALUES ('" + identifier + "'";
-        for (String key : map.keySet()) {
-            first = first + (", " + key);
-            last = last + (", '" + map.get(key) + "'");
-        }
-        first = first + ") ";
-        last = last + ")";
-        String update = first + last;
-        statement.executeUpdate(update);
-
-    }
-
-    public void removeRow(String table, String identifier, String fieldName) throws SQLException {
-        String update = "DELETE FROM " + table + " WHERE " + fieldName + "=" + "'" + identifier + "'";
-        statement.executeUpdate(update);
-    }
-
-    public HashMap<String, HashMap<String, Object>> getRecords(String table, String key) throws SQLException {
-        HashMap<String, HashMap<String, Object>> map = new HashMap<>();
-        String query = "SELECT * FROM " + table;
-        ResultSet rs1 = rs(query);
-        while (rs1.next()) {
-
-            int columns = rs1.getMetaData().getColumnCount();
-            HashMap<String, Object> map1 = new HashMap<>();
-            // Yes i know normally you start loops at 0 but the column indices start at 1
-            for (int i = 1; i == columns; i++) {
-                String columnName = rs1.getMetaData().getColumnLabel(i);
-                Object data = rs1.getObject(i);
-                map1.put(columnName, data);
+        sql = sql.substring(0, sql.length() - 2);
+        sql += " WHERE " + fieldName + "= ?";
+        boolean bool = false;
+        try {
+            connection.setAutoCommit(false);
+            preparedStatement = connection.prepareStatement(sql);
+            int index = 1;
+            for (String key : map.keySet()) {
+                preparedStatement.setString(index, map.get(key));
+                index++;
             }
-            map.put((String) map1.get(key), map1);
+            preparedStatement.setString(index, identifier);
+            int i = preparedStatement.executeUpdate();
+            if (i > 0) {
+                bool = true;
+            }
+            connection.commit();
+        } catch (SQLException e) {
+            App.logger.catching(e);
+            bool = false;
+        } finally {
+            try {
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+                connection.setAutoCommit(true);
+            } catch (SQLException e) {
+                App.logger.catching(e);
+                bool = false;
+            }
+
         }
-        return map;
+        return bool;
     }
 
-    public ArrayList<String> getRecordsList(String table, String key) throws SQLException {
-        ArrayList<String> list = new ArrayList<>();
-        String query = "SELECT * FROM " + table;
-        ResultSet rs1 = rs(query);
-        while (rs1.next()) {
-            list.add((String) rs1.getObject(key));
+    public boolean insertRecord(String table, String identifier, String fieldName, HashMap<String, String> map) {
+        PreparedStatement preparedStatement = null;
+        String sql = "INSERT INTO " + table + " VALUES (";
+        for (String key : map.keySet()) {
+            sql += "?, ";
         }
-        return list;
+        sql = sql.substring(0, sql.length() - 2) + ")";
+        boolean bool = false;
+        try {
+            connection.setAutoCommit(false);
+            preparedStatement = connection.prepareStatement(sql);
+            int index = 1;
+            for (String key : map.keySet()) {
+                preparedStatement.setString(index, map.get(key));
+                index++;
+            }
+            int i = preparedStatement.executeUpdate();
+            if (i > 0) {
+                bool = true;
+            }
+            connection.commit();
+        } catch (SQLException e) {
+            App.logger.catching(e);
+            bool = false;
+        } finally {
+            try {
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+                connection.setAutoCommit(true);
+            } catch (SQLException e) {
+                App.logger.catching(e);
+                bool = false;
+            }
+        }
+        return bool;
     }
+
+    public boolean removeRecord(String table, String identifier, String fieldName) {
+        PreparedStatement preparedStatement = null;
+        String sql = "DELETE FROM " + table + " WHERE " + fieldName + "=?";
+        boolean bool = false;
+        try {
+            connection.setAutoCommit(false);
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, identifier);
+            int i = preparedStatement.executeUpdate();
+            if (i > 0) {
+                bool = true;
+            }
+            connection.commit();
+        } catch (SQLException e) {
+            App.logger.catching(e);
+            bool = false;
+        } finally {
+            try {
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+                connection.setAutoCommit(true);
+            } catch (SQLException e) {
+                App.logger.catching(e);
+                bool = false;
+            }
+        }
+        return bool;
+    }
+
+    public ResultSet tableDump(String table) {
+        String sql = "SELECT * FROM " + table;
+        try {
+            return connection.createStatement().executeQuery(sql);
+        } catch (SQLException e) {
+            App.logger.catching(e);
+            return null;
+        }
+
+    }
+
+    public ArrayList<String> getRecordsList(String table, String key) {
+        try {
+            ArrayList<String> set = new ArrayList<>();
+
+            String sql = "SELECT " + key + " FROM " + table;
+            ResultSet resultSet = connection.createStatement().executeQuery(sql);
+            while (resultSet.next()) {
+                set.add(resultSet.getString(key));
+            }
+            return set;
+        } catch (SQLException e) {
+            App.logger.catching(e);
+            return null;
+        }
+    }
+
 }

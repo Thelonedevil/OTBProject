@@ -52,6 +52,12 @@ public class ConfigValidator {
             validatedConfig.setChannelJoinSetting(defaultConfig.getChannelJoinSetting());
         }
 
+        if (validatedConfig.getMessageSendDelayInMilliseconds() == null) {
+            validatedConfig.setMessageSendDelayInMilliseconds(defaultConfig.getMessageSendDelayInMilliseconds());
+        } else if (validatedConfig.getMessageSendDelayInMilliseconds() < 0) {
+            validatedConfig.setMessageSendDelayInMilliseconds(0);
+        }
+
         BotConfigHelper.initialize(validatedConfig);
 
         return validatedConfig;
@@ -80,6 +86,14 @@ public class ConfigValidator {
 
         if (validatedConfig.userCooldowns.getUl_default() == null) {
             validatedConfig.userCooldowns.setUl_default(defaultConfig.userCooldowns.getUl_default());
+        }
+
+        if (validatedConfig.isEnabled() == null) {
+            validatedConfig.setEnabled(defaultConfig.isEnabled());
+        }
+
+        if (validatedConfig.queueLimits.getHighPriorityLimit() == null) {
+            validatedConfig.queueLimits.setHighPriorityLimit(defaultConfig.queueLimits.getHighPriorityLimit());
         }
 
         return validatedConfig;

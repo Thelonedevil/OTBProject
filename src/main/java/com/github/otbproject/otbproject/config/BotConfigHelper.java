@@ -82,24 +82,23 @@ public class BotConfigHelper {
 
         if (config.whitelist == null) {
             copy.whitelist = null;
-        }
-        else {
+        } else {
             copy.whitelist = new ArrayList<String>(config.whitelist);
         }
 
         if (config.blacklist == null) {
             copy.blacklist = null;
-        }
-        else {
+        } else {
             copy.blacklist = new ArrayList<String>(config.blacklist);
         }
 
         if (config.currentChannels == null) {
             copy.currentChannels = null;
-        }
-        else {
+        } else {
             copy.currentChannels = new ArrayList<String>(config.currentChannels);
         }
+
+        copy.setMessageSendDelayInMilliseconds(config.getMessageSendDelayInMilliseconds());
 
         return copy;
     }

@@ -19,10 +19,9 @@ public class ChannelMessageSender implements Runnable {
             while (true) {
                 message = queue.take();
                 SendingWrapper.send(channel.getName(), message.getMessage());
-                Thread.sleep(2000); // TODO store as constant somewhere
+                Thread.sleep(App.bot.configManager.getBotConfig().getMessageSendDelayInMilliseconds());
             }
         } catch (InterruptedException e) {
-            // TODO tidy up
             App.logger.info("Stopped message sender for " + channel.getName());
         }
     }

@@ -1,63 +1,50 @@
 package com.github.otbproject.otbproject.commands;
 
+import com.github.otbproject.otbproject.App;
+import com.github.otbproject.otbproject.commands.loader.LoadedAlias;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
+import com.github.otbproject.otbproject.users.UserLevel;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Alias {
-    /**
-     *
-     * @param aliasName
-     * @return
-     * @throws java.sql.SQLException
-     */
-    public static HashMap<String, Object> getDetails(DatabaseWrapper db, String aliasName) throws SQLException {
-        return db.getRow(AliasFields.TABLE_NAME, aliasName, AliasFields.NAME);
+
+    public static LoadedAlias get(DatabaseWrapper db, String aliasName) {
+        LoadedAlias loadedAlias = new LoadedAlias();
+        if (db.exists(AliasFields.TABLE_NAME, aliasName, AliasFields.NAME)) {
+            ResultSet rs = db.getRecord(AliasFields.TABLE_NAME, aliasName, AliasFields.NAME);
+            try {
+                loadedAlias.setName(rs.getString(AliasFields.NAME));
+                loadedAlias.setCommand(rs.getString(AliasFields.COMMAND));
+                loadedAlias.setModifyingUserLevel(UserLevel.valueOf(rs.getString(AliasFields.MODIFYING_UL)));
+                loadedAlias.setEnabled(Boolean.valueOf(rs.getString(AliasFields.ENABLED)));
+            } catch (SQLException e) {
+                App.logger.catching(e);
+            }
+        }
+        return loadedAlias;
     }
 
-    public static Object get(DatabaseWrapper db, String aliasName, String fieldToGet) throws SQLException {
-        return db.getValue(AliasFields.TABLE_NAME, aliasName, AliasFields.NAME, fieldToGet);
+    public static ArrayList<String> getAliases(DatabaseWrapper db) {
+        return db.getRecordsList(AliasFields.TABLE_NAME, AliasFields.NAME);
     }
 
-    public static HashMap<String,HashMap<String,Object>> getAliasesWithInfo(DatabaseWrapper db) throws SQLException {
-        return db.getRecords(AliasFields.TABLE_NAME,AliasFields.NAME);
+    public static boolean update(DatabaseWrapper db, HashMap map) {
+        return db.updateRecord(AliasFields.TABLE_NAME, (String) map.get(AliasFields.NAME), AliasFields.NAME, map);
     }
 
-    public static ArrayList<String> getAliases(DatabaseWrapper db) throws SQLException {
-        return db.getRecordsList(AliasFields.TABLE_NAME,AliasFields.NAME);
-    }
-
-    /**
-     *
-     * @param map
-     * @throws SQLException
-     */
-    public static void update(DatabaseWrapper db, HashMap map) throws SQLException {
-        db.updateRow(AliasFields.TABLE_NAME, (String) map.get(AliasFields.NAME), AliasFields.NAME, map);
-    }
-
-    public static void update(DatabaseWrapper db, String aliasName, String fieldName, Object fieldValue) throws SQLException {
-        HashMap<String,Object> map = getDetails(db, aliasName);
-        map.replace(fieldName,fieldValue);
-        update(db, map);
-    }
-
-    public static boolean exists(DatabaseWrapper db, String aliasName) throws SQLException {
+    public static boolean exists(DatabaseWrapper db, String aliasName) {
         return db.exists(AliasFields.TABLE_NAME, aliasName, AliasFields.NAME);
     }
 
-    /**
-     *
-     * @param map
-     * @throws SQLException
-     */
-    public static void add(DatabaseWrapper db, HashMap map) throws SQLException {
-        db.insertRow(AliasFields.TABLE_NAME, (String) map.get(AliasFields.NAME), AliasFields.NAME, map);
+    public static boolean add(DatabaseWrapper db, HashMap map) {
+        return db.insertRecord(AliasFields.TABLE_NAME, (String) map.get(AliasFields.NAME), AliasFields.NAME, map);
     }
 
-    public static void remove(DatabaseWrapper db, String aliasName) throws SQLException {
-        db.removeRow(AliasFields.TABLE_NAME, aliasName, AliasFields.NAME);
+    public static boolean remove(DatabaseWrapper db, String aliasName) {
+        return db.removeRecord(AliasFields.TABLE_NAME, aliasName, AliasFields.NAME);
     }
 }

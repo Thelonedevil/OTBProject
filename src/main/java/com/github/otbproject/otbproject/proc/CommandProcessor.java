@@ -1,15 +1,12 @@
 package com.github.otbproject.otbproject.proc;
 
-import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.commands.Alias;
-import com.github.otbproject.otbproject.commands.AliasFields;
 import com.github.otbproject.otbproject.commands.Command;
-import com.github.otbproject.otbproject.commands.CommandFields;
+import com.github.otbproject.otbproject.commands.loader.LoadedAlias;
+import com.github.otbproject.otbproject.commands.loader.LoadedCommand;
 import com.github.otbproject.otbproject.commands.parser.CommandResponseParser;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.users.UserLevel;
-
-import java.sql.SQLException;
 
 public class CommandProcessor {
     public static ProcessedCommand process(DatabaseWrapper db, String message, String channel, String user, UserLevel userLevel, boolean debug) {
@@ -28,19 +25,15 @@ public class CommandProcessor {
         else if (aliasName.equals(originalAlias)) {
             return message;
         }
-
-        try {
-            if (Alias.exists(db, aliasName) && Boolean.valueOf((String)Alias.get(db, aliasName, AliasFields.ENABLED))) {
+        if (Alias.exists(db, aliasName)) {
+            LoadedAlias loadedAlias = Alias.get(db, aliasName);
+            if (loadedAlias.isEnabled()) {
                 if (splitMsg.length == 1) {
-                    return checkAlias(db, (String)Alias.get(db, aliasName, AliasFields.COMMAND), originalAlias);
+                    return checkAlias(db, loadedAlias.getCommand(), originalAlias);
                 }
-                return checkAlias(db, ((String)Alias.get(db, aliasName, AliasFields.COMMAND) + " " + aliasName), originalAlias);
+                return checkAlias(db, (loadedAlias.getCommand() + " " + aliasName), originalAlias);
             }
         }
-        catch (SQLException e) {
-            App.logger.catching(e);
-        }
-
         // Return message if not an alias
         return message;
     }
@@ -53,34 +46,26 @@ public class CommandProcessor {
         String[] args;
         if (splitMsg.length == 1) {
             args = new String[0];
-        }
-        else {
+        } else {
             args = splitMsg[1].split(" ");
         }
 
-        try {
-            if (Command.exists(db, cmdName)
-                    && Boolean.valueOf((String)Command.get(db, cmdName, CommandFields.ENABLED))
-                    && (userLevel.getValue() >= UserLevel.valueOf((String)Command.get(db, cmdName, CommandFields.EXEC_USER_LEVEL)).getValue())
-                    && ((Integer)Command.get(db, cmdName, CommandFields.MIN_ARGS) <= args.length)) {
-
-                String scriptPath = (String)Command.get(db, cmdName, CommandFields.SCRIPT);
+        if (Command.exists(db, cmdName)) {
+            LoadedCommand loadedCommand = Command.get(db, cmdName);
+            if (loadedCommand.isEnabled() && userLevel.getValue() >= loadedCommand.getExecUserLevel().getValue() && args.length >= loadedCommand.getMinArgs()) {
+                String scriptPath = loadedCommand.getScript();
                 // Return script path
-                if (!scriptPath.equals("null")) {
+                if ((scriptPath != null) && !scriptPath.equals("null")) {
                     return new ProcessedCommand(scriptPath, cmdName, true, args);
                 }
                 // Else non-script command
                 // Check if command is debug
-                else if (!Boolean.valueOf((String)Command.get(db, cmdName, CommandFields.DEBUG)) || debug) {
-                    String response = CommandResponseParser.parse(user, channel, (Integer) Command.get(db, cmdName, CommandFields.COUNT), args, (String) Command.get(db, cmdName, CommandFields.RESPONSE));
+                else if (!loadedCommand.isDebug() || debug) {
+                    String response = CommandResponseParser.parse(user, channel, loadedCommand.getCount(), args, loadedCommand.getResponse());
                     return new ProcessedCommand(response, cmdName, false, args);
                 }
             }
         }
-        catch (SQLException e) {
-            App.logger.catching(e);
-        }
-
         return new ProcessedCommand("", "", false, args);
     }
 }

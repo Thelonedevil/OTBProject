@@ -1,6 +1,6 @@
 package com.github.otbproject.otbproject.users;
 
-import java.util.HashMap;
+import java.util.HashSet;
 
 public class UserFields {
     public static final String NICK = "nick";
@@ -8,11 +8,10 @@ public class UserFields {
 
     public static final String TABLE_NAME = "tblUsers";
 
-    public static HashMap<String, String> getTableHashMap()
-    {
-        HashMap<String, String> userFields = new HashMap<String, String>();
-        userFields.put(NICK, "Text");
-        userFields.put(USER_LEVEL, "Text");
+    public static HashSet<String> getTableHashSet() {
+        HashSet<String> userFields = new HashSet<>();
+        userFields.add(NICK);
+        userFields.add(USER_LEVEL);
 
         return userFields;
     }

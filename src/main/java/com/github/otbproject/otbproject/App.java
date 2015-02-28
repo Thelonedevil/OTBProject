@@ -26,7 +26,6 @@ import org.pircbotx.hooks.Listener;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
-
 import java.util.HashSet;
 import java.util.Scanner;
 
@@ -41,6 +40,21 @@ public class App {
     public static Thread botThread;
 
     public static void main(String[] args) {
+        try {
+            doMain(args);
+        } catch (Throwable t) {
+            try {
+                System.err.println("A fatal problem has occurred.");
+                t.printStackTrace();
+                System.err.println("Attempting to log problem.");
+                // TODO log throwable
+            } finally {
+                System.exit(-10);
+            }
+        }
+    }
+
+    public static void doMain(String[] args) {
         CommandLine cmd = null;
         try {
             cmd = ArgParser.parse(args);
@@ -59,11 +73,10 @@ public class App {
             String path = cmd.getOptionValue(ArgParser.Opts.BASE_DIR);
             if (new File(path).isDirectory()) {
                 if (path.endsWith(File.separator)) {
-                    path = path.substring(0, path.length() -1);
+                    path = path.substring(0, path.length() - 1);
                 }
                 FSUtil.setBaseDirPath(path);
-            }
-            else {
+            } else {
                 System.out.println("Error setting base directory.");
                 System.out.println("The path:\t" + path);
                 System.out.println("does not exist or is not a directory.");
@@ -90,11 +103,18 @@ public class App {
         // TODO remove before release
         DevHelper.run(args);
 
-        Account account = JsonHandler.readValue(FSUtil.configDir()+ File.separator+"account.json", Account.class);
-        account = ConfigValidator.validateAccount(account);
+        // Load account details
+        String accountPath = FSUtil.configDir() + File.separator + "account.json";
+        Account account = ConfigValidator.validateAccount(JsonHandler.readValue(accountPath, Account.class));
+        JsonHandler.writeValue(accountPath, account);
 
-        // TODO store bot config
-        String botConfPath = FSUtil.dataDir()+ File.separator+FSUtil.DirNames.BOT_CHANNEL+ File.separator+"bot-config.json";
+        // Load general config
+        String generalConfPath = FSUtil.configDir() + File.separator + "general-config.json";
+        GeneralConfig generalConfig = ConfigValidator.validateGeneralConfig(JsonHandler.readValue(generalConfPath, GeneralConfig.class));
+        JsonHandler.writeValue(generalConfPath, generalConfig);
+
+        // Load bot config
+        String botConfPath = FSUtil.dataDir() + File.separator + FSUtil.DirNames.BOT_CHANNEL + File.separator + "bot-config.json";
         BotConfig botConfig = ConfigValidator.validateBotConfig(JsonHandler.readValue(botConfPath, BotConfig.class));
         JsonHandler.writeValue(botConfPath, botConfig);
         channels = new HashSet<>(botConfig.currentChannels);
@@ -109,7 +129,13 @@ public class App {
 
         logger.info("Bot configuration built");
         bot = new CustomBot(configuration);
-        for (String channelName :channels){
+
+        // Store configs
+        bot.configManager.setGeneralConfig(generalConfig);
+        bot.configManager.setBotConfig(botConfig);
+
+        // Load channels
+        for (String channelName : channels) {
             try {
                 Setup.setupChannel(channelName);
             } catch (IOException e) {

@@ -5,8 +5,8 @@ import com.github.otbproject.otbproject.database.DatabaseHelper;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.messages.receive.ChannelMessageReceiver;
 import com.github.otbproject.otbproject.messages.receive.MessageReceiveQueue;
-import com.github.otbproject.otbproject.messages.send.MessageSendQueue;
 import com.github.otbproject.otbproject.messages.send.ChannelMessageSender;
+import com.github.otbproject.otbproject.messages.send.MessageSendQueue;
 import com.github.otbproject.otbproject.proc.CooldownSet;
 
 public class Channel {
@@ -18,7 +18,7 @@ public class Channel {
     private ChannelMessageReceiver messageReceiver;
     private Thread messageReceiverThread;
     private boolean inChannel;
-    public final MessageSendQueue sendQueue = new MessageSendQueue();
+    public final MessageSendQueue sendQueue = new MessageSendQueue(this);
     public final MessageReceiveQueue receiveQueue = new MessageReceiveQueue();
     public final CooldownSet commandCooldownSet = new CooldownSet();
     public final CooldownSet userCooldownSet = new CooldownSet();

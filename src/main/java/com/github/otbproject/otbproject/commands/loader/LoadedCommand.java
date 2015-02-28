@@ -7,6 +7,7 @@ public class LoadedCommand {
     private String response;
     private UserLevel execUserLevel;
     private int minArgs;
+    private int count;
 
     public ModifyingUserLevels modifyingUserLevels;
 
@@ -74,6 +75,14 @@ public class LoadedCommand {
 
     public void setMinArgs(int minArgs) {
         this.minArgs = minArgs;
+    }
+
+    public int getCount() {
+        return count;
+    }
+
+    public void setCount(int count) {
+        this.count = count;
     }
 
     public String getScript() {

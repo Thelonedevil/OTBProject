@@ -16,6 +16,12 @@ public class CommandValidator {
             validatedCommand.setExecUserLevel(defaultCommand.getExecUserLevel());
         }
 
+        if (validatedCommand.getMinArgs() < 0) {
+            validatedCommand.setMinArgs(0);
+        }
+
+        validatedCommand.setCount(0);
+
         if (validatedCommand.modifyingUserLevels.getNameModifyingUL() == null) {
             validatedCommand.modifyingUserLevels.setNameModifyingUL(defaultCommand.modifyingUserLevels.getNameModifyingUL());
         }
