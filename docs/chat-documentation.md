@@ -11,6 +11,7 @@
 	- [Flags](#flags)
 	- [User Levels](#user-levels)
 	- [Aliases](#aliases)
+	- [Command Responses](#command-responses)
 - [Special Terms](#special-terms)
 	- [Terms](#terms)
 	- [Modifiers](#modifiers)
@@ -40,7 +41,7 @@ Version 0.2.0 [WIP]
 | Command | Flags | Arguments | Description |
 |:--------|:------|:----------|:------------|
 |`!command` `add | new`|`ul`, `ma`|`<command>` `<response>`||
-|`!command` `set`|`ul`, `ma`|`<command>` `<response>`||
+|`!command` `set | edit`|`ul`, `ma`|`<command>` `<response>`||
 |`!command` `remove | delete | rm | del`||`<command>`||
 |`!command` `list`||||
 |`!command` `raw`||`<command>`||
@@ -60,12 +61,14 @@ Version 0.2.0 [WIP]
 
 
 #### Flags
+
 | Flag | Usage | Option(s) | Description |
 |:-----|:------|:----------|:------------|
 |`ul`|`--ul=<option>`|A user level marker as described in the table below||
 |`ma`|`--ma=<option>`|An integer greater than 0||
 
 #### User Levels
+
 | User Level | Marker(s) |
 |:-----------|:----------|
 |Default|`default | def | none | any | all`|
@@ -76,6 +79,49 @@ Version 0.2.0 [WIP]
 |Broadcaster|`broadcaster | bc`|
 
 #### Aliases
+
+| Alias | Command |
+|:------|:--------|
+|`!alias`|`!alias-meta add`|
+|`!unalias`|`!alias-meta remove`|
+|`!commands`|`!command`|
+|`!addcom`|`!command add`|
+|`!delcom`|`!command delete`|
+|`!setcom`|`!command set`|
+|`!editcom`|`!command set`|
+
+#### Command Responses
+
+| Command | Description | Default Response |
+|:--------|:------------|:-----------------|
+|~%general:insufficient.user.level|||
+|~%general:insufficient.user.level|||
+|~%general:poorly.formatted|||
+|~%general:invalid.flag|||
+|~%general:unknown.failure|||
+|~%command.add.already.exists|||
+|~%command.add.success|||
+|~%command.remove.does.not.exist|||
+|~%command.remove.success|||
+|~%command.set.success|||
+|~%alias.is.command|||
+|~%alias.success|||
+|~%unalias.does.not.exist|||
+|~%unalias.success|||
+|~%disable.success|||
+|~%enable.success|||
+|~%set.exec.ul.success|||
+|~%set.name.modifying.ul.success|||
+|~%set.response.modifying.ul.success|||
+|~%set.ul.modifying.ul.success|||
+|~%set.min.args.invalid.number|||
+|~%set.min.args.success|||
+|~%rename.already.exists|||
+|~%rename.success|||
+|~%reset.count.success|||
+|~%silence.success|||
+|~%leave.success|||
+|~%join.success|||
 
 ##Special Terms
 
