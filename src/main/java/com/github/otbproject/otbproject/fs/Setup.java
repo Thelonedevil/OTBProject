@@ -1,5 +1,7 @@
 package com.github.otbproject.otbproject.fs;
 
+import com.github.otbproject.otbproject.App;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -41,8 +43,8 @@ public class Setup {
     }
 
     public static void setupChannel(String channel) throws IOException {
-        if ((! new File(FSUtil.commandsDir() + File.separator + FSUtil.DirNames.CHANNELS).exists())
-                || (! new File(FSUtil.dataDir() + File.separator + FSUtil.DirNames.CHANNELS).exists())) {
+        if ((!new File(FSUtil.commandsDir() + File.separator + FSUtil.DirNames.CHANNELS).exists())
+                || (!new File(FSUtil.dataDir() + File.separator + FSUtil.DirNames.CHANNELS).exists())) {
             setup(); // Because presumably it's not set up properly
         }
 
@@ -58,6 +60,10 @@ public class Setup {
 
         // Data
         createDirs(FSUtil.dataDir() + File.separator + FSUtil.DirNames.CHANNELS + File.separator + channel);
+        if (!new File(FSUtil.dataDir() + File.separator + FSUtil.DirNames.CHANNELS + File.separator + channel + File.separator + FSUtil.DatabaseNames.MAIN).createNewFile()) {
+            App.logger.error("Unable to create database file.");
+
+        }
     }
 
     private static void createDirs(String path) throws IOException {

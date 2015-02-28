@@ -20,6 +20,8 @@ public class CommandValidator {
             validatedCommand.setMinArgs(0);
         }
 
+        validatedCommand.setCount(0);
+
         if (validatedCommand.modifyingUserLevels.getNameModifyingUL() == null) {
             validatedCommand.modifyingUserLevels.setNameModifyingUL(defaultCommand.modifyingUserLevels.getNameModifyingUL());
         }
