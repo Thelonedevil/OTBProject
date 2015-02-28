@@ -60,9 +60,10 @@ public class Setup {
 
         // Data
         createDirs(FSUtil.dataDir() + File.separator + FSUtil.DirNames.CHANNELS + File.separator + channel);
-        if (!new File(FSUtil.dataDir() + File.separator + FSUtil.DirNames.CHANNELS + File.separator + channel + File.separator + FSUtil.DatabaseNames.MAIN).createNewFile()) {
-            App.logger.error("Unable to create database file.");
-
+        String mainDBPath = FSUtil.dataDir() + File.separator + FSUtil.DirNames.CHANNELS + File.separator + channel + File.separator + FSUtil.DatabaseNames.MAIN;
+        File mainDB = new File(mainDBPath);
+        if (!mainDB.exists() && !mainDB.createNewFile()) {
+            App.logger.error("Unable to create database file: " + mainDBPath);
         }
     }
 

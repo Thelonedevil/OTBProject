@@ -48,14 +48,15 @@ public class DatabaseWrapper extends Object {
             }
         }
         sql = sql.substring(0, sql.length() - 2) + ")";
-        boolean bool = false;
+        boolean bool = true;
         try {
             connection.setAutoCommit(false);
             preparedStatement = connection.prepareStatement(sql);
-            bool = preparedStatement.execute();
+            preparedStatement.executeUpdate();
             connection.commit();
         } catch (SQLException e) {
             App.logger.catching(e);
+            bool = false;
         } finally {
             try {
                 if (preparedStatement != null) {
@@ -64,6 +65,7 @@ public class DatabaseWrapper extends Object {
                 connection.setAutoCommit(true);
             } catch (SQLException e) {
                 App.logger.catching(e);
+                bool = false;
             }
 
         }
@@ -72,21 +74,18 @@ public class DatabaseWrapper extends Object {
 
     public ResultSet getRecord(String table, String identifier, String fieldName) {
         PreparedStatement preparedStatement = null;
-        String sql = "SELECT " + fieldName + " FROM " + table + " WHERE " + fieldName + "= ?";
+        String sql = "SELECT * FROM " + table + " WHERE " + fieldName + "= ?";
         ResultSet rs = null;
         try {
             connection.setAutoCommit(false);
             preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setString(1, identifier);
-            rs = preparedStatement.getResultSet();
+            rs = preparedStatement.executeQuery();
             connection.commit();
         } catch (SQLException e) {
             App.logger.catching(e);
         } finally {
             try {
-                if (preparedStatement != null) {
-                    preparedStatement.close();
-                }
                 connection.setAutoCommit(true);
             } catch (SQLException e) {
                 App.logger.catching(e);
@@ -104,10 +103,16 @@ public class DatabaseWrapper extends Object {
             connection.setAutoCommit(false);
             preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setString(1, identifier);
-            bool = preparedStatement.execute();
+            ResultSet rs =  preparedStatement.executeQuery();
+            while (rs.next()){
+                if(rs.getString(fieldName).equals(identifier)){
+                    bool = true;
+                }
+            }
             connection.commit();
         } catch (SQLException e) {
             App.logger.catching(e);
+            bool = false;
         } finally {
             try {
                 if (preparedStatement != null) {
@@ -115,6 +120,7 @@ public class DatabaseWrapper extends Object {
                 }
                 connection.setAutoCommit(true);
             } catch (SQLException e) {
+                bool = false;
                 App.logger.catching(e);
             }
 
@@ -129,7 +135,7 @@ public class DatabaseWrapper extends Object {
             sql += key+"=?, ";
         }
         sql = sql.substring(0, sql.length() - 2);
-        sql += "WHERE " + fieldName + "= ?";
+        sql += " WHERE " + fieldName + "= ?";
         boolean bool = false;
         try {
             connection.setAutoCommit(false);
@@ -140,10 +146,14 @@ public class DatabaseWrapper extends Object {
                 index++;
             }
             preparedStatement.setString(index, identifier);
-            bool = preparedStatement.execute();
+            int i =  preparedStatement.executeUpdate();
+            if(i > 0) {
+                bool = true;
+            }
             connection.commit();
         } catch (SQLException e) {
             App.logger.catching(e);
+            bool = false;
         } finally {
             try {
                 if (preparedStatement != null) {
@@ -152,6 +162,7 @@ public class DatabaseWrapper extends Object {
                 connection.setAutoCommit(true);
             } catch (SQLException e) {
                 App.logger.catching(e);
+                bool = false;
             }
 
         }
@@ -174,11 +185,14 @@ public class DatabaseWrapper extends Object {
                 preparedStatement.setString(index, map.get(key));
                 index++;
             }
-            preparedStatement.setString(index, identifier);
-            bool = preparedStatement.execute();
+            int i =  preparedStatement.executeUpdate();
+            if(i > 0) {
+                bool = true;
+            }
             connection.commit();
         } catch (SQLException e) {
             App.logger.catching(e);
+            bool = false;
         } finally {
             try {
                 if (preparedStatement != null) {
@@ -187,8 +201,8 @@ public class DatabaseWrapper extends Object {
                 connection.setAutoCommit(true);
             } catch (SQLException e) {
                 App.logger.catching(e);
+                bool = false;
             }
-
         }
         return bool;
     }
@@ -201,10 +215,14 @@ public class DatabaseWrapper extends Object {
             connection.setAutoCommit(false);
             preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setString(1, identifier);
-            bool = preparedStatement.execute();
+            int i =  preparedStatement.executeUpdate();
+            if(i > 0) {
+                bool = true;
+            }
             connection.commit();
         } catch (SQLException e) {
             App.logger.catching(e);
+            bool = false;
         } finally {
             try {
                 if (preparedStatement != null) {
@@ -213,8 +231,8 @@ public class DatabaseWrapper extends Object {
                 connection.setAutoCommit(true);
             } catch (SQLException e) {
                 App.logger.catching(e);
+                bool = false;
             }
-
         }
         return bool;
     }
@@ -224,6 +242,7 @@ public class DatabaseWrapper extends Object {
         try {
             return connection.createStatement().executeQuery(sql);
         } catch (SQLException e) {
+            App.logger.catching(e);
             return null;
         }
 
@@ -240,6 +259,7 @@ public class DatabaseWrapper extends Object {
             }
             return set;
         } catch (SQLException e) {
+            App.logger.catching(e);
             return null;
         }
     }
