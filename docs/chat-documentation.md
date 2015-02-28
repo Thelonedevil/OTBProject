@@ -95,19 +95,19 @@ Version 0.2.0 [WIP]
 | Command | Description | Default Response |
 |:--------|:------------|:-----------------|
 |~%general:insufficient.user.level|||
-|~%general:insufficient.user.level|||
 |~%general:poorly.formatted|||
 |~%general:invalid.flag|||
 |~%general:unknown.failure|||
 |~%command.add.already.exists|||
 |~%command.add.success|||
-|~%command.remove.does.not.exist|||
-|~%command.remove.success|||
 |~%command.set.success|||
+|~%command.is.alias|||
+|~%command.remove.success|||
+|~%command.general.does.not.exist|||
 |~%alias.is.command|||
 |~%alias.success|||
-|~%unalias.does.not.exist|||
 |~%unalias.success|||
+|~%alias.general.does.not.exist|||
 |~%disable.success|||
 |~%enable.success|||
 |~%set.exec.ul.success|||
