@@ -9,6 +9,9 @@ public class LoadedCommandHelper {
         copy.setExecUserLevel(command.getExecUserLevel());
         copy.setMinArgs(command.getMinArgs());
         copy.modifyingUserLevels = copy.new ModifyingUserLevels();
+        if (command.modifyingUserLevels == null) {
+            command.modifyingUserLevels = command.new ModifyingUserLevels();
+        }
         copy.modifyingUserLevels.setNameModifyingUL(command.modifyingUserLevels.getNameModifyingUL());
         copy.modifyingUserLevels.setResponseModifyingUL(command.modifyingUserLevels.getResponseModifyingUL());
         copy.modifyingUserLevels.setUserLevelModifyingUL(command.modifyingUserLevels.getUserLevelModifyingUL());
