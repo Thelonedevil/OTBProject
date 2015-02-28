@@ -6,6 +6,7 @@
 
 - [Version](#version)
 	- [Changelog](#changelog)
+- [Warning](#warning)
 - [Account](#account)
 - [General Config](#general-config)
 - [Bot Config](#bot-config)
