@@ -21,7 +21,7 @@ public class Alias {
                 loadedAlias.setName(rs.getString(AliasFields.NAME));
                 loadedAlias.setCommand(rs.getString(AliasFields.COMMAND));
                 loadedAlias.setModifyingUserLevel(UserLevel.valueOf(rs.getString(AliasFields.MODIFYING_UL)));
-                loadedAlias.setEnabled(Boolean.getBoolean(rs.getString(AliasFields.ENABLED)));
+                loadedAlias.setEnabled(Boolean.valueOf(rs.getString(AliasFields.ENABLED)));
             } catch (SQLException e) {
                 App.logger.catching(e);
             }

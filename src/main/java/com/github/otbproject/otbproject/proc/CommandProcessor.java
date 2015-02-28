@@ -56,18 +56,16 @@ public class CommandProcessor {
 
         if (Command.exists(db, cmdName)) {
             LoadedCommand loadedCommand = Command.get(db, cmdName);
-            if (loadedCommand.isEnabled() && userLevel.getValue() >= loadedCommand.getExecUserLevel().getValue() && args.length > loadedCommand.getMinArgs()) {
-
+            if (loadedCommand.isEnabled() && userLevel.getValue() >= loadedCommand.getExecUserLevel().getValue() && args.length >= loadedCommand.getMinArgs()) {
                 String scriptPath = loadedCommand.getScript();
                 // Return script path
-                if (!scriptPath.equals("null")) {
+                if ((scriptPath != null) && !scriptPath.equals("null")) {
                     return new ProcessedCommand(scriptPath, cmdName, true, args);
                 }
                 // Else non-script command
                 // Check if command is debug
                 else if (!loadedCommand.isDebug() || debug) {
                     String response = CommandResponseParser.parse(user, channel, loadedCommand.getCount(), args, loadedCommand.getResponse());
-
                     return new ProcessedCommand(response, cmdName, false, args);
                 }
             }
