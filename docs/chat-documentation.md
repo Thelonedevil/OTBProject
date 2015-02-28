@@ -68,6 +68,7 @@ Version 0.2.0 [WIP]
 #### User Levels
 | User Level | Marker(s) |
 |:-----------|:----------|
+|Default|`default | def | none | any | all`|
 |Subscriber|`subscriber | sub`|
 |Regular|`regular | reg`|
 |Moderator|`moderator | mod`|
