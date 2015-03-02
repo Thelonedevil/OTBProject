@@ -94,34 +94,34 @@ Version 0.2.0 [WIP]
 
 | Command | Description | Default Response |
 |:--------|:------------|:-----------------|
-|~%general:insufficient.user.level|||
-|~%general:poorly.formatted|||
-|~%general:invalid.flag|||
-|~%general:unknown.failure|||
-|~%command.add.already.exists|||
-|~%command.add.success|||
-|~%command.set.success|||
-|~%command.is.alias|||
-|~%command.remove.success|||
-|~%command.general.does.not.exist|||
-|~%alias.is.command|||
-|~%alias.success|||
-|~%unalias.success|||
-|~%alias.general.does.not.exist|||
-|~%disable.success|||
-|~%enable.success|||
-|~%set.exec.ul.success|||
-|~%set.name.modifying.ul.success|||
-|~%set.response.modifying.ul.success|||
-|~%set.ul.modifying.ul.success|||
-|~%set.min.args.invalid.number|||
-|~%set.min.args.success|||
-|~%rename.already.exists|||
-|~%rename.success|||
-|~%reset.count.success|||
-|~%silence.success|||
-|~%leave.success|||
-|~%join.success|||
+|`~%general:insufficient.user.level`|||
+|`~%general:poorly.formatted`|||
+|`~%general:invalid.flag`|||
+|`~%general:unknown.failure`|||
+|`~%command.add.already.exists`|||
+|`~%command.add.success`|||
+|`~%command.set.success`|||
+|`~%command.is.alias`|||
+|`~%command.remove.success`|||
+|`~%command.general.does.not.exist`|||
+|`~%alias.is.command`|||
+|`~%alias.success`|||
+|`~%unalias.success`|||
+|`~%alias.general.does.not.exist`|||
+|`~%disable.success`|||
+|`~%enable.success`|||
+|`~%set.exec.ul.success`|||
+|`~%set.name.modifying.ul.success`|||
+|`~%set.response.modifying.ul.success`|||
+|`~%set.ul.modifying.ul.success`|||
+|`~%set.min.args.invalid.number`|||
+|`~%set.min.args.success`|||
+|`~%rename.already.exists`|||
+|`~%rename.success`|||
+|`~%reset.count.success`|||
+|`~%silence.success`|||
+|`~%leave.success`|||
+|`~%join.success`|||
 
 ##Special Terms
 
