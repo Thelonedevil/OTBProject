@@ -1,11 +1,15 @@
 package com.github.otbproject.otbproject.commands.parser;
 
+import java.util.Arrays;
+
 public class CommandResponseParser {
     private static final String TERM_START = "[[";        // Not a regex
     private static final String TERM_END = "]]";          // Not a regex
     private static final String MODIFIER_DELIM = "\\.";   // regex
     private static final String EMBED_START = "\\{\\{";   // regex
     private static final String EMBED_END = "\\}\\}";     // regex
+    private static final String BASE_REGEX_START = "^";
+    private static final String BASE_REGEX_END = "(" + MODIFIER_DELIM + "\\w*)?(" + EMBED_START + ".*" + EMBED_END + ")*$";
 
 
     public static String parse(String userNick, String channel, int count, String[] args, String rawResponse) {
@@ -41,82 +45,77 @@ public class CommandResponseParser {
 
     private static String parseTerm(String userNick, String channel, int count, String[] args, String term) throws InvalidTermException {
         // [[user.modifier]]
-        if (term.matches("^user(" + MODIFIER_DELIM + "\\w*)?$")) {
+        if (isTerm(term, "user")) {
             return doModifier(userNick, term);
         }
         // [[channel.modifier]]
-        else if (term.matches("^channel(" + MODIFIER_DELIM + "\\w*)?$")) {
+        else if (isTerm(term, "channel")) {
             return doModifier(channel, term);
         }
         // [[count]] - ignores modifier (because no effect)
-        else if (term.matches("^count(" + MODIFIER_DELIM + "\\w*)?$")) {
+        else if (isTerm(term, "count")) {
             return Integer.toString(count);
         }
         // [[quote.modifier]] - can have a modifier, but it's unclear why you want one
-        else if (term.matches("^quote(" + MODIFIER_DELIM + "\\w*)?$")) {
+        else if (isTerm(term, "quote")) {
             return "[Quotes are not yet implemented]"; // TODO fix when quotes implemented
         }
         // [[game.modifier]]
-        else if (term.matches("^game(" + MODIFIER_DELIM + "\\w*)?$")) {
-            return "a game"; // TODO fix when able to get game name from twitch
+        else if (isTerm(term, "game")) {
+            return doModifier("a game", term); // TODO fix when able to get game name from twitch
         }
         // [[numargs]] - ignores modifier (because no effect)
-        else if (term.matches("^numargs(" + MODIFIER_DELIM + "\\w*)?$")) {
+        else if (isTerm(term, "numargs")) {
             return Integer.toString(args.length);
         }
         // [[args.modifier{{default}}]]
-        else if (term.matches("^args(" + MODIFIER_DELIM + "\\w*)?(" + EMBED_START + ".*" + EMBED_END + ")?$")) {
+        else if (isTerm(term, "args")) {
             // If no args, parse default
             if (args.length == 0) {
-                return getEmbeddedString(term);
+                return getEmbeddedString(term, 1);
             }
             return doModifier(String.join(" ", args), term);
         }
         // [[ifargs{{string}}]] - ignores modifier
-        else if (term.matches("^ifargs(" + MODIFIER_DELIM + "\\w*)?(" + EMBED_START + ".*" + EMBED_END + ")?$")) {
+        else if (isTerm(term, "ifargs")) {
             // If no args, return empty string
             if (args.length == 0) {
-                return "";
+                return getEmbeddedString(term, 2);
             }
             // Gets conditionally printed string
-            return getEmbeddedString(term);
+            return getEmbeddedString(term, 1);
+        }
+        // [[fromargN.modifier{{default}}]]
+        else if (isTerm(term, "fromarg\\p{Digit}+")) {
+            int argNum = getArgNum(term, "fromarg");
+            if (args.length < argNum) {
+                return getEmbeddedString(term, 1);
+            }
+            String[] lessArgs = Arrays.copyOfRange(args, (argNum - 1), args.length);
+            return doModifier(String.join(" ", lessArgs), term);
         }
         // [[argN.modifier{{default}}]] - N is a natural number
-        else if (term.matches("^arg\\p{Digit}+(" + MODIFIER_DELIM + "\\w*)?(" + EMBED_START + ".*" + EMBED_END + ")?$")) {
-            // Gets arg number
-            String argNumStr = term.replaceFirst("arg", "").split(EMBED_START, 2)[0].split(MODIFIER_DELIM, 2)[0];
-            int argNum = Integer.parseInt(argNumStr);
-
-            // If argNum is 0 (or max int overflow), invalid term
-            if (argNum <= 0) {
-                throw new InvalidTermException();
-            }
+        else if (isTerm(term, "arg\\p{Digit}+")) {
+            int argNum = getArgNum(term, "arg");
             // If insufficient args, parse default
             if (args.length < argNum) {
-                return getEmbeddedString(term);
+                return getEmbeddedString(term, 1);
             }
             return doModifier(args[argNum - 1], term);
         }
         // [[ifargN{{string}}]] - N is a natural number; ignores modifier
-        else if (term.matches("^ifarg\\p{Digit}+(" + MODIFIER_DELIM + "\\w*)?(" + EMBED_START + ".*" + EMBED_END + ")?$")) {
-            // Gets arg number
-            String argNumStr = term.replaceFirst("ifarg", "").split(EMBED_START, 2)[0].split(MODIFIER_DELIM, 2)[0];
-            int argNum = Integer.parseInt(argNumStr);
-
-            // If argNum is 0 (or max int overflow)-, invalid term
-            if (argNum <= 0) {
-                throw new InvalidTermException();
-            }
+        else if (isTerm(term, "ifarg\\p{Digit}+")) {
+            int argNum = getArgNum(term, "ifarg");
             // If insufficient args, return empty string
             if (args.length < argNum) {
-                return "";
+                return getEmbeddedString(term, 2);
             }
             // Gets conditionally printed string
-            return getEmbeddedString(term);
+            return getEmbeddedString(term, 1);
         }
         // [[foreach.modifier{{prepend}}{{append}}]]
-        else if (term.matches("^foreach(" + MODIFIER_DELIM + "\\w*)?(" + EMBED_START + ".*" + EMBED_END + "){0,2}$")) {
-            String prepend = getEmbeddedString(term);
+        else if (isTerm(term, "foreach")) {
+            String prepend = getEmbeddedString(term, 1);
             String append = getEmbeddedString(term, 2);
             String result = "";
 
@@ -124,9 +123,22 @@ public class CommandResponseParser {
                 result = result + prepend + doModifier(arg, term) + append;
             }
             return result;
+        }
+        // [[equal{{compare1}}{{compare2}}{{if_same}}{{if_diff}}]]
+        else if (isTerm(term, "equal")) {
+            String compare1 = getEmbeddedString(term, 1);
+            String compare2 = getEmbeddedString(term, 2);
+            if (compare1.equals(compare2)) {
+                return getEmbeddedString(term, 3);
+            }
+            return getEmbeddedString(term, 4);
         } else {
             throw new InvalidTermException();
         }
+    }
+
+    private static boolean isTerm(String possibleTerm, String termName) {
+        return possibleTerm.matches(BASE_REGEX_START + termName + BASE_REGEX_END);
     }
 
     // Prevents terms and embedded strings from being passed into the parser as
@@ -148,8 +160,8 @@ public class CommandResponseParser {
         return message.replaceAll("\t", "");
     }
 
-    private static String doModifier(String toModify, String rawResponseWord) {
-        String modifier = getModifier(rawResponseWord);
+    private static String doModifier(String toModify, String term) {
+        String modifier = getModifier(term);
 
         if (modifier.equals(ModifierTypes.LOWER)) {
             return toModify.toLowerCase();
@@ -186,11 +198,6 @@ public class CommandResponseParser {
         return temp[1];
     }
 
-    // Check if embedded string exists; return empty string if not
-    private static String getEmbeddedString(String term) {
-        return getEmbeddedString(term, 1);
-    }
-
     // Check if given index embedded string exists; return empty string if not
     private static String getEmbeddedString(String term, int index) {
         String[] temp = term.split(EMBED_START, 2);
@@ -210,5 +217,18 @@ public class CommandResponseParser {
             return "";
         }
         return temp[1].split(EMBED_END)[0];
+    }
+
+    private static int getArgNum(String term, String prefix) throws InvalidTermException {
+        // Gets arg number
+        String argNumStr = term.replaceFirst(prefix, "").split(EMBED_START, 2)[0].split(MODIFIER_DELIM, 2)[0];
+        int argNum = Integer.parseInt(argNumStr);
+
+        // If argNum is 0 (or max int overflow)-, invalid term
+        if (argNum <= 0) {
+            throw new InvalidTermException();
+        }
+
+        return argNum;
     }
 }
