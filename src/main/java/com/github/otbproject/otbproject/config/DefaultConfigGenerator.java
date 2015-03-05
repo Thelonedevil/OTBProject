@@ -32,6 +32,7 @@ public class DefaultConfigGenerator {
         channelConfig.userCooldowns.setUl_default(30);
         channelConfig.setDebug(false);
         channelConfig.setEnabled(true);
+        channelConfig.setSilenced(false);
         channelConfig.queueLimits = channelConfig.new QueueLimits();
         channelConfig.queueLimits.setHighPriorityLimit(-1);
         channelConfig.queueLimits.setDefaultPriorityLimit(5);

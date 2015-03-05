@@ -11,12 +11,11 @@ public class AliasFields {
     public static final String TABLE_NAME = "tblAliases";
 
     public static HashSet<String> getTableHashSet() {
-        HashSet<String> commandFields = new HashSet<>();
-        commandFields.add(NAME);
-        commandFields.add(COMMAND);
-        commandFields.add(MODIFYING_UL);
-
-        commandFields.add(ENABLED); // TODO possibly remove
-        return commandFields;
+        HashSet<String> aliasFields = new HashSet<>();
+        aliasFields.add(NAME);
+        aliasFields.add(COMMAND);
+        aliasFields.add(MODIFYING_UL);
+        aliasFields.add(ENABLED);
+        return aliasFields;
     }
 }

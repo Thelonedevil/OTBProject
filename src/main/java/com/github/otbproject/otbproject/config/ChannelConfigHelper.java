@@ -49,6 +49,7 @@ public class ChannelConfigHelper {
         copy.queueLimits.setHighPriorityLimit(config.queueLimits.getHighPriorityLimit());
         copy.queueLimits.setDefaultPriorityLimit(config.queueLimits.getDefaultPriorityLimit());
         copy.queueLimits.setLowPriorityLimit(config.queueLimits.getLowPriorityLimit());
+        copy.setSilenced(config.isSilenced());
         return copy;
     }
 }

@@ -17,6 +17,10 @@ public class MessageSendQueue {
     }
 
     public boolean add(MessageOut message) {
+        if (channel.getConfig().isSilenced()) {
+            return false;
+        }
+
         MessagePriority priority = message.getPriority();
         // Defaults to no limit
         int limit = -1;
