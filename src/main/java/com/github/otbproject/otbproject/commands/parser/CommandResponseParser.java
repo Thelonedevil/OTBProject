@@ -86,7 +86,7 @@ public class CommandResponseParser {
             return getEmbeddedString(term, 1);
         }
         // [[fromargN.modifier{{default}}]]
-        else if (isTerm(term, "fromarg\\p{Digit}+")) {
+        else if (isTerm(term, "fromarg\\d+")) {
             int argNum = getArgNum(term, "fromarg");
             if (args.length < argNum) {
                 return getEmbeddedString(term, 1);
@@ -95,7 +95,7 @@ public class CommandResponseParser {
             return doModifier(String.join(" ", lessArgs), term);
         }
         // [[argN.modifier{{default}}]] - N is a natural number
-        else if (isTerm(term, "arg\\p{Digit}+")) {
+        else if (isTerm(term, "arg\\d+")) {
             int argNum = getArgNum(term, "arg");
             // If insufficient args, parse default
             if (args.length < argNum) {
@@ -104,7 +104,7 @@ public class CommandResponseParser {
             return doModifier(args[argNum - 1], term);
         }
         // [[ifargN{{string}}]] - N is a natural number; ignores modifier
-        else if (isTerm(term, "ifarg\\p{Digit}+")) {
+        else if (isTerm(term, "ifarg\\d+")) {
             int argNum = getArgNum(term, "ifarg");
             // If insufficient args, return empty string
             if (args.length < argNum) {
