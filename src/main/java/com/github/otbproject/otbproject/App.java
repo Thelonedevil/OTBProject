@@ -123,6 +123,7 @@ public class App {
         bot = new CustomBot(configuration);
 
         // Store configs
+        bot.configManager.setAccount(account);
         bot.configManager.setGeneralConfig(generalConfig);
         bot.configManager.setBotConfig(botConfig);
 
