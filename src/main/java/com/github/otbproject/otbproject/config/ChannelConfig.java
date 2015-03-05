@@ -72,6 +72,7 @@ public class ChannelConfig {
 
     private boolean debug;
     private Boolean enabled;
+    private boolean silenced;
 
     public QueueLimits queueLimits;
 
@@ -127,5 +128,13 @@ public class ChannelConfig {
 
     public void setEnabled(Boolean enabled) {
         this.enabled = enabled;
+    }
+
+    public boolean isSilenced() {
+        return silenced;
+    }
+
+    public void setSilenced(boolean silenced) {
+        this.silenced = silenced;
     }
 }

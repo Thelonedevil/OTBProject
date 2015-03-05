@@ -26,7 +26,7 @@ import java.util.HashSet;
  * Created by justin on 02/01/2015.
  */
 public class App {
-    public static HashSet<String> channels = new HashSet<>();
+    private static HashSet<String> channels = new HashSet<>();
     static Listener listener = new IrcListener();
     public static CustomBot bot;
     public static final Logger logger = LogManager.getLogger();
