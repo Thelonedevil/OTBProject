@@ -31,7 +31,7 @@ public class ChannelMessageReceiver implements Runnable {
         try {
             while (true) {
                 packagedMessage = queue.take();
-                String channelName = packagedMessage.getChannel();
+                String channelName = channel.getName();
                 String user = packagedMessage.getUser();
                 boolean inBotChannel = false;
                 if (channelName.equals(App.bot.getNick())) {
@@ -46,8 +46,7 @@ public class ChannelMessageReceiver implements Runnable {
                 // Process commands for bot channel
                 if (inBotChannel) {
                     DatabaseWrapper db = DatabaseHelper.getBotDatabase();
-                    // TODO get actual user level
-                    UserLevel ul = UserLevel.DEFAULT;
+                    UserLevel ul = packagedMessage.getUserLevel();
                     ProcessedMessage processedMsg = MessageProcessor.process(db, packagedMessage.getMessage(), channelName, user, ul, true);
                     if (processedMsg.isScript() || !processedMsg.getResponse().isEmpty()) {
                         doResponse(db, processedMsg, channelName, destinationChannel, user, ul, packagedMessage.getMessagePriority(), true);
@@ -63,8 +62,7 @@ public class ChannelMessageReceiver implements Runnable {
 
                 // Process commands not as bot channel
                 DatabaseWrapper db = channel.getDatabaseWrapper();
-                // TODO get actual user level
-                UserLevel ul = UserLevel.DEFAULT;
+                UserLevel ul = packagedMessage.getUserLevel();
                 ProcessedMessage processedMsg = MessageProcessor.process(db, packagedMessage.getMessage(), channelName, user, ul, channel.getConfig().isDebug());
 
                 // Check if bot is enabled
