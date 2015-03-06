@@ -16,8 +16,9 @@ public class ChannelConfigHelper {
             case SUPER_MODERATOR:
                 return config.userCooldowns.getUl_super_moderator();
             case BROADCASTER:
-            case INTERNAL:
                 return config.userCooldowns.getUl_broadcaster();
+            case INTERNAL:
+                return config.userCooldowns.getUl_internal();
             case TOO_HIGH:
             default:
                 return 0;
@@ -29,6 +30,10 @@ public class ChannelConfigHelper {
 
         copy.setCommandCooldown(config.getCommandCooldown());
         copy.userCooldowns = copy.new UserCooldowns();
+        if (config.userCooldowns == null) {
+            config.userCooldowns = config.new UserCooldowns();
+        }
+        copy.userCooldowns.setUl_internal(config.userCooldowns.getUl_internal());
         copy.userCooldowns.setUl_broadcaster(config.userCooldowns.getUl_broadcaster());
         copy.userCooldowns.setUl_super_moderator(config.userCooldowns.getUl_super_moderator());
         copy.userCooldowns.setUl_moderator(config.userCooldowns.getUl_moderator());
@@ -38,9 +43,13 @@ public class ChannelConfigHelper {
         copy.setDebug(config.isDebug());
         copy.setEnabled(config.isEnabled());
         copy.queueLimits = copy.new QueueLimits();
+        if (config.queueLimits == null) {
+            config.queueLimits = config.new QueueLimits();
+        }
         copy.queueLimits.setHighPriorityLimit(config.queueLimits.getHighPriorityLimit());
         copy.queueLimits.setDefaultPriorityLimit(config.queueLimits.getDefaultPriorityLimit());
         copy.queueLimits.setLowPriorityLimit(config.queueLimits.getLowPriorityLimit());
+        copy.setSilenced(config.isSilenced());
         return copy;
     }
 }

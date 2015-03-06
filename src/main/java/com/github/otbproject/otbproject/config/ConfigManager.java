@@ -1,14 +1,16 @@
 package com.github.otbproject.otbproject.config;
 
-import java.util.HashMap;
-
 public class ConfigManager {
+    private Account account;
     private GeneralConfig generalConfig;
     private BotConfig botConfig;
-    private final HashMap<String, ChannelConfig> channelConfigs;
 
-    public ConfigManager() {
-        this.channelConfigs = new HashMap<String, ChannelConfig>();
+    public Account getAccount() {
+        return account;
+    }
+
+    public void setAccount(Account account) {
+        this.account = account;
     }
 
     public GeneralConfig getGeneralConfig() {
@@ -25,21 +27,5 @@ public class ConfigManager {
 
     public void setBotConfig(BotConfig botConfig) {
         this.botConfig = botConfig;
-    }
-
-    public ChannelConfig putChannelConfig(String channel, ChannelConfig config) {
-        return channelConfigs.put(channel, config);
-    }
-
-    public ChannelConfig removeChannelConfig(String channel) {
-        return channelConfigs.remove(channel);
-    }
-
-    public ChannelConfig getChannelConfig(String channel) {
-        return channelConfigs.get(channel);
-    }
-
-    public void clearChannelConfigs() {
-        channelConfigs.clear();
     }
 }

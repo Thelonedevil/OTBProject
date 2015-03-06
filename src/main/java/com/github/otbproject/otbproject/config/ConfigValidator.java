@@ -96,6 +96,10 @@ public class ConfigValidator {
             validatedConfig.queueLimits.setHighPriorityLimit(defaultConfig.queueLimits.getHighPriorityLimit());
         }
 
+        if (validatedConfig.queueLimits.getDefaultPriorityLimit() == null) {
+            validatedConfig.queueLimits.setDefaultPriorityLimit(defaultConfig.queueLimits.getDefaultPriorityLimit());
+        }
+
         return validatedConfig;
     }
 }

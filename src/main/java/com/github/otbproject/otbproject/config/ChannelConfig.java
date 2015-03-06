@@ -49,7 +49,7 @@ public class ChannelConfig {
             return ul_regular;
         }
 
-        public void setUl_regular(int ul_regular) {
+        public void setUl_regular(Integer ul_regular) {
             this.ul_regular = ul_regular;
         }
 
@@ -57,7 +57,7 @@ public class ChannelConfig {
             return ul_subscriber;
         }
 
-        public void setUl_subscriber(int ul_subscriber) {
+        public void setUl_subscriber(Integer ul_subscriber) {
             this.ul_subscriber = ul_subscriber;
         }
 
@@ -65,13 +65,14 @@ public class ChannelConfig {
             return ul_default;
         }
 
-        public void setUl_default(int ul_default) {
+        public void setUl_default(Integer ul_default) {
             this.ul_default = ul_default;
         }
     }
 
     private boolean debug;
     private Boolean enabled;
+    private boolean silenced;
 
     public QueueLimits queueLimits;
 
@@ -109,7 +110,7 @@ public class ChannelConfig {
         return commandCooldown;
     }
 
-    public void setCommandCooldown(int commandCooldown) {
+    public void setCommandCooldown(Integer commandCooldown) {
         this.commandCooldown = commandCooldown;
     }
 
@@ -127,5 +128,13 @@ public class ChannelConfig {
 
     public void setEnabled(Boolean enabled) {
         this.enabled = enabled;
+    }
+
+    public boolean isSilenced() {
+        return silenced;
+    }
+
+    public void setSilenced(boolean silenced) {
+        this.silenced = silenced;
     }
 }
