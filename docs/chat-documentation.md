@@ -168,13 +168,14 @@ Some terms can contain embedded strings. The `{{default}}` in the `[[args]]` and
 
 If you are already confused at this point, you should probably skip this section and move onto the examples of term usage below.
 
-The following are terms which are significantly more useful when given embedded strings, or not useful at all without them.
+The following are terms which are significantly more useful when given embedded strings, or not useful at all without them. If less than N embedded strings are provided, then any term which attempts to use the Nth embedded string will treat it as an empty string.
 
 | Term | Description |
 |:-----|:------------|
-|`[[ifargs{{string}}]]`|Prints the specified string only if there is at least one argument. If no string is supplied, it does nothing.|
-|`[[ifargN{{string}}]]`|Prints the specified string only if at least `N` arguments were given. If no string is supplied, it does nothing. `N` must be greater than 0.|
-|`[[foreach{{prepend}}{{append}}]]`|For each argument provided, prints the string specified as ‘prepend’, the argument, and then the string specified as ‘append’. If a modifier (described later) is used, it is applied to each argument (but not to ‘prepend’ or ‘append’). If only one string is provided, it is ‘prepend’. If both are left out, the arguments are printed unmodified (and without spaces).|
+|`[[ifargs{{yes_args}}{{no_args}}]]`|Prints the first embedded string string if at least one argument was given. If no arguments were given, it prints the second embedded string. For either condition, if no string is supplied, it does nothing.|
+|`[[ifargN{{N_args}}{{not_N_args}}]]`|Prints the first embedded string if at least `N` arguments were given. If less than `N` arguments were given, it prints the second embedded string. For either condition, ff no string is supplied, it does nothing. `N` must be greater than 0.|
+|`[[foreach{{prepend}}{{append}}]]`|For each argument provided, prints the string specified as `prepend`, the argument, and then the string specified as `append`. If a modifier (described later) is used, it is applied to each argument (but not to `prepend` or `append`). If only one string is provided, it is `prepend`. If both are left out, the arguments are printed unmodified (and without spaces).|
+|`[[equal{{compare1}}{{compare2}}{{same}}{{different}}]]`|If the first two embedded strings are the same, then it prints the third embedded string. If not, it prints the fourth embedded string. Not particularly useful if neither of the first two embedded strings are a term.|
 
 ####Examples
 
