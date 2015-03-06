@@ -31,7 +31,7 @@ public class ChannelMessageReceiver implements Runnable {
         try {
             while (true) {
                 packagedMessage = queue.take();
-                String channelName = packagedMessage.getChannel();
+                String channelName = channel.getName();
                 String user = packagedMessage.getUser();
                 boolean inBotChannel = false;
                 if (channelName.equals(App.bot.getNick())) {
