@@ -25,7 +25,8 @@ Version 0.2.0 [WIP]
 ####Changelog
 
 * 0.2.0
-  - Added descriptions of commands that come with
+  - Added descriptions of commands that come with release
+  - Added more terms to the parser
 * 0.1.2
   - Special terms can contain spaces in defaults and other embedded strings
   - More special terms added
@@ -134,6 +135,7 @@ There are some special terms which can be used when creating a command to create
 |`[[user]]`|The name of the user who ran the command.|
 |`[[args]]` or `[[args{{default}}]]`|All arguments with which the command was run (separated by spaces). If the command is run without arguments, and a default is given, the default is used. The default can contain another special term. If no default is given, it is replaced by an empty string (it is left blank).|
 |`[[argN]]` or `[[argN{{default}}]]`|The `N`th argument, where `N` is a number greater than 0. If the command is run with fewer than `N` arguments, and a default is given, the default is used. The default can contain another special term. If no default is given, it is replaced by an empty string (it is left blank).|
+|`[[fromargN]]` or `[[fromargN{{default}}]]`||
 |`[[numargs]]`|The number of arguments with which the command was run.|
 |`[[channel]]`|The channel in which the command was run.|
 |`[[count]]`|The number of times the command has been run since it was created or since it was last modified.|
