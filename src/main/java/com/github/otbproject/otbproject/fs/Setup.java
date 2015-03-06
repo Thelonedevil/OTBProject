@@ -31,6 +31,12 @@ public class Setup {
         // Data Directory
         createDirs(FSUtil.dataDir() + File.separator + FSUtil.DirNames.BOT_CHANNEL);
         createDirs(FSUtil.dataDir() + File.separator + FSUtil.DirNames.CHANNELS);
+        // Create bot database
+        String mainDBPath = FSUtil.dataDir() + File.separator + FSUtil.DirNames.BOT_CHANNEL + File.separator + FSUtil.DatabaseNames.MAIN;
+        File mainDB = new File(mainDBPath);
+        if (!mainDB.exists() && !mainDB.createNewFile()) {
+            App.logger.error("Unable to create database file: " + mainDBPath);
+        }
 
         // Defaults Directory
         createDirs(FSUtil.defaultsDir());
