@@ -11,8 +11,8 @@ import java.io.File;
 public class ScriptProcessor {
     private static final String METHOD_NAME = "execute";
 
-    public static boolean process(String path, DatabaseWrapper db, String[] commandArgs, String channel, String destinationChannel, String user, UserLevel userLevel) {
-        Object[] args = new Object[]{db, commandArgs, channel, destinationChannel, user, userLevel};
+    public static boolean process(String path, DatabaseWrapper db, String commandName, String[] commandArgs, String channel, String destinationChannel, String user, UserLevel userLevel) {
+        Object[] args = new Object[]{db, commandName, commandArgs, channel, destinationChannel, user, userLevel};
 
         String fullPath = FSUtil.scriptDir() + File.separator + path;
 
