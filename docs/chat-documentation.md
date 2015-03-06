@@ -79,6 +79,12 @@ Version 0.2.0 [WIP]
 |Super Moderator|`super-moderator | super_moderator | smod | sm`|
 |Broadcaster|`broadcaster | bc`|
 
+Additionally, there is the user level 'Ignored', which can be used with `!assignUserLevel`, but not with the `ul` flag.
+
+| User Level | Marker(s) |
+|:-----------|:----------|
+|Ignored|`ignored | ig`|
+
 #### Aliases
 
 | Alias | Command |
