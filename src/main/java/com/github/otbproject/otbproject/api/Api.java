@@ -21,6 +21,9 @@ public class Api {
             App.logger.catching(e);
             return false;
         }
+        if(App.bot.isConnected()) {
+            App.bot.sendIRC().joinChannel("#"+channelName);
+        }
         String channelConfPath = FSUtil.dataDir() + File.separator + FSUtil.DirNames.CHANNELS + File.separator + channelName + File.separator + "config.json";
         ChannelConfig channelConfig = ConfigValidator.validateChannelConfig(JsonHandler.readValue(channelConfPath, ChannelConfig.class));
         JsonHandler.writeValue(channelConfPath, channelConfig);

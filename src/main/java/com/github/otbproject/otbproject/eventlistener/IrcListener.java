@@ -45,9 +45,6 @@ public class IrcListener extends ListenerAdapter {
 
     @Override
     public void onPart(PartEvent event) {
-        if (event.getUser().getNick().equalsIgnoreCase(event.getBot().getNick())) {
-            Api.leaveChannel(event.getChannel().getName().replace("#", ""));
-        }
     }
 
     @Override

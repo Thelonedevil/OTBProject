@@ -162,9 +162,7 @@ public class App {
                 logger.info("Bot Started");
                 bot.startBot();
                 logger.info("Bot Stopped");
-            } catch (IOException e) {
-                logger.catching(e);
-            } catch (IrcException e) {
+            } catch (IOException | IrcException e) {
                 logger.catching(e);
             }
 

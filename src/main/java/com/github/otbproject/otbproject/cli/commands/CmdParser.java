@@ -2,6 +2,7 @@ package com.github.otbproject.otbproject.cli.commands;
 
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.api.Api;
+import com.github.otbproject.otbproject.commands.loader.FSCommandLoader;
 import com.sun.javaws.exceptions.InvalidArgumentException;
 
 import java.util.Arrays;
@@ -23,8 +24,8 @@ public class CmdParser {
                     if (App.bot.isConnected()) {
                         App.bot.shutdown();
                     }
-                    while (App.botThread.isAlive()) {
-                    }
+                    FSCommandLoader.LoadCommands();
+                    FSCommandLoader.LoadAliases();
                     try {
                         App.botThread = new App.BotThread();
                         App.botThread.start();
@@ -47,10 +48,10 @@ public class CmdParser {
                     }
                     break;
                 default:
-                    throw new InvalidCLICommandException("That Command is invalid. "+strings[0].toLowerCase()+" does not exist as a CLI command");
+                    throw new InvalidCLICommandException("That command is invalid. "+strings[0].toLowerCase()+" does not exist as a CLI command");
             }
         } catch (ArrayIndexOutOfBoundsException e) {
-            throw new InvalidCLICommandException("No command was ran, what even?");
+            throw new InvalidCLICommandException("No command was run, what even?");
         }
     }
 
