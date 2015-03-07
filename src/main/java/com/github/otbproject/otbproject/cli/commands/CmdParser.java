@@ -1,6 +1,7 @@
 package com.github.otbproject.otbproject.cli.commands;
 
 import com.github.otbproject.otbproject.App;
+import com.github.otbproject.otbproject.api.Api;
 import com.sun.javaws.exceptions.InvalidArgumentException;
 
 import java.util.Arrays;
@@ -34,6 +35,16 @@ public class CmdParser {
                 case "channel":
                     if (strings.length > 2)
                         channelParse(Arrays.copyOfRange(strings, 2, strings.length - 1), strings[1]);
+                    break;
+                case "join":
+                        if (strings.length > 1){
+                            Api.joinChannel(strings[1]);
+                        }
+                    break;
+                case "leave":
+                    if (strings.length > 1){
+                        Api.leaveChannel(strings[1]);
+                    }
                     break;
                 default:
                     throw new InvalidCLICommandException("That Command is invalid. "+strings[0].toLowerCase()+" does not exist as a CLI command");

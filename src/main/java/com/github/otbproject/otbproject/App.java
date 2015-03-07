@@ -1,12 +1,10 @@
 package com.github.otbproject.otbproject;
 
+import com.github.otbproject.otbproject.api.Api;
 import com.github.otbproject.otbproject.channels.Channel;
 import com.github.otbproject.otbproject.cli.ArgParser;
 import com.github.otbproject.otbproject.cli.commands.CmdParser;
 import com.github.otbproject.otbproject.cli.commands.InvalidCLICommandException;
-import com.github.otbproject.otbproject.config.Account;
-import com.github.otbproject.otbproject.config.BotConfig;
-import com.github.otbproject.otbproject.config.ConfigValidator;
 import com.github.otbproject.otbproject.commands.loader.FSCommandLoader;
 import com.github.otbproject.otbproject.config.*;
 import com.github.otbproject.otbproject.eventlistener.IrcListener;
@@ -137,19 +135,7 @@ public class App {
 
         // Load channels
         for (String channelName : channels) {
-            try {
-                Setup.setupChannel(channelName);
-            } catch (IOException e) {
-                logger.error("Failed to setup channel: " + channelName);
-                logger.catching(e);
-                continue;
-            }
-            String channelConfPath = FSUtil.dataDir() + File.separator + FSUtil.DirNames.CHANNELS + File.separator + channelName + File.separator + "config.json";
-            ChannelConfig channelConfig = ConfigValidator.validateChannelConfig(JsonHandler.readValue(channelConfPath, ChannelConfig.class));
-            JsonHandler.writeValue(channelConfPath, channelConfig);
-            Channel channel = new Channel(channelName, channelConfig);
-            channel.join();
-            App.bot.channels.put(channel.getName(), channel);
+            Api.joinChannel(channelName);
         }
         botThread = new BotThread();
         botThread.start();
@@ -166,7 +152,6 @@ public class App {
                 logger.info(e.getMessage());
                 CmdParser.printHelp();
             }
-
         }
         scanner.close();
     }
@@ -185,4 +170,5 @@ public class App {
 
         }
     }
+
 }
