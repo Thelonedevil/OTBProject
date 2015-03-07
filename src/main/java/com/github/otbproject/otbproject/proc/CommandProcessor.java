@@ -31,7 +31,7 @@ public class CommandProcessor {
                 if (splitMsg.length == 1) {
                     return checkAlias(db, loadedAlias.getCommand(), originalAlias);
                 }
-                return checkAlias(db, (loadedAlias.getCommand() + " " + aliasName), originalAlias);
+                return checkAlias(db, (loadedAlias.getCommand() + " " + splitMsg[1]), originalAlias);
             }
         }
         // Return message if not an alias
