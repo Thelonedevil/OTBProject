@@ -8,30 +8,35 @@ import com.github.otbproject.otbproject.commands.parser.CommandResponseParser;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.users.UserLevel;
 
+import java.util.HashSet;
+
 public class CommandProcessor {
     public static ProcessedCommand process(DatabaseWrapper db, String message, String channel, String user, UserLevel userLevel, boolean debug) {
-        String commandMsg = checkAlias(db, message, "");
+        String commandMsg = checkAlias(db, message);
         return checkCommand(db, commandMsg, channel, user, userLevel, debug);
     }
 
-    public static String checkAlias(DatabaseWrapper db, String message, String originalAlias) {
+    public static String checkAlias(DatabaseWrapper db, String message) {
+        return checkAlias(db, message, new HashSet<String>());
+    }
+
+    private static String checkAlias(DatabaseWrapper db, String message, HashSet<String> usedAliases) {
         String[] splitMsg = message.split(" ", 2);
         String aliasName = splitMsg[0];
 
-        if (originalAlias.equals("")) {
-            originalAlias = aliasName;
-        }
         // Prevent infinite alias loop
-        else if (aliasName.equals(originalAlias)) {
+        if (usedAliases.contains(aliasName)) {
             return message;
+        } else {
+            usedAliases.add(aliasName);
         }
         if (Alias.exists(db, aliasName)) {
             LoadedAlias loadedAlias = Alias.get(db, aliasName);
             if (loadedAlias.isEnabled()) {
                 if (splitMsg.length == 1) {
-                    return checkAlias(db, loadedAlias.getCommand(), originalAlias);
+                    return checkAlias(db, loadedAlias.getCommand(), usedAliases);
                 }
-                return checkAlias(db, (loadedAlias.getCommand() + " " + splitMsg[1]), originalAlias);
+                return checkAlias(db, (loadedAlias.getCommand() + " " + splitMsg[1]), usedAliases);
             }
         }
         // Return message if not an alias
