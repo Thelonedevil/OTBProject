@@ -14,7 +14,7 @@ public class CommandProcessor {
         return checkCommand(db, commandMsg, channel, user, userLevel, debug);
     }
 
-    private static String checkAlias(DatabaseWrapper db, String message, String originalAlias) {
+    public static String checkAlias(DatabaseWrapper db, String message, String originalAlias) {
         String[] splitMsg = message.split(" ", 2);
         String aliasName = splitMsg[0];
 
@@ -61,7 +61,7 @@ public class CommandProcessor {
                 // Else non-script command
                 // Check if command is debug
                 else if (!loadedCommand.isDebug() || debug) {
-                    String response = CommandResponseParser.parse(user, channel, loadedCommand.getCount(), args, loadedCommand.getResponse());
+                    String response = CommandResponseParser.parse(user, channel, (loadedCommand.getCount() + 1), args, loadedCommand.getResponse());
                     return new ProcessedCommand(response, cmdName, false, args);
                 }
             }

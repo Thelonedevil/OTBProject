@@ -12,13 +12,14 @@ public class ScriptProcessor {
     private static final String METHOD_NAME = "execute";
 
     public static boolean process(String path, DatabaseWrapper db, String commandName, String[] commandArgs, String channel, String destinationChannel, String user, UserLevel userLevel) {
-        Object[] args = new Object[]{db, commandName, commandArgs, channel, destinationChannel, user, userLevel};
+        ScriptArgs args = new ScriptArgs(db, commandName, commandArgs, channel, destinationChannel, user, userLevel);
 
         String fullPath = FSUtil.scriptDir() + File.separator + path;
 
         Boolean success;
         Object scriptReturn;
         try {
+            App.logger.info("Running script: " + path);
             scriptReturn = new GroovyShell().parse(new File(fullPath)).invokeMethod(METHOD_NAME, args);
             if ((scriptReturn == null) || !(scriptReturn instanceof Boolean)) {
                 success = true;
