@@ -7,6 +7,9 @@ public class ArgParser {
         public static final String HELP = "help";
         public static final String HELP_SHORT = "h";
         public static final String BASE_DIR = "base-dir";
+        public static final String ACCOUNT = "account";
+        public static final String OAUTH = "oauth";
+        public static final String DEBUG = "debug";
     }
 
     public static CommandLine parse(String[] args) throws ParseException {
@@ -29,6 +32,28 @@ public class ArgParser {
         OptionBuilder.withArgName("PATH");
         Option baseDir = OptionBuilder.create();
         options.addOption(baseDir);
+
+        // --account
+        OptionBuilder.withLongOpt(Opts.ACCOUNT);
+        OptionBuilder.withDescription("The twitch account with which to log in");
+        OptionBuilder.hasArg();
+        OptionBuilder.withArgName("ACCT_NAME");
+        Option account = OptionBuilder.create();
+        options.addOption(account);
+
+        // --oauth
+        OptionBuilder.withLongOpt(Opts.OAUTH);
+        OptionBuilder.withDescription("The oauth token with which to log in");
+        OptionBuilder.hasArg();
+        OptionBuilder.withArgName("TOKEN");
+        Option oauth = OptionBuilder.create();
+        options.addOption(oauth);
+
+        // --debug
+        OptionBuilder.withLongOpt(Opts.DEBUG);
+        OptionBuilder.withDescription("Run in debug mode");
+        Option debug = OptionBuilder.create();
+        options.addOption(debug);
 
         return options;
     }

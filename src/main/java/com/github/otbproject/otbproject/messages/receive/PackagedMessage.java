@@ -1,6 +1,7 @@
 package com.github.otbproject.otbproject.messages.receive;
 
 import com.github.otbproject.otbproject.messages.send.MessagePriority;
+import com.github.otbproject.otbproject.users.UserLevel;
 import org.pircbotx.hooks.events.MessageEvent;
 
 public class PackagedMessage {
@@ -8,25 +9,20 @@ public class PackagedMessage {
     private String user;
     private String channel;
     private String destinationChannel;
-    private boolean subscriber;
+    private UserLevel userLevel;
     private MessagePriority messagePriority;
 
-    public PackagedMessage(String message, String user, String channel, String destinationChannel, boolean subscriber, MessagePriority messagePriority) {
+    public PackagedMessage(String message, String user, String channel, String destinationChannel, UserLevel userLevel, MessagePriority messagePriority) {
         this.message = message;
         this.user = user;
         this.channel = channel;
         this.destinationChannel = destinationChannel;
-        this.subscriber = subscriber;
+        this.userLevel = userLevel;
         this.messagePriority = messagePriority;
     }
 
-    public PackagedMessage(String message, String user, String channel, boolean subscriber, MessagePriority messagePriority) {
-        this(message, user, channel, channel, subscriber, messagePriority);
-    }
-
-    public PackagedMessage(MessageEvent event) {
-        // TODO replace false with actual subscriber info
-        this(event.getMessage(), event.getUser().getNick(), event.getChannel().getName().replace("#", ""), false, MessagePriority.DEFAULT);
+    public PackagedMessage(String message, String user, String channel, UserLevel userLevel, MessagePriority messagePriority) {
+        this(message, user, channel, channel, userLevel, messagePriority);
     }
 
     public String getMessage() {
@@ -45,11 +41,12 @@ public class PackagedMessage {
         return destinationChannel;
     }
 
-    public boolean isSubscriber() {
-        return subscriber;
+    public UserLevel getUserLevel() {
+        return userLevel;
     }
 
     public MessagePriority getMessagePriority() {
         return messagePriority;
     }
+
 }
