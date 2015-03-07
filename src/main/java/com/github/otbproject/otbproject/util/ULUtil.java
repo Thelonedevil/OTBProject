@@ -16,8 +16,8 @@ public class ULUtil {
         if (Users.exists(db, user)) {
             return Users.get(db, user).getUserLevel();
         }
-        if (SubscriberStorage.names.get(channel).equalsIgnoreCase(user)) {
-            SubscriberStorage.names.remove(channel,user);
+        if (App.bot.channels.get(channel).subscriberStorage.contains(user)) {
+            App.bot.channels.get(channel).subscriberStorage.remove(user);
             return UserLevel.SUBSCRIBER;
         }
         if (user.equals(channel)) {

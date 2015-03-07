@@ -14,6 +14,7 @@ public class IrcListener extends ListenerAdapter {
 
     @Override
     public void onMessage(MessageEvent event) throws Exception {
+        Channel channel = App.bot.channels.get(event.getChannel().getName().replace("#", ""));
 
         String message = event.getMessage();
         if(event.getUser().getNick().equalsIgnoreCase("jtv")){
@@ -22,12 +23,12 @@ public class IrcListener extends ListenerAdapter {
                 String name = messageSplit[0];
                 String userType = messageSplit[1];
                 if(userType.equalsIgnoreCase("subscriber")){
-                    SubscriberStorage.names.put(event.getChannel().getName().replace("#", ""),name);
+                    channel.subscriberStorage.add(name);
                 }
 
             }
         }else{
-            Channel channel = App.bot.channels.get(event.getChannel().getName().replace("#", ""));
+
             channel.receiveQueue.add(new PackagedMessage(event));
         }
 
