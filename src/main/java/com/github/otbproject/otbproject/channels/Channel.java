@@ -8,7 +8,7 @@ import com.github.otbproject.otbproject.messages.receive.MessageReceiveQueue;
 import com.github.otbproject.otbproject.messages.send.ChannelMessageSender;
 import com.github.otbproject.otbproject.messages.send.MessageSendQueue;
 import com.github.otbproject.otbproject.proc.CooldownSet;
-import com.github.otbproject.otbproject.users.SubscriberStorage;
+import com.github.otbproject.otbproject.util.BlockingHashSet;
 
 public class Channel {
     private final String name;
@@ -23,7 +23,7 @@ public class Channel {
     public final MessageReceiveQueue receiveQueue = new MessageReceiveQueue();
     public final CooldownSet commandCooldownSet = new CooldownSet();
     public final CooldownSet userCooldownSet = new CooldownSet();
-    public final SubscriberStorage subscriberStorage = new SubscriberStorage();
+    public final BlockingHashSet subscriberStorage = new BlockingHashSet();
 
     public Channel(String name, ChannelConfig config) {
         this.name = name;

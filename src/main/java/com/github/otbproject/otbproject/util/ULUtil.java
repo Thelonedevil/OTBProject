@@ -24,14 +24,13 @@ public class ULUtil {
         if (ul == UserLevel.SUPER_MODERATOR) {
             return ul;
         }
-        if(App.bot.getUserChannelDao().getChannel(channel).isOp(App.bot.getUserChannelDao().getUser(user))){
+        if(App.bot.getUserChannelDao().getChannel("#" + channel).isOp(App.bot.getUserChannelDao().getUser(user))){
             return UserLevel.MODERATOR;
         }
-        if ((ul == UserLevel.MODERATOR) || ul == UserLevel.IGNORED) {
+        if ((ul == UserLevel.REGULAR) || ul == UserLevel.IGNORED) {
             return ul;
         }
-        if (App.bot.channels.get(channel).subscriberStorage.contains(user)) {
-            App.bot.channels.get(channel).subscriberStorage.remove(user);
+        if (App.bot.channels.get(channel).subscriberStorage.remove(user)) {
             return UserLevel.SUBSCRIBER;
         }
 
