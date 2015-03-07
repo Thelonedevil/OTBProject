@@ -172,7 +172,7 @@ public class App {
     }
     public static class BotThread extends Thread{
         @Override
-        public void run(){
+        public void run() {
             try {
                 logger.info("Bot Started");
                 bot.startBot();
@@ -182,6 +182,7 @@ public class App {
             } catch (IrcException e) {
                 logger.catching(e);
             }
+
         }
     }
 }

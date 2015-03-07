@@ -83,7 +83,7 @@ public class ChannelMessageReceiver implements Runnable {
 
         // Do script (processedMsg.getResponse is the script path)
         if (processedMsg.isScript()) {
-            boolean success = ScriptProcessor.process(message, db, processedMsg.getArgs(), channelName, destinationChannel.getName(), user, ul);
+            boolean success = ScriptProcessor.process(message, db, command, processedMsg.getArgs(), channelName, destinationChannel.getName(), user, ul);
             if (!success) {
                 return;
             }
