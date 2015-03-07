@@ -75,9 +75,9 @@ public class DatabaseWrapper {
         String sql = "CREATE TABLE IF NOT EXISTS " + name + " (";
         for (String key : table) {
             if (key.equals(primaryKey)) {
-                sql = sql + key + " PRIMARY KEY TEXT, ";
+                sql = sql + key + " TEXT COLLATE NOCASE PRIMARY KEY, ";
             } else {
-                sql = sql + key + " TEXT, ";
+                sql = sql + key + " TEXT COLLATE NOCASE, ";
             }
         }
         sql = sql.substring(0, sql.length() - 2) + ")";
@@ -158,7 +158,7 @@ public class DatabaseWrapper {
             preparedStatement.setString(1, identifier);
             ResultSet rs = preparedStatement.executeQuery();
             while (rs.next()) {
-                if (rs.getString(fieldName).equals(identifier)) {
+                if (rs.getString(fieldName).equalsIgnoreCase(identifier)) {
                     bool = true;
                 }
             }
