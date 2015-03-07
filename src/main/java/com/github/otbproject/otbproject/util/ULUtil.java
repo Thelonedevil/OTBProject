@@ -3,7 +3,6 @@ package com.github.otbproject.otbproject.util;
 
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
-import com.github.otbproject.otbproject.users.SubscriberStorage;
 import com.github.otbproject.otbproject.users.UserLevel;
 import com.github.otbproject.otbproject.users.Users;
 
@@ -13,18 +12,27 @@ import com.github.otbproject.otbproject.users.Users;
 public class ULUtil {
 
     public static UserLevel getUserLevel(DatabaseWrapper db, String channel, String user) {
+        if (user.equals(channel)) {
+            return UserLevel.BROADCASTER;
+        }
+
+        UserLevel ul = null;
         if (Users.exists(db, user)) {
-            return Users.get(db, user).getUserLevel();
+            ul = Users.get(db, user).getUserLevel();
+        }
+
+        if (ul == UserLevel.SUPER_MODERATOR) {
+            return ul;
+        }
+        if(App.bot.getUserChannelDao().getChannel(channel).isOp(App.bot.getUserChannelDao().getUser(user))){
+            return UserLevel.MODERATOR;
+        }
+        if ((ul == UserLevel.MODERATOR) || ul == UserLevel.IGNORED) {
+            return ul;
         }
         if (App.bot.channels.get(channel).subscriberStorage.contains(user)) {
             App.bot.channels.get(channel).subscriberStorage.remove(user);
             return UserLevel.SUBSCRIBER;
-        }
-        if (user.equals(channel)) {
-            return UserLevel.BROADCASTER;
-        }
-        if(App.bot.getUserChannelDao().getChannel(channel).isOp(App.bot.getUserChannelDao().getUser(user))){
-            return UserLevel.MODERATOR;
         }
 
         // Default
