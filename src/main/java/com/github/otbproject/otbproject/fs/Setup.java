@@ -1,6 +1,8 @@
 package com.github.otbproject.otbproject.fs;
 
 import com.github.otbproject.otbproject.App;
+import com.github.otbproject.otbproject.commands.loader.FSCommandLoader;
+import com.github.otbproject.otbproject.commands.loader.LoadingSet;
 
 import java.io.File;
 import java.io.IOException;
@@ -68,8 +70,13 @@ public class Setup {
         createDirs(FSUtil.dataDir() + File.separator + FSUtil.DirNames.CHANNELS + File.separator + channel);
         String mainDBPath = FSUtil.dataDir() + File.separator + FSUtil.DirNames.CHANNELS + File.separator + channel + File.separator + FSUtil.DatabaseNames.MAIN;
         File mainDB = new File(mainDBPath);
-        if (!mainDB.exists() && !mainDB.createNewFile()) {
-            App.logger.error("Unable to create database file: " + mainDBPath);
+        if (!mainDB.exists()) {
+            if (!mainDB.createNewFile()) {
+                App.logger.error("Unable to create database file: " + mainDBPath);
+            } else {
+                FSCommandLoader.LoadLoadedCommands(channel, LoadingSet.BOTH);
+                FSCommandLoader.LoadLoadedAliases(channel, LoadingSet.BOTH);
+            }
         }
     }
 
