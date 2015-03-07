@@ -37,7 +37,7 @@ public class Setup {
         String mainDBPath = FSUtil.dataDir() + File.separator + FSUtil.DirNames.BOT_CHANNEL + File.separator + FSUtil.DatabaseNames.MAIN;
         File mainDB = new File(mainDBPath);
         if (!mainDB.exists() && !mainDB.createNewFile()) {
-            App.logger.error("Unable to create database file: " + mainDBPath);
+            throw new IOException("Unable to create database file: " + mainDBPath);
         }
 
         // Defaults Directory
@@ -72,7 +72,7 @@ public class Setup {
         File mainDB = new File(mainDBPath);
         if (!mainDB.exists()) {
             if (!mainDB.createNewFile()) {
-                App.logger.error("Unable to create database file: " + mainDBPath);
+                throw new IOException("Unable to create database file: " + mainDBPath);
             } else {
                 FSCommandLoader.LoadLoadedCommands(channel, LoadingSet.BOTH);
                 FSCommandLoader.LoadLoadedAliases(channel, LoadingSet.BOTH);
