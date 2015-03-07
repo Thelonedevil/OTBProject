@@ -189,6 +189,23 @@ public class ParserTest {
         args[1] = "people";
         parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, "Hi" + TS + "ifargs" + ES + " " + EE + TE + TS + "args" + TE + ".");
         assertEquals("Hi awesome people.", parsed);
+
+        // No args
+        String rawMsg = TS + "ifarg1" + ES + "args!" + EE + ES + "no args :(" + EE + TE;
+        args = new String[0];
+        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, rawMsg);
+        assertEquals("no args :(", parsed);
+        // 1 arg
+        args = "test".split(" ");
+        assertEquals(1, args.length);
+        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, rawMsg);
+        assertEquals("args!", parsed);
+    }
+
+    @Test
+    // Test [[fromargN.modifier{{}}]]
+    public void fromargNTest() {
+        // TODO write
     }
 
     @Test
@@ -232,6 +249,17 @@ public class ParserTest {
         assertEquals(5, args.length);
         parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, rawMsg);
         assertEquals("Watch all perspectives at http://kadgar.net/live/the_lone_devil/maddiiemaneater/mktheworst/aureylian/nthportal/", parsed);
+
+        // No args
+        rawMsg = TS + "ifarg1" + ES + "an arg!" + EE + ES + "no args :(" + EE + TE;
+        args = new String[0];
+        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, rawMsg);
+        assertEquals("no args :(", parsed);
+        // 1 arg
+        args = "test".split(" ");
+        assertEquals(1, args.length);
+        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, rawMsg);
+        assertEquals("an arg!", parsed);
     }
 
     @Test
@@ -341,6 +369,12 @@ public class ParserTest {
         assertEquals(3, args.length);
         parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, "There are " + TS + "numargs" + TE + " args.");
         assertEquals("There are 3 args.", parsed);
+    }
+
+    @Test
+    // Test [[equal{{}}{{}}{{}}{{}}]]
+    public void equalTest() {
+        // TODO write
     }
 
     @Test
