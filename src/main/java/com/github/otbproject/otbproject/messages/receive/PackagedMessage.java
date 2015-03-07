@@ -25,10 +25,6 @@ public class PackagedMessage {
         this(message, user, channel, channel, userLevel, messagePriority);
     }
 
-    public PackagedMessage(MessageEvent event) {
-        this(event.getMessage(), event.getUser().getNick(), event.getChannel().getName().replace("#", ""), getUserLevelFromEvent(event), MessagePriority.DEFAULT);
-    }
-
     public String getMessage() {
         return message;
     }
@@ -53,8 +49,4 @@ public class PackagedMessage {
         return messagePriority;
     }
 
-    private static UserLevel getUserLevelFromEvent(MessageEvent event) {
-        // TODO get correct UserLevel info from event and stuff
-        return UserLevel.DEFAULT;
-    }
 }
