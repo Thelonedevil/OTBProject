@@ -30,8 +30,7 @@ public class ULUtil {
         if ((ul == UserLevel.REGULAR) || ul == UserLevel.IGNORED) {
             return ul;
         }
-        if (App.bot.channels.get(channel).subscriberStorage.contains(user)) {
-            App.bot.channels.get(channel).subscriberStorage.remove(user);
+        if (App.bot.channels.get(channel).subscriberStorage.remove(user)) {
             return UserLevel.SUBSCRIBER;
         }
 
