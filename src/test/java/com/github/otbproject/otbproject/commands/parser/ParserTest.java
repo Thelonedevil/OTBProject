@@ -372,9 +372,24 @@ public class ParserTest {
     }
 
     @Test
-    // Test [[equal{{}}{{}}{{}}{{}}]]
+    // Test [[equal{{compare1}}{{compare2}}{{same}}{{diff}}]]
     public void equalTest() {
-        // TODO write
+        // Broadcaster test
+        String rawMsg = "[[equal{{[[user]]}}{{[[channel]]}}{{You are the broadcaster!}}{{You are not the broadcaster.}}]]";
+        String[] args = new String[0];
+        String parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, rawMsg);
+        assertEquals("You are not the broadcaster.", parsed);
+
+        parsed = CommandResponseParser.parse(USER, "nthportal", COUNT, args, rawMsg);
+        assertEquals("You are the broadcaster!", parsed);
+
+        // Say hi only to the_lone_devil
+        rawMsg = "[[equal{{the_lone_devil}}{{[[user]]}}{{Hi Justin!}}]]";
+        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, rawMsg);
+        assertEquals("", parsed);
+
+        parsed = CommandResponseParser.parse("the_lone_devil", CHANNEL, COUNT, args, rawMsg);
+        assertEquals("Hi Justin!", parsed);
     }
 
     @Test
