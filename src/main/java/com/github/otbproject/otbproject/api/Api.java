@@ -37,8 +37,8 @@ public class Api {
 
     public static void leaveChannel(String channelName) {
         App.bot.channels.remove(channelName).leave();
-        App.bot.getUserChannelDao().getChannel(channelName).send().part();
         BotConfigHelper.removeFromCurrentChannels(App.bot.configManager.getBotConfig(), channelName);
         JsonHandler.writeValue(FSUtil.dataDir() + File.separator + FSUtil.DirNames.BOT_CHANNEL + File.separator + "bot-config.json", App.bot.configManager.getBotConfig());
+        App.bot.getUserChannelDao().getChannel(channelName).send().part();
     }
 }
