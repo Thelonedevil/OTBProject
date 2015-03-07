@@ -146,9 +146,7 @@ public class App {
         try {
             logger.info("Bot Started");
             bot.startBot();
-        } catch (IOException e) {
-            logger.catching(e);
-        } catch (IrcException e) {
+        } catch (IOException | IrcException e) {
             logger.catching(e);
         }
     }
