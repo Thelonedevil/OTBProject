@@ -19,6 +19,7 @@ public class ScriptProcessor {
         Boolean success;
         Object scriptReturn;
         try {
+            App.logger.info("Running script: " + path);
             scriptReturn = new GroovyShell().parse(new File(fullPath)).invokeMethod(METHOD_NAME, args);
             if ((scriptReturn == null) || !(scriptReturn instanceof Boolean)) {
                 success = true;
