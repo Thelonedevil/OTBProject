@@ -11,7 +11,6 @@ import com.github.otbproject.otbproject.fs.FSUtil;
 import com.github.otbproject.otbproject.fs.Setup;
 import com.github.otbproject.otbproject.util.JsonHandler;
 import com.github.otbproject.otbproject.util.dev.DevHelper;
-import com.sun.javaws.exceptions.InvalidArgumentException;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.ParseException;
 import org.apache.logging.log4j.LogManager;
@@ -147,8 +146,6 @@ public class App {
             String[] words = in.split(" ");
             try {
                 CmdParser.SuperParse(words);
-            } catch (InvalidArgumentException e) {
-                logger.catching(e);
             } catch (InvalidCLICommandException e) {
                 logger.info(e.getMessage());
                 CmdParser.printHelp();

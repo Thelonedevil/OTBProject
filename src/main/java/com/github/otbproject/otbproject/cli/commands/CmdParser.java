@@ -3,7 +3,6 @@ package com.github.otbproject.otbproject.cli.commands;
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.api.Api;
 import com.github.otbproject.otbproject.commands.loader.FSCommandLoader;
-import com.sun.javaws.exceptions.InvalidArgumentException;
 
 import java.util.Arrays;
 
@@ -11,7 +10,7 @@ import java.util.Arrays;
  * Created by justin on 18/02/2015.
  */
 public class CmdParser {
-    public static void SuperParse(String[] strings) throws InvalidArgumentException, InvalidCLICommandException {
+    public static void SuperParse(String[] strings) throws InvalidCLICommandException {
         try {
             switch (strings[0].toLowerCase()) {
                 case "stop":
@@ -59,32 +58,18 @@ public class CmdParser {
         try {
             switch (words[0].toLowerCase()) {
                 case "command":
-                    if (words.length > 1) {
-                        try {
+                    if (words.length > 1)
                             commandParse(Arrays.copyOfRange(words, 1, words.length - 1), channel);
-                        } catch (InvalidArgumentException e) {
-                            e.printStackTrace();
-                        }
-                    } else {
-
-                    }
                     break;
                 case "alias":
                     if (words.length > 1)
-                        try {
                             aliasParse(Arrays.copyOfRange(words, 1, words.length - 1), channel);
-                        } catch (InvalidArgumentException e) {
-                            App.logger.catching(e);
-                        }
+
                     break;
                 case "user":
                     if (words.length > 1)
-                        try {
-                            userParse(Arrays.copyOfRange(words, 1, words.length - 1), channel);
-                        } catch (InvalidArgumentException e) {
-                            e.printStackTrace();
-                        }
-                    break;
+                        userParse(Arrays.copyOfRange(words, 1, words.length - 1), channel);
+                        break;
                 default:
                     //TODO do thing saying bad
             }
@@ -93,7 +78,7 @@ public class CmdParser {
         }
     }
 
-    private static void commandParse(String[] strings, String channel) throws InvalidArgumentException {
+    private static void commandParse(String[] strings, String channel) {
         try {
             switch (strings[0].toLowerCase()) {
                 case "add":
@@ -113,14 +98,13 @@ public class CmdParser {
                         commandULSetter(Arrays.copyOfRange(strings, 1, strings.length - 1), channel);
                     break;
                 default:
-                    throw new InvalidArgumentException(strings);
             }
         } catch (ArrayIndexOutOfBoundsException e) {
             App.logger.catching(e);
         }
     }
 
-    private static void aliasParse(String[] strings, String channel) throws InvalidArgumentException {
+    private static void aliasParse(String[] strings, String channel) {
         try {
             switch (strings[0].toLowerCase()) {
                 case "add":
@@ -140,14 +124,13 @@ public class CmdParser {
                         aliasULSetter(Arrays.copyOfRange(strings, 1, strings.length - 1), channel);
                     break;
                 default:
-                    throw new InvalidArgumentException(strings);
             }
         } catch (ArrayIndexOutOfBoundsException e) {
             App.logger.catching(e);
         }
     }
 
-    private static void userParse(String[] strings, String channel) throws InvalidArgumentException {
+    private static void userParse(String[] strings, String channel){
         try {
             switch (strings[0].toLowerCase()) {
                 case "add":
@@ -162,8 +145,7 @@ public class CmdParser {
                     if (strings.length > 1)
                         userDeleter(Arrays.copyOfRange(strings, 1, strings.length - 1), channel);
                     break;
-                default:
-                    throw new InvalidArgumentException(strings);
+                default:;
             }
         } catch (ArrayIndexOutOfBoundsException e) {
             App.logger.catching(e);
