@@ -46,12 +46,15 @@ Version 0.2.0 [WIP]
 |`!command` `remove | delete | rm | del`||`<command>`||
 |`!command` `list`||||
 |`!command` `raw`||`<command>`||
+|`!command` `enable`||`<command>`||
+|`!command` `disable`||`<command>`||
 |`!alias-meta` `add | new`||`<alias>` `<command>`||
+|`!alias-meta` `set`||`<alias>` `<command>`||
 |`!alias-meta` `remove | delete | rm | del`||`<alias>`||
 |`!alias-meta` `list`||||
 |`!alias-meta` `getCommand`||`<alias>`||
-|`!disable`||`<command>`||
-|`!enable`||`<command>`||
+|`!alias-meta` `enable`||`<alias>`||
+|`!alias-meta` `disable`||`<alias>`||
 |`!setExecUL`||`<command>` `<user level>`||
 |`!setMinArgs`||`<command>` `<min args>`||
 |`!rename`||`<old command name>` `<new command name>`||
@@ -89,13 +92,15 @@ Additionally, there is the user level 'Ignored', which can be used with `!assign
 
 | Alias | Command |
 |:------|:--------|
-|`!alias`|`!alias-meta add`|
-|`!unalias`|`!alias-meta remove`|
 |`!commands`|`!command`|
 |`!addcom`|`!command add`|
 |`!delcom`|`!command delete`|
 |`!setcom`|`!command set`|
 |`!editcom`|`!command set`|
+|`!enable`|`!command enable`|
+|`!disable`|`!command disable`|
+|`!alias`|`!alias-meta add`|
+|`!unalias`|`!alias-meta remove`|
 
 #### Command Responses
 
