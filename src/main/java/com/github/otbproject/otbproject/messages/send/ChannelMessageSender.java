@@ -13,9 +13,9 @@ public class ChannelMessageSender implements Runnable {
     }
 
     public void run() {
-        MessageOut message;
-
         try {
+            MessageOut message;
+
             while (true) {
                 message = queue.take();
                 SendingWrapper.send(channel.getName(), message.getMessage());
@@ -23,6 +23,8 @@ public class ChannelMessageSender implements Runnable {
             }
         } catch (InterruptedException e) {
             App.logger.info("Stopped message sender for " + channel.getName());
+        } catch (Exception e) {
+            App.logger.catching(e);
         }
     }
 }

@@ -26,9 +26,9 @@ public class ChannelMessageReceiver implements Runnable {
     }
 
     public void run() {
-        PackagedMessage packagedMessage;
-
         try {
+            PackagedMessage packagedMessage;
+
             while (true) {
                 packagedMessage = queue.take();
                 String channelName = channel.getName();
@@ -74,6 +74,8 @@ public class ChannelMessageReceiver implements Runnable {
             }
         } catch (InterruptedException e) {
             App.logger.info("Stopped message receiver for " + channel.getName());
+        } catch (Exception e) {
+            App.logger.catching(e);
         }
     }
 
