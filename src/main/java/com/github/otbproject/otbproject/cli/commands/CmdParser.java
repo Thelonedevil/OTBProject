@@ -3,7 +3,9 @@ package com.github.otbproject.otbproject.cli.commands;
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.api.Api;
 import com.github.otbproject.otbproject.commands.loader.FSCommandLoader;
+import com.github.otbproject.otbproject.commands.loader.LoadingSet;
 
+import java.io.IOException;
 import java.util.Arrays;
 
 /**
@@ -44,6 +46,23 @@ public class CmdParser {
                 case "leave":
                     if (strings.length > 1){
                         Api.leaveChannel(strings[1].toLowerCase());
+                    }
+                    break;
+                case "reload":
+                    if (strings.length > 1){
+                        try {
+                            FSCommandLoader.LoadLoadedCommands(strings[1], LoadingSet.BOTH);
+                        } catch (IOException e) {
+                            App.logger.catching(e);
+                        }
+                        try {
+                            FSCommandLoader.LoadLoadedAliases(strings[1], LoadingSet.BOTH);
+                        } catch (IOException e) {
+                            App.logger.catching(e);
+                        }
+                    }else{
+                        FSCommandLoader.LoadLoadedCommands(LoadingSet.BOTH);
+                        FSCommandLoader.LoadLoadedAliases(LoadingSet.BOTH);
                     }
                     break;
                 default:
@@ -145,7 +164,7 @@ public class CmdParser {
                     if (strings.length > 1)
                         userDeleter(Arrays.copyOfRange(strings, 1, strings.length - 1), channel);
                     break;
-                default:;
+                default:
             }
         } catch (ArrayIndexOutOfBoundsException e) {
             App.logger.catching(e);
