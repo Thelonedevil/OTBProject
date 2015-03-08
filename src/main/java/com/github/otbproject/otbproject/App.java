@@ -119,9 +119,6 @@ public class App {
         //TODO get botname and oauth from config asell as possible server address and port
         Configuration.Builder configurationBuilder = new Configuration.Builder().setName(account.getName()).setAutoNickChange(false).setCapEnabled(false).addListener(listener).setServerHostname("irc.twitch.tv")
                 .setServerPort(6667).setServerPassword(account.getOauth()).setEncoding(Charset.forName("UTF-8"));
-        for (String channel : channels) {
-            configurationBuilder.addAutoJoinChannel("#" + channel);
-        }
         Configuration configuration = configurationBuilder.buildConfiguration();
 
         logger.info("Bot configuration built");
@@ -131,14 +128,13 @@ public class App {
         bot.configManager.setAccount(account);
         bot.configManager.setGeneralConfig(generalConfig);
         bot.configManager.setBotConfig(botConfig);
-
+        botRunnable = new BotRunnable();
+        botThread = new Thread(botRunnable);
+        botThread.start();
         // Load channels
         for (String channelName : channels) {
             Api.joinChannel(channelName);
         }
-        botRunnable = new BotRunnable();
-        botThread = new Thread(botRunnable);
-        botThread.start();
         Scanner scanner = new Scanner(System.in);
         while(scanner.hasNext()){
             String in = scanner.nextLine();
