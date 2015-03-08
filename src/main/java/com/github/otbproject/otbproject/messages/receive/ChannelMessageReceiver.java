@@ -27,6 +27,7 @@ public class ChannelMessageReceiver implements Runnable {
 
     public void run() {
         try {
+            Thread.currentThread().setName(channel.getName() + " Message Receiver");
             PackagedMessage packagedMessage;
 
             while (true) {

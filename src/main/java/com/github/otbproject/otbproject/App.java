@@ -1,7 +1,6 @@
 package com.github.otbproject.otbproject;
 
 import com.github.otbproject.otbproject.api.Api;
-import com.github.otbproject.otbproject.channels.Channel;
 import com.github.otbproject.otbproject.cli.ArgParser;
 import com.github.otbproject.otbproject.cli.commands.CmdParser;
 import com.github.otbproject.otbproject.cli.commands.InvalidCLICommandException;
@@ -36,6 +35,7 @@ public class App {
     public static CustomBot bot;
     public static final Logger logger = LogManager.getLogger();
     public static Thread botThread;
+    public static Runnable botRunnable;
 
     public static void main(String[] args) {
         try {
@@ -137,7 +137,8 @@ public class App {
         for (String channelName : channels) {
             Api.joinChannel(channelName);
         }
-        botThread = new BotThread();
+        botRunnable = new BotRunnable();
+        botThread = new Thread(botRunnable);
         botThread.start();
         Scanner scanner = new Scanner(System.in);
         while(scanner.hasNext()){
@@ -155,10 +156,11 @@ public class App {
         }
         scanner.close();
     }
-    public static class BotThread extends Thread{
+    public static class BotRunnable implements Runnable{
         @Override
         public void run() {
             try {
+                Thread.currentThread().setName("Main Bot");
                 logger.info("Bot Started");
                 bot.startBot();
                 logger.info("Bot Stopped");

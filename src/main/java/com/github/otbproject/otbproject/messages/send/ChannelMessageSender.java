@@ -14,6 +14,7 @@ public class ChannelMessageSender implements Runnable {
 
     public void run() {
         try {
+            Thread.currentThread().setName(channel.getName() + " Message Sender");
             MessageOut message;
 
             while (true) {

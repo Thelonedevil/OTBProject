@@ -27,7 +27,7 @@ public class CmdParser {
                     FSCommandLoader.LoadCommands();
                     FSCommandLoader.LoadAliases();
                     try {
-                        App.botThread = new App.BotThread();
+                        App.botThread = new Thread(App.botRunnable);
                         App.botThread.start();
                     } catch (IllegalThreadStateException e) {
                         App.logger.catching(e);

@@ -15,6 +15,7 @@ public class CooldownRemover implements Runnable {
     }
 
     public void run() {
+        Thread.currentThread().setName("Cooldown Remover");
         try {
             Thread.sleep(waitInSeconds * 1000);
         } catch (InterruptedException e) {
