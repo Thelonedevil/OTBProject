@@ -11,16 +11,17 @@ import com.github.otbproject.otbproject.fs.FSUtil;
 import com.github.otbproject.otbproject.fs.Setup;
 import com.github.otbproject.otbproject.util.JsonHandler;
 import com.github.otbproject.otbproject.util.dev.DevHelper;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.ParseException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
 import org.pircbotx.Configuration;
 import org.pircbotx.exception.IrcException;
 import org.pircbotx.hooks.Listener;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.nio.charset.Charset;
 import java.util.HashSet;
 import java.util.Scanner;
@@ -45,13 +46,20 @@ public class App {
                 t.printStackTrace();
                 System.err.println("Attempting to log problem.");
                 // TODO log throwable
+                File file = new File("OTBProjectFatal.log");
+                file.createNewFile();
+                PrintStream ps = new PrintStream(file);
+                t.printStackTrace(ps);
+            } catch (IOException e) {
+                e.printStackTrace();
             } finally {
                 System.exit(-10);
             }
         }
     }
 
-    public static void doMain(String[] args) {
+
+    public static void doMain(String[] args){
         CommandLine cmd = null;
         try {
             cmd = ArgParser.parse(args);
@@ -136,7 +144,7 @@ public class App {
             Api.joinChannel(channelName);
         }
         Scanner scanner = new Scanner(System.in);
-        while(scanner.hasNext()){
+        while (scanner.hasNext()) {
             String in = scanner.nextLine();
             logger.info(in);
             String[] words = in.split(" ");
@@ -149,7 +157,8 @@ public class App {
         }
         scanner.close();
     }
-    public static class BotRunnable implements Runnable{
+
+    public static class BotRunnable implements Runnable {
         @Override
         public void run() {
             try {
