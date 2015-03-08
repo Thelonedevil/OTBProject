@@ -14,6 +14,10 @@ import java.io.IOException;
 
 public class Api {
     public static boolean joinChannel(String channelName) {
+        if(App.bot.channels.containsKey(channelName)){
+            App.logger.info("Failed to join channel: " + channelName + ". Already in channel");
+            return false;
+        }
         try {
             Setup.setupChannel(channelName);
         } catch (IOException e) {
@@ -23,13 +27,16 @@ public class Api {
         }
         if(App.bot.isConnected()) {
             App.bot.sendIRC().joinChannel("#"+channelName);
+        } else{
+            App.logger.error("Not connected to Twitch");
+            return false;
         }
         String channelConfPath = FSUtil.dataDir() + File.separator + FSUtil.DirNames.CHANNELS + File.separator + channelName + File.separator + "config.json";
         ChannelConfig channelConfig = ConfigValidator.validateChannelConfig(JsonHandler.readValue(channelConfPath, ChannelConfig.class));
         JsonHandler.writeValue(channelConfPath, channelConfig);
         Channel channel = new Channel(channelName, channelConfig);
         channel.join();
-        App.bot.channels.put(channel.getName(), channel);
+        App.bot.channels.put(channelName, channel);
         BotConfigHelper.addToCurrentChannels(App.bot.configManager.getBotConfig(), channelName);
         JsonHandler.writeValue(FSUtil.dataDir() + File.separator + FSUtil.DirNames.BOT_CHANNEL + File.separator + "bot-config.json", App.bot.configManager.getBotConfig());
         return true;
