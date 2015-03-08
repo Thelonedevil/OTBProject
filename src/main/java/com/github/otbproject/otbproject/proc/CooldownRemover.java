@@ -7,6 +7,7 @@ public class CooldownRemover implements Runnable {
     private String command;
     private int waitInSeconds;
     private CooldownSet cooldownSet;
+    private static int increment = 1;
 
     public CooldownRemover(String command, int waitInSeconds, CooldownSet cooldownSet) {
         this.command = command;
@@ -15,6 +16,7 @@ public class CooldownRemover implements Runnable {
     }
 
     public void run() {
+        Thread.currentThread().setName("Cooldown Remover " + increment++);
         try {
             Thread.sleep(waitInSeconds * 1000);
         } catch (InterruptedException e) {

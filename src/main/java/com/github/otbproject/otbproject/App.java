@@ -1,7 +1,9 @@
 package com.github.otbproject.otbproject;
 
-import com.github.otbproject.otbproject.channels.Channel;
+import com.github.otbproject.otbproject.api.Api;
 import com.github.otbproject.otbproject.cli.ArgParser;
+import com.github.otbproject.otbproject.cli.commands.CmdParser;
+import com.github.otbproject.otbproject.cli.commands.InvalidCLICommandException;
 import com.github.otbproject.otbproject.commands.loader.FSCommandLoader;
 import com.github.otbproject.otbproject.config.*;
 import com.github.otbproject.otbproject.eventlistener.IrcListener;
@@ -21,6 +23,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.HashSet;
+import java.util.Scanner;
 
 /**
  * Created by justin on 02/01/2015.
@@ -30,6 +33,8 @@ public class App {
     static Listener listener = new IrcListener();
     public static CustomBot bot;
     public static final Logger logger = LogManager.getLogger();
+    public static Thread botThread;
+    public static Runnable botRunnable;
 
     public static void main(String[] args) {
         try {
@@ -129,25 +134,38 @@ public class App {
 
         // Load channels
         for (String channelName : channels) {
-            try {
-                Setup.setupChannel(channelName);
-            } catch (IOException e) {
-                logger.error("Failed to setup channel: " + channelName);
-                logger.catching(e);
-                continue;
-            }
-            String channelConfPath = FSUtil.dataDir() + File.separator + FSUtil.DirNames.CHANNELS + File.separator + channelName + File.separator + "config.json";
-            ChannelConfig channelConfig = ConfigValidator.validateChannelConfig(JsonHandler.readValue(channelConfPath, ChannelConfig.class));
-            JsonHandler.writeValue(channelConfPath, channelConfig);
-            Channel channel = new Channel(channelName, channelConfig);
-            channel.join();
-            App.bot.channels.put(channel.getName(), channel);
+            Api.joinChannel(channelName);
         }
-        try {
-            logger.info("Bot Started");
-            bot.startBot();
-        } catch (IOException | IrcException e) {
-            logger.catching(e);
+        botRunnable = new BotRunnable();
+        botThread = new Thread(botRunnable);
+        botThread.start();
+        Scanner scanner = new Scanner(System.in);
+        while(scanner.hasNext()){
+            String in = scanner.nextLine();
+            logger.info(in);
+            String[] words = in.split(" ");
+            try {
+                CmdParser.SuperParse(words);
+            } catch (InvalidCLICommandException e) {
+                logger.info(e.getMessage());
+                CmdParser.printHelp();
+            }
+        }
+        scanner.close();
+    }
+    public static class BotRunnable implements Runnable{
+        @Override
+        public void run() {
+            try {
+                Thread.currentThread().setName("Main Bot");
+                logger.info("Bot Started");
+                bot.startBot();
+                logger.info("Bot Stopped");
+            } catch (IOException | IrcException e) {
+                logger.catching(e);
+            }
+
         }
     }
+
 }

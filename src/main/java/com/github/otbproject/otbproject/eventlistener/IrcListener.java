@@ -1,6 +1,7 @@
 package com.github.otbproject.otbproject.eventlistener;
 
 import com.github.otbproject.otbproject.App;
+import com.github.otbproject.otbproject.api.Api;
 import com.github.otbproject.otbproject.channels.Channel;
 import com.github.otbproject.otbproject.messages.receive.PackagedMessage;
 import com.github.otbproject.otbproject.messages.send.MessagePriority;
@@ -43,10 +44,6 @@ public class IrcListener extends ListenerAdapter {
 
     @Override
     public void onPart(PartEvent event) {
-        //TODO move this to somewhere else (probably be in the CLI leave command executor)
-        if (event.getUser().getNick().equalsIgnoreCase(event.getBot().getNick())) {
-            App.bot.channels.remove(event.getChannel().getName().replace("#", "")).leave();
-        }
     }
 
     @Override
