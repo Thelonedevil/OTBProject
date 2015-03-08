@@ -104,6 +104,8 @@ public class App {
 
         FSCommandLoader.LoadCommands();
         FSCommandLoader.LoadAliases();
+        FSCommandLoader.LoadBotCommands();
+        FSCommandLoader.LoadBotAliases();
 
         // TODO remove before release
         DevHelper.run(args);
