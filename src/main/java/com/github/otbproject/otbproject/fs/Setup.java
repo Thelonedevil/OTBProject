@@ -1,6 +1,5 @@
 package com.github.otbproject.otbproject.fs;
 
-import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.commands.loader.FSCommandLoader;
 import com.github.otbproject.otbproject.commands.loader.LoadingSet;
 
@@ -36,8 +35,12 @@ public class Setup {
         // Create bot database
         String mainDBPath = FSUtil.dataDir() + File.separator + FSUtil.DirNames.BOT_CHANNEL + File.separator + FSUtil.DatabaseNames.MAIN;
         File mainDB = new File(mainDBPath);
-        if (!mainDB.exists() && !mainDB.createNewFile()) {
-            throw new IOException("Unable to create database file: " + mainDBPath);
+        if (!mainDB.exists()) {
+            if (!mainDB.createNewFile()) {
+                throw new IOException("Unable to create database file: " + mainDBPath);
+            }
+            FSCommandLoader.LoadLoadedBotCommands();
+            FSCommandLoader.LoadLoadedBotAliases();
         }
 
         // Defaults Directory

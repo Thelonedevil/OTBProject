@@ -129,6 +129,51 @@ public class FSCommandLoader {
         }
     }
 
+
+    public static void LoadBotCommands() {
+        // Get commands from files
+        ArrayList<LoadedCommand> loadedCommands = getCommands(FSUtil.commandsDir() + File.separator + FSUtil.DirNames.BOT_CHANNEL + File.separator + FSUtil.DirNames.TO_LOAD);
+
+        DatabaseWrapper db = DatabaseHelper.getBotDatabase();
+        // Load all-channels commands
+        for (LoadedCommand command : loadedCommands) {
+            CommandLoader.addCommandFromLoadedCommand(db, command);
+        }
+    }
+
+    public static void LoadBotAliases() {
+        // Get aliases from files
+        ArrayList<LoadedAlias> loadedAliases = getAliases(FSUtil.aliasesDir() + File.separator + FSUtil.DirNames.ALL_CHANNELS + File.separator + FSUtil.DirNames.TO_LOAD);
+
+        DatabaseWrapper db = DatabaseHelper.getBotDatabase();
+        // Load all-channels aliases
+        for (LoadedAlias alias : loadedAliases) {
+            CommandLoader.addAliasFromLoadedAlias(db, alias);
+        }
+    }
+
+    public static void LoadLoadedBotCommands() {
+        // Get commands from files
+        ArrayList<LoadedCommand> loadedCommands = getCommands(FSUtil.commandsDir() + File.separator + FSUtil.DirNames.BOT_CHANNEL + File.separator + FSUtil.DirNames.LOADED);
+
+        DatabaseWrapper db = DatabaseHelper.getBotDatabase();
+        // Load all-channels commands
+        for (LoadedCommand command : loadedCommands) {
+            CommandLoader.addCommandFromLoadedCommand(db, command);
+        }
+    }
+
+    public static void LoadLoadedBotAliases() {
+        // Get aliases from files
+        ArrayList<LoadedAlias> loadedAliases = getAliases(FSUtil.aliasesDir() + File.separator + FSUtil.DirNames.ALL_CHANNELS + File.separator + FSUtil.DirNames.LOADED);
+
+        DatabaseWrapper db = DatabaseHelper.getBotDatabase();
+        // Load all-channels aliases
+        for (LoadedAlias alias : loadedAliases) {
+            CommandLoader.addAliasFromLoadedAlias(db, alias);
+        }
+    }
+
     private static ArrayList<LoadedCommand> getCommands(String path) {
         // Get commands from files
         ArrayList<LoadedCommand> loadedCommands = new ArrayList<LoadedCommand>();
