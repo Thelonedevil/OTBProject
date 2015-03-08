@@ -34,16 +34,16 @@ public class CmdParser {
                     break;
                 case "channel":
                     if (strings.length > 2)
-                        channelParse(Arrays.copyOfRange(strings, 2, strings.length - 1), strings[1]);
+                        channelParse(Arrays.copyOfRange(strings, 2, strings.length - 1), strings[1].toLowerCase());
                     break;
                 case "join":
                         if (strings.length > 1){
-                            Api.joinChannel(strings[1]);
+                            Api.joinChannel(strings[1].toLowerCase());
                         }
                     break;
                 case "leave":
                     if (strings.length > 1){
-                        Api.leaveChannel(strings[1]);
+                        Api.leaveChannel(strings[1].toLowerCase());
                     }
                     break;
                 default:
