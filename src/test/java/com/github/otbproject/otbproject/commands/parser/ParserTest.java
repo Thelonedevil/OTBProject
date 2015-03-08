@@ -190,7 +190,7 @@ public class ParserTest {
         parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, "Hi" + TS + "ifargs" + ES + " " + EE + TE + TS + "args" + TE + ".");
         assertEquals("Hi awesome people.", parsed);
 
-        // No args
+        // No args with string if none
         String rawMsg = TS + "ifarg1" + ES + "args!" + EE + ES + "no args :(" + EE + TE;
         args = new String[0];
         parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, rawMsg);
@@ -203,9 +203,46 @@ public class ParserTest {
     }
 
     @Test
-    // Test [[fromargN.modifier{{}}]]
+    // Test [[fromargN.modifier{{default}}]]
     public void fromargNTest() {
-        // TODO write
+        // fromarg1
+        // 0 args
+        String rawMsg = TS + "fromarg1" + TE;
+        String[] args = new String[0];
+        String parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, rawMsg);
+        assertEquals("", parsed);
+        // 0 args default
+        rawMsg = TS + "fromarg1" + ES + "word" + EE + TE;
+        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, rawMsg);
+        assertEquals("word", parsed);
+        // 1 arg
+        args = "one".split(" ");
+        assertEquals(1, args.length);
+        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, rawMsg);
+        assertEquals("one", parsed);
+        // 2 args
+        args = "one two".split(" ");
+        assertEquals(2, args.length);
+        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, rawMsg);
+        assertEquals("one two", parsed);
+
+        // fromarg2
+        // 1 arg
+        rawMsg = TS + "fromarg2" + TE;
+        args = "one".split(" ");
+        assertEquals(1, args.length);
+        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, rawMsg);
+        assertEquals("", parsed);
+        // 2 args
+        args = "one two".split(" ");
+        assertEquals(2, args.length);
+        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, rawMsg);
+        assertEquals("two", parsed);
+        // 3 args
+        args = "one two three".split(" ");
+        assertEquals(3, args.length);
+        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, rawMsg);
+        assertEquals("two three", parsed);
     }
 
     @Test
