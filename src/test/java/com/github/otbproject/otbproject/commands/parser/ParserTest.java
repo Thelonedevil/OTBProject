@@ -189,6 +189,60 @@ public class ParserTest {
         args[1] = "people";
         parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, "Hi" + TS + "ifargs" + ES + " " + EE + TE + TS + "args" + TE + ".");
         assertEquals("Hi awesome people.", parsed);
+
+        // No args with string if none
+        String rawMsg = TS + "ifarg1" + ES + "args!" + EE + ES + "no args :(" + EE + TE;
+        args = new String[0];
+        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, rawMsg);
+        assertEquals("no args :(", parsed);
+        // 1 arg
+        args = "test".split(" ");
+        assertEquals(1, args.length);
+        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, rawMsg);
+        assertEquals("args!", parsed);
+    }
+
+    @Test
+    // Test [[fromargN.modifier{{default}}]]
+    public void fromargNTest() {
+        // fromarg1
+        // 0 args
+        String rawMsg = TS + "fromarg1" + TE;
+        String[] args = new String[0];
+        String parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, rawMsg);
+        assertEquals("", parsed);
+        // 0 args default
+        rawMsg = TS + "fromarg1" + ES + "word" + EE + TE;
+        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, rawMsg);
+        assertEquals("word", parsed);
+        // 1 arg
+        args = "one".split(" ");
+        assertEquals(1, args.length);
+        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, rawMsg);
+        assertEquals("one", parsed);
+        // 2 args
+        args = "one two".split(" ");
+        assertEquals(2, args.length);
+        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, rawMsg);
+        assertEquals("one two", parsed);
+
+        // fromarg2
+        // 1 arg
+        rawMsg = TS + "fromarg2" + TE;
+        args = "one".split(" ");
+        assertEquals(1, args.length);
+        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, rawMsg);
+        assertEquals("", parsed);
+        // 2 args
+        args = "one two".split(" ");
+        assertEquals(2, args.length);
+        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, rawMsg);
+        assertEquals("two", parsed);
+        // 3 args
+        args = "one two three".split(" ");
+        assertEquals(3, args.length);
+        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, rawMsg);
+        assertEquals("two three", parsed);
     }
 
     @Test
@@ -232,6 +286,17 @@ public class ParserTest {
         assertEquals(5, args.length);
         parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, rawMsg);
         assertEquals("Watch all perspectives at http://kadgar.net/live/the_lone_devil/maddiiemaneater/mktheworst/aureylian/nthportal/", parsed);
+
+        // No args
+        rawMsg = TS + "ifarg1" + ES + "an arg!" + EE + ES + "no args :(" + EE + TE;
+        args = new String[0];
+        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, rawMsg);
+        assertEquals("no args :(", parsed);
+        // 1 arg
+        args = "test".split(" ");
+        assertEquals(1, args.length);
+        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, rawMsg);
+        assertEquals("an arg!", parsed);
     }
 
     @Test
@@ -341,6 +406,27 @@ public class ParserTest {
         assertEquals(3, args.length);
         parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, "There are " + TS + "numargs" + TE + " args.");
         assertEquals("There are 3 args.", parsed);
+    }
+
+    @Test
+    // Test [[equal{{compare1}}{{compare2}}{{same}}{{diff}}]]
+    public void equalTest() {
+        // Broadcaster test
+        String rawMsg = "[[equal{{[[user]]}}{{[[channel]]}}{{You are the broadcaster!}}{{You are not the broadcaster.}}]]";
+        String[] args = new String[0];
+        String parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, rawMsg);
+        assertEquals("You are not the broadcaster.", parsed);
+
+        parsed = CommandResponseParser.parse(USER, "nthportal", COUNT, args, rawMsg);
+        assertEquals("You are the broadcaster!", parsed);
+
+        // Say hi only to the_lone_devil
+        rawMsg = "[[equal{{the_lone_devil}}{{[[user]]}}{{Hi Justin!}}]]";
+        parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, rawMsg);
+        assertEquals("", parsed);
+
+        parsed = CommandResponseParser.parse("the_lone_devil", CHANNEL, COUNT, args, rawMsg);
+        assertEquals("Hi Justin!", parsed);
     }
 
     @Test

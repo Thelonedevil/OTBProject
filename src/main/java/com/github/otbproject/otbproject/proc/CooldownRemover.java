@@ -16,10 +16,12 @@ public class CooldownRemover implements Runnable {
 
     public void run() {
         try {
-            Thread.currentThread().sleep(waitInSeconds * 1000);
+            Thread.sleep(waitInSeconds * 1000);
         } catch (InterruptedException e) {
             App.logger.info("Interrupted CooldownRemover for command '" + command + "'");
             App.logger.catching(Level.DEBUG, e);
+        } catch (Exception e) {
+            App.logger.catching(e);
         } finally {
             cooldownSet.remove(command);
         }
