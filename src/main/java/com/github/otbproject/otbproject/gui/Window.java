@@ -6,12 +6,13 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
 
 /**
  * Created by Justin on 09/03/2015.
  */
 public class Window extends JFrame implements ActionListener {
-
+    Window frame = this;
     JPanel pnlButtons = new JPanel();
     JPanel pnlText = new JPanel();
     JButton close = new JButton("Close Window");
@@ -33,7 +34,7 @@ public class Window extends JFrame implements ActionListener {
         }
         setSize(400, 300);
         setResizable(false);
-        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
         pnlText.add(text);
         pnlButtons.add(close);
         pnlButtons.add(exit);
@@ -42,6 +43,7 @@ public class Window extends JFrame implements ActionListener {
         setVisible(true);
         close.addActionListener(this);
         exit.addActionListener(this);
+        addWindowListener(this.new Closing());
     }
 
     @Override
@@ -70,8 +72,19 @@ public class Window extends JFrame implements ActionListener {
             setWrapStyleWord(true);
             setFocusable(false);
             setOpaque(false);
-            setPreferredSize(new Dimension(300,200));
+            setPreferredSize(new Dimension(300,220));
             setFont(UIManager.getFont("Label.font"));
         }
     }
+    private class Closing extends WindowAdapter {
+        @Override
+        public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+            if(JOptionPane.showConfirmDialog(frame,"This will stop the bot from running","Are you sure?",JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION ) {
+                if (App.bot != null && App.bot.isConnected()) {
+                    App.bot.shutdown();
+                }
+                System.exit(0);
+            }
+    }
+}
 }
