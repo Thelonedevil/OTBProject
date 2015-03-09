@@ -42,9 +42,6 @@ public class App {
 
     public static void main(String[] args) {
         try {
-            if (!GraphicsEnvironment.isHeadless()) {
-                Window gui = new Window();// I know this variable "gui" is never used, that is just how it works okay.
-            }
             doMain(args);
         } catch (Throwable t) {
             try {
@@ -155,6 +152,9 @@ public class App {
         // Load channels
         for (String channelName : channels) {
             APIChannel.join(channelName);
+        }
+        if (!GraphicsEnvironment.isHeadless()) {
+            Window gui = new Window();// I know this variable "gui" is never used, that is just how it works okay.
         }
         Scanner scanner = new Scanner(System.in);
         while (scanner.hasNext()) {
