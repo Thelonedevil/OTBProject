@@ -48,19 +48,19 @@ public class Api {
             App.logger.error("Not connected to Twitch");
             return false;
         }
-        ChannelConfig channelConfig = ConfigApi.readChannelConfig(channelName);
+        ChannelConfig channelConfig = APIConfig.readChannelConfig(channelName);
         Channel channel = new Channel(channelName, channelConfig);
         channel.join();
         App.bot.channels.put(channelName, channel);
         BotConfigHelper.addToCurrentChannels(botConfig, channelName);
-        ConfigApi.writeBotConfig();
+        APIConfig.writeBotConfig();
         return true;
     }
 
     public static void leaveChannel(String channelName) {
         App.bot.channels.remove(channelName).leave();
         BotConfigHelper.removeFromCurrentChannels(App.bot.configManager.getBotConfig(), channelName);
-        ConfigApi.writeBotConfig();
+        APIConfig.writeBotConfig();
         App.bot.getUserChannelDao().getChannel("#"+channelName).send().part();
     }
 }

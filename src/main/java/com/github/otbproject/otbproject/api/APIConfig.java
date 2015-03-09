@@ -7,7 +7,7 @@ import com.github.otbproject.otbproject.util.JsonHandler;
 
 import java.io.File;
 
-public class ConfigApi {
+public class APIConfig {
     public static final String GENERAL_CONFIG_PATH = FSUtil.configDir() + File.separator + FSUtil.ConfigFileNames.GENERAL_CONFIG;
     public static final String BOT_CONFIG_PATH = FSUtil.dataDir() + File.separator + FSUtil.DirNames.BOT_CHANNEL + File.separator + FSUtil.ConfigFileNames.BOT_CONFIG;
 

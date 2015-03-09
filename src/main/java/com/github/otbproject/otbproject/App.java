@@ -1,7 +1,7 @@
 package com.github.otbproject.otbproject;
 
 import com.github.otbproject.otbproject.api.Api;
-import com.github.otbproject.otbproject.api.ConfigApi;
+import com.github.otbproject.otbproject.api.APIConfig;
 import com.github.otbproject.otbproject.cli.ArgParser;
 import com.github.otbproject.otbproject.cli.commands.CmdParser;
 import com.github.otbproject.otbproject.cli.commands.InvalidCLICommandException;
@@ -10,7 +10,6 @@ import com.github.otbproject.otbproject.config.*;
 import com.github.otbproject.otbproject.eventlistener.IrcListener;
 import com.github.otbproject.otbproject.fs.FSUtil;
 import com.github.otbproject.otbproject.fs.Setup;
-import com.github.otbproject.otbproject.util.JsonHandler;
 import com.github.otbproject.otbproject.util.dev.DevHelper;
 
 import org.apache.commons.cli.CommandLine;
@@ -113,12 +112,12 @@ public class App {
         // Load configs
         Account account;
         if (cmd.hasOption(ArgParser.Opts.ACCOUNT_FILE)) {
-            account = ConfigApi.readAccount(cmd.getOptionValue(ArgParser.Opts.ACCOUNT_FILE));
+            account = APIConfig.readAccount(cmd.getOptionValue(ArgParser.Opts.ACCOUNT_FILE));
         } else {
-            account = ConfigApi.readAccount();
+            account = APIConfig.readAccount();
         }
-        GeneralConfig generalConfig = ConfigApi.readGeneralConfig();
-        BotConfig botConfig = ConfigApi.readBotConfig();
+        GeneralConfig generalConfig = APIConfig.readGeneralConfig();
+        BotConfig botConfig = APIConfig.readBotConfig();
 
         // Get account info
         if (cmd.hasOption(ArgParser.Opts.ACCOUNT)) {
@@ -127,7 +126,7 @@ public class App {
         if (cmd.hasOption(ArgParser.Opts.OAUTH)) {
             account.setOauth(cmd.getOptionValue(ArgParser.Opts.OAUTH));
         }
-        ConfigApi.writeAccount(account);
+        APIConfig.writeAccount(account);
 
         HashSet<String> channels = new HashSet<>(botConfig.currentChannels);
 
