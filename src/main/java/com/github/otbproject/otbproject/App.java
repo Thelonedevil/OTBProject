@@ -10,6 +10,7 @@ import com.github.otbproject.otbproject.config.*;
 import com.github.otbproject.otbproject.eventlistener.IrcListener;
 import com.github.otbproject.otbproject.fs.FSUtil;
 import com.github.otbproject.otbproject.fs.Setup;
+import com.github.otbproject.otbproject.gui.Window;
 import com.github.otbproject.otbproject.util.dev.DevHelper;
 
 import org.apache.commons.cli.CommandLine;
@@ -21,7 +22,9 @@ import org.pircbotx.Configuration;
 import org.pircbotx.exception.IrcException;
 import org.pircbotx.hooks.Listener;
 
+import java.awt.*;
 import java.io.*;
+import java.lang.management.ManagementFactory;
 import java.nio.charset.Charset;
 import java.util.HashSet;
 import java.util.Scanner;
@@ -30,6 +33,7 @@ import java.util.Scanner;
  * Created by justin on 02/01/2015.
  */
 public class App {
+    public static final String PID = ManagementFactory.getRuntimeMXBean().getName().split("@")[0];
     static Listener listener = new IrcListener();
     public static CustomBot bot;
     public static final Logger logger = LogManager.getLogger();
@@ -38,6 +42,9 @@ public class App {
 
     public static void main(String[] args) {
         try {
+            if (!GraphicsEnvironment.isHeadless()) {
+                Window gui = new Window();// I know this variable "gui" is never used, that is just how it works okay.
+            }
             doMain(args);
         } catch (Throwable t) {
             try {
