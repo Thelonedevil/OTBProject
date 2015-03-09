@@ -2,6 +2,7 @@ package com.github.otbproject.otbproject.util;
 
 
 import com.github.otbproject.otbproject.App;
+import com.github.otbproject.otbproject.api.APIChannel;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.users.UserLevel;
 import com.github.otbproject.otbproject.users.Users;
@@ -30,7 +31,7 @@ public class ULUtil {
         if ((ul == UserLevel.REGULAR) || ul == UserLevel.IGNORED) {
             return ul;
         }
-        if (App.bot.channels.get(channel).subscriberStorage.remove(user)) {
+        if (APIChannel.get(channel).subscriberStorage.remove(user)) {
             return UserLevel.SUBSCRIBER;
         }
 

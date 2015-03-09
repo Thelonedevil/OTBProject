@@ -1,6 +1,6 @@
 package com.github.otbproject.otbproject;
 
-import com.github.otbproject.otbproject.api.Api;
+import com.github.otbproject.otbproject.api.APIChannel;
 import com.github.otbproject.otbproject.api.APIConfig;
 import com.github.otbproject.otbproject.cli.ArgParser;
 import com.github.otbproject.otbproject.cli.commands.CmdParser;
@@ -147,7 +147,7 @@ public class App {
         botThread.start();
         // Load channels
         for (String channelName : channels) {
-            Api.joinChannel(channelName);
+            APIChannel.join(channelName);
         }
         Scanner scanner = new Scanner(System.in);
         while (scanner.hasNext()) {

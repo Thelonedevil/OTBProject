@@ -78,7 +78,7 @@ public class APIConfig {
     }
 
     public static void writeChannelConfig(String channel) {
-        writeChannelConfig(App.bot.channels.get(channel).getConfig(), channel);
+        writeChannelConfig(APIChannel.get(channel).getConfig(), channel);
     }
 
     private static String getAccountPath(String filename) {

@@ -8,9 +8,17 @@ import com.github.otbproject.otbproject.serviceapi.ApiRequest;
 
 import java.io.IOException;
 
-public class Api {
-    public static boolean joinChannel(String channelName) {
-        if(App.bot.channels.containsKey(channelName)){
+public class APIChannel {
+    public static boolean in(String channel) {
+        return App.bot.channels.containsKey(channel);
+    }
+    
+    public static Channel get(String channel) {
+        return App.bot.channels.get(channel);
+    }
+
+    public static boolean join(String channelName) {
+        if(in(channelName)){
             App.logger.info("Failed to join channel: " + channelName + ". Already in channel");
             return false;
         }
@@ -57,7 +65,7 @@ public class Api {
         return true;
     }
 
-    public static void leaveChannel(String channelName) {
+    public static void leave(String channelName) {
         App.bot.channels.remove(channelName).leave();
         BotConfigHelper.removeFromCurrentChannels(App.bot.configManager.getBotConfig(), channelName);
         APIConfig.writeBotConfig();

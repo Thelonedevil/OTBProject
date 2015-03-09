@@ -1,7 +1,7 @@
 package com.github.otbproject.otbproject.cli.commands;
 
 import com.github.otbproject.otbproject.App;
-import com.github.otbproject.otbproject.api.Api;
+import com.github.otbproject.otbproject.api.APIChannel;
 import com.github.otbproject.otbproject.commands.loader.FSCommandLoader;
 import com.github.otbproject.otbproject.commands.loader.LoadingSet;
 
@@ -40,12 +40,12 @@ public class CmdParser {
                     break;
                 case "join":
                         if (strings.length > 1){
-                            Api.joinChannel(strings[1].toLowerCase());
+                            APIChannel.join(strings[1].toLowerCase());
                         }
                     break;
                 case "leave":
                     if (strings.length > 1){
-                        Api.leaveChannel(strings[1].toLowerCase());
+                        APIChannel.leave(strings[1].toLowerCase());
                     }
                     break;
                 case "reload":
