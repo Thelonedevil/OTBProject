@@ -22,14 +22,4 @@ public class DatabaseHelper {
 
         return tables;
     }
-
-    public static DatabaseWrapper getChannelDatabase(String channel) {
-        String path = FSUtil.dataDir() + File.separator + FSUtil.DirNames.CHANNELS + File.separator + channel + File.separator + FSUtil.DatabaseNames.MAIN;
-        return DatabaseWrapper.createDataBase(path, getTablesHashMap());
-    }
-
-    public static DatabaseWrapper getBotDatabase() {
-        String path = FSUtil.dataDir() + File.separator + FSUtil.DirNames.BOT_CHANNEL + File.separator + FSUtil.DatabaseNames.MAIN;
-        return DatabaseWrapper.createDataBase(path, getTablesHashMap());
-    }
 }

@@ -1,13 +1,13 @@
 package com.github.otbproject.otbproject.util.dev;
 
 import com.github.otbproject.otbproject.App;
+import com.github.otbproject.otbproject.api.APIDatabase;
 import com.github.otbproject.otbproject.commands.Alias;
 import com.github.otbproject.otbproject.commands.Command;
 import com.github.otbproject.otbproject.commands.loader.CommandLoader;
 import com.github.otbproject.otbproject.commands.loader.FSCommandLoader;
 import com.github.otbproject.otbproject.commands.loader.LoadedCommand;
 import com.github.otbproject.otbproject.config.ChannelConfig;
-import com.github.otbproject.otbproject.database.DatabaseHelper;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.fs.FSUtil;
 import com.github.otbproject.otbproject.fs.Setup;
@@ -36,13 +36,13 @@ public class DevHelper {
 
     private static void loadAliases() {
         FSCommandLoader.LoadAliases();
-        DatabaseWrapper db = DatabaseHelper.getChannelDatabase("the_lone_devil");
+        DatabaseWrapper db = APIDatabase.getChannelMainDatabase("the_lone_devil");
         App.logger.info(Alias.getAliases(db));
     }
 
     private static void loadCommands() {
         FSCommandLoader.LoadCommands();
-        DatabaseWrapper db = DatabaseHelper.getChannelDatabase("the_lone_devil");
+        DatabaseWrapper db = APIDatabase.getChannelMainDatabase("the_lone_devil");
         App.logger.info(Command.getCommands(db));
     }
 
@@ -60,7 +60,7 @@ public class DevHelper {
 
     private static void testCommandLoading() {
         LoadedCommand command = JsonHandler.readValue(FSUtil.defaultsDir() + File.separator + "example-command.json", LoadedCommand.class);
-        DatabaseWrapper db = DatabaseHelper.getChannelDatabase("the_lone_devil");
+        DatabaseWrapper db = APIDatabase.getChannelMainDatabase("the_lone_devil");
         CommandLoader.addCommandFromLoadedCommand(db, command);
 
         App.logger.info("Command was successfully loaded:");
