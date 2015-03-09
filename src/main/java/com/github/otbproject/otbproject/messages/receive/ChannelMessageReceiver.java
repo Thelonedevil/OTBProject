@@ -7,7 +7,6 @@ import com.github.otbproject.otbproject.channels.Channel;
 import com.github.otbproject.otbproject.commands.Command;
 import com.github.otbproject.otbproject.config.ChannelConfigHelper;
 import com.github.otbproject.otbproject.config.GeneralConfigHelper;
-import com.github.otbproject.otbproject.database.DatabaseHelper;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.messages.send.MessageOut;
 import com.github.otbproject.otbproject.messages.send.MessagePriority;
