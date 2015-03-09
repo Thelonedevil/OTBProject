@@ -1,6 +1,7 @@
 package com.github.otbproject.otbproject.messages.receive;
 
 import com.github.otbproject.otbproject.App;
+import com.github.otbproject.otbproject.api.APIChannel;
 import com.github.otbproject.otbproject.channels.Channel;
 import com.github.otbproject.otbproject.commands.Command;
 import com.github.otbproject.otbproject.config.ChannelConfigHelper;
@@ -39,7 +40,7 @@ public class ChannelMessageReceiver implements Runnable {
                     inBotChannel = true;
                 }
 
-                Channel destinationChannel = App.bot.channels.get(packagedMessage.getDestinationChannel());
+                Channel destinationChannel = APIChannel.get(packagedMessage.getDestinationChannel());
                 if (destinationChannel == null) {
                     continue;
                 }

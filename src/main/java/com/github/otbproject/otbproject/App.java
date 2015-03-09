@@ -1,6 +1,7 @@
 package com.github.otbproject.otbproject;
 
-import com.github.otbproject.otbproject.api.Api;
+import com.github.otbproject.otbproject.api.APIChannel;
+import com.github.otbproject.otbproject.api.APIConfig;
 import com.github.otbproject.otbproject.cli.ArgParser;
 import com.github.otbproject.otbproject.cli.commands.CmdParser;
 import com.github.otbproject.otbproject.cli.commands.InvalidCLICommandException;
@@ -9,7 +10,6 @@ import com.github.otbproject.otbproject.config.*;
 import com.github.otbproject.otbproject.eventlistener.IrcListener;
 import com.github.otbproject.otbproject.fs.FSUtil;
 import com.github.otbproject.otbproject.fs.Setup;
-import com.github.otbproject.otbproject.util.JsonHandler;
 import com.github.otbproject.otbproject.util.dev.DevHelper;
 
 import org.apache.commons.cli.CommandLine;
@@ -30,7 +30,6 @@ import java.util.Scanner;
  * Created by justin on 02/01/2015.
  */
 public class App {
-    private static HashSet<String> channels = new HashSet<>();
     static Listener listener = new IrcListener();
     public static CustomBot bot;
     public static final Logger logger = LogManager.getLogger();
@@ -110,21 +109,26 @@ public class App {
         // TODO remove before release
         DevHelper.run(args);
 
-        // Load account details
-        String accountPath = FSUtil.configDir() + File.separator + "account.json";
-        Account account = ConfigValidator.validateAccount(JsonHandler.readValue(accountPath, Account.class));
-        JsonHandler.writeValue(accountPath, account);
+        // Load configs
+        Account account;
+        if (cmd.hasOption(ArgParser.Opts.ACCOUNT_FILE)) {
+            account = APIConfig.readAccount(cmd.getOptionValue(ArgParser.Opts.ACCOUNT_FILE));
+        } else {
+            account = APIConfig.readAccount();
+        }
+        GeneralConfig generalConfig = APIConfig.readGeneralConfig();
+        BotConfig botConfig = APIConfig.readBotConfig();
 
-        // Load general config
-        String generalConfPath = FSUtil.configDir() + File.separator + "general-config.json";
-        GeneralConfig generalConfig = ConfigValidator.validateGeneralConfig(JsonHandler.readValue(generalConfPath, GeneralConfig.class));
-        JsonHandler.writeValue(generalConfPath, generalConfig);
+        // Get account info
+        if (cmd.hasOption(ArgParser.Opts.ACCOUNT)) {
+            account.setName(cmd.getOptionValue(ArgParser.Opts.ACCOUNT));
+        }
+        if (cmd.hasOption(ArgParser.Opts.OAUTH)) {
+            account.setOauth(cmd.getOptionValue(ArgParser.Opts.OAUTH));
+        }
+        APIConfig.writeAccount(account);
 
-        // Load bot config
-        String botConfPath = FSUtil.dataDir() + File.separator + FSUtil.DirNames.BOT_CHANNEL + File.separator + "bot-config.json";
-        BotConfig botConfig = ConfigValidator.validateBotConfig(JsonHandler.readValue(botConfPath, BotConfig.class));
-        JsonHandler.writeValue(botConfPath, botConfig);
-        channels = new HashSet<>(botConfig.currentChannels);
+        HashSet<String> channels = new HashSet<>(botConfig.currentChannels);
 
         //TODO get botname and oauth from config asell as possible server address and port
         Configuration.Builder configurationBuilder = new Configuration.Builder().setName(account.getName()).setAutoNickChange(false).setCapEnabled(false).addListener(listener).setServerHostname("irc.twitch.tv")
@@ -143,7 +147,7 @@ public class App {
         botThread.start();
         // Load channels
         for (String channelName : channels) {
-            Api.joinChannel(channelName);
+            APIChannel.join(channelName);
         }
         Scanner scanner = new Scanner(System.in);
         while (scanner.hasNext()) {

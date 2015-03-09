@@ -7,6 +7,7 @@ public class ArgParser {
         public static final String HELP = "help";
         public static final String HELP_SHORT = "h";
         public static final String BASE_DIR = "base-dir";
+        public static final String ACCOUNT_FILE = "account-file";
         public static final String ACCOUNT = "account";
         public static final String OAUTH = "oauth";
         public static final String DEBUG = "debug";
@@ -23,7 +24,7 @@ public class ArgParser {
     private static Options getMainOptions() {
         Options options = new Options();
 
-        options.addOption(Opts.HELP_SHORT, Opts.HELP, false, "Prints this help message");
+        options.addOption(Opts.HELP_SHORT, Opts.HELP, false, "Prints this help message and exits");
 
         // --base-dir
         OptionBuilder.withLongOpt(Opts.BASE_DIR);
@@ -33,9 +34,17 @@ public class ArgParser {
         Option baseDir = OptionBuilder.create();
         options.addOption(baseDir);
 
+        // --account-file
+        OptionBuilder.withLongOpt(Opts.ACCOUNT_FILE);
+        OptionBuilder.withDescription("The name of the file in the config directory from which to load account information");
+        OptionBuilder.hasArg();
+        OptionBuilder.withArgName("ACCT_FILE_NAME");
+        Option accountFile = OptionBuilder.create();
+        options.addOption(accountFile);
+
         // --account
         OptionBuilder.withLongOpt(Opts.ACCOUNT);
-        OptionBuilder.withDescription("The twitch account with which to log in");
+        OptionBuilder.withDescription("The twitch account with which to log in. Overrides account name from --" + Opts.ACCOUNT_FILE);
         OptionBuilder.hasArg();
         OptionBuilder.withArgName("ACCT_NAME");
         Option account = OptionBuilder.create();
@@ -43,7 +52,7 @@ public class ArgParser {
 
         // --oauth
         OptionBuilder.withLongOpt(Opts.OAUTH);
-        OptionBuilder.withDescription("The oauth token with which to log in");
+        OptionBuilder.withDescription("The oauth token with which to log in. Overrides oauth token from --" + Opts.ACCOUNT_FILE);
         OptionBuilder.hasArg();
         OptionBuilder.withArgName("TOKEN");
         Option oauth = OptionBuilder.create();

@@ -1,7 +1,7 @@
 package com.github.otbproject.otbproject.eventlistener;
 
 import com.github.otbproject.otbproject.App;
-import com.github.otbproject.otbproject.api.Api;
+import com.github.otbproject.otbproject.api.APIChannel;
 import com.github.otbproject.otbproject.channels.Channel;
 import com.github.otbproject.otbproject.messages.receive.PackagedMessage;
 import com.github.otbproject.otbproject.messages.send.MessagePriority;
@@ -18,7 +18,7 @@ public class IrcListener extends ListenerAdapter {
     @Override
     public void onMessage(MessageEvent event) throws Exception {
         String channelName = event.getChannel().getName().replace("#", "");
-        Channel channel = App.bot.channels.get(channelName);
+        Channel channel = APIChannel.get(channelName);
         String user = event.getUser().getNick();
 
         String message = event.getMessage();
