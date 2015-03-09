@@ -2,6 +2,7 @@ package com.github.otbproject.otbproject.messages.receive;
 
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.api.APIChannel;
+import com.github.otbproject.otbproject.api.APIDatabase;
 import com.github.otbproject.otbproject.channels.Channel;
 import com.github.otbproject.otbproject.commands.Command;
 import com.github.otbproject.otbproject.config.ChannelConfigHelper;
@@ -47,7 +48,7 @@ public class ChannelMessageReceiver implements Runnable {
 
                 // Process commands for bot channel
                 if (inBotChannel) {
-                    DatabaseWrapper db = DatabaseHelper.getBotDatabase();
+                    DatabaseWrapper db = APIDatabase.getBotDatabase();
                     UserLevel ul = packagedMessage.getUserLevel();
                     ProcessedMessage processedMsg = MessageProcessor.process(db, packagedMessage.getMessage(), channelName, user, ul, true);
                     if (processedMsg.isScript() || !processedMsg.getResponse().isEmpty()) {

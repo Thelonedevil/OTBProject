@@ -1,7 +1,7 @@
 package com.github.otbproject.otbproject.commands.loader;
 
 import com.github.otbproject.otbproject.App;
-import com.github.otbproject.otbproject.database.DatabaseHelper;
+import com.github.otbproject.otbproject.api.APIDatabase;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.fs.FSUtil;
 import com.github.otbproject.otbproject.util.JsonHandler;
@@ -18,7 +18,7 @@ public class FSCommandLoader {
         // Load commands
         for (File file : new File(FSUtil.commandsDir() + File.separator + FSUtil.DirNames.CHANNELS).listFiles()) {
             if (file.isDirectory()) {
-                DatabaseWrapper db = DatabaseHelper.getChannelDatabase(file.getName());
+                DatabaseWrapper db = APIDatabase.getChannelMainDatabase(file.getName());
                 // Load all-channels commands
                 for (LoadedCommand command : loadedCommands) {
                     CommandLoader.addCommandFromLoadedCommand(db, command);
@@ -39,7 +39,7 @@ public class FSCommandLoader {
         // Load aliases
         for (File file : new File(FSUtil.aliasesDir() + File.separator + FSUtil.DirNames.CHANNELS).listFiles()) {
             if (file.isDirectory()) {
-                DatabaseWrapper db = DatabaseHelper.getChannelDatabase(file.getName());
+                DatabaseWrapper db = APIDatabase.getChannelMainDatabase(file.getName());
                 // Load all-channels aliases
                 for (LoadedAlias alias : loadedAliases) {
                     CommandLoader.addAliasFromLoadedAlias(db, alias);
@@ -77,7 +77,7 @@ public class FSCommandLoader {
             throw new IOException("Channel '" + channel + "' is not set up.");
         }
 
-        DatabaseWrapper db = DatabaseHelper.getChannelDatabase(channel);
+        DatabaseWrapper db = APIDatabase.getChannelMainDatabase(channel);
         String loadPath;
         if (set == LoadingSet.ALL_CHANNELS) {
             loadPath = FSUtil.commandsDir() + File.separator + FSUtil.DirNames.ALL_CHANNELS + File.separator + FSUtil.DirNames.LOADED;
@@ -115,7 +115,7 @@ public class FSCommandLoader {
             throw new IOException("Channel '" + channel + "' is not set up.");
         }
 
-        DatabaseWrapper db = DatabaseHelper.getChannelDatabase(channel);
+        DatabaseWrapper db = APIDatabase.getChannelMainDatabase(channel);
         String loadPath;
         if (set == LoadingSet.ALL_CHANNELS) {
             loadPath = FSUtil.aliasesDir() + File.separator + FSUtil.DirNames.ALL_CHANNELS + File.separator + FSUtil.DirNames.LOADED;
@@ -134,7 +134,7 @@ public class FSCommandLoader {
         // Get commands from files
         ArrayList<LoadedCommand> loadedCommands = getCommands(FSUtil.commandsDir() + File.separator + FSUtil.DirNames.BOT_CHANNEL + File.separator + FSUtil.DirNames.TO_LOAD);
 
-        DatabaseWrapper db = DatabaseHelper.getBotDatabase();
+        DatabaseWrapper db = APIDatabase.getBotDatabase();
         // Load all-channels commands
         for (LoadedCommand command : loadedCommands) {
             CommandLoader.addCommandFromLoadedCommand(db, command);
@@ -145,7 +145,7 @@ public class FSCommandLoader {
         // Get aliases from files
         ArrayList<LoadedAlias> loadedAliases = getAliases(FSUtil.aliasesDir() + File.separator + FSUtil.DirNames.ALL_CHANNELS + File.separator + FSUtil.DirNames.TO_LOAD);
 
-        DatabaseWrapper db = DatabaseHelper.getBotDatabase();
+        DatabaseWrapper db = APIDatabase.getBotDatabase();
         // Load all-channels aliases
         for (LoadedAlias alias : loadedAliases) {
             CommandLoader.addAliasFromLoadedAlias(db, alias);
@@ -156,7 +156,7 @@ public class FSCommandLoader {
         // Get commands from files
         ArrayList<LoadedCommand> loadedCommands = getCommands(FSUtil.commandsDir() + File.separator + FSUtil.DirNames.BOT_CHANNEL + File.separator + FSUtil.DirNames.LOADED);
 
-        DatabaseWrapper db = DatabaseHelper.getBotDatabase();
+        DatabaseWrapper db = APIDatabase.getBotDatabase();
         // Load all-channels commands
         for (LoadedCommand command : loadedCommands) {
             CommandLoader.addCommandFromLoadedCommand(db, command);
@@ -167,7 +167,7 @@ public class FSCommandLoader {
         // Get aliases from files
         ArrayList<LoadedAlias> loadedAliases = getAliases(FSUtil.aliasesDir() + File.separator + FSUtil.DirNames.ALL_CHANNELS + File.separator + FSUtil.DirNames.LOADED);
 
-        DatabaseWrapper db = DatabaseHelper.getBotDatabase();
+        DatabaseWrapper db = APIDatabase.getBotDatabase();
         // Load all-channels aliases
         for (LoadedAlias alias : loadedAliases) {
             CommandLoader.addAliasFromLoadedAlias(db, alias);

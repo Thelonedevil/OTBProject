@@ -1,7 +1,7 @@
 package com.github.otbproject.otbproject.channels;
 
+import com.github.otbproject.otbproject.api.APIDatabase;
 import com.github.otbproject.otbproject.config.ChannelConfig;
-import com.github.otbproject.otbproject.database.DatabaseHelper;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.messages.receive.ChannelMessageReceiver;
 import com.github.otbproject.otbproject.messages.receive.MessageReceiveQueue;
@@ -40,7 +40,7 @@ public class Channel {
         messageReceiverThread = new Thread(messageReceiver);
         messageReceiverThread.start();
 
-        db = DatabaseHelper.getChannelDatabase(name);
+        db = APIDatabase.getChannelMainDatabase(name);
 
         inChannel = true;
     }
