@@ -3,12 +3,9 @@ package com.github.otbproject.otbproject.api;
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.channels.Channel;
 import com.github.otbproject.otbproject.config.*;
-import com.github.otbproject.otbproject.fs.FSUtil;
 import com.github.otbproject.otbproject.fs.Setup;
 import com.github.otbproject.otbproject.serviceapi.ApiRequest;
-import com.github.otbproject.otbproject.util.JsonHandler;
 
-import java.io.File;
 import java.io.IOException;
 
 public class Api {
@@ -51,21 +48,19 @@ public class Api {
             App.logger.error("Not connected to Twitch");
             return false;
         }
-        String channelConfPath = FSUtil.dataDir() + File.separator + FSUtil.DirNames.CHANNELS + File.separator + channelName + File.separator + "config.json";
-        ChannelConfig channelConfig = ConfigValidator.validateChannelConfig(JsonHandler.readValue(channelConfPath, ChannelConfig.class));
-        JsonHandler.writeValue(channelConfPath, channelConfig);
+        ChannelConfig channelConfig = ConfigApi.readChannelConfig(channelName);
         Channel channel = new Channel(channelName, channelConfig);
         channel.join();
         App.bot.channels.put(channelName, channel);
-        BotConfigHelper.addToCurrentChannels(App.bot.configManager.getBotConfig(), channelName);
-        JsonHandler.writeValue(FSUtil.dataDir() + File.separator + FSUtil.DirNames.BOT_CHANNEL + File.separator + "bot-config.json", App.bot.configManager.getBotConfig());
+        BotConfigHelper.addToCurrentChannels(botConfig, channelName);
+        ConfigApi.writeBotConfig();
         return true;
     }
 
     public static void leaveChannel(String channelName) {
         App.bot.channels.remove(channelName).leave();
         BotConfigHelper.removeFromCurrentChannels(App.bot.configManager.getBotConfig(), channelName);
-        JsonHandler.writeValue(FSUtil.dataDir() + File.separator + FSUtil.DirNames.BOT_CHANNEL + File.separator + "bot-config.json", App.bot.configManager.getBotConfig());
+        ConfigApi.writeBotConfig();
         App.bot.getUserChannelDao().getChannel("#"+channelName).send().part();
     }
 }

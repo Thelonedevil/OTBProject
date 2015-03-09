@@ -28,6 +28,13 @@ public class FSUtil {
         public static final String QUOTES = "quotes.db";
     }
 
+    public static class ConfigFileNames {
+        public static final String ACCOUNT = "account.json";
+        public static final String GENERAL_CONFIG = "general-config.json";
+        public static final String BOT_CONFIG = "bot-config.json";
+        public static final String CHANNEL_CONFIG = "config.json";
+    }
+
     public static final String BASE_DIR_DEFAULT = System.getProperty("user.home") + File.separator + BASE_DIR_NAME;
     public static final String ERROR_MSG = "Failed to create directory: ";
 
