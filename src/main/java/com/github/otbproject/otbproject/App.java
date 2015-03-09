@@ -111,9 +111,23 @@ public class App {
         DevHelper.run(args);
 
         // Load configs
-        Account account = ConfigApi.readAccount();
+        Account account;
+        if (cmd.hasOption(ArgParser.Opts.ACCOUNT_FILE)) {
+            account = ConfigApi.readAccount(cmd.getOptionValue(ArgParser.Opts.ACCOUNT_FILE));
+        } else {
+            account = ConfigApi.readAccount();
+        }
         GeneralConfig generalConfig = ConfigApi.readGeneralConfig();
         BotConfig botConfig = ConfigApi.readBotConfig();
+
+        // Get account info
+        if (cmd.hasOption(ArgParser.Opts.ACCOUNT)) {
+            account.setName(cmd.getOptionValue(ArgParser.Opts.ACCOUNT));
+        }
+        if (cmd.hasOption(ArgParser.Opts.OAUTH)) {
+            account.setOauth(cmd.getOptionValue(ArgParser.Opts.OAUTH));
+        }
+        ConfigApi.writeAccount(account);
 
         HashSet<String> channels = new HashSet<>(botConfig.currentChannels);
 
