@@ -46,6 +46,7 @@ public class DefaultConfigGenerator {
         generalConfig.setPortNumber(80);
         generalConfig.setIp_binding("0.0.0.0");
         GeneralConfigHelper.initialize(generalConfig);
+        GeneralConfigHelper.permanentlyEnable(generalConfig, "!bot-enable-meta");
 
         return generalConfig;
     }
