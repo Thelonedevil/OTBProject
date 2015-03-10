@@ -151,7 +151,7 @@ public class App {
         botThread.start();
         // Load channels
         for (String channelName : channels) {
-            APIChannel.join(channelName);
+            APIChannel.join(channelName, false);
         }
         if (!GraphicsEnvironment.isHeadless()) {
             Window gui = new Window();// I know this variable "gui" is never used, that is just how it works okay.
