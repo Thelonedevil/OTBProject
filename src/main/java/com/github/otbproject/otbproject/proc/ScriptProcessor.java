@@ -46,4 +46,12 @@ public class ScriptProcessor {
 
         return success;
     }
+
+    public static void clearScriptCache(String path) {
+        CACHE.remove(path);
+    }
+
+    public static void clearScriptCache() {
+        CACHE.clear();
+    }
 }
