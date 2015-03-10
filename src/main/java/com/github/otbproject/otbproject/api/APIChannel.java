@@ -50,8 +50,7 @@ public class APIChannel {
             File channelsDir = new File(FSUtil.dataDir() + File.separator + FSUtil.DirNames.CHANNELS);
             // Checks that directory exists (so no null pointer), and if channel is already set up
             // If not, does API call to check if channel is valid
-            if ( (  !channelsDir.isDirectory()
-                    || !(new ArrayList<String>(Arrays.asList(channelsDir.list())).contains(channelName)) )
+            if (    (!channelsDir.isDirectory() || !(new ArrayList<String>(Arrays.asList(channelsDir.list())).contains(channelName)) )
                     && (ApiRequest.attemptRequest("channels/" + channelName, 3, 500) == null)   ) {
                 App.logger.info("Failed to join channel: " + channelName + ". Channel does not exist.");
                 return false;
