@@ -1,6 +1,5 @@
 package com.github.otbproject.otbproject;
 
-import com.github.otbproject.otbproject.api.APIChannel;
 import com.github.otbproject.otbproject.api.APIConfig;
 import com.github.otbproject.otbproject.cli.ArgParser;
 import com.github.otbproject.otbproject.cli.commands.CmdParser;
@@ -26,7 +25,6 @@ import java.awt.*;
 import java.io.*;
 import java.lang.management.ManagementFactory;
 import java.nio.charset.Charset;
-import java.util.HashSet;
 import java.util.Scanner;
 
 /**
@@ -132,8 +130,6 @@ public class App {
         }
         APIConfig.writeAccount(account);
 
-        HashSet<String> channels = new HashSet<>(botConfig.currentChannels);
-
         //TODO get botname and oauth from config asell as possible server address and port
         Configuration.Builder configurationBuilder = new Configuration.Builder().setName(account.getName()).setAutoNickChange(false).setCapEnabled(false).addListener(listener).setServerHostname("irc.twitch.tv")
                 .setServerPort(6667).setServerPassword(account.getOauth()).setEncoding(Charset.forName("UTF-8"));
@@ -149,10 +145,7 @@ public class App {
         botRunnable = new BotRunnable();
         botThread = new Thread(botRunnable);
         botThread.start();
-        // Load channels
-        for (String channelName : channels) {
-            APIChannel.join(channelName, false);
-        }
+
         if (!GraphicsEnvironment.isHeadless()) {
             Window gui = new Window();// I know this variable "gui" is never used, that is just how it works okay.
         }
@@ -182,8 +175,6 @@ public class App {
             } catch (IOException | IrcException e) {
                 logger.catching(e);
             }
-
         }
     }
-
 }

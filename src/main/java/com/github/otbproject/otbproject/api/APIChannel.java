@@ -26,6 +26,7 @@ public class APIChannel {
     }
 
     public static boolean join(String channelName, boolean checkValidChannel) {
+        App.logger.info("Attempting to join channel: " + channelName);
         if(in(channelName)){
             App.logger.info("Failed to join channel: " + channelName + ". Already in channel");
             return false;

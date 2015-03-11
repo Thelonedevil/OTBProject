@@ -2,6 +2,7 @@ package com.github.otbproject.otbproject.eventlistener;
 
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.api.APIChannel;
+import com.github.otbproject.otbproject.api.APIConfig;
 import com.github.otbproject.otbproject.channels.Channel;
 import com.github.otbproject.otbproject.messages.receive.PackagedMessage;
 import com.github.otbproject.otbproject.messages.send.MessagePriority;
@@ -54,6 +55,10 @@ public class IrcListener extends ListenerAdapter {
     @Override
     public void onConnect(ConnectEvent event) {
         App.bot.sendRaw().rawLine("TWITCHCLIENT 3");
+        // Load channels
+        for (String channelName : App.bot.configManager.getBotConfig().currentChannels) {
+            APIChannel.join(channelName, false);
+        }
     }
 
 }
