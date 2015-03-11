@@ -14,7 +14,7 @@ import java.util.Arrays;
 
 public class APIChannel {
     public static boolean in(String channel) {
-        return App.bot.channels.containsKey(channel);
+        return App.bot.channels.containsKey(channel) && get(channel).isInChannel();
     }
     
     public static Channel get(String channel) {
@@ -71,10 +71,15 @@ public class APIChannel {
             App.logger.error("Not connected to Twitch");
             return false;
         }
-        ChannelConfig channelConfig = APIConfig.readChannelConfig(channelName);
-        Channel channel = new Channel(channelName, channelConfig);
+        Channel channel;
+        if (!App.bot.channels.containsKey(channelName)) {
+            ChannelConfig channelConfig = APIConfig.readChannelConfig(channelName);
+            channel = new Channel(channelName, channelConfig);
+            App.bot.channels.put(channelName, channel);
+        } else {
+            channel = get(channelName);
+        }
         channel.join();
-        App.bot.channels.put(channelName, channel);
         if (!channelName.equals(App.bot.getNick())) {
             BotConfigHelper.addToCurrentChannels(botConfig, channelName);
             APIConfig.writeBotConfig();
@@ -83,7 +88,7 @@ public class APIChannel {
     }
 
     public static void leave(String channelName) {
-        App.bot.channels.remove(channelName).leave();
+        get(channelName).leave();
         if (!channelName.equals(App.bot.getNick())) {
             BotConfigHelper.removeFromCurrentChannels(App.bot.configManager.getBotConfig(), channelName);
             APIConfig.writeBotConfig();
