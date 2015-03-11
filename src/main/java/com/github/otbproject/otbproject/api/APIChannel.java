@@ -75,15 +75,19 @@ public class APIChannel {
         Channel channel = new Channel(channelName, channelConfig);
         channel.join();
         App.bot.channels.put(channelName, channel);
-        BotConfigHelper.addToCurrentChannels(botConfig, channelName);
-        APIConfig.writeBotConfig();
+        if (!channelName.equals(App.bot.getNick())) {
+            BotConfigHelper.addToCurrentChannels(botConfig, channelName);
+            APIConfig.writeBotConfig();
+        }
         return true;
     }
 
     public static void leave(String channelName) {
         App.bot.channels.remove(channelName).leave();
-        BotConfigHelper.removeFromCurrentChannels(App.bot.configManager.getBotConfig(), channelName);
-        APIConfig.writeBotConfig();
+        if (!channelName.equals(App.bot.getNick())) {
+            BotConfigHelper.removeFromCurrentChannels(App.bot.configManager.getBotConfig(), channelName);
+            APIConfig.writeBotConfig();
+        }
         App.bot.getUserChannelDao().getChannel("#"+channelName).send().part();
     }
 }
