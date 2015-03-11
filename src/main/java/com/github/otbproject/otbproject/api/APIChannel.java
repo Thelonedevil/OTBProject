@@ -3,10 +3,14 @@ package com.github.otbproject.otbproject.api;
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.channels.Channel;
 import com.github.otbproject.otbproject.config.*;
+import com.github.otbproject.otbproject.fs.FSUtil;
 import com.github.otbproject.otbproject.fs.Setup;
 import com.github.otbproject.otbproject.serviceapi.ApiRequest;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class APIChannel {
     public static boolean in(String channel) {
@@ -18,6 +22,11 @@ public class APIChannel {
     }
 
     public static boolean join(String channelName) {
+        return join(channelName, true);
+    }
+
+    public static boolean join(String channelName, boolean checkValidChannel) {
+        App.logger.info("Attempting to join channel: " + channelName);
         if(in(channelName)){
             App.logger.info("Failed to join channel: " + channelName + ". Already in channel");
             return false;
@@ -38,9 +47,15 @@ public class APIChannel {
             }
         }
 
-        if (ApiRequest.attemptRequest("channels/" + channelName, 3, 500) == null) {
-            App.logger.info("Failed to join channel: " + channelName + ". Channel does not exist.");
-            return false;
+        if (checkValidChannel) {
+            File channelsDir = new File(FSUtil.dataDir() + File.separator + FSUtil.DirNames.CHANNELS);
+            // Checks that directory exists (so no null pointer), and if channel is already set up
+            // If not, does API call to check if channel is valid
+            if (    (!channelsDir.isDirectory() || !(new ArrayList<String>(Arrays.asList(channelsDir.list())).contains(channelName)) )
+                    && (ApiRequest.attemptRequest("channels/" + channelName, 3, 500) == null)   ) {
+                App.logger.info("Failed to join channel: " + channelName + ". Channel does not exist.");
+                return false;
+            }
         }
 
         try {
