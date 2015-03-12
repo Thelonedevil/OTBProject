@@ -88,6 +88,9 @@ public class APIChannel {
     }
 
     public static void leave(String channelName) {
+        if (!in(channelName)) {
+            return;
+        }
         get(channelName).leave();
         if (!channelName.equals(App.bot.getNick())) {
             BotConfigHelper.removeFromCurrentChannels(App.bot.configManager.getBotConfig(), channelName);
