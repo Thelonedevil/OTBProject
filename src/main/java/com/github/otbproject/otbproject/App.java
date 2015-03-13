@@ -10,6 +10,8 @@ import com.github.otbproject.otbproject.eventlistener.IrcListener;
 import com.github.otbproject.otbproject.fs.FSUtil;
 import com.github.otbproject.otbproject.fs.Setup;
 import com.github.otbproject.otbproject.gui.Window;
+import com.github.otbproject.otbproject.util.UnPacker;
+import com.github.otbproject.otbproject.util.VersionClass;
 import com.github.otbproject.otbproject.util.dev.DevHelper;
 
 import org.apache.commons.cli.CommandLine;
@@ -37,6 +39,7 @@ public class App {
     public static final Logger logger = LogManager.getLogger();
     public static Thread botThread;
     public static Runnable botRunnable;
+    public static final String VERSION = new VersionClass().getVersion();
 
     public static void main(String[] args) {
         try {
@@ -102,6 +105,18 @@ public class App {
             App.logger.catching(e);
             System.exit(1);
         }
+       /* if (!VERSION.contains("SNAPSHOT")){
+            new UnPacker("/scripts", FSUtil.scriptDir());
+        }
+        File versionFile = new File(FSUtil.configDir()+File.separator+"VERSION");
+        try {
+            versionFile.createNewFile();
+            PrintStream ps = new PrintStream(versionFile);
+            ps.println(VERSION);
+        } catch (IOException e) {
+            App.logger.catching(e);
+        }
+*/
 
         FSCommandLoader.LoadCommands();
         FSCommandLoader.LoadAliases();
