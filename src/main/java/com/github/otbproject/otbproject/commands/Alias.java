@@ -47,4 +47,18 @@ public class Alias {
     public static boolean remove(DatabaseWrapper db, String aliasName) {
         return db.removeRecord(AliasFields.TABLE_NAME, aliasName, AliasFields.NAME);
     }
+
+    public static boolean addAliasFromLoadedAlias(DatabaseWrapper db, LoadedAlias loadedAlias) {
+        HashMap<String, String> map = new HashMap<String, String>();
+
+        map.put(AliasFields.NAME, loadedAlias.getName());
+        map.put(AliasFields.COMMAND, loadedAlias.getCommand());
+        map.put(AliasFields.MODIFYING_UL, loadedAlias.getModifyingUserLevel().name());
+        map.put(AliasFields.ENABLED, String.valueOf(loadedAlias.isEnabled()));
+        if (Alias.exists(db, loadedAlias.getName())) {
+            return Alias.update(db, map);
+        } else {
+            return Alias.add(db, map);
+        }
+    }
 }

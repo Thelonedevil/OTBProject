@@ -2,7 +2,6 @@ package com.github.otbproject.otbproject.commands;
 
 
 import com.github.otbproject.otbproject.App;
-import com.github.otbproject.otbproject.commands.loader.CommandLoader;
 import com.github.otbproject.otbproject.commands.loader.LoadedCommand;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.users.UserLevel;
@@ -61,12 +60,34 @@ public class Command {
     public static void incrementCount(DatabaseWrapper db, String commandName) throws SQLException {
         LoadedCommand loadedCommand = get(db, commandName);
         loadedCommand.setCount(loadedCommand.getCount() + 1);
-        CommandLoader.addCommandFromLoadedCommand(db, loadedCommand);
+        addCommandFromLoadedCommand(db, loadedCommand);
     }
 
     public static void resetCount(DatabaseWrapper db, String commandName) throws SQLException {
         LoadedCommand loadedCommand = get(db, commandName);
         loadedCommand.setCount(0);
-        CommandLoader.addCommandFromLoadedCommand(db, loadedCommand);
+        addCommandFromLoadedCommand(db, loadedCommand);
+    }
+
+    public static boolean addCommandFromLoadedCommand(DatabaseWrapper db, LoadedCommand loadedCommand) {
+        HashMap<String, String> map = new HashMap<String, String>();
+
+        map.put(CommandFields.NAME, loadedCommand.getName());
+        map.put(CommandFields.RESPONSE, loadedCommand.getResponse());
+        map.put(CommandFields.EXEC_USER_LEVEL, loadedCommand.getExecUserLevel().name());
+        map.put(CommandFields.MIN_ARGS, String.valueOf(loadedCommand.getMinArgs()));
+        map.put(CommandFields.COUNT, String.valueOf(loadedCommand.getCount()));
+        map.put(CommandFields.NAME_MODIFYING_UL, loadedCommand.modifyingUserLevels.getNameModifyingUL().name());
+        map.put(CommandFields.RESPONSE_MODIFYING_UL, loadedCommand.modifyingUserLevels.getResponseModifyingUL().name());
+        map.put(CommandFields.USER_LEVEL_MODIFYING_UL, loadedCommand.modifyingUserLevels.getUserLevelModifyingUL().name());
+        map.put(CommandFields.SCRIPT, loadedCommand.getScript());
+        map.put(CommandFields.ENABLED, String.valueOf(loadedCommand.isEnabled()));
+        map.put(CommandFields.DEBUG, String.valueOf(loadedCommand.isDebug()));
+
+        if (Command.exists(db, loadedCommand.getName())) {
+            return Command.update(db, map);
+        } else {
+            return Command.add(db, map);
+        }
     }
 }

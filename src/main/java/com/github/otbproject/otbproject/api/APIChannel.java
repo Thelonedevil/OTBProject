@@ -14,7 +14,7 @@ import java.util.Arrays;
 
 public class APIChannel {
     public static boolean in(String channel) {
-        return App.bot.channels.containsKey(channel);
+        return App.bot.channels.containsKey(channel) && get(channel).isInChannel();
     }
     
     public static Channel get(String channel) {
@@ -26,6 +26,10 @@ public class APIChannel {
     }
 
     public static boolean join(String channelName, boolean checkValidChannel) {
+        return join(channelName.toLowerCase(), checkValidChannel, true);
+    }
+
+    private static boolean join(String channelName, boolean checkValidChannel, boolean dummy) {
         App.logger.info("Attempting to join channel: " + channelName);
         if(in(channelName)){
             App.logger.info("Failed to join channel: " + channelName + ". Already in channel");
@@ -71,19 +75,33 @@ public class APIChannel {
             App.logger.error("Not connected to Twitch");
             return false;
         }
-        ChannelConfig channelConfig = APIConfig.readChannelConfig(channelName);
-        Channel channel = new Channel(channelName, channelConfig);
+        Channel channel;
+        if (!App.bot.channels.containsKey(channelName)) {
+            ChannelConfig channelConfig = APIConfig.readChannelConfig(channelName);
+            channel = new Channel(channelName, channelConfig);
+            App.bot.channels.put(channelName, channel);
+        } else {
+            channel = get(channelName);
+        }
         channel.join();
-        App.bot.channels.put(channelName, channel);
-        BotConfigHelper.addToCurrentChannels(botConfig, channelName);
-        APIConfig.writeBotConfig();
+        if (!channelName.equals(App.bot.getNick())) {
+            BotConfigHelper.addToCurrentChannels(botConfig, channelName);
+            APIConfig.writeBotConfig();
+        }
         return true;
     }
 
     public static void leave(String channelName) {
-        App.bot.channels.remove(channelName).leave();
+        leave(channelName.toLowerCase(), true);
+    }
+
+    public static void leave(String channelName, boolean dummy) {
+        if (!in(channelName) || channelName.equals(App.bot.getNick())) {
+            return;
+        }
+        get(channelName).leave();
         BotConfigHelper.removeFromCurrentChannels(App.bot.configManager.getBotConfig(), channelName);
         APIConfig.writeBotConfig();
-        App.bot.getUserChannelDao().getChannel("#"+channelName).send().part();
+        App.bot.getUserChannelDao().getChannel("#" + channelName).send().part();
     }
 }

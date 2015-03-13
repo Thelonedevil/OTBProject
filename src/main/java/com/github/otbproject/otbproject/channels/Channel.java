@@ -62,6 +62,7 @@ public class Channel {
 
         commandCooldownSet.clear();
         userCooldownSet.clear();
+        subscriberStorage.clear();
     }
 
     public String getName() {

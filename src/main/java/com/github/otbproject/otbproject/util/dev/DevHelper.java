@@ -4,7 +4,6 @@ import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.api.APIDatabase;
 import com.github.otbproject.otbproject.commands.Alias;
 import com.github.otbproject.otbproject.commands.Command;
-import com.github.otbproject.otbproject.commands.loader.CommandLoader;
 import com.github.otbproject.otbproject.commands.loader.FSCommandLoader;
 import com.github.otbproject.otbproject.commands.loader.LoadedCommand;
 import com.github.otbproject.otbproject.config.ChannelConfig;
@@ -61,7 +60,7 @@ public class DevHelper {
     private static void testCommandLoading() {
         LoadedCommand command = JsonHandler.readValue(FSUtil.defaultsDir() + File.separator + "example-command.json", LoadedCommand.class);
         DatabaseWrapper db = APIDatabase.getChannelMainDatabase("the_lone_devil");
-        CommandLoader.addCommandFromLoadedCommand(db, command);
+        Command.addCommandFromLoadedCommand(db, command);
 
         App.logger.info("Command was successfully loaded:");
         App.logger.info(Command.exists(db, command.getName()));

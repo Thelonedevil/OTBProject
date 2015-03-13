@@ -2,9 +2,12 @@ package com.github.otbproject.otbproject.commands.loader;
 
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.api.APIDatabase;
+import com.github.otbproject.otbproject.commands.Alias;
+import com.github.otbproject.otbproject.commands.Command;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.fs.FSUtil;
 import com.github.otbproject.otbproject.util.JsonHandler;
+import org.apache.logging.log4j.core.util.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,12 +24,12 @@ public class FSCommandLoader {
                 DatabaseWrapper db = APIDatabase.getChannelMainDatabase(file.getName());
                 // Load all-channels commands
                 for (LoadedCommand command : loadedCommands) {
-                    CommandLoader.addCommandFromLoadedCommand(db, command);
+                    Command.addCommandFromLoadedCommand(db, command);
                 }
                 // Load its own commands
                 ArrayList<LoadedCommand> channelCommands = getCommands(file.getPath() + File.separator + FSUtil.DirNames.TO_LOAD);
                 for (LoadedCommand command : channelCommands) {
-                    CommandLoader.addCommandFromLoadedCommand(db, command);
+                    Command.addCommandFromLoadedCommand(db, command);
                 }
             }
         }
@@ -42,12 +45,12 @@ public class FSCommandLoader {
                 DatabaseWrapper db = APIDatabase.getChannelMainDatabase(file.getName());
                 // Load all-channels aliases
                 for (LoadedAlias alias : loadedAliases) {
-                    CommandLoader.addAliasFromLoadedAlias(db, alias);
+                    Alias.addAliasFromLoadedAlias(db, alias);
                 }
                 // Load its own aliases
                 ArrayList<LoadedAlias> channelAliases = getAliases(file.getPath() + File.separator + FSUtil.DirNames.TO_LOAD);
                 for (LoadedAlias alias : channelAliases) {
-                    CommandLoader.addAliasFromLoadedAlias(db, alias);
+                    Alias.addAliasFromLoadedAlias(db, alias);
                 }
             }
         }
@@ -87,7 +90,7 @@ public class FSCommandLoader {
 
         ArrayList<LoadedCommand> loadedCommands = getCommands(loadPath);
         for (LoadedCommand command : loadedCommands) {
-            CommandLoader.addCommandFromLoadedCommand(db, command);
+            Command.addCommandFromLoadedCommand(db, command);
         }
     }
 
@@ -125,7 +128,7 @@ public class FSCommandLoader {
 
         ArrayList<LoadedAlias> loadedAliases = getAliases(loadPath);
         for (LoadedAlias alias : loadedAliases) {
-            CommandLoader.addAliasFromLoadedAlias(db, alias);
+            Alias.addAliasFromLoadedAlias(db, alias);
         }
     }
 
@@ -137,7 +140,7 @@ public class FSCommandLoader {
         DatabaseWrapper db = APIDatabase.getBotDatabase();
         // Load all-channels commands
         for (LoadedCommand command : loadedCommands) {
-            CommandLoader.addCommandFromLoadedCommand(db, command);
+            Command.addCommandFromLoadedCommand(db, command);
         }
     }
 
@@ -148,7 +151,7 @@ public class FSCommandLoader {
         DatabaseWrapper db = APIDatabase.getBotDatabase();
         // Load all-channels aliases
         for (LoadedAlias alias : loadedAliases) {
-            CommandLoader.addAliasFromLoadedAlias(db, alias);
+            Alias.addAliasFromLoadedAlias(db, alias);
         }
     }
 
@@ -159,7 +162,7 @@ public class FSCommandLoader {
         DatabaseWrapper db = APIDatabase.getBotDatabase();
         // Load all-channels commands
         for (LoadedCommand command : loadedCommands) {
-            CommandLoader.addCommandFromLoadedCommand(db, command);
+            Command.addCommandFromLoadedCommand(db, command);
         }
     }
 
@@ -170,7 +173,7 @@ public class FSCommandLoader {
         DatabaseWrapper db = APIDatabase.getBotDatabase();
         // Load all-channels aliases
         for (LoadedAlias alias : loadedAliases) {
-            CommandLoader.addAliasFromLoadedAlias(db, alias);
+            Alias.addAliasFromLoadedAlias(db, alias);
         }
     }
 
@@ -221,8 +224,15 @@ public class FSCommandLoader {
     private static void handleSuccessfulLoad(File file) {
         String successPath = new File(new File(file.getParent()).getParent()) + File.separator + FSUtil.DirNames.LOADED + File.separator + file.getName();
         App.logger.info("Successfully loaded:\t" + file.getPath());
-        if (!file.renameTo(new File(successPath))) {
+        if (!move(file, new File(successPath))) {
             App.logger.error("Failed to move file to:\t" + successPath);
         }
+    }
+
+    private static boolean move(File source, File dest) {
+        if (dest.exists()) {
+            dest.delete();
+        }
+        return source.renameTo(dest);
     }
 }
