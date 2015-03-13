@@ -43,4 +43,17 @@ public class Users {
     public static boolean remove(DatabaseWrapper db, String userName) {
         return db.removeRecord(UserFields.TABLE_NAME, userName, UserFields.NICK);
     }
+
+    public static boolean addUserFromObj(DatabaseWrapper db, User user) {
+        HashMap<String, String> map = new HashMap<String, String>();
+
+        map.put(UserFields.NICK, user.getNick());
+        map.put(UserFields.USER_LEVEL, user.getUserLevel().name());
+
+        if (exists(db, user.getNick())) {
+            return update(db, map);
+        } else {
+            return add(db, map);
+        }
+    }
 }
