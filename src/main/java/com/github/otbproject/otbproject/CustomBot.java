@@ -2,8 +2,10 @@ package com.github.otbproject.otbproject;
 
 import com.github.otbproject.otbproject.channels.Channel;
 import com.github.otbproject.otbproject.config.ConfigManager;
+import com.github.otbproject.otbproject.util.OutputRawImproved;
 import org.pircbotx.Configuration;
 import org.pircbotx.PircBotX;
+import org.pircbotx.output.OutputRaw;
 
 import java.io.InterruptedIOException;
 import java.net.SocketException;
@@ -16,13 +18,20 @@ public class CustomBot extends PircBotX {
 
     public HashMap<String, Channel> channels = new HashMap<>();
     public final ConfigManager configManager = new ConfigManager();
+    private final OutputRaw newOutputRaw;
 
     public CustomBot(Configuration<? extends PircBotX> configuration) {
         super(configuration);
+        newOutputRaw = new OutputRawImproved(this);
     }
 
     public void shutdown() {
         super.shutdown(true);
+    }
+
+    @Override
+    public OutputRaw sendRaw(){
+        return newOutputRaw;
     }
 
     /**
