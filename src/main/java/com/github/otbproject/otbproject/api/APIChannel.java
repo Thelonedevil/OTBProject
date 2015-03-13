@@ -26,6 +26,10 @@ public class APIChannel {
     }
 
     public static boolean join(String channelName, boolean checkValidChannel) {
+        return join(channelName.toLowerCase(), checkValidChannel, true);
+    }
+
+    private static boolean join(String channelName, boolean checkValidChannel, boolean dummy) {
         App.logger.info("Attempting to join channel: " + channelName);
         if(in(channelName)){
             App.logger.info("Failed to join channel: " + channelName + ". Already in channel");
@@ -88,14 +92,16 @@ public class APIChannel {
     }
 
     public static void leave(String channelName) {
-        if (!in(channelName)) {
+        leave(channelName.toLowerCase(), true);
+    }
+
+    public static void leave(String channelName, boolean dummy) {
+        if (!in(channelName) || channelName.equals(App.bot.getNick())) {
             return;
         }
         get(channelName).leave();
-        if (!channelName.equals(App.bot.getNick())) {
-            BotConfigHelper.removeFromCurrentChannels(App.bot.configManager.getBotConfig(), channelName);
-            APIConfig.writeBotConfig();
-        }
-        App.bot.getUserChannelDao().getChannel("#"+channelName).send().part();
+        BotConfigHelper.removeFromCurrentChannels(App.bot.configManager.getBotConfig(), channelName);
+        APIConfig.writeBotConfig();
+        App.bot.getUserChannelDao().getChannel("#" + channelName).send().part();
     }
 }
