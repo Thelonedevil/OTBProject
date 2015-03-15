@@ -123,10 +123,10 @@ public class App {
                     App.logger.catching(e);
                 }
         if (!VERSION.contains("SNAPSHOT") && !VERSION.equalsIgnoreCase(version)){
-            UnPacker.unPack("preloads/commands/", FSUtil.commandsDir()+File.separator+"all-channels"+File.separator+"to-load");
-            UnPacker.unPack("preloads/aliases/", FSUtil.aliasesDir()+File.separator+"all-channels"+File.separator+"to-load");
-            UnPacker.unPack("preloads/bot-channel/commands/", FSUtil.commandsDir()+File.separator+"bot-channel"+File.separator+"to-load");
-            UnPacker.unPack("preloads/scripts/", FSUtil.scriptDir());
+            UnPacker.unPack("preloads/json/commands/", FSUtil.commandsDir()+File.separator+"all-channels"+File.separator+"to-load");
+            UnPacker.unPack("preloads/json/aliases/", FSUtil.aliasesDir()+File.separator+"all-channels"+File.separator+"to-load");
+            UnPacker.unPack("preloads/json/bot-channel/commands/", FSUtil.commandsDir()+File.separator+"bot-channel"+File.separator+"to-load");
+            UnPacker.unPack("preloads/groovy/scripts/", FSUtil.scriptDir());
         }
         try {
             PrintStream ps = new PrintStream(versionFile);
