@@ -1,0 +1,7 @@
+
+[submodule "src/main/resources/preloads/json"]
+	path = src/main/resources/preloads/json
+	url = https://github.com/OTBProject/OTBPreloads.git
+[submodule "src/main/resources/preloads/groovy"]
+	path = src/main/resources/preloads/groovy
+	url = https://github.com/OTBProject/OTBScripts.git
