@@ -19,6 +19,12 @@ public class Users {
                 user.setUserLevel(UserLevel.valueOf(rs.getString(UserFields.USER_LEVEL)));
             } catch (SQLException e) {
                 App.logger.catching(e);
+            } finally {
+                try {
+                    rs.close();
+                } catch (SQLException e) {
+                    App.logger.catching(e);
+                }
             }
         }
         return user;
