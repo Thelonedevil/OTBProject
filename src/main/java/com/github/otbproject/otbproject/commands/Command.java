@@ -32,6 +32,12 @@ public class Command {
                 loadedCommand.modifyingUserLevels.setUserLevelModifyingUL(UserLevel.valueOf(rs.getString(CommandFields.USER_LEVEL_MODIFYING_UL)));
             } catch (SQLException e) {
                 App.logger.catching(e);
+            } finally {
+                try {
+                    rs.close();
+                } catch (SQLException e) {
+                    App.logger.catching(e);
+                }
             }
         }
         return loadedCommand;

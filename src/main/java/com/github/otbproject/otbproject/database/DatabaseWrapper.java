@@ -6,12 +6,15 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Created by justin on 23/12/2014.
  */
 public class DatabaseWrapper {
     final Connection connection;
+    private final Lock lock = new ReentrantLock();
 
     /**
      * Private constructor, should never be used directly. <br>
@@ -23,10 +26,15 @@ public class DatabaseWrapper {
      * @throws ClassNotFoundException
      */
     private DatabaseWrapper(String path, HashMap<String, HashSet<String>> tables) throws SQLException, ClassNotFoundException {
-        Class.forName("org.sqlite.JDBC");
-        connection = DriverManager.getConnection("jdbc:sqlite:" + path);
-        for (String key : tables.keySet()) {
-            createTable(key, tables.get(key));
+        lock.lock();
+        try {
+            Class.forName("org.sqlite.JDBC");
+            connection = DriverManager.getConnection("jdbc:sqlite:" + path);
+            for (String key : tables.keySet()) {
+                createTable(key, tables.get(key));
+            }
+        } finally {
+            lock.unlock();
         }
     }
 
@@ -58,7 +66,7 @@ public class DatabaseWrapper {
      * @param table A HashSet of field names for the table.
      * @return False if an <code>SQLException</code> is thrown, else it returns true.
      */
-    public boolean createTable(String name, HashSet<String> table) {
+    private boolean createTable(String name, HashSet<String> table) {
         return createTable(name, table, null);
     }
 
@@ -70,7 +78,7 @@ public class DatabaseWrapper {
      * @param primaryKey The field name for the primary key.
      * @return False if an <code>SQLException</code> is thrown, else it returns true.
      */
-    public boolean createTable(String name, HashSet<String> table, String primaryKey) {
+    private boolean createTable(String name, HashSet<String> table, String primaryKey) {
         PreparedStatement preparedStatement = null;
         String sql = "CREATE TABLE IF NOT EXISTS " + name + " (";
         for (String key : table) {
@@ -121,6 +129,7 @@ public class DatabaseWrapper {
         PreparedStatement preparedStatement = null;
         String sql = "SELECT * FROM " + table + " WHERE " + fieldName + "= ?";
         ResultSet rs = null;
+        lock.lock();
         try {
             connection.setAutoCommit(false);
             preparedStatement = connection.prepareStatement(sql);
@@ -135,7 +144,7 @@ public class DatabaseWrapper {
             } catch (SQLException e) {
                 App.logger.catching(e);
             }
-
+            lock.unlock();
         }
         return rs;
     }
@@ -152,6 +161,7 @@ public class DatabaseWrapper {
         PreparedStatement preparedStatement = null;
         String sql = "SELECT " + fieldName + " FROM " + table + " WHERE " + fieldName + "= ?";
         boolean bool = false;
+        lock.lock();
         try {
             connection.setAutoCommit(false);
             preparedStatement = connection.prepareStatement(sql);
@@ -176,7 +186,7 @@ public class DatabaseWrapper {
                 bool = false;
                 App.logger.catching(e);
             }
-
+            lock.unlock();
         }
         return bool;
     }
@@ -199,6 +209,7 @@ public class DatabaseWrapper {
         sql = sql.substring(0, sql.length() - 2);
         sql += " WHERE " + fieldName + "= ?";
         boolean bool = false;
+        lock.lock();
         try {
             connection.setAutoCommit(false);
             preparedStatement = connection.prepareStatement(sql);
@@ -226,7 +237,7 @@ public class DatabaseWrapper {
                 App.logger.catching(e);
                 bool = false;
             }
-
+            lock.unlock();
         }
         return bool;
     }
@@ -248,6 +259,7 @@ public class DatabaseWrapper {
         }
         sql = sql.substring(0, sql.length() - 2) + ")";
         boolean bool = false;
+        lock.lock();
         try {
             connection.setAutoCommit(false);
             preparedStatement = connection.prepareStatement(sql);
@@ -274,6 +286,7 @@ public class DatabaseWrapper {
                 App.logger.catching(e);
                 bool = false;
             }
+            lock.unlock();
         }
         return bool;
     }
@@ -290,6 +303,7 @@ public class DatabaseWrapper {
         PreparedStatement preparedStatement = null;
         String sql = "DELETE FROM " + table + " WHERE " + fieldName + "=?";
         boolean bool = false;
+        lock.lock();
         try {
             connection.setAutoCommit(false);
             preparedStatement = connection.prepareStatement(sql);
@@ -312,6 +326,7 @@ public class DatabaseWrapper {
                 App.logger.catching(e);
                 bool = false;
             }
+            lock.unlock();
         }
         return bool;
     }
@@ -324,13 +339,15 @@ public class DatabaseWrapper {
      */
     public ResultSet tableDump(String table) {
         String sql = "SELECT * FROM " + table;
+        lock.lock();
         try {
             return connection.createStatement().executeQuery(sql);
         } catch (SQLException e) {
             App.logger.catching(e);
             return null;
+        } finally {
+            lock.unlock();
         }
-
     }
 
     /**
@@ -342,6 +359,7 @@ public class DatabaseWrapper {
      * @return an <code>ArrayList&lt;String&gt;</code> that contains all entries in the table specified for the field key or <code>null</code> if an <code>SQLException</code> is thrown.
      */
     public ArrayList<String> getRecordsList(String table, String key) {
+        lock.lock();
         try {
             ArrayList<String> set = new ArrayList<>();
 
@@ -354,6 +372,8 @@ public class DatabaseWrapper {
         } catch (SQLException e) {
             App.logger.catching(e);
             return null;
+        } finally {
+            lock.unlock();
         }
     }
 

@@ -36,18 +36,22 @@ public class APIChannel {
             return false;
         }
 
+        boolean isBotChannel = channelName.equals(App.bot.getNick());
+
         // Check whitelist/blacklist
         BotConfig botConfig = App.bot.configManager.getBotConfig();
         ChannelJoinSetting channelJoinSetting = botConfig.getChannelJoinSetting();
-        if (channelJoinSetting == ChannelJoinSetting.WHITELIST) {
-            if (!BotConfigHelper.isWhitelisted(botConfig, channelName)) {
-                App.logger.info("Failed to join channel: " + channelName + ". Not whitelisted.");
-                return false;
-            }
-        } else if (channelJoinSetting == ChannelJoinSetting.BLACKLIST) {
-            if (BotConfigHelper.isBlacklisted(botConfig, channelName)) {
-                App.logger.info("Failed to join channel: " + channelName + ". Blacklisted.");
-                return false;
+        if (!isBotChannel) {
+            if (channelJoinSetting == ChannelJoinSetting.WHITELIST) {
+                if (!BotConfigHelper.isWhitelisted(botConfig, channelName)) {
+                    App.logger.info("Failed to join channel: " + channelName + ". Not whitelisted.");
+                    return false;
+                }
+            } else if (channelJoinSetting == ChannelJoinSetting.BLACKLIST) {
+                if (BotConfigHelper.isBlacklisted(botConfig, channelName)) {
+                    App.logger.info("Failed to join channel: " + channelName + ". Blacklisted.");
+                    return false;
+                }
             }
         }
 
@@ -84,7 +88,7 @@ public class APIChannel {
             channel = get(channelName);
         }
         channel.join();
-        if (!channelName.equals(App.bot.getNick())) {
+        if (!isBotChannel) {
             BotConfigHelper.addToCurrentChannels(botConfig, channelName);
             APIConfig.writeBotConfig();
         }
@@ -97,8 +101,11 @@ public class APIChannel {
 
     public static void leave(String channelName, boolean dummy) {
         if (!in(channelName) || channelName.equals(App.bot.getNick())) {
+            App.logger.debug("In channel: " + in(channelName));
+            App.logger.debug("Bot channel: " + channelName.equals(App.bot.getNick()));
             return;
         }
+        App.logger.info("Leaving channel: " + channelName);
         get(channelName).leave();
         BotConfigHelper.removeFromCurrentChannels(App.bot.configManager.getBotConfig(), channelName);
         APIConfig.writeBotConfig();

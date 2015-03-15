@@ -23,6 +23,12 @@ public class Alias {
                 loadedAlias.setEnabled(Boolean.valueOf(rs.getString(AliasFields.ENABLED)));
             } catch (SQLException e) {
                 App.logger.catching(e);
+            } finally {
+                try {
+                    rs.close();
+                } catch (SQLException e) {
+                    App.logger.catching(e);
+                }
             }
         }
         return loadedAlias;
