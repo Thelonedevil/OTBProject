@@ -105,18 +105,36 @@ public class App {
             App.logger.catching(e);
             System.exit(1);
         }
-       /* if (!VERSION.contains("SNAPSHOT")){
-            new UnPacker("/scripts", FSUtil.scriptDir());
-        }
+
         File versionFile = new File(FSUtil.configDir()+File.separator+"VERSION");
         try {
-            versionFile.createNewFile();
+            if(versionFile.createNewFile()){
+                PrintStream ps = new PrintStream(versionFile);
+                ps.println(VERSION);
+            }
+        } catch (IOException e) {
+            App.logger.catching(e);
+        }
+        String version = "";
+                try{
+                    BufferedReader fileReader = new BufferedReader( new FileReader(versionFile));
+                    version = fileReader.readLine();
+                } catch (IOException e) {
+                    App.logger.catching(e);
+                }
+        if (!VERSION.contains("SNAPSHOT") && !VERSION.equalsIgnoreCase(version)){
+            UnPacker.unPack("preloads/commands/", FSUtil.commandsDir()+File.separator+"all-channels"+File.separator+"to-load");
+            UnPacker.unPack("preloads/aliases/", FSUtil.aliasesDir()+File.separator+"all-channels"+File.separator+"to-load");
+            UnPacker.unPack("preloads/bot-channel/commands/", FSUtil.commandsDir()+File.separator+"bot-channel"+File.separator+"to-load");
+            UnPacker.unPack("preloads/scripts/", FSUtil.scriptDir());
+        }
+        try {
             PrintStream ps = new PrintStream(versionFile);
             ps.println(VERSION);
         } catch (IOException e) {
             App.logger.catching(e);
         }
-*/
+
 
         FSCommandLoader.LoadCommands();
         FSCommandLoader.LoadAliases();
