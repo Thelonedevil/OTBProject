@@ -48,7 +48,7 @@ public class Channel {
     public void leave() {
         inChannel = false;
 
-        db = null;
+        //db = null;
 
         messageSenderThread.interrupt();
         messageSenderThread = null;

@@ -30,15 +30,15 @@ public class ChannelMessageReceiver implements Runnable {
         try {
             Thread.currentThread().setName(channel.getName() + " Message Receiver");
             PackagedMessage packagedMessage;
+            boolean inBotChannel = false;
+            String channelName = channel.getName();
+            if (channelName.equals(App.bot.getNick())) {
+                inBotChannel = true;
+            }
 
             while (true) {
                 packagedMessage = queue.take();
-                String channelName = channel.getName();
                 String user = packagedMessage.getUser();
-                boolean inBotChannel = false;
-                if (channelName.equals(App.bot.getNick())) {
-                    inBotChannel = true;
-                }
 
                 Channel destinationChannel = APIChannel.get(packagedMessage.getDestinationChannel());
                 if (destinationChannel == null) {
@@ -47,7 +47,7 @@ public class ChannelMessageReceiver implements Runnable {
 
                 // Process commands for bot channel
                 if (inBotChannel) {
-                    DatabaseWrapper db = APIDatabase.getBotDatabase();
+                    DatabaseWrapper db = App.bot.getBotDB();
                     UserLevel ul = packagedMessage.getUserLevel();
                     ProcessedMessage processedMsg = MessageProcessor.process(db, packagedMessage.getMessage(), channelName, user, ul, true);
                     if (processedMsg.isScript() || !processedMsg.getResponse().isEmpty()) {

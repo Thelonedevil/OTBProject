@@ -1,7 +1,9 @@
 package com.github.otbproject.otbproject;
 
+import com.github.otbproject.otbproject.api.APIDatabase;
 import com.github.otbproject.otbproject.channels.Channel;
 import com.github.otbproject.otbproject.config.ConfigManager;
+import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.util.OutputRawImproved;
 import org.pircbotx.Configuration;
 import org.pircbotx.PircBotX;
@@ -19,6 +21,7 @@ public class CustomBot extends PircBotX {
     public HashMap<String, Channel> channels = new HashMap<>();
     public final ConfigManager configManager = new ConfigManager();
     private final OutputRaw newOutputRaw;
+    private final DatabaseWrapper botDB = APIDatabase.getBotDatabase();
 
     public CustomBot(Configuration<? extends PircBotX> configuration) {
         super(configuration);
@@ -98,5 +101,9 @@ public class CustomBot extends PircBotX {
 
         //Now that the socket is definatly closed call event, log, and kill the OutputThread
         shutdown();
+    }
+
+    public DatabaseWrapper getBotDB() {
+        return botDB;
     }
 }

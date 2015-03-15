@@ -21,7 +21,6 @@ public class ScriptProcessor {
         try {
             Script script;
             Object scriptReturn;
-            App.logger.info("Running script: " + path);
 
             // Get script
             if (CACHE.contains(path)) {
@@ -31,7 +30,9 @@ public class ScriptProcessor {
                 CACHE.put(path, script);
             }
 
+            App.logger.info("Running script: " + path);
             scriptReturn = script.invokeMethod(METHOD_NAME, args);
+            App.logger.info("Finished running script: " + path);
             if ((scriptReturn == null) || !(scriptReturn instanceof Boolean)) {
                 success = true;
             }
