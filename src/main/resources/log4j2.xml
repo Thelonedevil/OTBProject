@@ -22,8 +22,10 @@
 
     </Appenders>
     <Loggers>
-        <Root level="debug">
+        <Logger name="EventLogger" level="info" additivity="false">
             <AppenderRef ref="Console"/>
+        </Logger>
+        <Root level="debug">
             <AppenderRef ref="Routing"/>
         </Root>
     </Loggers>
