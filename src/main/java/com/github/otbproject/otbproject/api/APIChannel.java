@@ -99,7 +99,7 @@ public class APIChannel {
         leave(channelName.toLowerCase(), true);
     }
 
-    public static void leave(String channelName, boolean dummy) {
+    private static void leave(String channelName, boolean dummy) {
         if (!in(channelName) || channelName.equals(App.bot.getNick())) {
             App.logger.debug("In channel: " + in(channelName));
             App.logger.debug("Bot channel: " + channelName.equals(App.bot.getNick()));
