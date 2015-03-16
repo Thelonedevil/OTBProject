@@ -2,6 +2,7 @@ package com.github.otbproject.otbproject.messages.receive;
 
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.api.APIChannel;
+import com.github.otbproject.otbproject.api.APIConfig;
 import com.github.otbproject.otbproject.api.APIDatabase;
 import com.github.otbproject.otbproject.channels.Channel;
 import com.github.otbproject.otbproject.commands.Command;
@@ -68,7 +69,7 @@ public class ChannelMessageReceiver implements Runnable {
                 ProcessedMessage processedMsg = MessageProcessor.process(db, packagedMessage.getMessage(), channelName, user, ul, channel.getConfig().isDebug());
 
                 // Check if bot is enabled
-                if (channel.getConfig().isEnabled() || GeneralConfigHelper.isPermanentlyEnabled(App.bot.configManager.getGeneralConfig(), processedMsg.getCommandName())) {
+                if (channel.getConfig().isEnabled() || GeneralConfigHelper.isPermanentlyEnabled(APIConfig.getGeneralConfig(), processedMsg.getCommandName())) {
                     if ((processedMsg.isScript() || !processedMsg.getResponse().isEmpty()) && !destinationChannel.commandCooldownSet.contains(processedMsg.getCommandName())) {
                         doResponse(db, processedMsg, channelName, destinationChannel, user, ul, packagedMessage.getMessagePriority(), inBotChannel);
                     }

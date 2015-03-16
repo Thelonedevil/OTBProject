@@ -50,11 +50,11 @@ public class APIConfig {
     }
 
     public static void writeAccount(String filename) {
-        writeAccount(App.bot.configManager.getAccount(), filename);
+        writeAccount(getAccount(), filename);
     }
 
     public static void writeAccount() {
-        writeAccount(App.bot.configManager.getAccount());
+        writeAccount(getAccount());
     }
 
     public static void writeGeneralConfig(GeneralConfig config) {
@@ -62,7 +62,7 @@ public class APIConfig {
     }
 
     public static void writeGeneralConfig() {
-        writeGeneralConfig(App.bot.configManager.getGeneralConfig());
+        writeGeneralConfig(getGeneralConfig());
     }
 
     public static void writeBotConfig(BotConfig config) {
@@ -70,7 +70,7 @@ public class APIConfig {
     }
 
     public static void writeBotConfig() {
-        writeBotConfig(App.bot.configManager.getBotConfig());
+        writeBotConfig(getBotConfig());
     }
 
     public static void writeChannelConfig(ChannelConfig config, String channel) {
@@ -78,7 +78,23 @@ public class APIConfig {
     }
 
     public static void writeChannelConfig(String channel) {
-        writeChannelConfig(APIChannel.get(channel).getConfig(), channel);
+        writeChannelConfig(getChannelConfig(channel), channel);
+    }
+
+    public static Account getAccount() {
+        return App.bot.configManager.getAccount();
+    }
+
+    public static GeneralConfig getGeneralConfig() {
+        return App.bot.configManager.getGeneralConfig();
+    }
+
+    public static BotConfig getBotConfig() {
+        return App.bot.configManager.getBotConfig();
+    }
+
+    public static ChannelConfig getChannelConfig(String channel) {
+        return APIChannel.get(channel).getConfig();
     }
 
     private static String getAccountPath(String filename) {
