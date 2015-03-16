@@ -108,10 +108,7 @@ public class App {
 
         File versionFile = new File(FSUtil.configDir()+File.separator+"VERSION");
         try {
-            if(versionFile.createNewFile()){
-                PrintStream ps = new PrintStream(versionFile);
-                ps.println(VERSION);
-            }
+            versionFile.createNewFile();
         } catch (IOException e) {
             App.logger.catching(e);
         }
