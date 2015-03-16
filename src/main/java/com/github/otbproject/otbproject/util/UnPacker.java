@@ -22,8 +22,10 @@ public class UnPacker {
             List<FileHeader> fileHeaders = jar.getFileHeaders();
             for (FileHeader fileHeader : fileHeaders){
                 if(fileHeader.getFileName().startsWith(dir)) {
-                    App.logger.debug(fileHeader.getFileName());
-                    jar.extractFile(fileHeader,destDir,null,fileHeader.getFileName().substring(dir.length()));
+                    if(!fileHeader.isDirectory()) {
+                        App.logger.debug(fileHeader.getFileName());
+                        jar.extractFile(fileHeader, destDir, null, fileHeader.getFileName().substring(dir.length()));
+                    }
                 }
             }
         } catch (URISyntaxException | ZipException e) {
