@@ -7,10 +7,12 @@
 - [Version](#version)
 	- [Changelog](#changelog)
 - [Commands](#commands)
-	- [Built-in Commands](#built-in-commands)
+	- [Built-in Channel Commands](#built-in-channel-commands)
+	- [Built-in Bot-Channel Commands](#built-in-bot-channel-commands)
 	- [Flags](#flags)
 	- [User Levels](#user-levels)
 	- [Aliases](#aliases)
+	- [Built-in Aliases](#built-in-aliases)
 	- [Command Responses](#command-responses)
 - [Special Terms](#special-terms)
 	- [Terms](#terms)
@@ -37,7 +39,11 @@ Version 0.2.0 [WIP]
 
 ##Commands
 
-#### Built-in Commands
+Commands are words which the bot will respond to if they are the first word in a message. Commands often start with an exclamation mark, such as `!example`, but they can be any string of characters without a space in them. Some commands can tell the bot to perform an action, instead of just printing a message in response; these are known as "script commands".
+
+#### Built-in Channel Commands
+
+Each channel by default has script commands to add and remove commands and aliases, as well as script commands to do several other things. The built-in channel script commands are below.
 
 | Command | Flags | Arguments | Description |
 |:--------|:------|:----------|:------------|
@@ -59,12 +65,29 @@ Version 0.2.0 [WIP]
 |`!setMinArgs`||`<command>` `<min args>`||
 |`!rename`||`<old command name>` `<new command name>`||
 |`!resetCount`||`<command>`||
-|`!silence` `on | off`||||
-|`!leave`||`<bot name>`||
 |`!assignUserLevel`||`<user>` `<user level>`||
+|`!silence-meta` `on | true | off | false`||||
+|`!bot-enable-meta` `true | false`||||
+|`!leave`||`<bot name>`||
 
+#### Built-in Bot-Channel Commands
+
+The bot's channel has its own script commands to perform actions specific to the bot, such as joining channels. The built-in bot-channel script commands are below.
+
+| Command | Flags | Arguments | Description |
+|:--------|:------|:----------|:------------|
+|`!join`||||
+|`!joinMode`||`<mode>`||
+|`!whitelist` `add`||`<channel>`||
+|`!whitelist` `remove`||`<channel>`||
+|`!whitelist` `list`||||
+|`!blacklist` `add`||`<channel>`||
+|`!blacklist` `remove`||`<channel>`||
+|`!blacklist` `list`||||
 
 #### Flags
+
+Flags are optional arguments for a command which give more control over what the command does or how it executes. Any flags mentioned above are listed here.
 
 | Flag | Usage | Option(s) | Description |
 |:-----|:------|:----------|:------------|
@@ -82,13 +105,22 @@ Version 0.2.0 [WIP]
 |Super Moderator|`super-moderator | super_moderator | smod | sm`|
 |Broadcaster|`broadcaster | bc`|
 
-Additionally, there is the user level 'Ignored', which can be used with `!assignUserLevel`, but not with the `ul` flag.
+Additionally, there is the user level 'Ignored', which can be used with `!assignUserLevel`, but not with the `ul` flag. You can also reset a user's user level to whatever it would be using Twitch alone, as described below.
 
 | User Level | Marker(s) |
 |:-----------|:----------|
 |Ignored|`ignored | ig`|
+|Reset|`reset | twitch`|
+
+The user levels 'Subscriber', 'Moderator', and 'Broadcaster' cannot be assigned using `!assignUserLevel` because they are user properties determined by Twitch.
 
 #### Aliases
+
+An alias is a word which represents another word or group of words. Like commands, aliases are only processed by the bot if they are the first word of a message. However, an alias can expand into a command and parameters for the command, to make running certain commands easier. If an alias expands to something which is not a command, it won't do anything.
+
+Aliases will not loop; they will only be expanded once. For example, if you alias `!foo` to `!bar` and `!bar` to `!foo test`, it will process the message `!foo example` into `!foo test example`, and then check if `!foo` is a command to run.
+
+#### Built-in Aliases
 
 | Alias | Command |
 |:------|:--------|
@@ -101,39 +133,55 @@ Additionally, there is the user level 'Ignored', which can be used with `!assign
 |`!disable`|`!command disable`|
 |`!alias`|`!alias-meta add`|
 |`!unalias`|`!alias-meta remove`|
+|`!aliaslist`|`!alias-meta list`|
+|`!resetUserLevel`|`!assignUserLevel reset`|
+|`!silence`|`!silence-meta true`|
+|`!unsilence`|`!silence-meta false`|
+|`!bot-enable`|`!bot-enable-meta true`|
+|`!enable-bot`|`!bot-enable-meta true`|
+|`!bot-disable`|`!bot-enable-meta false`|
+|`!disable-bot`|`!bot-enable-meta false`|
 
 #### Command Responses
 
+Script commands send responses to chat as commands, not directly as messages. The commands which they use to respond are listed below. You can change the responses of the commands below to customize the responses of script commands. For example, if you don't like what the bot says when it creates a command, you can change it by changing the response to `~%command.set.success`.
+
 | Command | Description | Default Response |
 |:--------|:------------|:-----------------|
+|`~%general:insufficient.args`|||
 |`~%general:insufficient.user.level`|||
-|`~%general:poorly.formatted`|||
+|`~%general:invalid.arg`|||
 |`~%general:invalid.flag`|||
-|`~%general:unknown.failure`|||
+|`~%command.general:does.not.exist`|||
 |`~%command.add.already.exists`|||
-|`~%command.add.success`|||
 |`~%command.set.success`|||
 |`~%command.is.alias`|||
 |`~%command.remove.success`|||
-|`~%command.general.does.not.exist`|||
-|`~%alias.is.command`|||
+|`~%command.enabled`|||
+|`~%command.disabled`|||
+|`~%alias.general:does.not.exist`|||
+|`~%alias.add.already.exists`|||
 |`~%alias.success`|||
 |`~%unalias.success`|||
-|`~%alias.general.does.not.exist`|||
-|`~%disable.success`|||
-|`~%enable.success`|||
-|`~%set.exec.ul.success`|||
-|`~%set.name.modifying.ul.success`|||
-|`~%set.response.modifying.ul.success`|||
-|`~%set.ul.modifying.ul.success`|||
-|`~%set.min.args.invalid.number`|||
-|`~%set.min.args.success`|||
-|`~%rename.already.exists`|||
-|`~%rename.success`|||
-|`~%reset.count.success`|||
-|`~%silence.success`|||
-|`~%leave.success`|||
-|`~%join.success`|||
+|`~%alias.enabled`|||
+|`~%alias.disabled`|||
+|`~%command.set.exec.ul.success`|||
+|`~%command.set.min.args.success`|||
+|`~%command.reset.count.success`|||
+|`~%command.rename.success`|||
+|`~%command.rename.already.in.use`|||
+|`~%bot.unsilence.success`|||
+|`~%bot.enable.success`|||
+|`~%bot.leave.need.name`|||
+|`~%bot.joined.channel`|||
+|`~%assign.user.level.success`|||
+|`~%reset.user.level.success`|||
+|`~%assign.unsupported.user.level`|||
+|`~%join.mode.set`|||
+|`~%whitelist.add.success`|||
+|`~%whitelist.remove.success`|||
+|`~%blacklist.add.success`|||
+|`~%blacklist.remove.success`|||
 
 ##Special Terms
 
@@ -145,8 +193,8 @@ There are some special terms which can be used when creating a command to create
 |:-----|:------------|
 |`[[user]]`|The name of the user who ran the command.|
 |`[[args]]` or `[[args{{default}}]]`|All arguments with which the command was run (separated by spaces). If the command is run without arguments, and a default is given, the default is used. The default can contain another special term. If no default is given, it is replaced by an empty string (it is left blank).|
-|`[[argN]]` or `[[argN{{default}}]]`|The `N`th argument, where `N` is a number greater than 0. If the command is run with fewer than `N` arguments, and a default is given, the default is used. The default can contain another special term. If no default is given, it is replaced by an empty string (it is left blank).|
-|`[[fromargN]]` or `[[fromargN{{default}}]]`||
+|`[[argN]]` or `[[argN{{default}}]]`|The `N`th argument, where `N` is a whole number greater than 0. If the command is run with fewer than `N` arguments, and a default is given, the default is used. The default can contain another special term. If no default is given, it is replaced by an empty string (it is left blank).|
+|`[[fromargN]]` or `[[fromargN{{default}}]]`|All the arguments from the `N`th argument and on. As with `[[argN]]`, `N` must be a whole number. If `N` is 1, it is equivalent to `[[args]]`.|
 |`[[numargs]]`|The number of arguments with which the command was run.|
 |`[[channel]]`|The channel in which the command was run.|
 |`[[count]]`|The number of times the command has been run since it was created or since it was last modified.|
