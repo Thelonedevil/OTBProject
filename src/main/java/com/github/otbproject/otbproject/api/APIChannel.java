@@ -39,7 +39,7 @@ public class APIChannel {
         boolean isBotChannel = channelName.equals(App.bot.getNick());
 
         // Check whitelist/blacklist
-        BotConfig botConfig = App.bot.configManager.getBotConfig();
+        BotConfig botConfig = APIConfig.getBotConfig();
         ChannelJoinSetting channelJoinSetting = botConfig.getChannelJoinSetting();
         if (!isBotChannel) {
             if (channelJoinSetting == ChannelJoinSetting.WHITELIST) {
@@ -99,7 +99,7 @@ public class APIChannel {
         leave(channelName.toLowerCase(), true);
     }
 
-    public static void leave(String channelName, boolean dummy) {
+    private static void leave(String channelName, boolean dummy) {
         if (!in(channelName) || channelName.equals(App.bot.getNick())) {
             App.logger.debug("In channel: " + in(channelName));
             App.logger.debug("Bot channel: " + channelName.equals(App.bot.getNick()));
@@ -107,7 +107,7 @@ public class APIChannel {
         }
         App.logger.info("Leaving channel: " + channelName);
         get(channelName).leave();
-        BotConfigHelper.removeFromCurrentChannels(App.bot.configManager.getBotConfig(), channelName);
+        BotConfigHelper.removeFromCurrentChannels(APIConfig.getBotConfig(), channelName);
         APIConfig.writeBotConfig();
         App.bot.getUserChannelDao().getChannel("#" + channelName).send().part();
     }
