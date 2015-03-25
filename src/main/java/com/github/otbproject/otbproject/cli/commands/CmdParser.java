@@ -268,7 +268,7 @@ public class CmdParser {
                     if (args.size() > 6) {
                         String ul = args.get(2).split("=")[1];
                         String ma = args.get(3).split("=")[1];
-                        String commandName = args.get(4));
+                        String commandName = args.get(4);
                         String response = args.get(5);
                         for (int i = 6; i < args.size(); i++) {
                             response += " ";
