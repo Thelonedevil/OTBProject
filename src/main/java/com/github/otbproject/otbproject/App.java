@@ -26,7 +26,6 @@ import java.awt.*;
 import java.io.*;
 import java.lang.management.ManagementFactory;
 import java.nio.charset.Charset;
-import java.util.Objects;
 import java.util.Scanner;
 
 /**
@@ -182,8 +181,8 @@ public class App {
         Scanner scanner = new Scanner(System.in);
         scanner.useDelimiter("\n");
         while (scanner.hasNext()) {
-            String in = scanner.next/*Line*/();
-            if(!Objects.equals(in, ""))
+            String in = scanner.next();
+            if(!in.equals(""))
             new CmdParser().processLine(in);
         }
         scanner.close();
