@@ -3,9 +3,10 @@ package com.github.otbproject.otbproject;
 import com.github.otbproject.otbproject.api.APIConfig;
 import com.github.otbproject.otbproject.cli.ArgParser;
 import com.github.otbproject.otbproject.cli.commands.CmdParser;
-import com.github.otbproject.otbproject.cli.commands.InvalidCLICommandException;
 import com.github.otbproject.otbproject.commands.loader.FSCommandLoader;
-import com.github.otbproject.otbproject.config.*;
+import com.github.otbproject.otbproject.config.Account;
+import com.github.otbproject.otbproject.config.BotConfig;
+import com.github.otbproject.otbproject.config.GeneralConfig;
 import com.github.otbproject.otbproject.eventlistener.IrcListener;
 import com.github.otbproject.otbproject.fs.FSUtil;
 import com.github.otbproject.otbproject.fs.Setup;
@@ -13,12 +14,10 @@ import com.github.otbproject.otbproject.gui.Window;
 import com.github.otbproject.otbproject.util.UnPacker;
 import com.github.otbproject.otbproject.util.VersionClass;
 import com.github.otbproject.otbproject.util.dev.DevHelper;
-
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.ParseException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 import org.pircbotx.Configuration;
 import org.pircbotx.exception.IrcException;
 import org.pircbotx.hooks.Listener;
@@ -27,6 +26,7 @@ import java.awt.*;
 import java.io.*;
 import java.lang.management.ManagementFactory;
 import java.nio.charset.Charset;
+import java.util.Objects;
 import java.util.Scanner;
 
 /**
@@ -180,16 +180,11 @@ public class App {
             Window gui = new Window();// I know this variable "gui" is never used, that is just how it works okay.
         }
         Scanner scanner = new Scanner(System.in);
+        scanner.useDelimiter("\n");
         while (scanner.hasNext()) {
-            String in = scanner.nextLine();
-            logger.info(in);
-            String[] words = in.split(" ");
-            try {
-                CmdParser.SuperParse(words);
-            } catch (InvalidCLICommandException e) {
-                logger.info(e.getMessage());
-                CmdParser.printHelp();
-            }
+            String in = scanner.next/*Line*/();
+            if(!Objects.equals(in, ""))
+            new CmdParser().processLine(in);
         }
         scanner.close();
     }

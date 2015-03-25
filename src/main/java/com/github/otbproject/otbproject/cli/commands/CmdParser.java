@@ -2,220 +2,300 @@ package com.github.otbproject.otbproject.cli.commands;
 
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.api.APIChannel;
-import com.github.otbproject.otbproject.commands.loader.FSCommandLoader;
-import com.github.otbproject.otbproject.commands.loader.LoadingSet;
+import com.github.otbproject.otbproject.commands.Alias;
+import com.github.otbproject.otbproject.commands.Command;
+import com.github.otbproject.otbproject.commands.loader.*;
+import com.github.otbproject.otbproject.users.User;
+import com.github.otbproject.otbproject.users.UserLevel;
+import com.github.otbproject.otbproject.users.Users;
 
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Scanner;
 
 /**
- * Created by justin on 18/02/2015.
+ * Created by Justin on 25/03/2015.
  */
 public class CmdParser {
-    public static void SuperParse(String[] strings) throws InvalidCLICommandException {
-        try {
-            switch (strings[0].toLowerCase()) {
-                case "stop":
-                    if (App.bot.isConnected()) {
-                        App.bot.shutdown();
-                    }
-                    System.exit(0);
-                    break;
-                case "restart":
-                    if (App.bot.isConnected()) {
-                        App.bot.shutdown();
-                    }
-                    FSCommandLoader.LoadCommands();
-                    FSCommandLoader.LoadAliases();
-                    try {
-                        App.botThread = new Thread(App.botRunnable);
-                        App.botThread.start();
-                    } catch (IllegalThreadStateException e) {
-                        App.logger.catching(e);
-                    }
-                    break;
-                case "channel":
-                    if (strings.length > 2)
-                        channelParse(Arrays.copyOfRange(strings, 2, strings.length - 1), strings[1].toLowerCase());
-                    break;
-                case "join":
-                        if (strings.length > 1){
-                            APIChannel.join(strings[1].toLowerCase());
-                        }
-                    break;
-                case "leave":
-                    if (strings.length > 1){
-                        APIChannel.leave(strings[1].toLowerCase());
-                    }
-                    break;
-                case "reload":
-                    if (strings.length > 1){
-                        try {
-                            FSCommandLoader.LoadLoadedCommands(strings[1], LoadingSet.BOTH);
-                        } catch (IOException e) {
-                            App.logger.catching(e);
-                        }
-                        try {
-                            FSCommandLoader.LoadLoadedAliases(strings[1], LoadingSet.BOTH);
-                        } catch (IOException e) {
-                            App.logger.catching(e);
-                        }
-                    }else{
-                        FSCommandLoader.LoadLoadedCommands(LoadingSet.BOTH);
-                        FSCommandLoader.LoadLoadedAliases(LoadingSet.BOTH);
-                    }
-                    break;
-                default:
-                    throw new InvalidCLICommandException("That command is invalid. "+strings[0].toLowerCase()+" does not exist as a CLI command");
+
+    HashMap<String, Runnable> mapOfThings = new HashMap<>();
+    public static final String STOP = "stop";
+    public static final String RESTART = "restart";
+    public static final String JOINCHANNEL = "join";
+    public static final String LEAVECHANNEL = "leave";
+    public static final String RELOAD = "reload";
+    public static final String COMMAND = "command";
+    public static final String ALIAS = "alias";
+    public static final String USER = "user";
+
+    ArrayList<String> args = new ArrayList<>();
+    String name = "RETURN CHARACTER";
+
+    public CmdParser() {
+        //Java 8 magic
+        mapOfThings.put(STOP, this::stop);
+        mapOfThings.put(RESTART, this::restart);
+        mapOfThings.put(JOINCHANNEL, this::joinChannel);
+        mapOfThings.put(LEAVECHANNEL, this::leaveChannel);
+        mapOfThings.put(RELOAD, this::reload);
+        mapOfThings.put(COMMAND, this::command);
+        mapOfThings.put(ALIAS, this::alias);
+        mapOfThings.put(USER, this::user);
+    }
+
+    public void processLine(String aLine) {
+        //use a second Scanner to parse the content of each line
+        aLine = aLine.trim();
+        Scanner scanner = new Scanner(aLine);
+        scanner.useDelimiter(" ");
+        if (scanner.hasNext()) {
+            App.logger.info(aLine);
+            name = scanner.next().toLowerCase();
+            while (scanner.hasNext()) {
+                args.add(scanner.next().toLowerCase());
             }
-        } catch (ArrayIndexOutOfBoundsException e) {
-            throw new InvalidCLICommandException("No command was run, what even?");
+            if (mapOfThings.containsKey(name)) {
+                mapOfThings.get(name).run();
+            } else {
+                printHelpNoCommand();
+            }
+        } else {
+            App.logger.info("Empty or invalid line. Unable to process.");
         }
     }
 
-    private static void channelParse(String[] words, String channel) {
-        try {
-            switch (words[0].toLowerCase()) {
-                case "command":
-                    if (words.length > 1)
-                            commandParse(Arrays.copyOfRange(words, 1, words.length - 1), channel);
-                    break;
-                case "alias":
-                    if (words.length > 1)
-                            aliasParse(Arrays.copyOfRange(words, 1, words.length - 1), channel);
 
+    void stop() {
+        App.logger.info("Stopping the process");
+        if (App.bot.isConnected()) {
+            App.bot.shutdown();
+        }
+        App.logger.info("Process Stopped, Goodbye");
+        System.exit(0);
+    }
+
+    void restart() {
+        if (App.bot.isConnected()) {
+            App.bot.shutdown();
+        }
+        FSCommandLoader.LoadCommands();
+        FSCommandLoader.LoadAliases();
+        try {
+            App.botThread = new Thread(App.botRunnable);
+            App.botThread.start();
+        } catch (IllegalThreadStateException e) {
+            App.logger.catching(e);
+        }
+    }
+
+    void joinChannel() {
+        if (args.size() > 0 && !APIChannel.in(args.get(0))) {
+            APIChannel.join(args.get(0), true);
+        }
+    }
+
+    void leaveChannel() {
+        if (args.size() > 0 && !APIChannel.in(args.get(0))) {
+            APIChannel.leave(args.get(0));
+        }
+    }
+
+    void reload() {
+        if (args.size() > 0) {
+            try {
+                FSCommandLoader.LoadLoadedCommands(args.get(0), LoadingSet.BOTH);
+            } catch (IOException e) {
+                App.logger.catching(e);
+            }
+            try {
+                FSCommandLoader.LoadLoadedAliases(args.get(0), LoadingSet.BOTH);
+            } catch (IOException e) {
+                App.logger.catching(e);
+            }
+        } else {
+            FSCommandLoader.LoadLoadedCommands(LoadingSet.BOTH);
+            FSCommandLoader.LoadLoadedAliases(LoadingSet.BOTH);
+        }
+    }
+
+    void user() {
+        if (args.size() > 3) {
+            String channelname = args.get(0);
+            String username = args.get(1);
+            String userLevel = args.get(2);
+            User user = new User();
+            user.setNick(username);
+            user.setUserLevel(UserLevel.valueOf(userLevel));
+            Users.addUserFromObj(APIChannel.get(channelname.toLowerCase()).getDatabaseWrapper(), user);
+        }
+    }
+
+    void alias() {
+        if (args.size() > 1) {
+            String channelname = args.get(1);
+            switch (args.get(0)) {
+                case "add":
+                    if (args.size() > 3) {
+                        String aliasName = args.get(2);
+                        String commandName = args.get(3);
+                        LoadedAlias alias = DefaultCommandGenerator.createDefaultAlias();
+                        alias.setName(aliasName);
+                        alias.setCommand(commandName);
+                        Alias.addAliasFromLoadedAlias(APIChannel.get(channelname.toLowerCase()).getDatabaseWrapper(), alias);
+                    }
                     break;
-                case "user":
-                    if (words.length > 1)
-                        userParse(Arrays.copyOfRange(words, 1, words.length - 1), channel);
+                case "edit":
+                    if (args.size() > 3) {
+                        String aliasName = args.get(2);
+                        String commandName = args.get(3);
+                        LoadedAlias alias = DefaultCommandGenerator.createDefaultAlias();
+                        if (Alias.exists(APIChannel.get(channelname.toLowerCase()).getDatabaseWrapper(), aliasName)) {
+                            alias = Alias.get(APIChannel.get(channelname.toLowerCase()).getDatabaseWrapper(), aliasName);
+                        }
+                        alias.setName(aliasName);
+                        alias.setCommand(commandName);
+                        Alias.addAliasFromLoadedAlias(APIChannel.get(channelname.toLowerCase()).getDatabaseWrapper(), alias);
+
                         break;
+                    }
+                case "delete":
+                    if (args.size() > 2) {
+                        String aliasName = args.get(2);
+                        Alias.remove(APIChannel.get(channelname.toLowerCase()).getDatabaseWrapper(), aliasName);
+                    }
+                    break;
+                case "enable":
+                    if (args.size() > 2) {
+                        String aliasName = args.get(2);
+                        LoadedAlias alias = DefaultCommandGenerator.createDefaultAlias();
+                        if (Alias.exists(APIChannel.get(channelname.toLowerCase()).getDatabaseWrapper(), aliasName)) {
+                            alias = Alias.get(APIChannel.get(channelname.toLowerCase()).getDatabaseWrapper(), aliasName);
+                        }
+                        alias.setEnabled(true);
+                        Alias.addAliasFromLoadedAlias(APIChannel.get(channelname.toLowerCase()).getDatabaseWrapper(), alias);
+                    }
+                    break;
+                case "disable":
+                    if (args.size() > 2) {
+                        String aliasName = args.get(2);
+                        LoadedAlias alias = DefaultCommandGenerator.createDefaultAlias();
+                        if (Alias.exists(APIChannel.get(channelname.toLowerCase()).getDatabaseWrapper(), aliasName)) {
+                            alias = Alias.get(APIChannel.get(channelname.toLowerCase()).getDatabaseWrapper(), aliasName);
+                        }
+                        alias.setEnabled(false);
+                        Alias.addAliasFromLoadedAlias(APIChannel.get(channelname.toLowerCase()).getDatabaseWrapper(), alias);
+                    }
+                    break;
                 default:
-                    //TODO do thing saying bad
+                    printHelpWrongAliasArgs();
+
             }
-        } catch (ArrayIndexOutOfBoundsException e) {
-            App.logger.catching(e);
         }
     }
 
-    private static void commandParse(String[] strings, String channel) {
-        try {
-            switch (strings[0].toLowerCase()) {
+    void command() {
+        if (args.size() > 1) {
+            String channelname = args.get(1);
+            switch (args.get(0)) {
                 case "add":
-                    if (strings.length > 1)
-                        commandAdder(Arrays.copyOfRange(strings, 1, strings.length - 1), channel);
+                    if (args.size() > 6) {
+                        String ul = args.get(2).split("=")[1];
+                        String ma = args.get(3).split("=")[1];
+                        String commandName = args.get(4);
+                        String response = args.get(5);
+                        for (int i = 6; i < args.size(); i++) {
+                            response += " ";
+                            response += args.get(i);
+                        }
+                        LoadedCommand command = DefaultCommandGenerator.createDefaultCommand();
+                        command.setName(commandName);
+                        command.setResponse(response);
+                        UserLevel execUL = UserLevel.valueOf(ul);
+                        if (execUL != UserLevel.IGNORED) {
+                            command.setExecUserLevel(execUL);
+                        }
+                        int minArgs = Integer.parseInt(ma);
+                        if (minArgs != -1) {
+                            command.setMinArgs(minArgs);
+                        }
+                        Command.addCommandFromLoadedCommand(APIChannel.get(channelname.toLowerCase()).getDatabaseWrapper(), command);
+                    }
                     break;
                 case "edit":
-                    if (strings.length > 1)
-                        commandEditor(Arrays.copyOfRange(strings, 1, strings.length - 1), channel);
+                    if (args.size() > 6) {
+                        String ul = args.get(2).split("=")[1];
+                        String ma = args.get(3).split("=")[1];
+                        String commandName = args.get(4);
+                        String response = args.get(5);
+                        for (int i = 6; i < args.size(); i++) {
+                            response += " ";
+                            response += args.get(i);
+                        }
+                        LoadedCommand command = DefaultCommandGenerator.createDefaultCommand();
+                        if (Command.exists(APIChannel.get(channelname.toLowerCase()).getDatabaseWrapper(), commandName)) {
+                            command = Command.get(APIChannel.get(channelname.toLowerCase()).getDatabaseWrapper(), commandName);
+                        }
+                        command.setResponse(response);
+                        UserLevel execUL = UserLevel.valueOf(ul);
+                        if (execUL != UserLevel.IGNORED) {
+                            command.setExecUserLevel(execUL);
+                        }
+                        int minArgs = Integer.parseInt(ma);
+                        if (minArgs != -1) {
+                            command.setMinArgs(minArgs);
+                        }
+                        Command.addCommandFromLoadedCommand(APIChannel.get(channelname.toLowerCase()).getDatabaseWrapper(), command);
+                    }
                     break;
                 case "delete":
-                    if (strings.length > 1)
-                        commandDeleter(Arrays.copyOfRange(strings, 1, strings.length - 1), channel);
+                    if (args.size() > 2) {
+                        String commandName = args.get(2);
+                        Command.remove(APIChannel.get(channelname.toLowerCase()).getDatabaseWrapper(), commandName);
+                    }
                     break;
-                case "set-ul":
-                    if (strings.length > 1)
-                        commandULSetter(Arrays.copyOfRange(strings, 1, strings.length - 1), channel);
+                case "enable":
+                    if (args.size() > 2) {
+                        String commandName = args.get(2);
+                        LoadedCommand command = DefaultCommandGenerator.createDefaultCommand();
+                        if (Command.exists(APIChannel.get(channelname.toLowerCase()).getDatabaseWrapper(), commandName)) {
+                            command = Command.get(APIChannel.get(channelname.toLowerCase()).getDatabaseWrapper(), commandName);
+                        }
+                        command.setEnabled(true);
+                        Command.addCommandFromLoadedCommand(APIChannel.get(channelname.toLowerCase()).getDatabaseWrapper(), command);
+                    }
+                    break;
+                case "disable":
+                    if (args.size() > 2) {
+                        String commandName = args.get(2);
+                        LoadedCommand command = DefaultCommandGenerator.createDefaultCommand();
+                        if (Command.exists(APIChannel.get(channelname.toLowerCase()).getDatabaseWrapper(), commandName)) {
+                            command = Command.get(APIChannel.get(channelname.toLowerCase()).getDatabaseWrapper(), commandName);
+                        }
+                        command.setEnabled(false);
+                        Command.addCommandFromLoadedCommand(APIChannel.get(channelname.toLowerCase()).getDatabaseWrapper(), command);
+                    }
                     break;
                 default:
+                    printHelpWrongCommandArgs();
             }
-        } catch (ArrayIndexOutOfBoundsException e) {
-            App.logger.catching(e);
         }
     }
 
-    private static void aliasParse(String[] strings, String channel) {
-        try {
-            switch (strings[0].toLowerCase()) {
-                case "add":
-                    if (strings.length > 1)
-                        aliasAdder(Arrays.copyOfRange(strings, 1, strings.length - 1), channel);
-                    break;
-                case "edit":
-                    if (strings.length > 1)
-                        aliasEditor(Arrays.copyOfRange(strings, 1, strings.length - 1), channel);
-                    break;
-                case "delete":
-                    if (strings.length > 1)
-                        aliasDeleter(Arrays.copyOfRange(strings, 1, strings.length - 1), channel);
-                    break;
-                case "set-ul":
-                    if (strings.length > 1)
-                        aliasULSetter(Arrays.copyOfRange(strings, 1, strings.length - 1), channel);
-                    break;
-                default:
-            }
-        } catch (ArrayIndexOutOfBoundsException e) {
-            App.logger.catching(e);
-        }
+    void printHelpWrongAliasArgs() {
+        App.logger.info("Valid sub-commands for \"Alias\" are; Add, Edit, Delete, Enable, Disable");
     }
 
-    private static void userParse(String[] strings, String channel){
-        try {
-            switch (strings[0].toLowerCase()) {
-                case "add":
-                    if (strings.length > 1)
-                        userAdder(Arrays.copyOfRange(strings, 1, strings.length - 1), channel);
-                    break;
-                case "edit":
-                    if (strings.length > 1)
-                        userEditor(Arrays.copyOfRange(strings, 1, strings.length - 1), channel);
-                    break;
-                case "delete":
-                    if (strings.length > 1)
-                        userDeleter(Arrays.copyOfRange(strings, 1, strings.length - 1), channel);
-                    break;
-                default:
-            }
-        } catch (ArrayIndexOutOfBoundsException e) {
-            App.logger.catching(e);
-        }
+    void printHelpWrongCommandArgs() {
+        App.logger.info("Valid sub-commands for \"Command\" are; Add, Edit, Delete, Enable, Disable");
     }
 
-    private static void userDeleter(String[] strings, String channel) {
-
+    void printHelpNoCommand() {
+        App.logger.info("That command is invalid. \'" + name + "\' does not exist as a CLI command");
     }
 
-    private static void userEditor(String[] strings, String channel) {
-
+    void printHelp() {
+        App.logger.info("Invalid arguments");
     }
 
-    private static void userAdder(String[] strings, String channel) {
-
-    }
-
-    private static void aliasULSetter(String[] strings, String channel) {
-
-    }
-
-    private static void aliasDeleter(String[] strings, String channel) {
-
-    }
-
-    private static void aliasEditor(String[] strings, String channel) {
-
-    }
-
-    private static void aliasAdder(String[] strings, String channel) {
-
-    }
-
-    private static void commandAdder(String[] strings, String channel) {
-
-    }
-
-    private static void commandEditor(String[] strings, String channel) {
-
-    }
-
-    private static void commandDeleter(String[] strings, String channel) {
-
-    }
-
-    private static void commandULSetter(String[] strings, String channel) {
-
-    }
-
-    public static void printHelp() {
-        App.logger.info("TODO ACTUALLY PRINT A HELP MESSAGE");
-    }
 }
