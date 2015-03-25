@@ -121,12 +121,54 @@ public class CmdParser {
 
     void user() {
         if (args.size() > 3) {
-            String channelname = args.get(0);
-            String username = args.get(1);
-            String userLevel = args.get(2);
+            String channelname = args.get(0).toLowerCase();
+            String username = args.get(1).toLowerCase();
+            String userLevel = args.get(2).toLowerCase();
             User user = new User();
             user.setNick(username);
-            user.setUserLevel(UserLevel.valueOf(userLevel));
+            UserLevel ul = UserLevel.DEFAULT;
+            switch (userLevel) {
+                case "subscriber":
+                case "sub":
+                    printHelpUnSupportedUL();
+                    break;
+                case "regular":
+                case "reg":
+                    ul = UserLevel.REGULAR;
+                    break;
+                case "moderator":
+                case "mod":
+                    printHelpUnSupportedUL();
+                    break;
+                case "super-moderator":
+                case "super_moderator":
+                case "smod":
+                case "sm":
+                    ul = UserLevel.SUPER_MODERATOR;
+                    break;
+                case "broadcaster":
+                case "bc":
+                    printHelpUnSupportedUL();
+                    break;
+                case "default":
+                case "def":
+                case "none":
+                case "any":
+                case "all":
+                    ul = UserLevel.DEFAULT;
+                    break;
+                case "ignored":
+                case "ig":
+                    ul = UserLevel.IGNORED;
+                    break;
+                case "reset":
+                case "twitch":
+                    Users.remove(APIChannel.get(channelname.toLowerCase()).getDatabaseWrapper(), username);
+                    break;
+                default:
+                    printHelpUnSupportedUL();
+            }
+            user.setUserLevel(ul);
             Users.addUserFromObj(APIChannel.get(channelname.toLowerCase()).getDatabaseWrapper(), user);
         }
     }
@@ -282,20 +324,25 @@ public class CmdParser {
         }
     }
 
+    void printHelpUnSupportedUL() {
+        App.logger.info("Valid User Levels for \"User\" are; default | def | none | any | all, subscriber | sub," +
+                "regular | reg, moderator | mod, super-moderator | super_moderator | smod | sm, broadcaster | bc. Assuming Default.");
+    }
+
     void printHelpWrongAliasArgs() {
-        App.logger.info("Valid sub-commands for \"Alias\" are; Add, Edit, Delete, Enable, Disable");
+        App.logger.info("Valid sub-commands for \"Alias\" are; Add, Edit, Delete, Enable, Disable.");
     }
 
     void printHelpWrongCommandArgs() {
-        App.logger.info("Valid sub-commands for \"Command\" are; Add, Edit, Delete, Enable, Disable");
+        App.logger.info("Valid sub-commands for \"Command\" are; Add, Edit, Delete, Enable, Disable.");
     }
 
     void printHelpNoCommand() {
-        App.logger.info("That command is invalid. \'" + name + "\' does not exist as a CLI command");
+        App.logger.info("That command is invalid. \'" + name + "\' does not exist as a CLI command.");
     }
 
     void printHelp() {
-        App.logger.info("Invalid arguments");
+        App.logger.info("Invalid arguments.");
     }
 
 }
