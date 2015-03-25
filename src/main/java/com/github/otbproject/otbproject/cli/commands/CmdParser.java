@@ -30,7 +30,7 @@ public class CmdParser {
     public static final String USER = "user";
 
     ArrayList<String> args = new ArrayList<>();
-    String name = "RETURN CHARACTER";
+    String name = "RETURN CHARACTER";//Honestly useless assignment, but something has to be here, why not this?
 
     public CmdParser() {
         //Java 8 magic
@@ -53,7 +53,7 @@ public class CmdParser {
             App.logger.info(aLine);
             name = scanner.next().toLowerCase();
             while (scanner.hasNext()) {
-                args.add(scanner.next().toLowerCase());
+                args.add(scanner.next());
             }
             if (mapOfThings.containsKey(name)) {
                 mapOfThings.get(name).run();
@@ -90,26 +90,26 @@ public class CmdParser {
     }
 
     void joinChannel() {
-        if (args.size() > 0 && !APIChannel.in(args.get(0))) {
-            APIChannel.join(args.get(0), true);
+        if (args.size() > 0 && !APIChannel.in(args.get(0).toLowerCase())) {
+            APIChannel.join(args.get(0).toLowerCase(), true);
         }
     }
 
     void leaveChannel() {
-        if (args.size() > 0 && !APIChannel.in(args.get(0))) {
-            APIChannel.leave(args.get(0));
+        if (args.size() > 0 && !APIChannel.in(args.get(0).toLowerCase())) {
+            APIChannel.leave(args.get(0).toLowerCase());
         }
     }
 
     void reload() {
         if (args.size() > 0) {
             try {
-                FSCommandLoader.LoadLoadedCommands(args.get(0), LoadingSet.BOTH);
+                FSCommandLoader.LoadLoadedCommands(args.get(0).toLowerCase(), LoadingSet.BOTH);
             } catch (IOException e) {
                 App.logger.catching(e);
             }
             try {
-                FSCommandLoader.LoadLoadedAliases(args.get(0), LoadingSet.BOTH);
+                FSCommandLoader.LoadLoadedAliases(args.get(0).toLowerCase(), LoadingSet.BOTH);
             } catch (IOException e) {
                 App.logger.catching(e);
             }
@@ -123,7 +123,7 @@ public class CmdParser {
         if (args.size() > 3) {
             String channelname = args.get(0).toLowerCase();
             String username = args.get(1).toLowerCase();
-            String userLevel = args.get(2).toLowerCase();
+            String userLevel = args.get(2);
             User user = new User();
             user.setNick(username);
             UserLevel ul = UserLevel.DEFAULT;
@@ -163,20 +163,20 @@ public class CmdParser {
                     break;
                 case "reset":
                 case "twitch":
-                    Users.remove(APIChannel.get(channelname.toLowerCase()).getDatabaseWrapper(), username);
+                    Users.remove(APIChannel.get(channelname).getDatabaseWrapper(), username);
                     break;
                 default:
                     printHelpUnSupportedUL();
             }
             user.setUserLevel(ul);
-            Users.addUserFromObj(APIChannel.get(channelname.toLowerCase()).getDatabaseWrapper(), user);
+            Users.addUserFromObj(APIChannel.get(channelname).getDatabaseWrapper(), user);
         }
     }
 
     void alias() {
         if (args.size() > 1) {
-            String channelname = args.get(1);
-            switch (args.get(0)) {
+            String channelname = args.get(1).toLowerCase();
+            switch (args.get(0).toLowerCase()) {
                 case "add":
                     if (args.size() > 3) {
                         String aliasName = args.get(2);
@@ -184,49 +184,49 @@ public class CmdParser {
                         LoadedAlias alias = DefaultCommandGenerator.createDefaultAlias();
                         alias.setName(aliasName);
                         alias.setCommand(commandName);
-                        Alias.addAliasFromLoadedAlias(APIChannel.get(channelname.toLowerCase()).getDatabaseWrapper(), alias);
+                        Alias.addAliasFromLoadedAlias(APIChannel.get(channelname).getDatabaseWrapper(), alias);
                     }
                     break;
                 case "edit":
                     if (args.size() > 3) {
-                        String aliasName = args.get(2);
-                        String commandName = args.get(3);
+                        String aliasName = args.get(2).toLowerCase();
+                        String commandName = args.get(3).toLowerCase();
                         LoadedAlias alias = DefaultCommandGenerator.createDefaultAlias();
-                        if (Alias.exists(APIChannel.get(channelname.toLowerCase()).getDatabaseWrapper(), aliasName)) {
-                            alias = Alias.get(APIChannel.get(channelname.toLowerCase()).getDatabaseWrapper(), aliasName);
+                        if (Alias.exists(APIChannel.get(channelname).getDatabaseWrapper(), aliasName)) {
+                            alias = Alias.get(APIChannel.get(channelname).getDatabaseWrapper(), aliasName);
                         }
                         alias.setName(aliasName);
                         alias.setCommand(commandName);
-                        Alias.addAliasFromLoadedAlias(APIChannel.get(channelname.toLowerCase()).getDatabaseWrapper(), alias);
+                        Alias.addAliasFromLoadedAlias(APIChannel.get(channelname).getDatabaseWrapper(), alias);
 
                         break;
                     }
                 case "delete":
                     if (args.size() > 2) {
                         String aliasName = args.get(2);
-                        Alias.remove(APIChannel.get(channelname.toLowerCase()).getDatabaseWrapper(), aliasName);
+                        Alias.remove(APIChannel.get(channelname).getDatabaseWrapper(), aliasName);
                     }
                     break;
                 case "enable":
                     if (args.size() > 2) {
                         String aliasName = args.get(2);
                         LoadedAlias alias = DefaultCommandGenerator.createDefaultAlias();
-                        if (Alias.exists(APIChannel.get(channelname.toLowerCase()).getDatabaseWrapper(), aliasName)) {
-                            alias = Alias.get(APIChannel.get(channelname.toLowerCase()).getDatabaseWrapper(), aliasName);
+                        if (Alias.exists(APIChannel.get(channelname).getDatabaseWrapper(), aliasName)) {
+                            alias = Alias.get(APIChannel.get(channelname).getDatabaseWrapper(), aliasName);
                         }
                         alias.setEnabled(true);
-                        Alias.addAliasFromLoadedAlias(APIChannel.get(channelname.toLowerCase()).getDatabaseWrapper(), alias);
+                        Alias.addAliasFromLoadedAlias(APIChannel.get(channelname).getDatabaseWrapper(), alias);
                     }
                     break;
                 case "disable":
                     if (args.size() > 2) {
                         String aliasName = args.get(2);
                         LoadedAlias alias = DefaultCommandGenerator.createDefaultAlias();
-                        if (Alias.exists(APIChannel.get(channelname.toLowerCase()).getDatabaseWrapper(), aliasName)) {
-                            alias = Alias.get(APIChannel.get(channelname.toLowerCase()).getDatabaseWrapper(), aliasName);
+                        if (Alias.exists(APIChannel.get(channelname).getDatabaseWrapper(), aliasName)) {
+                            alias = Alias.get(APIChannel.get(channelname).getDatabaseWrapper(), aliasName);
                         }
                         alias.setEnabled(false);
-                        Alias.addAliasFromLoadedAlias(APIChannel.get(channelname.toLowerCase()).getDatabaseWrapper(), alias);
+                        Alias.addAliasFromLoadedAlias(APIChannel.get(channelname).getDatabaseWrapper(), alias);
                     }
                     break;
                 default:
@@ -238,8 +238,8 @@ public class CmdParser {
 
     void command() {
         if (args.size() > 1) {
-            String channelname = args.get(1);
-            switch (args.get(0)) {
+            String channelname = args.get(1).toLowerCase();
+            switch (args.get(0).toLowerCase()) {
                 case "add":
                     if (args.size() > 6) {
                         String ul = args.get(2).split("=")[1];
@@ -261,22 +261,22 @@ public class CmdParser {
                         if (minArgs != -1) {
                             command.setMinArgs(minArgs);
                         }
-                        Command.addCommandFromLoadedCommand(APIChannel.get(channelname.toLowerCase()).getDatabaseWrapper(), command);
+                        Command.addCommandFromLoadedCommand(APIChannel.get(channelname).getDatabaseWrapper(), command);
                     }
                     break;
                 case "edit":
                     if (args.size() > 6) {
                         String ul = args.get(2).split("=")[1];
                         String ma = args.get(3).split("=")[1];
-                        String commandName = args.get(4);
+                        String commandName = args.get(4));
                         String response = args.get(5);
                         for (int i = 6; i < args.size(); i++) {
                             response += " ";
                             response += args.get(i);
                         }
                         LoadedCommand command = DefaultCommandGenerator.createDefaultCommand();
-                        if (Command.exists(APIChannel.get(channelname.toLowerCase()).getDatabaseWrapper(), commandName)) {
-                            command = Command.get(APIChannel.get(channelname.toLowerCase()).getDatabaseWrapper(), commandName);
+                        if (Command.exists(APIChannel.get(channelname).getDatabaseWrapper(), commandName)) {
+                            command = Command.get(APIChannel.get(channelname).getDatabaseWrapper(), commandName);
                         }
                         command.setResponse(response);
                         UserLevel execUL = UserLevel.valueOf(ul);
@@ -287,35 +287,35 @@ public class CmdParser {
                         if (minArgs != -1) {
                             command.setMinArgs(minArgs);
                         }
-                        Command.addCommandFromLoadedCommand(APIChannel.get(channelname.toLowerCase()).getDatabaseWrapper(), command);
+                        Command.addCommandFromLoadedCommand(APIChannel.get(channelname).getDatabaseWrapper(), command);
                     }
                     break;
                 case "delete":
                     if (args.size() > 2) {
-                        String commandName = args.get(2);
-                        Command.remove(APIChannel.get(channelname.toLowerCase()).getDatabaseWrapper(), commandName);
+                        String commandName = args.get(2).toLowerCase();
+                        Command.remove(APIChannel.get(channelname).getDatabaseWrapper(), commandName);
                     }
                     break;
                 case "enable":
                     if (args.size() > 2) {
                         String commandName = args.get(2);
                         LoadedCommand command = DefaultCommandGenerator.createDefaultCommand();
-                        if (Command.exists(APIChannel.get(channelname.toLowerCase()).getDatabaseWrapper(), commandName)) {
-                            command = Command.get(APIChannel.get(channelname.toLowerCase()).getDatabaseWrapper(), commandName);
+                        if (Command.exists(APIChannel.get(channelname).getDatabaseWrapper(), commandName)) {
+                            command = Command.get(APIChannel.get(channelname).getDatabaseWrapper(), commandName);
                         }
                         command.setEnabled(true);
-                        Command.addCommandFromLoadedCommand(APIChannel.get(channelname.toLowerCase()).getDatabaseWrapper(), command);
+                        Command.addCommandFromLoadedCommand(APIChannel.get(channelname).getDatabaseWrapper(), command);
                     }
                     break;
                 case "disable":
                     if (args.size() > 2) {
                         String commandName = args.get(2);
                         LoadedCommand command = DefaultCommandGenerator.createDefaultCommand();
-                        if (Command.exists(APIChannel.get(channelname.toLowerCase()).getDatabaseWrapper(), commandName)) {
-                            command = Command.get(APIChannel.get(channelname.toLowerCase()).getDatabaseWrapper(), commandName);
+                        if (Command.exists(APIChannel.get(channelname).getDatabaseWrapper(), commandName)) {
+                            command = Command.get(APIChannel.get(channelname).getDatabaseWrapper(), commandName);
                         }
                         command.setEnabled(false);
-                        Command.addCommandFromLoadedCommand(APIChannel.get(channelname.toLowerCase()).getDatabaseWrapper(), command);
+                        Command.addCommandFromLoadedCommand(APIChannel.get(channelname).getDatabaseWrapper(), command);
                     }
                     break;
                 default:
