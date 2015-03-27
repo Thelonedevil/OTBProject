@@ -3,12 +3,12 @@ package com.github.otbproject.otbproject.messages.receive;
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.api.APIChannel;
 import com.github.otbproject.otbproject.api.APIConfig;
-import com.github.otbproject.otbproject.api.APIDatabase;
 import com.github.otbproject.otbproject.channels.Channel;
 import com.github.otbproject.otbproject.commands.Command;
 import com.github.otbproject.otbproject.config.ChannelConfigHelper;
 import com.github.otbproject.otbproject.config.GeneralConfigHelper;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
+import com.github.otbproject.otbproject.messages.internal.InternalMessageSender;
 import com.github.otbproject.otbproject.messages.send.MessageOut;
 import com.github.otbproject.otbproject.messages.send.MessagePriority;
 import com.github.otbproject.otbproject.proc.MessageProcessor;
@@ -32,6 +32,7 @@ public class ChannelMessageReceiver implements Runnable {
             Thread.currentThread().setName(channel.getName() + " Message Receiver");
             PackagedMessage packagedMessage;
             boolean inBotChannel = false;
+            boolean internal;
             String channelName = channel.getName();
             if (channelName.equals(App.bot.getNick())) {
                 inBotChannel = true;
@@ -41,10 +42,16 @@ public class ChannelMessageReceiver implements Runnable {
                 packagedMessage = queue.take();
                 String user = packagedMessage.getUser();
 
-                Channel destinationChannel = APIChannel.get(packagedMessage.getDestinationChannel());
-                if (destinationChannel == null) {
-                    App.logger.warn("Attempted to send message in channel in which bot is not listening: " + packagedMessage.getDestinationChannel());
-                    continue;
+                Channel destinationChannel = null;
+                if (packagedMessage.getDestinationChannel().startsWith(InternalMessageSender.DESTINATION_START)) {
+                    internal = true;
+                } else {
+                    internal = false;
+                    destinationChannel = APIChannel.get(packagedMessage.getDestinationChannel());
+                    if (destinationChannel == null) {
+                        App.logger.warn("Attempted to send message in channel in which bot is not listening: " + packagedMessage.getDestinationChannel());
+                        continue;
+                    }
                 }
 
                 // Process commands for bot channel
@@ -53,14 +60,14 @@ public class ChannelMessageReceiver implements Runnable {
                     UserLevel ul = packagedMessage.getUserLevel();
                     ProcessedMessage processedMsg = MessageProcessor.process(db, packagedMessage.getMessage(), channelName, user, ul, true);
                     if (processedMsg.isScript() || !processedMsg.getResponse().isEmpty()) {
-                        doResponse(db, processedMsg, channelName, destinationChannel, user, ul, packagedMessage.getMessagePriority(), true);
+                        doResponse(db, processedMsg, channelName, packagedMessage.getDestinationChannel(), destinationChannel, user, ul, packagedMessage.getMessagePriority(), true, internal);
                         // Don't process response as regular channel if done as bot channel
                         continue;
                     }
                 }
 
-                // Pre-check if user is on cooldown
-                if (destinationChannel.userCooldownSet.contains(user)) {
+                // Pre-check if user is on cooldown (skip if internal)
+                if (!internal && destinationChannel.userCooldownSet.contains(user)) {
                     continue;
                 }
 
@@ -71,8 +78,9 @@ public class ChannelMessageReceiver implements Runnable {
 
                 // Check if bot is enabled
                 if (channel.getConfig().isEnabled() || GeneralConfigHelper.isPermanentlyEnabled(APIConfig.getGeneralConfig(), processedMsg.getCommandName())) {
-                    if ((processedMsg.isScript() || !processedMsg.getResponse().isEmpty()) && !destinationChannel.commandCooldownSet.contains(processedMsg.getCommandName())) {
-                        doResponse(db, processedMsg, channelName, destinationChannel, user, ul, packagedMessage.getMessagePriority(), inBotChannel);
+                    // Check if empty message, and then if command is on cooldown (skip cooldown check if internal)
+                    if ((processedMsg.isScript() || !processedMsg.getResponse().isEmpty()) && (internal || !destinationChannel.commandCooldownSet.contains(processedMsg.getCommandName()))) {
+                        doResponse(db, processedMsg, channelName, packagedMessage.getDestinationChannel(), destinationChannel, user, ul, packagedMessage.getMessagePriority(), inBotChannel, internal);
                     }
                 }
             }
@@ -83,13 +91,13 @@ public class ChannelMessageReceiver implements Runnable {
         }
     }
 
-    private void doResponse(DatabaseWrapper db, ProcessedMessage processedMsg, String channelName, Channel destinationChannel, String user, UserLevel ul, MessagePriority priority, boolean inBotChannel) {
+    private void doResponse(DatabaseWrapper db, ProcessedMessage processedMsg, String channelName, String destinationChannelName, Channel destinationChannel, String user, UserLevel ul, MessagePriority priority, boolean inBotChannel, boolean internal) {
         String message = processedMsg.getResponse();
         String command = processedMsg.getCommandName();
 
         // Do script (processedMsg.getResponse is the script path)
         if (processedMsg.isScript()) {
-            boolean success = ScriptProcessor.process(message, db, command, processedMsg.getArgs(), channelName, destinationChannel.getName(), user, ul);
+            boolean success = ScriptProcessor.process(message, db, command, processedMsg.getArgs(), channelName, destinationChannelName, user, ul);
             if (!success) {
                 return;
             }
@@ -97,8 +105,11 @@ public class ChannelMessageReceiver implements Runnable {
         // Send message
         else {
             MessageOut messageOut = new MessageOut(message, priority);
+            if (internal) {
+                new InternalMessageSender(destinationChannelName.replace(InternalMessageSender.DESTINATION_START, ""), messageOut.getMessage()).sendMessage();
+            }
             // If queue rejects message because it's too full, return
-            if (!destinationChannel.sendQueue.add(messageOut)) {
+            else if (!destinationChannel.sendQueue.add(messageOut)) {
                 return;
             }
         }
@@ -111,8 +122,8 @@ public class ChannelMessageReceiver implements Runnable {
             App.logger.catching(e);
         }
 
-        // Skip cooldowns if bot channel
-        if (inBotChannel) {
+        // Skip cooldowns if bot channel or internal
+        if (inBotChannel || internal) {
             return;
         }
 
