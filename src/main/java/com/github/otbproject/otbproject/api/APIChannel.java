@@ -5,6 +5,7 @@ import com.github.otbproject.otbproject.channels.Channel;
 import com.github.otbproject.otbproject.config.*;
 import com.github.otbproject.otbproject.fs.FSUtil;
 import com.github.otbproject.otbproject.fs.Setup;
+import com.github.otbproject.otbproject.irc.IrcHelper;
 import com.github.otbproject.otbproject.serviceapi.ApiRequest;
 
 import java.io.File;
@@ -74,7 +75,7 @@ public class APIChannel {
             return false;
         }
         if(App.bot.isConnected()) {
-            App.bot.sendIRC().joinChannel("#"+channelName);
+            IrcHelper.join(channelName);
         } else{
             App.logger.error("Not connected to Twitch");
             return false;
@@ -87,7 +88,11 @@ public class APIChannel {
         } else {
             channel = get(channelName);
         }
-        channel.join();
+        if (!channel.join()) {
+            App.logger.error("Failed to join channel '" + channelName + "' internally. Parting in IRC.");
+            IrcHelper.part(channelName);
+            return false;
+        }
         if (!isBotChannel) {
             BotConfigHelper.addToCurrentChannels(botConfig, channelName);
             APIConfig.writeBotConfig();
@@ -109,6 +114,6 @@ public class APIChannel {
         get(channelName).leave();
         BotConfigHelper.removeFromCurrentChannels(APIConfig.getBotConfig(), channelName);
         APIConfig.writeBotConfig();
-        App.bot.getUserChannelDao().getChannel("#" + channelName).send().part();
+        IrcHelper.part(channelName);
     }
 }
