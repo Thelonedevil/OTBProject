@@ -1,5 +1,6 @@
 package com.github.otbproject.otbproject.channels;
 
+import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.api.APIDatabase;
 import com.github.otbproject.otbproject.config.ChannelConfig;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
@@ -31,7 +32,13 @@ public class Channel {
         this.inChannel = false;
     }
 
-    public void join() {
+    public boolean join() {
+        db = APIDatabase.getChannelMainDatabase(name);
+        if (db == null) {
+            App.logger.error("Unable to get database for channel: " + name);
+            return false;
+        }
+
         messageSender = new ChannelMessageSender(this, sendQueue);
         messageSenderThread = new Thread(messageSender);
         messageSenderThread.start();
@@ -40,15 +47,13 @@ public class Channel {
         messageReceiverThread = new Thread(messageReceiver);
         messageReceiverThread.start();
 
-        db = APIDatabase.getChannelMainDatabase(name);
-
         inChannel = true;
+
+        return true;
     }
 
     public void leave() {
         inChannel = false;
-
-        db = null;
 
         messageSenderThread.interrupt();
         messageSenderThread = null;
@@ -63,6 +68,8 @@ public class Channel {
         commandCooldownSet.clear();
         userCooldownSet.clear();
         subscriberStorage.clear();
+
+        db = null;
     }
 
     public String getName() {

@@ -43,6 +43,7 @@ public class ChannelMessageReceiver implements Runnable {
 
                 Channel destinationChannel = APIChannel.get(packagedMessage.getDestinationChannel());
                 if (destinationChannel == null) {
+                    App.logger.warn("Attempted to send message in channel in which bot is not listening: " + packagedMessage.getDestinationChannel());
                     continue;
                 }
 
