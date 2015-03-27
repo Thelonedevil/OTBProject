@@ -5,7 +5,7 @@ import com.github.otbproject.otbproject.App;
 import java.util.HashMap;
 
 public class InternalMessageSender {
-    public static final String DESTINATION_START = "internal:";
+    public static final String DESTINATION_PREFIX = "internal:";
 
     public static final String CLI = "cli";
 

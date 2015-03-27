@@ -43,7 +43,7 @@ public class ChannelMessageReceiver implements Runnable {
                 String user = packagedMessage.getUser();
 
                 Channel destinationChannel = null;
-                if (packagedMessage.getDestinationChannel().startsWith(InternalMessageSender.DESTINATION_START)) {
+                if (packagedMessage.getDestinationChannel().startsWith(InternalMessageSender.DESTINATION_PREFIX)) {
                     internal = true;
                 } else {
                     internal = false;
@@ -106,7 +106,7 @@ public class ChannelMessageReceiver implements Runnable {
         else {
             MessageOut messageOut = new MessageOut(message, priority);
             if (internal) {
-                new InternalMessageSender(destinationChannelName.replace(InternalMessageSender.DESTINATION_START, ""), messageOut.getMessage()).sendMessage();
+                new InternalMessageSender(destinationChannelName.replace(InternalMessageSender.DESTINATION_PREFIX, ""), messageOut.getMessage()).sendMessage();
             }
             // If queue rejects message because it's too full, return
             else if (!destinationChannel.sendQueue.add(messageOut)) {
