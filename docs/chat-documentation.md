@@ -74,10 +74,11 @@ Each channel by default has script commands to add and remove commands and alias
 
 #### Built-in Bot-Channel Commands
 
-The bot's channel has its own script commands to perform actions specific to the bot, such as joining channels. With the exception of the `!join` command, which can be run by any user, commands in the bot's channel can only be run by users with a user level of super-moderator or higher. The built-in bot-channel script commands are below.
+The bot's channel has its own script commands to perform actions specific to the bot, such as joining channels. With the exception of the `!at` and `!join` commands, which can be run by any user, commands in the bot's channel can only be run by users with a user level of super-moderator or higher. The built-in bot-channel script commands are below.
 
 | Command | Flags | Arguments | Description |
 |:--------|:------|:----------|:------------|
+|`!at`||`<channel>` `<command>`|Runs the specified command in the specified channel, and prints the response in the bot's channel. Useful if you don't want to spam a channel's chat while it's streaming.|
 |`!join`|||Joins the channel of the user who ran the command. Respects the join mode, as specified in the [config documentation](config-documentation.md#fields-2).|
 |`!joinMode` `whitelist | blacklist | none`||`<mode>`|Sets the join mode to the mode specified. See the [config documentation](config-documentation.md#fields-2).|
 |`!whitelist` `add`||`<channel>`|Adds the specified channel to the whitelist of channels which may be joined.|
