@@ -43,47 +43,50 @@ Commands are words which the bot will respond to if they are the first word in a
 
 #### Built-in Channel Commands
 
-Each channel by default has script commands to add and remove commands and aliases, as well as script commands to do several other things. The built-in channel script commands are below.
+Each channel by default has script commands to add and remove commands and aliases, as well as script commands to do several other things. The built-in channel script commands are below. Flags and user levels are covered later.
 
-| Command | Flags | Arguments | Description |
-|:--------|:------|:----------|:------------|
-|`!command` `add | new`|`ul`, `ma`|`<command>` `<response>`||
-|`!command` `set | edit`|`ul`, `ma`|`<command>` `<response>`||
-|`!command` `remove | delete | rm | del`||`<command>`||
-|`!command` `list`||||
-|`!command` `raw`||`<command>`||
-|`!command` `enable`||`<command>`||
-|`!command` `disable`||`<command>`||
-|`!alias-meta` `add | new`||`<alias>` `<command>`||
-|`!alias-meta` `set`||`<alias>` `<command>`||
-|`!alias-meta` `remove | delete | rm | del`||`<alias>`||
-|`!alias-meta` `list`||||
-|`!alias-meta` `getCommand`||`<alias>`||
-|`!alias-meta` `enable`||`<alias>`||
-|`!alias-meta` `disable`||`<alias>`||
-|`!setExecUL`||`<command>` `<user level>`||
-|`!setMinArgs`||`<command>` `<min args>`||
-|`!rename`||`<old command name>` `<new command name>`||
-|`!resetCount`||`<command>`||
-|`!assignUserLevel`||`<user>` `<user level>`||
-|`!silence-meta` `on | true | off | false`||||
-|`!bot-enable-meta` `true | false`||||
-|`!leave`||`<bot name>`||
+| Command | Flags | Arguments | Description | ExecUL |
+|:--------|:------|:----------|:------------|:-------|
+|`!command` `add | new`|`ul`, `ma`|`<command>` `<response>`|Adds a command which did not previously exist. The command is the first space-delineated word (after any flags), and the response is everything following it.|Moderator|
+|`!command` `set | edit`|`ul`, `ma`|`<command>` `<response>`|Sets the specified command with the given response, whether it existed before or not. The command is the first space-delineated word (after any flags), and the response is everything following it.|Moderator|
+|`!command` `remove | delete | rm | del`||`<command>`|Removes the specified command.|Moderator|
+|`!command` `list`|||Lists all commands (other than the built-in response commands) without their responses.|Moderator|
+|`!command` `raw`||`<command>`|Prints the response for the specified command.|Moderator|
+|`!command` `enable`||`<command>`|Enables the specified command.|Moderator|
+|`!command` `disable`||`<command>`|Disables the specified command.|Moderator|
+|`!alias-meta` `add | new`||`<alias>` `<command>`|Adds an alias which did not previously exist. The alias is the first space-delineated word, and the command is everything following it (may contain spaces).|Moderator|
+|`!alias-meta` `set`||`<alias>` `<command>`|Sets the specified alias to the given command, whether it existed before or not. The alias is the first space-delineated word, and the command is everything following it (may contain spaces).|Moderator|
+|`!alias-meta` `remove | delete | rm | del`||`<alias>`|Removes an alias.|Moderator|
+|`!alias-meta` `list`|||Lists all aliases without their commands.|Moderator|
+|`!alias-meta` `getCommand`||`<alias>`|Prrints the command to which an alias is aliased.|Moderator|
+|`!alias-meta` `enable`||`<alias>`|Enables the specified alias.|Moderator|
+|`!alias-meta` `disable`||`<alias>`|Disables the specified alias.|Moderator|
+|`!setExecUL`||`<command>` `<user level>`|Sets the minimum user level required to execute the specified command.|Moderator|
+|`!setMinArgs`||`<command>` `<min args>`|Sets the minimum number of arguments with which a command must be run. Cannot be negative.|Moderator|
+|`!rename`||`<old command name>` `<new command name>`|Renames a command. A command with the new name cannot already exist.|Moderator|
+|`!resetCount`||`<command>`|Resets the count of the specified command to 0.|Moderator|
+|`!assignUserLevel`||`<user>` `<user level>`|Assigns the specified user level to the specified user.|Broadcaster|
+|`!silence-meta` `on | true`|||Silences the bot in the channel. Commands which run scripts will still execute the scripts, but no responses will be printed in chat.|Super-moderator|
+|`!silence-meta` `off | false`|||Unsilences the bot in the channel. Responses will be printed again.|Super-moderator|
+|`!bot-enable-meta` `false`|||Disables the bot in the channel. It will not respond to any commands (both by running scripts and printing responses in chat) except the command to enable it.|Super-moderator|
+|`!bot-enable-meta` `true`|||Enables the bot in the channel.|Super-moderator|
+|`!leave`||`<bot name>`|Makes the bot leave the channel. Its name must be specified in case other bots are running in the channel (such as the Monstercat bot), and you want a different bot to leave.|Super-moderator|
 
 #### Built-in Bot-Channel Commands
 
-The bot's channel has its own script commands to perform actions specific to the bot, such as joining channels. The built-in bot-channel script commands are below.
+The bot's channel has its own script commands to perform actions specific to the bot, such as joining channels. With the exception of the `!at` and `!join` commands, which can be run by any user, commands in the bot's channel can only be run by users with a user level of super-moderator or higher. The built-in bot-channel script commands are below.
 
 | Command | Flags | Arguments | Description |
 |:--------|:------|:----------|:------------|
-|`!join`||||
-|`!joinMode`||`<mode>`||
-|`!whitelist` `add`||`<channel>`||
-|`!whitelist` `remove`||`<channel>`||
-|`!whitelist` `list`||||
-|`!blacklist` `add`||`<channel>`||
-|`!blacklist` `remove`||`<channel>`||
-|`!blacklist` `list`||||
+|`!at`||`<channel>` `<command>`|Runs the specified command in the specified channel, and prints the response in the bot's channel. Useful if you don't want to spam a channel's chat while it's streaming.|
+|`!join`|||Joins the channel of the user who ran the command. Respects the join mode, as specified in the [config documentation](config-documentation.md#fields-2).|
+|`!joinMode` `whitelist | blacklist | none`||`<mode>`|Sets the join mode to the mode specified. See the [config documentation](config-documentation.md#fields-2).|
+|`!whitelist` `add`||`<channel>`|Adds the specified channel to the whitelist of channels which may be joined.|
+|`!whitelist` `remove`||`<channel>`|Removes the specified channel from the whitelist of channels which may be joined.|
+|`!whitelist` `list`|||Lists the channels in the channel join whitelist.|
+|`!blacklist` `add`||`<channel>`|Adds the specified channel to the blacklist of channels which may not be joined.|
+|`!blacklist` `remove`||`<channel>`|Removes the specified channel from the whitelist of channels which may not be joined.|
+|`!blacklist` `list`|||Lists the channels in the channel join blacklist.|
 
 #### Flags
 
@@ -91,8 +94,8 @@ Flags are optional arguments for a command which give more control over what the
 
 | Flag | Usage | Option(s) | Description |
 |:-----|:------|:----------|:------------|
-|`ul`|`--ul=<option>`|A user level marker as described in the table below||
-|`ma`|`--ma=<option>`|An integer greater than 0||
+|`ul`|`--ul=<option>`|A user level marker as described in the table below|Specifies the minimum user level required to execute a command.|
+|`ma`|`--ma=<option>`|An integer greater than 0|Specifies the minimum number of arguments with which a command must be run.|
 
 #### User Levels
 
@@ -144,44 +147,44 @@ Aliases will not loop; they will only be expanded once. For example, if you alia
 
 #### Command Responses
 
-Script commands send responses to chat as commands, not directly as messages. The commands which they use to respond are listed below. You can change the responses of the commands below to customize the responses of script commands. For example, if you don't like what the bot says when it creates a command, you can change it by changing the response to `~%command.set.success`.
+Because script commands can have multiple outcomes, they send responses to chat as commands, not directly as messages. The commands which they use to respond are listed below. You can change the responses of the commands below to customize the responses of script commands. For example, if you don't like what the bot says when it creates a command, you can change it by changing the response to `~%command.set.success`.
 
 | Command | Description | Default Response |
 |:--------|:------------|:-----------------|
-|`~%general:insufficient.args`|||
-|`~%general:insufficient.user.level`|||
-|`~%general:invalid.arg`|||
-|`~%general:invalid.flag`|||
-|`~%command.general:does.not.exist`|||
-|`~%command.add.already.exists`|||
-|`~%command.set.success`|||
-|`~%command.is.alias`|||
-|`~%command.remove.success`|||
-|`~%command.enabled`|||
-|`~%command.disabled`|||
-|`~%alias.general:does.not.exist`|||
-|`~%alias.add.already.exists`|||
-|`~%alias.success`|||
-|`~%unalias.success`|||
-|`~%alias.enabled`|||
-|`~%alias.disabled`|||
-|`~%command.set.exec.ul.success`|||
-|`~%command.set.min.args.success`|||
-|`~%command.reset.count.success`|||
-|`~%command.rename.success`|||
-|`~%command.rename.already.in.use`|||
-|`~%bot.unsilence.success`|||
-|`~%bot.enable.success`|||
-|`~%bot.leave.need.name`|||
-|`~%bot.joined.channel`|||
-|`~%assign.user.level.success`|||
-|`~%reset.user.level.success`|||
-|`~%assign.unsupported.user.level`|||
-|`~%join.mode.set`|||
-|`~%whitelist.add.success`|||
-|`~%whitelist.remove.success`|||
-|`~%blacklist.add.success`|||
-|`~%blacklist.remove.success`|||
+|`~%general:insufficient.args`|Some command or sub-command was not given enough arguments.||
+|`~%general:insufficient.user.level`|A user running some command attempted to perform an action for which they did not have a high enough user level.||
+|`~%general:invalid.arg`|An invalid argument was given for some command.||
+|`~%general:invalid.flag`|An invalid flag was given for some command.||
+|`~%command.general:does.not.exist`|A user attempted to run one of the subcommands of `!command` on a command which did not exist.||
+|`~%command.add.already.exists`|A user attempted to add a command which already existed using `!command` `add | new`.||
+|`~%command.set.success`|A command was successfully set.||
+|`~%command.is.alias`|A command whose name is also in use as an alias was successfully set.||
+|`~%command.remove.success`|A command was successfully removed.||
+|`~%command.enabled`|A command was enabled.||
+|`~%command.disabled`|A command was disabled.||
+|`~%alias.general:does.not.exist`|A user attempted to run one of the subcommands of `!alias` on an alias which did not exist.||
+|`~%alias.add.already.exists`|A user attempted to add an alias which already existed using `!alias` `add | new`.||
+|`~%alias.success`|An alias was successfully set.||
+|`~%unalias.success`|An alias was successfully removed.||
+|`~%alias.enabled`|An alias was enabled.||
+|`~%alias.disabled`|An alias was disabled.||
+|`~%command.set.exec.ul.success`|The minimum user level required to execute a command was successfully set.||
+|`~%command.set.min.args.success`|The minimum number of arguments with which a command must be executed was successfully set.||
+|`~%command.reset.count.success`|The count of a command was successfully reset to 0.||
+|`~%command.rename.success`|A command was successfully renamed.||
+|`~%command.rename.already.in.use`|A command could not be renamed because the new name given was already in use.||
+|`~%bot.unsilence.success`|The bot was successfully unsilenced.||
+|`~%bot.enable.success`|The bot was successfully enabled.||
+|`~%bot.leave.need.name`|Notifies the user running the `!leave` command that the bot's name must be specified to make it leave.||
+|`~%bot.joined.channel`|Notifies users in a channel that the bot has joined the channel.||
+|`~%assign.user.level.success`|A user level was successfully assigned to a user.||
+|`~%reset.user.level.success`|A user's user level was reset.||
+|`~%assign.unsupported.user.level`|The user level specified in the `!assignUserLevel` command is a valid user level to have as the minumum user level for the execution of a command, but cannot be assigned because it is controlled by Twitch.||
+|`~%join.mode.set`|The join mode for the bot was successfully set.||
+|`~%whitelist.add.success`|A channel was added to the channel join whitelist.||
+|`~%whitelist.remove.success`|A channel was removed from the channel join whitelist.||
+|`~%blacklist.add.success`|A channel was added to the channel join blacklist.||
+|`~%blacklist.remove.success`|A channel was removed from the channel join blacklist.||
 
 ##Special Terms
 
@@ -225,7 +228,7 @@ The modifiers are described in the following table.
 
 Some terms can contain embedded strings. The `{{default}}` in the `[[args]]` and `[[argN]]` terms is an example of an embedded string. Embedded strings are surrounded by `{{` and `}}`. Embedded strings can be useful for providing more information or options for a term, and are used extensively in more advanced and versatile terms.
 
-If you are already confused at this point, you should probably skip this section and move onto the examples of term usage below.
+If you are already confused at this point, you should probably skip this section and move on to the examples of term usage below.
 
 The following are terms which are significantly more useful when given embedded strings, or not useful at all without them. If less than N embedded strings are provided, then any term which attempts to use the Nth embedded string will treat it as an empty string.
 

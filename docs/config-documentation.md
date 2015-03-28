@@ -76,7 +76,7 @@ The general configuration file can be found at:
 {
   "portNumber" : 80,
   "ip_binding" : "0.0.0.0",
-  "permanently_enabled_commands" : [ ]
+  "permanently_enabled_commands" : [ "!bot-enable-meta" ]
 }
 ```
 
@@ -86,7 +86,7 @@ The general configuration file can be found at:
 |:-----------|:------------|
 |`portNumber`||
 |`ip_binding`||
-|`permanently_enabled_commands`||
+|`permanently_enabled_commands`|A list of commands which the bot will listen for even when it is disabled.|
 
 ## Bot Config
 
@@ -157,10 +157,10 @@ The configuration file for a given channel can be found at:
 | Field | Description |
 |:-----------|:------------|
 |`commandCooldown`||
-|`userCooldowns`||
+|`userCooldowns`|See the table below.|
 |`debug`||
 |`enabled`||
-|`queueLimits`||
+|`queueLimits`|See the table below.|
 
 ##### userCooldowns
 
