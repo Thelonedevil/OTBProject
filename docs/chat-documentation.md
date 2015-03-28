@@ -78,7 +78,7 @@ The bot's channel has its own script commands to perform actions specific to the
 
 | Command | Flags | Arguments | Description |
 |:--------|:------|:----------|:------------|
-|`!join`|||Joins the channel of the user who ran the command. Respects the join mode, as specified below and in the [config documentation](../config-documentation.md#bot-config).|
+|`!join`|||Joins the channel of the user who ran the command. Respects the join mode, as specified below and in the [config documentation](config-documentation.md#bot-config).|
 |`!joinMode`||`<mode>`||
 |`!whitelist` `add`||`<channel>`||
 |`!whitelist` `remove`||`<channel>`||
