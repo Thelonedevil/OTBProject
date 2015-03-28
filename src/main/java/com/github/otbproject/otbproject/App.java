@@ -48,7 +48,7 @@ public class App {
                 System.err.println("A fatal problem has occurred.");
                 t.printStackTrace();
                 System.err.println("Attempting to log problem.");
-                // TODO log throwable
+                // log throwable
                 File file = new File("OTBProjectFatal.log");
                 file.createNewFile();
                 PrintStream ps = new PrintStream(file);
@@ -63,7 +63,7 @@ public class App {
 
 
     public static void doMain(String[] args){
-        CommandLine cmd = null;
+        CommandLine cmd;
         try {
             cmd = ArgParser.parse(args);
         } catch (ParseException e) {
@@ -95,6 +95,9 @@ public class App {
         }
 
         System.setProperty("OTBCONF", FSUtil.logsDir());
+        if (cmd.hasOption(ArgParser.Opts.DEBUG)) {
+            // TODO use debug mode for console
+        }
 
         // Ensure directory tree is setup
         try {
@@ -112,13 +115,13 @@ public class App {
             App.logger.catching(e);
         }
         String version = "";
-                try{
-                    BufferedReader fileReader = new BufferedReader( new FileReader(versionFile));
-                    version = fileReader.readLine();
-                } catch (IOException e) {
-                    App.logger.catching(e);
-                }
-        if (!VERSION.contains("SNAPSHOT") && !VERSION.equalsIgnoreCase(version)){
+        try {
+            BufferedReader fileReader = new BufferedReader(new FileReader(versionFile));
+            version = fileReader.readLine();
+        } catch (IOException e) {
+            App.logger.catching(e);
+        }
+        if (cmd.hasOption(ArgParser.Opts.UNPACK) || (!VERSION.contains("SNAPSHOT") && !VERSION.equalsIgnoreCase(version))) {
             UnPacker.unPack("preloads/json/commands/", FSUtil.commandsDir()+File.separator+"all-channels"+File.separator+"to-load");
             UnPacker.unPack("preloads/json/aliases/", FSUtil.aliasesDir()+File.separator+"all-channels"+File.separator+"to-load");
             UnPacker.unPack("preloads/json/bot-channel/commands/", FSUtil.commandsDir()+File.separator+"bot-channel"+File.separator+"to-load");
