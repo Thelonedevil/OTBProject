@@ -61,7 +61,7 @@ Each channel by default has script commands to add and remove commands and alias
 |`!alias-meta` `getCommand`||`<alias>`|Prrints the command to which an alias is aliased.|Moderator|
 |`!alias-meta` `enable`||`<alias>`|Enables the specified alias.|Moderator|
 |`!alias-meta` `disable`||`<alias>`|Disables the specified alias.|Moderator|
-|`!setExecUL`||`<command>` `<user level>`|Sets the minimum user level to execute the specified command.|Moderator|
+|`!setExecUL`||`<command>` `<user level>`|Sets the minimum user level required to execute the specified command.|Moderator|
 |`!setMinArgs`||`<command>` `<min args>`|Sets the minimum number of arguments with which a command must be run. Cannot be negative.|Moderator|
 |`!rename`||`<old command name>` `<new command name>`|Renames a command. A command with the new name cannot already exist.|Moderator|
 |`!resetCount`||`<command>`|Resets the count of the specified command to 0.|Moderator|
@@ -93,8 +93,8 @@ Flags are optional arguments for a command which give more control over what the
 
 | Flag | Usage | Option(s) | Description |
 |:-----|:------|:----------|:------------|
-|`ul`|`--ul=<option>`|A user level marker as described in the table below||
-|`ma`|`--ma=<option>`|An integer greater than 0||
+|`ul`|`--ul=<option>`|A user level marker as described in the table below|Specifies the minimum user level required to execute a command.|
+|`ma`|`--ma=<option>`|An integer greater than 0|Specifies the minimum number of arguments with which a command must be run.|
 
 #### User Levels
 
