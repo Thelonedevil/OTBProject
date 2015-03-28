@@ -45,47 +45,47 @@ Commands are words which the bot will respond to if they are the first word in a
 
 Each channel by default has script commands to add and remove commands and aliases, as well as script commands to do several other things. The built-in channel script commands are below. Flags and user levels are covered later.
 
-| Command | Flags | Arguments | Description |
-|:--------|:------|:----------|:------------|
-|`!command` `add | new`|`ul`, `ma`|`<command>` `<response>`|Adds a command which did not previously exist. The command is the first space-delineated word (after any flags), and the response is everything following it.|
-|`!command` `set | edit`|`ul`, `ma`|`<command>` `<response>`|Sets the specified command with the given response, whether it existed before or not. The command is the first space-delineated word (after any flags), and the response is everything following it.|
-|`!command` `remove | delete | rm | del`||`<command>`|Removes the specified command.|
-|`!command` `list`|||Lists all commands (other than the built-in response commands) without their responses.|
-|`!command` `raw`||`<command>`|Prints the response for the specified command.|
-|`!command` `enable`||`<command>`|Enables the specified command.|
-|`!command` `disable`||`<command>`|Disables the specified command.|
-|`!alias-meta` `add | new`||`<alias>` `<command>`|Adds an alias which did not previously exist. The alias is the first space-delineated word, and the command is everything following it (may contain spaces).|
-|`!alias-meta` `set`||`<alias>` `<command>`|Sets the specified alias to the given command, whether it existed before or not. The alias is the first space-delineated word, and the command is everything following it (may contain spaces).|
-|`!alias-meta` `remove | delete | rm | del`||`<alias>`|Removes an alias.|
-|`!alias-meta` `list`|||Lists all aliases without their commands.|
-|`!alias-meta` `getCommand`||`<alias>`|Prrints the command to which an alias is aliased.|
-|`!alias-meta` `enable`||`<alias>`|Enables the specified alias.|
-|`!alias-meta` `disable`||`<alias>`|Disables the specified alias.|
-|`!setExecUL`||`<command>` `<user level>`|Sets the minimum user level to execute the specified command.|
-|`!setMinArgs`||`<command>` `<min args>`|Sets the minimum number of arguments with which a command must be run. Cannot be negative.|
-|`!rename`||`<old command name>` `<new command name>`|Renames a command. A command with the new name cannot already exist.|
-|`!resetCount`||`<command>`|Resets the count of the specified command to 0.|
-|`!assignUserLevel`||`<user>` `<user level>`|Assigns the specified user level to the specified user.|
-|`!silence-meta` `on | true`|||Silences the bot in the channel. Commands which run scripts will still execute the scripts, but no responses will be printed in chat.|
-|`!silence-meta` `off | false`|||Unsilences the bot in the channel. Responses will be printed again.|
-|`!bot-enable-meta` `false`|||Disables the bot in the channel. It will not respond to any commands (both by running scripts and printing responses in chat) except the command to enable it.|
-|`!bot-enable-meta` `true`|||Enables the bot in the channel.|
-|`!leave`||`<bot name>`|Makes the bot leave the channel. Its name must be specified in case other bots are running in the channel (such as the Monstercat bot), and you want a different bot to leave.|
+| Command | Flags | Arguments | Description | ExecUL |
+|:--------|:------|:----------|:------------|:-------|
+|`!command` `add | new`|`ul`, `ma`|`<command>` `<response>`|Adds a command which did not previously exist. The command is the first space-delineated word (after any flags), and the response is everything following it.|Moderator|
+|`!command` `set | edit`|`ul`, `ma`|`<command>` `<response>`|Sets the specified command with the given response, whether it existed before or not. The command is the first space-delineated word (after any flags), and the response is everything following it.|Moderator|
+|`!command` `remove | delete | rm | del`||`<command>`|Removes the specified command.|Moderator|
+|`!command` `list`|||Lists all commands (other than the built-in response commands) without their responses.|Moderator|
+|`!command` `raw`||`<command>`|Prints the response for the specified command.|Moderator|
+|`!command` `enable`||`<command>`|Enables the specified command.|Moderator|
+|`!command` `disable`||`<command>`|Disables the specified command.|Moderator|
+|`!alias-meta` `add | new`||`<alias>` `<command>`|Adds an alias which did not previously exist. The alias is the first space-delineated word, and the command is everything following it (may contain spaces).|Moderator|
+|`!alias-meta` `set`||`<alias>` `<command>`|Sets the specified alias to the given command, whether it existed before or not. The alias is the first space-delineated word, and the command is everything following it (may contain spaces).|Moderator|
+|`!alias-meta` `remove | delete | rm | del`||`<alias>`|Removes an alias.|Moderator|
+|`!alias-meta` `list`|||Lists all aliases without their commands.|Moderator|
+|`!alias-meta` `getCommand`||`<alias>`|Prrints the command to which an alias is aliased.|Moderator|
+|`!alias-meta` `enable`||`<alias>`|Enables the specified alias.|Moderator|
+|`!alias-meta` `disable`||`<alias>`|Disables the specified alias.|Moderator|
+|`!setExecUL`||`<command>` `<user level>`|Sets the minimum user level to execute the specified command.|Moderator|
+|`!setMinArgs`||`<command>` `<min args>`|Sets the minimum number of arguments with which a command must be run. Cannot be negative.|Moderator|
+|`!rename`||`<old command name>` `<new command name>`|Renames a command. A command with the new name cannot already exist.|Moderator|
+|`!resetCount`||`<command>`|Resets the count of the specified command to 0.|Moderator|
+|`!assignUserLevel`||`<user>` `<user level>`|Assigns the specified user level to the specified user.|Broadcaster|
+|`!silence-meta` `on | true`|||Silences the bot in the channel. Commands which run scripts will still execute the scripts, but no responses will be printed in chat.|Super-moderator|
+|`!silence-meta` `off | false`|||Unsilences the bot in the channel. Responses will be printed again.|Super-moderator|
+|`!bot-enable-meta` `false`|||Disables the bot in the channel. It will not respond to any commands (both by running scripts and printing responses in chat) except the command to enable it.|Super-moderator|
+|`!bot-enable-meta` `true`|||Enables the bot in the channel.|Super-moderator|
+|`!leave`||`<bot name>`|Makes the bot leave the channel. Its name must be specified in case other bots are running in the channel (such as the Monstercat bot), and you want a different bot to leave.|Super-moderator|
 
 #### Built-in Bot-Channel Commands
 
-The bot's channel has its own script commands to perform actions specific to the bot, such as joining channels. The built-in bot-channel script commands are below.
+The bot's channel has its own script commands to perform actions specific to the bot, such as joining channels. With the exception of the `!join` command, which can be run by any user, commands in the bot's channel can only be run by users with a user level of super-moderator or higher. The built-in bot-channel script commands are below.
 
 | Command | Flags | Arguments | Description |
 |:--------|:------|:----------|:------------|
-|`!join`|||Joins the channel of the user who ran the command. Respects the join mode, as specified below and in the [config documentation](config-documentation.md#bot-config).|
-|`!joinMode`||`<mode>`||
-|`!whitelist` `add`||`<channel>`||
-|`!whitelist` `remove`||`<channel>`||
-|`!whitelist` `list`||||
-|`!blacklist` `add`||`<channel>`||
-|`!blacklist` `remove`||`<channel>`||
-|`!blacklist` `list`||||
+|`!join`|||Joins the channel of the user who ran the command. Respects the join mode, as specified in the [config documentation](config-documentation.md#fields-2).|
+|`!joinMode` `whitelist | blacklist | none`||`<mode>`|Sets the join mode to the mode specified. See the [config documentation](config-documentation.md#fields-2).|
+|`!whitelist` `add`||`<channel>`|Adds the specified channel to the whitelist of channels which may be joined.|
+|`!whitelist` `remove`||`<channel>`|Removes the specified channel from the whitelist of channels which may be joined.|
+|`!whitelist` `list`|||Lists the channels in the channel join whitelist.|
+|`!blacklist` `add`||`<channel>`|Adds the specified channel to the blacklist of channels which may not be joined.|
+|`!blacklist` `remove`||`<channel>`|Removes the specified channel from the whitelist of channels which may not be joined.|
+|`!blacklist` `list`|||Lists the channels in the channel join blacklist.|
 
 #### Flags
 
