@@ -167,23 +167,23 @@ Because script commands can have multiple outcomes, they send responses to chat 
 |`~%unalias.success`|An alias was successfully removed.||
 |`~%alias.enabled`|An alias was enabled.||
 |`~%alias.disabled`|An alias was disabled.||
-|`~%command.set.exec.ul.success`|||
-|`~%command.set.min.args.success`|||
-|`~%command.reset.count.success`|||
-|`~%command.rename.success`|||
-|`~%command.rename.already.in.use`|||
-|`~%bot.unsilence.success`|||
-|`~%bot.enable.success`|||
-|`~%bot.leave.need.name`|||
-|`~%bot.joined.channel`|||
-|`~%assign.user.level.success`|||
-|`~%reset.user.level.success`|||
-|`~%assign.unsupported.user.level`|||
-|`~%join.mode.set`|||
-|`~%whitelist.add.success`|||
-|`~%whitelist.remove.success`|||
-|`~%blacklist.add.success`|||
-|`~%blacklist.remove.success`|||
+|`~%command.set.exec.ul.success`|The minimum user level required to execute a command was successfully set.||
+|`~%command.set.min.args.success`|The minimum number of arguments with which a command must be executed was successfully set.||
+|`~%command.reset.count.success`|The count of a command was successfully reset to 0.||
+|`~%command.rename.success`|A command was successfully renamed.||
+|`~%command.rename.already.in.use`|A command could not be renamed because the new name given was already in use.||
+|`~%bot.unsilence.success`|The bot was successfully unsilenced.||
+|`~%bot.enable.success`|The bot was successfully enabled.||
+|`~%bot.leave.need.name`|Notifies the user running the `!leave` command that the bot's name must be specified to make it leave.||
+|`~%bot.joined.channel`|Notifies users in a channel that the bot has joined the channel.||
+|`~%assign.user.level.success`|A user level was successfully assigned to a user.||
+|`~%reset.user.level.success`|A user's user level was reset.||
+|`~%assign.unsupported.user.level`|The user level specified in the `!assignUserLevel` command is a valid user level to have as the minumum user level for the execution of a command, but cannot be assigned because it is controlled by Twitch.||
+|`~%join.mode.set`|The join mode for the bot was successfully set.||
+|`~%whitelist.add.success`|A channel was added to the channel join whitelist.||
+|`~%whitelist.remove.success`|A channel was removed from the channel join whitelist.||
+|`~%blacklist.add.success`|A channel was added to the channel join blacklist.||
+|`~%blacklist.remove.success`|A channel was removed from the channel join blacklist.||
 
 ##Special Terms
 
@@ -227,7 +227,7 @@ The modifiers are described in the following table.
 
 Some terms can contain embedded strings. The `{{default}}` in the `[[args]]` and `[[argN]]` terms is an example of an embedded string. Embedded strings are surrounded by `{{` and `}}`. Embedded strings can be useful for providing more information or options for a term, and are used extensively in more advanced and versatile terms.
 
-If you are already confused at this point, you should probably skip this section and move onto the examples of term usage below.
+If you are already confused at this point, you should probably skip this section and move on to the examples of term usage below.
 
 The following are terms which are significantly more useful when given embedded strings, or not useful at all without them. If less than N embedded strings are provided, then any term which attempts to use the Nth embedded string will treat it as an empty string.
 
