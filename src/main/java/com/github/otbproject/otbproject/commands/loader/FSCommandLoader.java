@@ -230,6 +230,11 @@ public class FSCommandLoader {
     }
 
     private static boolean move(File source, File dest) {
+        // Check if they're the same
+        if (source.equals(dest)) {
+            return true;
+        }
+        // Make sure overwrites
         if (dest.exists()) {
             dest.delete();
         }
