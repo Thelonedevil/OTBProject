@@ -146,27 +146,27 @@ Aliases will not loop; they will only be expanded once. For example, if you alia
 
 #### Command Responses
 
-Script commands send responses to chat as commands, not directly as messages. The commands which they use to respond are listed below. You can change the responses of the commands below to customize the responses of script commands. For example, if you don't like what the bot says when it creates a command, you can change it by changing the response to `~%command.set.success`.
+Because script commands can have multiple outcomes, they send responses to chat as commands, not directly as messages. The commands which they use to respond are listed below. You can change the responses of the commands below to customize the responses of script commands. For example, if you don't like what the bot says when it creates a command, you can change it by changing the response to `~%command.set.success`.
 
 | Command | Description | Default Response |
 |:--------|:------------|:-----------------|
-|`~%general:insufficient.args`|||
-|`~%general:insufficient.user.level`|||
-|`~%general:invalid.arg`|||
-|`~%general:invalid.flag`|||
-|`~%command.general:does.not.exist`|||
-|`~%command.add.already.exists`|||
-|`~%command.set.success`|||
-|`~%command.is.alias`|||
-|`~%command.remove.success`|||
-|`~%command.enabled`|||
-|`~%command.disabled`|||
-|`~%alias.general:does.not.exist`|||
-|`~%alias.add.already.exists`|||
-|`~%alias.success`|||
-|`~%unalias.success`|||
-|`~%alias.enabled`|||
-|`~%alias.disabled`|||
+|`~%general:insufficient.args`|Some command or sub-command was not given enough arguments.||
+|`~%general:insufficient.user.level`|A user running some command attempted to perform an action for which they did not have a high enough user level.||
+|`~%general:invalid.arg`|An invalid argument was given for some command.||
+|`~%general:invalid.flag`|An invalid flag was given for some command.||
+|`~%command.general:does.not.exist`|A user attempted to run one of the subcommands of `!command` on a command which did not exist.||
+|`~%command.add.already.exists`|A user attempted to add a command which already existed using `!command` `add | new`.||
+|`~%command.set.success`|A command was successfully set.||
+|`~%command.is.alias`|A command whose name is also in use as an alias was successfully set.||
+|`~%command.remove.success`|A command was successfully removed.||
+|`~%command.enabled`|A command was enabled.||
+|`~%command.disabled`|A command was disabled.||
+|`~%alias.general:does.not.exist`|A user attempted to run one of the subcommands of `!alias` on an alias which did not exist.||
+|`~%alias.add.already.exists`|A user attempted to add an alias which already existed using `!alias` `add | new`.||
+|`~%alias.success`|An alias was successfully set.||
+|`~%unalias.success`|An alias was successfully removed.||
+|`~%alias.enabled`|An alias was enabled.||
+|`~%alias.disabled`|An alias was disabled.||
 |`~%command.set.exec.ul.success`|||
 |`~%command.set.min.args.success`|||
 |`~%command.reset.count.success`|||
