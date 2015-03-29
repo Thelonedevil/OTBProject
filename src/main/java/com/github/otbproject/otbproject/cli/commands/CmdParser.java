@@ -90,13 +90,13 @@ public class CmdParser {
     }
 
     void joinChannel() {
-        if (args.size() > 0 && !APIChannel.in(args.get(0).toLowerCase())) {
+        if (args.size() > 0) {
             APIChannel.join(args.get(0).toLowerCase(), true);
         }
     }
 
     void leaveChannel() {
-        if (args.size() > 0 && !APIChannel.in(args.get(0).toLowerCase())) {
+        if (args.size() > 0) {
             APIChannel.leave(args.get(0).toLowerCase());
         }
     }
@@ -325,8 +325,8 @@ public class CmdParser {
     }
 
     void printHelpUnSupportedUL() {
-        App.logger.info("Valid User Levels for \"User\" are; default | def | none | any | all, subscriber | sub," +
-                "regular | reg, moderator | mod, super-moderator | super_moderator | smod | sm, broadcaster | bc. Assuming Default.");
+        App.logger.info("Valid User Levels for \"User\" are; default | def | none | any | all," +
+                "regular | reg, super-moderator | super_moderator | smod | sm, ignored | ig. Assuming Default.");
     }
 
     void printHelpWrongAliasArgs() {
