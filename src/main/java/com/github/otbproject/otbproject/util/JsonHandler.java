@@ -2,8 +2,10 @@ package com.github.otbproject.otbproject.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.otbproject.otbproject.App;
+import org.apache.logging.log4j.Level;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public class JsonHandler {
@@ -13,6 +15,8 @@ public class JsonHandler {
     public static <T> T readValue(String path, Class<T> className) {
         try {
             return mapper.readValue(new File(path), className);
+        } catch (FileNotFoundException e){
+            App.logger.catching(Level.DEBUG, e);
         } catch (IOException e) {
             App.logger.catching(e);
         }

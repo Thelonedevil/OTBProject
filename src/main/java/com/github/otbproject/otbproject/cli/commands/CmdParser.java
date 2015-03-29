@@ -2,12 +2,12 @@ package com.github.otbproject.otbproject.cli.commands;
 
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.api.APIChannel;
-import com.github.otbproject.otbproject.commands.Alias;
-import com.github.otbproject.otbproject.commands.Command;
-import com.github.otbproject.otbproject.commands.loader.*;
-import com.github.otbproject.otbproject.users.User;
+import com.github.otbproject.otbproject.commands.loader.FSCommandLoader;
+import com.github.otbproject.otbproject.commands.loader.LoadingSet;
+import com.github.otbproject.otbproject.messages.internal.InternalMessageSender;
+import com.github.otbproject.otbproject.messages.receive.PackagedMessage;
+import com.github.otbproject.otbproject.messages.send.MessagePriority;
 import com.github.otbproject.otbproject.users.UserLevel;
-import com.github.otbproject.otbproject.users.Users;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -25,9 +25,7 @@ public class CmdParser {
     public static final String JOINCHANNEL = "join";
     public static final String LEAVECHANNEL = "leave";
     public static final String RELOAD = "reload";
-    public static final String COMMAND = "command";
-    public static final String ALIAS = "alias";
-    public static final String USER = "user";
+    public static final String EXEC = "exec";
 
     ArrayList<String> args = new ArrayList<>();
     String name = "RETURN CHARACTER";//Honestly useless assignment, but something has to be here, why not this?
@@ -39,9 +37,7 @@ public class CmdParser {
         mapOfThings.put(JOINCHANNEL, this::joinChannel);
         mapOfThings.put(LEAVECHANNEL, this::leaveChannel);
         mapOfThings.put(RELOAD, this::reload);
-        mapOfThings.put(COMMAND, this::command);
-        mapOfThings.put(ALIAS, this::alias);
-        mapOfThings.put(USER, this::user);
+        mapOfThings.put(EXEC, this::exec);
     }
 
     public void processLine(String aLine) {
@@ -90,13 +86,13 @@ public class CmdParser {
     }
 
     void joinChannel() {
-        if (args.size() > 0 && !APIChannel.in(args.get(0).toLowerCase())) {
+        if (args.size() > 0) {
             APIChannel.join(args.get(0).toLowerCase(), true);
         }
     }
 
     void leaveChannel() {
-        if (args.size() > 0 && !APIChannel.in(args.get(0).toLowerCase())) {
+        if (args.size() > 0) {
             APIChannel.leave(args.get(0).toLowerCase());
         }
     }
@@ -119,223 +115,33 @@ public class CmdParser {
         }
     }
 
-    void user() {
-        if (args.size() > 3) {
-            String channelname = args.get(0).toLowerCase();
-            String username = args.get(1).toLowerCase();
-            String userLevel = args.get(2);
-            User user = new User();
-            user.setNick(username);
-            UserLevel ul = UserLevel.DEFAULT;
-            switch (userLevel) {
-                case "subscriber":
-                case "sub":
-                    printHelpUnSupportedUL();
-                    break;
-                case "regular":
-                case "reg":
-                    ul = UserLevel.REGULAR;
-                    break;
-                case "moderator":
-                case "mod":
-                    printHelpUnSupportedUL();
-                    break;
-                case "super-moderator":
-                case "super_moderator":
-                case "smod":
-                case "sm":
-                    ul = UserLevel.SUPER_MODERATOR;
-                    break;
-                case "broadcaster":
-                case "bc":
-                    printHelpUnSupportedUL();
-                    break;
-                case "default":
-                case "def":
-                case "none":
-                case "any":
-                case "all":
-                    ul = UserLevel.DEFAULT;
-                    break;
-                case "ignored":
-                case "ig":
-                    ul = UserLevel.IGNORED;
-                    break;
-                case "reset":
-                case "twitch":
-                    Users.remove(APIChannel.get(channelname).getDatabaseWrapper(), username);
-                    break;
-                default:
-                    printHelpUnSupportedUL();
-            }
-            user.setUserLevel(ul);
-            Users.addUserFromObj(APIChannel.get(channelname).getDatabaseWrapper(), user);
+    void exec() {
+        if (args.size() < 2) {
+            String commandStr = "Not enough args for exec";
+            App.logger.info(commandStr);
+            return;
         }
-    }
-
-    void alias() {
-        if (args.size() > 1) {
-            String channelname = args.get(1).toLowerCase();
-            switch (args.get(0).toLowerCase()) {
-                case "add":
-                    if (args.size() > 3) {
-                        String aliasName = args.get(2);
-                        String commandName = args.get(3);
-                        LoadedAlias alias = DefaultCommandGenerator.createDefaultAlias();
-                        alias.setName(aliasName);
-                        alias.setCommand(commandName);
-                        Alias.addAliasFromLoadedAlias(APIChannel.get(channelname).getDatabaseWrapper(), alias);
-                    }
-                    break;
-                case "edit":
-                    if (args.size() > 3) {
-                        String aliasName = args.get(2).toLowerCase();
-                        String commandName = args.get(3).toLowerCase();
-                        LoadedAlias alias = DefaultCommandGenerator.createDefaultAlias();
-                        if (Alias.exists(APIChannel.get(channelname).getDatabaseWrapper(), aliasName)) {
-                            alias = Alias.get(APIChannel.get(channelname).getDatabaseWrapper(), aliasName);
-                        }
-                        alias.setName(aliasName);
-                        alias.setCommand(commandName);
-                        Alias.addAliasFromLoadedAlias(APIChannel.get(channelname).getDatabaseWrapper(), alias);
-
-                        break;
-                    }
-                case "delete":
-                    if (args.size() > 2) {
-                        String aliasName = args.get(2);
-                        Alias.remove(APIChannel.get(channelname).getDatabaseWrapper(), aliasName);
-                    }
-                    break;
-                case "enable":
-                    if (args.size() > 2) {
-                        String aliasName = args.get(2);
-                        LoadedAlias alias = DefaultCommandGenerator.createDefaultAlias();
-                        if (Alias.exists(APIChannel.get(channelname).getDatabaseWrapper(), aliasName)) {
-                            alias = Alias.get(APIChannel.get(channelname).getDatabaseWrapper(), aliasName);
-                        }
-                        alias.setEnabled(true);
-                        Alias.addAliasFromLoadedAlias(APIChannel.get(channelname).getDatabaseWrapper(), alias);
-                    }
-                    break;
-                case "disable":
-                    if (args.size() > 2) {
-                        String aliasName = args.get(2);
-                        LoadedAlias alias = DefaultCommandGenerator.createDefaultAlias();
-                        if (Alias.exists(APIChannel.get(channelname).getDatabaseWrapper(), aliasName)) {
-                            alias = Alias.get(APIChannel.get(channelname).getDatabaseWrapper(), aliasName);
-                        }
-                        alias.setEnabled(false);
-                        Alias.addAliasFromLoadedAlias(APIChannel.get(channelname).getDatabaseWrapper(), alias);
-                    }
-                    break;
-                default:
-                    printHelpWrongAliasArgs();
-
-            }
+        String channelName = args.get(0).toLowerCase();
+        if (!APIChannel.in(channelName)) {
+            String commandStr = "Not in channel: " + channelName;
+            App.logger.info(commandStr);
+            return;
         }
-    }
-
-    void command() {
-        if (args.size() > 1) {
-            String channelname = args.get(1).toLowerCase();
-            switch (args.get(0).toLowerCase()) {
-                case "add":
-                    if (args.size() > 6) {
-                        String ul = args.get(2).split("=")[1];
-                        String ma = args.get(3).split("=")[1];
-                        String commandName = args.get(4);
-                        String response = args.get(5);
-                        for (int i = 6; i < args.size(); i++) {
-                            response += " ";
-                            response += args.get(i);
-                        }
-                        LoadedCommand command = DefaultCommandGenerator.createDefaultCommand();
-                        command.setName(commandName);
-                        command.setResponse(response);
-                        UserLevel execUL = UserLevel.valueOf(ul);
-                        if (execUL != UserLevel.IGNORED) {
-                            command.setExecUserLevel(execUL);
-                        }
-                        int minArgs = Integer.parseInt(ma);
-                        if (minArgs != -1) {
-                            command.setMinArgs(minArgs);
-                        }
-                        Command.addCommandFromLoadedCommand(APIChannel.get(channelname).getDatabaseWrapper(), command);
-                    }
-                    break;
-                case "edit":
-                    if (args.size() > 6) {
-                        String ul = args.get(2).split("=")[1];
-                        String ma = args.get(3).split("=")[1];
-                        String commandName = args.get(4);
-                        String response = args.get(5);
-                        for (int i = 6; i < args.size(); i++) {
-                            response += " ";
-                            response += args.get(i);
-                        }
-                        LoadedCommand command = DefaultCommandGenerator.createDefaultCommand();
-                        if (Command.exists(APIChannel.get(channelname).getDatabaseWrapper(), commandName)) {
-                            command = Command.get(APIChannel.get(channelname).getDatabaseWrapper(), commandName);
-                        }
-                        command.setResponse(response);
-                        UserLevel execUL = UserLevel.valueOf(ul);
-                        if (execUL != UserLevel.IGNORED) {
-                            command.setExecUserLevel(execUL);
-                        }
-                        int minArgs = Integer.parseInt(ma);
-                        if (minArgs != -1) {
-                            command.setMinArgs(minArgs);
-                        }
-                        Command.addCommandFromLoadedCommand(APIChannel.get(channelname).getDatabaseWrapper(), command);
-                    }
-                    break;
-                case "delete":
-                    if (args.size() > 2) {
-                        String commandName = args.get(2).toLowerCase();
-                        Command.remove(APIChannel.get(channelname).getDatabaseWrapper(), commandName);
-                    }
-                    break;
-                case "enable":
-                    if (args.size() > 2) {
-                        String commandName = args.get(2);
-                        LoadedCommand command = DefaultCommandGenerator.createDefaultCommand();
-                        if (Command.exists(APIChannel.get(channelname).getDatabaseWrapper(), commandName)) {
-                            command = Command.get(APIChannel.get(channelname).getDatabaseWrapper(), commandName);
-                        }
-                        command.setEnabled(true);
-                        Command.addCommandFromLoadedCommand(APIChannel.get(channelname).getDatabaseWrapper(), command);
-                    }
-                    break;
-                case "disable":
-                    if (args.size() > 2) {
-                        String commandName = args.get(2);
-                        LoadedCommand command = DefaultCommandGenerator.createDefaultCommand();
-                        if (Command.exists(APIChannel.get(channelname).getDatabaseWrapper(), commandName)) {
-                            command = Command.get(APIChannel.get(channelname).getDatabaseWrapper(), commandName);
-                        }
-                        command.setEnabled(false);
-                        Command.addCommandFromLoadedCommand(APIChannel.get(channelname).getDatabaseWrapper(), command);
-                    }
-                    break;
-                default:
-                    printHelpWrongCommandArgs();
-            }
+        UserLevel ul = UserLevel.INTERNAL;
+        String command = args.get(1);
+        for (int i = 2; i < args.size(); i++) {
+            command += " ";
+            command += args.get(i);
         }
+        PackagedMessage packagedMessage = new PackagedMessage(command, InternalMessageSender.DESTINATION_PREFIX + InternalMessageSender.CLI, channelName, InternalMessageSender.DESTINATION_PREFIX + InternalMessageSender.CLI, ul, MessagePriority.DEFAULT);
+        try {
+            APIChannel.get(channelName).receiveQueue.add(packagedMessage);
+        } catch (NullPointerException npe) {
+            App.logger.catching(npe);
+        }
+        return;
     }
 
-    void printHelpUnSupportedUL() {
-        App.logger.info("Valid User Levels for \"User\" are; default | def | none | any | all, subscriber | sub," +
-                "regular | reg, moderator | mod, super-moderator | super_moderator | smod | sm, broadcaster | bc. Assuming Default.");
-    }
-
-    void printHelpWrongAliasArgs() {
-        App.logger.info("Valid sub-commands for \"Alias\" are; Add, Edit, Delete, Enable, Disable.");
-    }
-
-    void printHelpWrongCommandArgs() {
-        App.logger.info("Valid sub-commands for \"Command\" are; Add, Edit, Delete, Enable, Disable.");
-    }
 
     void printHelpNoCommand() {
         App.logger.info("That command is invalid. \'" + name + "\' does not exist as a CLI command.");
