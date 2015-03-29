@@ -1,5 +1,5 @@
 #OTB Project Documentation
-###Interacting with a bot in chat
+###Interacting with a Bot in Chat
 
 ##Table of Contents
 
