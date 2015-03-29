@@ -156,28 +156,28 @@ The configuration file for a given channel can be found at:
 
 | Field | Description |
 |:-----------|:------------|
-|`commandCooldown`||
-|`userCooldowns`|See the table below.|
-|`debug`||
-|`enabled`||
-|`queueLimits`|See the table below.|
+|`commandCooldown`|The time (in seconds) after a command is run before it can be run again. A value of `0` means no cooldown.|
+|`userCooldowns`|The times (in seconds) after users of various user levels run commands before they can run another command. A value of `0` means no cooldown. See the table below.|
+|`debug`|Whether or not debug commands and response commands will be printed in the channel. Set to `true` to print debug commands.|
+|`enabled`|Whether or not the bot is enabled. Set to `true` to enable.|
+|`queueLimits`|The number of messages queued to be sent in a channel after which messages of a given priority will be dropped (they will not be queued). See the table below.|
 
 ##### userCooldowns
 
 | Field | Description |
 |:-----------|:------------|
-|`ul_internal`||
-|`ul_broadcaster`||
-|`ul_super_moderator`||
-|`ul_moderator`||
-|`ul_regular`||
-|`ul_subscriber`||
-|`ul_default`||
+|`ul_internal`|The time (in seconds) after a user of the user level 'Internal' runs a command before they can run another command.|
+|`ul_broadcaster`|The time (in seconds) after a user of the user level 'Broadcaster' runs a command before they can run another command.|
+|`ul_super_moderator`|The time (in seconds) after a user of the user level 'Super-moderator' runs a command before they can run another command.|
+|`ul_moderator`|The time (in seconds) after a user of the user level 'Moderator' runs a command before they can run another command.|
+|`ul_regular`|The time (in seconds) after a user of the user level 'Regular' runs a command before they can run another command.|
+|`ul_subscriber`|The time (in seconds) after a user of the user level 'Subscriber' runs a command before they can run another command.|
+|`ul_default`|The time (in seconds) after a user of the user level 'Default' runs a command before they can run another command.|
 
 ##### queueLimits
 
 | Field | Description |
 |:-----------|:------------|
-|`highPriorityLimit`||
-|`defaultPriorityLimit`||
-|`lowPriorityLimit`||
+|`highPriorityLimit`|The number of messages queued to be sent in a channel after which messages of the priority 'High' will be dropped (they will not be queued).|
+|`defaultPriorityLimit`|The number of messages queued to be sent in a channel after which messages of the priority 'Default' will be dropped (they will not be queued).|
+|`lowPriorityLimit`|The number of messages queued to be sent in a channel after which messages of the priority 'Low' will be dropped (they will not be queued).|
