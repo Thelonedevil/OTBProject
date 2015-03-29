@@ -18,10 +18,10 @@ import java.util.HashMap;
  */
 public class CustomBot extends PircBotX {
 
-    public HashMap<String, Channel> channels = new HashMap<>();
     public final ConfigManager configManager = new ConfigManager();
     private final OutputRaw newOutputRaw;
     private final DatabaseWrapper botDB = APIDatabase.getBotDatabase();
+    public HashMap<String, Channel> channels = new HashMap<>();
 
     public CustomBot(Configuration<? extends PircBotX> configuration) {
         super(configuration);
@@ -33,7 +33,7 @@ public class CustomBot extends PircBotX {
     }
 
     @Override
-    public OutputRaw sendRaw(){
+    public OutputRaw sendRaw() {
         return newOutputRaw;
     }
 
@@ -76,7 +76,7 @@ public class CustomBot extends PircBotX {
             //Start acting the line
             try {
                 inputParser.handleLine(line);
-            }catch (IndexOutOfBoundsException e) {
+            } catch (IndexOutOfBoundsException e) {
                 boolean log = true;
                 StackTraceElement[] stackTraceElements = e.getStackTrace();
                 for (StackTraceElement stackTraceElement : stackTraceElements) {
@@ -84,14 +84,13 @@ public class CustomBot extends PircBotX {
                         log = false;
                     }
                 }
-                if (log){
+                if (log) {
                     App.logger.error("Exception encountered when parsing line", e);
                 }
-            }catch (Exception e) {
+            } catch (Exception e) {
                 //Exception in client code. Just log and continue
                 App.logger.error("Exception encountered when parsing line", e);
             }
-
 
 
             //Do nothing if this thread is being interrupted (meaning shutdown() was run)

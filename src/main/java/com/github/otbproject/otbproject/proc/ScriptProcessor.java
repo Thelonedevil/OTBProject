@@ -35,8 +35,7 @@ public class ScriptProcessor {
             App.logger.info("Finished running script: " + path);
             if ((scriptReturn == null) || !(scriptReturn instanceof Boolean)) {
                 success = true;
-            }
-            else {
+            } else {
                 success = (Boolean) scriptReturn;
             }
         } catch (Exception e) {

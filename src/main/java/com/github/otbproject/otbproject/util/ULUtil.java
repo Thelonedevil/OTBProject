@@ -25,7 +25,7 @@ public class ULUtil {
         if (ul == UserLevel.SUPER_MODERATOR) {
             return ul;
         }
-        if(App.bot.getUserChannelDao().getChannel("#" + channel).isOp(App.bot.getUserChannelDao().getUser(user))){
+        if (App.bot.getUserChannelDao().getChannel("#" + channel).isOp(App.bot.getUserChannelDao().getUser(user))) {
             return UserLevel.MODERATOR;
         }
         if ((ul == UserLevel.REGULAR) || ul == UserLevel.IGNORED) {

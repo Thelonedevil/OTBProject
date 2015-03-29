@@ -4,10 +4,10 @@ import com.github.otbproject.otbproject.App;
 import org.apache.logging.log4j.Level;
 
 public class CooldownRemover implements Runnable {
+    private static int increment = 1;
     private String command;
     private int waitInSeconds;
     private CooldownSet cooldownSet;
-    private static int increment = 1;
 
     public CooldownRemover(String command, int waitInSeconds, CooldownSet cooldownSet) {
         this.command = command;

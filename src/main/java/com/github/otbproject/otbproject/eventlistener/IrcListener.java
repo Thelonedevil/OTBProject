@@ -30,8 +30,8 @@ public class IrcListener extends ListenerAdapter {
         String user = event.getUser().getNick();
 
         String message = event.getMessage();
-        if(user.equalsIgnoreCase("jtv")){
-            if(message.contains(":SPECIALUSER")) {
+        if (user.equalsIgnoreCase("jtv")) {
+            if (message.contains(":SPECIALUSER")) {
                 String[] messageSplit = message.split(":SPECIALUSER")[1].split(" ");
                 String name = messageSplit[0];
                 String userType = messageSplit[1];
@@ -39,8 +39,8 @@ public class IrcListener extends ListenerAdapter {
                     channel.subscriberStorage.add(name);
                 }
             }
-        }else{
-            UserLevel userLevel = ULUtil.getUserLevel(channel.getDatabaseWrapper(),channelName,user);
+        } else {
+            UserLevel userLevel = ULUtil.getUserLevel(channel.getDatabaseWrapper(), channelName, user);
             channel.receiveQueue.add(new PackagedMessage(message, user, channelName, userLevel, MessagePriority.DEFAULT));
         }
 

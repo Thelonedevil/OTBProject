@@ -105,7 +105,7 @@ public class App {
 
         if (cmd.hasOption(ArgParser.Opts.DEBUG)) {
             coreLogger.removeAppender(config.getAppender("Console-info"));
-        }else{
+        } else {
             coreLogger.removeAppender(config.getAppender("Console-debug"));
         }
 
