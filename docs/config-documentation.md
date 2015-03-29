@@ -84,8 +84,8 @@ The general configuration file can be found at:
 
 | Field | Description |
 |:-----------|:------------|
-|`portNumber`||
-|`ip_binding`||
+|`portNumber`|Not currently in use.|
+|`ip_binding`|Not currently in use.|
 |`permanently_enabled_commands`|A list of commands which the bot will listen for even when it is disabled.|
 
 ## Bot Config
