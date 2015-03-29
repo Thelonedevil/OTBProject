@@ -27,6 +27,7 @@ Version 0.2.0
 ####Changelog
 
 * 0.2.0
+  - Release 1.0.0
   - Added descriptions of aliases and script commands that come with release
   - Added more terms to the parser
 * 0.1.2
@@ -98,6 +99,8 @@ Flags are optional arguments for a command which give more control over what the
 |`ma`|`--ma=<option>`|An integer greater than 0|Specifies the minimum number of arguments with which a command must be run.|
 
 #### User Levels
+
+The following are valid user levels to use with the `ul` flag.
 
 | User Level | Marker(s) |
 |:-----------|:----------|
