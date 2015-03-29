@@ -19,14 +19,13 @@ import java.util.Scanner;
  */
 public class CmdParser {
 
-    HashMap<String, Runnable> mapOfThings = new HashMap<>();
     public static final String STOP = "stop";
     public static final String RESTART = "restart";
     public static final String JOINCHANNEL = "join";
     public static final String LEAVECHANNEL = "leave";
     public static final String RELOAD = "reload";
     public static final String EXEC = "exec";
-
+    HashMap<String, Runnable> mapOfThings = new HashMap<>();
     ArrayList<String> args = new ArrayList<>();
     String name = "RETURN CHARACTER";//Honestly useless assignment, but something has to be here, why not this?
 
