@@ -2,7 +2,6 @@ package com.github.otbproject.otbproject.cli.commands;
 
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.api.APIChannel;
-import com.github.otbproject.otbproject.channels.Channel;
 import com.github.otbproject.otbproject.commands.loader.FSCommandLoader;
 import com.github.otbproject.otbproject.commands.loader.LoadingSet;
 import com.github.otbproject.otbproject.messages.internal.InternalMessageSender;
@@ -116,16 +115,15 @@ public class CmdParser {
         }
     }
 
-    void exec(){
+    void exec() {
         if (args.size() < 2) {
             String commandStr = "Not enough args for exec";
             App.logger.info(commandStr);
             return;
         }
         String channelName = args.get(0).toLowerCase();
-        Channel channel = APIChannel.get(channelName);
         if (!APIChannel.in(channelName)) {
-            String commandStr = "Not in channel" + channelName;
+            String commandStr = "Not in channel: " + channelName;
             App.logger.info(commandStr);
             return;
         }
@@ -135,8 +133,12 @@ public class CmdParser {
             command += " ";
             command += args.get(i);
         }
-        PackagedMessage packagedMessage = new PackagedMessage(command, InternalMessageSender.DESTINATION_PREFIX+InternalMessageSender.CLI, channelName, InternalMessageSender.DESTINATION_PREFIX+InternalMessageSender.CLI, ul, MessagePriority.DEFAULT);
-        channel.receiveQueue.add(packagedMessage);
+        PackagedMessage packagedMessage = new PackagedMessage(command, InternalMessageSender.DESTINATION_PREFIX + InternalMessageSender.CLI, channelName, InternalMessageSender.DESTINATION_PREFIX + InternalMessageSender.CLI, ul, MessagePriority.DEFAULT);
+        try {
+            APIChannel.get(channelName).receiveQueue.add(packagedMessage);
+        } catch (NullPointerException npe) {
+            App.logger.catching(npe);
+        }
         return;
     }
 
