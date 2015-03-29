@@ -3,9 +3,9 @@ package com.github.otbproject.otbproject.config;
 import java.util.ArrayList;
 
 public class GeneralConfig {
-    public ArrayList<String> permanently_enabled_commands;
     private int portNumber;
     private String ip_binding;
+    public ArrayList<String> permanently_enabled_commands;
 
     public int getPortNumber() {
         return portNumber;

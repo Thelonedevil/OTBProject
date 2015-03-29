@@ -3,12 +3,44 @@ package com.github.otbproject.otbproject.commands.loader;
 import com.github.otbproject.otbproject.users.UserLevel;
 
 public class LoadedCommand {
-    public ModifyingUserLevels modifyingUserLevels;
     private String name;
     private String response;
     private UserLevel execUserLevel;
     private int minArgs;
     private int count;
+
+    public ModifyingUserLevels modifyingUserLevels;
+
+    public class ModifyingUserLevels {
+        private UserLevel nameModifyingUL;
+        private UserLevel responseModifyingUL;
+        private UserLevel userLevelModifyingUL;
+
+        public UserLevel getNameModifyingUL() {
+            return nameModifyingUL;
+        }
+
+        public void setNameModifyingUL(UserLevel nameModifyingUL) {
+            this.nameModifyingUL = nameModifyingUL;
+        }
+
+        public UserLevel getResponseModifyingUL() {
+            return responseModifyingUL;
+        }
+
+        public void setResponseModifyingUL(UserLevel responseModifyingUL) {
+            this.responseModifyingUL = responseModifyingUL;
+        }
+
+        public UserLevel getUserLevelModifyingUL() {
+            return userLevelModifyingUL;
+        }
+
+        public void setUserLevelModifyingUL(UserLevel userLevelModifyingUL) {
+            this.userLevelModifyingUL = userLevelModifyingUL;
+        }
+    }
+
     private String script;
     private Boolean enabled;
     private boolean debug;
@@ -75,35 +107,5 @@ public class LoadedCommand {
 
     public void setDebug(boolean debug) {
         this.debug = debug;
-    }
-
-    public class ModifyingUserLevels {
-        private UserLevel nameModifyingUL;
-        private UserLevel responseModifyingUL;
-        private UserLevel userLevelModifyingUL;
-
-        public UserLevel getNameModifyingUL() {
-            return nameModifyingUL;
-        }
-
-        public void setNameModifyingUL(UserLevel nameModifyingUL) {
-            this.nameModifyingUL = nameModifyingUL;
-        }
-
-        public UserLevel getResponseModifyingUL() {
-            return responseModifyingUL;
-        }
-
-        public void setResponseModifyingUL(UserLevel responseModifyingUL) {
-            this.responseModifyingUL = responseModifyingUL;
-        }
-
-        public UserLevel getUserLevelModifyingUL() {
-            return userLevelModifyingUL;
-        }
-
-        public void setUserLevelModifyingUL(UserLevel userLevelModifyingUL) {
-            this.userLevelModifyingUL = userLevelModifyingUL;
-        }
     }
 }

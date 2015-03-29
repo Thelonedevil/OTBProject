@@ -1,44 +1,8 @@
 package com.github.otbproject.otbproject.config;
 
 public class ChannelConfig {
-    public UserCooldowns userCooldowns;
-    public QueueLimits queueLimits;
     private Integer commandCooldown;
-    private boolean debug;
-    private Boolean enabled;
-    private boolean silenced;
-
-    public Integer getCommandCooldown() {
-        return commandCooldown;
-    }
-
-    public void setCommandCooldown(Integer commandCooldown) {
-        this.commandCooldown = commandCooldown;
-    }
-
-    public boolean isDebug() {
-        return debug;
-    }
-
-    public void setDebug(boolean debug) {
-        this.debug = debug;
-    }
-
-    public Boolean isEnabled() {
-        return enabled;
-    }
-
-    public void setEnabled(Boolean enabled) {
-        this.enabled = enabled;
-    }
-
-    public boolean isSilenced() {
-        return silenced;
-    }
-
-    public void setSilenced(boolean silenced) {
-        this.silenced = silenced;
-    }
+    public UserCooldowns userCooldowns;
 
     public class UserCooldowns {
         private int ul_internal;
@@ -106,6 +70,12 @@ public class ChannelConfig {
         }
     }
 
+    private boolean debug;
+    private Boolean enabled;
+    private boolean silenced;
+
+    public QueueLimits queueLimits;
+
     public class QueueLimits {
         private Integer highPriorityLimit;
         private Integer defaultPriorityLimit;
@@ -134,5 +104,37 @@ public class ChannelConfig {
         public void setLowPriorityLimit(int lowPriorityLimit) {
             this.lowPriorityLimit = lowPriorityLimit;
         }
+    }
+
+    public Integer getCommandCooldown() {
+        return commandCooldown;
+    }
+
+    public void setCommandCooldown(Integer commandCooldown) {
+        this.commandCooldown = commandCooldown;
+    }
+
+    public boolean isDebug() {
+        return debug;
+    }
+
+    public void setDebug(boolean debug) {
+        this.debug = debug;
+    }
+
+    public Boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public boolean isSilenced() {
+        return silenced;
+    }
+
+    public void setSilenced(boolean silenced) {
+        this.silenced = silenced;
     }
 }
