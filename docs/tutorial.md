@@ -17,7 +17,7 @@ Before being able to modify configurations or other data for the bot, you need t
 
 #### Finding Your Installation Directory
 
-After running the bot once, it will have set up a directory to store data for the bot. The default installation directory is a folder called ".otbproject" in your home directory. On Windows, you can find your default installation directory by typing `%USERPROFILE%\.otbproject` into the address bar of Windows Explorer (which is the file explorer, and is not the same as Internet Explorer). I assume that if you are on Mac or Linux, you know where your home directory is.
+After running the bot once, it will have set up a directory to store data for the bot. The default installation directory is a folder called `.otbproject` in your home directory. On Windows, you can find your default installation directory by typing `%USERPROFILE%\.otbproject` into the address bar of Windows Explorer (which is the file explorer, and is not the same as Internet Explorer). I assume that if you are on Mac or Linux, you know where your home directory is.
 
 After this point, all paths will be denoted within the `.otbproject` installation directory, and it is assumed that you have already determined that directory's location.
 
