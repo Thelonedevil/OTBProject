@@ -102,7 +102,7 @@ Flags are optional arguments for a command which give more control over what the
 
 The following are valid user levels to use with the `ul` flag.
 
-| User Level | Marker(s) |
+| User Level | Markers |
 |:-----------|:----------|
 |Default|`default | def | none | any | all`|
 |Subscriber|`subscriber | sub`|
@@ -113,7 +113,7 @@ The following are valid user levels to use with the `ul` flag.
 
 Additionally, there is the user level 'Ignored', which can be used with `!assignUserLevel`, but not with the `ul` flag. You can also reset a user's user level to whatever it would be using Twitch alone, as described below.
 
-| User Level | Marker(s) |
+| User Level | Markers |
 |:-----------|:----------|
 |Ignored|`ignored | ig`|
 |Reset|`reset | twitch`|
