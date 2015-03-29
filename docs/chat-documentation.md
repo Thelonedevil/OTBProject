@@ -22,12 +22,12 @@
 
 ##Version
 
-Version 0.2.0 [WIP]
+Version 0.2.0
 
 ####Changelog
 
 * 0.2.0
-  - Added descriptions of commands that come with release
+  - Added descriptions of aliases and script commands that come with release
   - Added more terms to the parser
 * 0.1.2
   - Special terms can contain spaces in defaults and other embedded strings
