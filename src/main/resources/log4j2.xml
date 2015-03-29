@@ -1,7 +1,10 @@
 <Configuration status="INFO">
     <Appenders>
-        <Console name="Console" target="SYSTEM_OUT">
+        <Console name="Console-info" target="SYSTEM_OUT">
             <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %msg%n"/>
+        </Console>
+        <Console name="Console-debug" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %class{36} %L %M - %msg%n"/>
         </Console>
         <routing name="Routing">
             <routes pattern="*">
@@ -23,7 +26,8 @@
     </Appenders>
     <Loggers>
         <Root level="trace">
-            <AppenderRef ref="Console" level="info"/>
+            <AppenderRef ref="Console-info" level="info"/>
+            <AppenderRef ref="Console-debug" level="debug"/>
             <AppenderRef ref="Routing" level="debug"/>
         </Root>
     </Loggers>
