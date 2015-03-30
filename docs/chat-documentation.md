@@ -268,7 +268,7 @@ Here are some examples of special terms and modifiers:
 
 **Running the commands in chat**
 
-All commands are run by a user named “fred”, and responded to by a bot named “Bot”.
+All commands are run by a user named “fred” and responded to by a bot named “Bot” in the channel "the_lone_devil".
 
 | Message in chat | Response |
 |:----------------|:---------|
@@ -298,8 +298,8 @@ All commands are run by a user named “fred”, and responded to by a bot named
 |fred: !words one two|Bot: words one words two words two words two words|
 |fred: !words one two three|Bot: words one words two words three words two words|
 |fred: !words one two three four|Bot: words one words two words three words four words|
-|fred: !multi|Bot: Watch MaddiieManeater, MKtheWorst, and me at the same time! example.com/multistream/the_lone_devil/|
-|fred: !multi MaddiieManeater|Bot: Watch MaddiieManeater, MKtheWorst, and me at the same time! example.com/multistream/the_lone_devil/maddiiemaneater/|
+|fred: !multi|Bot: Watch me at the same time! example.com/multistream/the_lone_devil/|
+|fred: !multi MaddiieManeater|Bot: Watch MaddiieManeater, and me at the same time! example.com/multistream/the_lone_devil/maddiiemaneater/|
 |fred: !multi MaddiieManeater MKtheWorst|Bot: Watch MaddiieManeater, MKtheWorst, and me at the same time! example.com/multistream/the_lone_devil/maddiiemaneater/mktheworst/|
 |fred: !ifargs|Bot: A secret message appears if you run this command with args.|
 |fred: !ifargs some args|Bot: A secret message appears if you run this command with args. I mean, I suppose it's a secret, but it's not a very interesting one :P|
