@@ -8,7 +8,10 @@ import com.github.otbproject.otbproject.commands.parser.CommandResponseParser;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.users.UserLevel;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Iterator;
 
 public class CommandProcessor {
     public static ProcessedCommand process(DatabaseWrapper db, String message, String channel, String user, UserLevel userLevel, boolean debug) {
@@ -17,7 +20,7 @@ public class CommandProcessor {
     }
 
     public static String checkAlias(DatabaseWrapper db, String message) {
-        return checkAlias(db, message, new HashSet<String>());
+        return checkAlias(db, message, new HashSet<>());
     }
 
     private static String checkAlias(DatabaseWrapper db, String message, HashSet<String> usedAliases) {
@@ -49,10 +52,22 @@ public class CommandProcessor {
         String cmdName = splitMsg[0];
 
         String[] args;
-        if (splitMsg.length == 1) {
+        if ((splitMsg.length == 1) || splitMsg[1].equals("")) {
             args = new String[0];
         } else {
             args = splitMsg[1].split(" ");
+            ArrayList<String> tempArrayList = new ArrayList<>(Arrays.asList(args));
+            for (Iterator<String> i = tempArrayList.iterator(); i.hasNext();) {
+                if (i.next().isEmpty()) {
+                    i.remove();
+                }
+            }
+
+            if (tempArrayList.size() == 0) {
+                args = new String[0];
+            } else {
+                args = tempArrayList.toArray(new String[tempArrayList.size()]);
+            }
         }
 
         if (Command.exists(db, cmdName)) {
