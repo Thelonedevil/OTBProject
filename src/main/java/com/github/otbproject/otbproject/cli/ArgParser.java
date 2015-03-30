@@ -3,17 +3,6 @@ package com.github.otbproject.otbproject.cli;
 import org.apache.commons.cli.*;
 
 public class ArgParser {
-    public static class Opts {
-        public static final String HELP = "help";
-        public static final String HELP_SHORT = "h";
-        public static final String BASE_DIR = "base-dir";
-        public static final String ACCOUNT_FILE = "account-file";
-        public static final String ACCOUNT = "account";
-        public static final String OAUTH = "oauth";
-        public static final String DEBUG = "debug";
-        public static final String UNPACK = "unpack";
-    }
-
     public static CommandLine parse(String[] args) throws ParseException {
         Options options = getMainOptions();
 
@@ -70,5 +59,16 @@ public class ArgParser {
 
     public static void printHelp() {
         new HelpFormatter().printHelp("java -jar otbproject-x.x.x.jar [OPTIONS]", ArgParser.getMainOptions());
+    }
+
+    public static class Opts {
+        public static final String HELP = "help";
+        public static final String HELP_SHORT = "h";
+        public static final String BASE_DIR = "base-dir";
+        public static final String ACCOUNT_FILE = "account-file";
+        public static final String ACCOUNT = "account";
+        public static final String OAUTH = "oauth";
+        public static final String DEBUG = "debug";
+        public static final String UNPACK = "unpack";
     }
 }

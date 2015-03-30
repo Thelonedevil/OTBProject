@@ -7,7 +7,6 @@ import com.github.otbproject.otbproject.commands.Command;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.fs.FSUtil;
 import com.github.otbproject.otbproject.util.JsonHandler;
-import org.apache.logging.log4j.core.util.FileUtils;
 
 import java.io.File;
 import java.io.IOException;

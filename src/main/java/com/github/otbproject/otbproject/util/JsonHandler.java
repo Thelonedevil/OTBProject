@@ -15,7 +15,7 @@ public class JsonHandler {
     public static <T> T readValue(String path, Class<T> className) {
         try {
             return mapper.readValue(new File(path), className);
-        } catch (FileNotFoundException e){
+        } catch (FileNotFoundException e) {
             App.logger.catching(Level.DEBUG, e);
         } catch (IOException e) {
             App.logger.catching(e);

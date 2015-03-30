@@ -19,6 +19,7 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.ParseException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.LoggerContext;
 import org.pircbotx.Configuration;
 import org.pircbotx.exception.IrcException;
 import org.pircbotx.hooks.Listener;
@@ -35,12 +36,12 @@ import java.util.Scanner;
  */
 public class App {
     public static final String PID = ManagementFactory.getRuntimeMXBean().getName().split("@")[0];
-    static Listener listener = new IrcListener();
-    public static CustomBot bot;
     public static final Logger logger = LogManager.getLogger();
+    public static final String VERSION = new VersionClass().getVersion();
+    public static CustomBot bot;
     public static Thread botThread;
     public static Runnable botRunnable;
-    public static final String VERSION = new VersionClass().getVersion();
+    static Listener listener = new IrcListener();
 
     public static void main(String[] args) {
         try {
@@ -62,6 +63,7 @@ public class App {
             }
         }
     }
+
 
 
     public static void doMain(String[] args) throws NoSuchFieldException, IllegalAccessException {
@@ -97,8 +99,17 @@ public class App {
         }
 
         System.setProperty("OTBCONF", FSUtil.logsDir());
+        org.apache.logging.log4j.core.Logger coreLogger
+                = (org.apache.logging.log4j.core.Logger) LogManager.getLogger();
+        LoggerContext context
+                = coreLogger.getContext();
+        org.apache.logging.log4j.core.config.Configuration config
+                = context.getConfiguration();
+
         if (cmd.hasOption(ArgParser.Opts.DEBUG)) {
-            // TODO use debug mode for console
+            coreLogger.removeAppender(config.getAppender("Console-info"));
+        } else {
+            coreLogger.removeAppender(config.getAppender("Console-debug"));
         }
 
         // Ensure directory tree is setup
@@ -110,7 +121,7 @@ public class App {
             System.exit(1);
         }
 
-        File versionFile = new File(FSUtil.configDir()+File.separator+"VERSION");
+        File versionFile = new File(FSUtil.configDir() + File.separator + "VERSION");
         try {
             versionFile.createNewFile();
         } catch (IOException e) {
@@ -124,9 +135,9 @@ public class App {
             App.logger.catching(e);
         }
         if (cmd.hasOption(ArgParser.Opts.UNPACK) || (!VERSION.contains("SNAPSHOT") && !VERSION.equalsIgnoreCase(version))) {
-            UnPacker.unPack("preloads/json/commands/", FSUtil.commandsDir()+File.separator+"all-channels"+File.separator+"to-load");
-            UnPacker.unPack("preloads/json/aliases/", FSUtil.aliasesDir()+File.separator+"all-channels"+File.separator+"to-load");
-            UnPacker.unPack("preloads/json/bot-channel/commands/", FSUtil.commandsDir()+File.separator+"bot-channel"+File.separator+"to-load");
+            UnPacker.unPack("preloads/json/commands/", FSUtil.commandsDir() + File.separator + "all-channels" + File.separator + "to-load");
+            UnPacker.unPack("preloads/json/aliases/", FSUtil.aliasesDir() + File.separator + "all-channels" + File.separator + "to-load");
+            UnPacker.unPack("preloads/json/bot-channel/commands/", FSUtil.commandsDir() + File.separator + "bot-channel" + File.separator + "to-load");
             UnPacker.unPack("preloads/groovy/scripts/", FSUtil.scriptDir());
         }
         try {
@@ -190,8 +201,8 @@ public class App {
         scanner.useDelimiter("\n");
         while (scanner.hasNext()) {
             String in = scanner.next();
-            if(!in.equals(""))
-            new CmdParser().processLine(in);
+            if (!in.equals(""))
+                new CmdParser().processLine(in);
         }
         scanner.close();
     }

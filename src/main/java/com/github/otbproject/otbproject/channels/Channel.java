@@ -12,6 +12,11 @@ import com.github.otbproject.otbproject.proc.CooldownSet;
 import com.github.otbproject.otbproject.util.BlockingHashSet;
 
 public class Channel {
+    public final MessageSendQueue sendQueue = new MessageSendQueue(this);
+    public final MessageReceiveQueue receiveQueue = new MessageReceiveQueue();
+    public final CooldownSet commandCooldownSet = new CooldownSet();
+    public final CooldownSet userCooldownSet = new CooldownSet();
+    public final BlockingHashSet subscriberStorage = new BlockingHashSet();
     private final String name;
     private ChannelConfig config;
     private DatabaseWrapper db;
@@ -20,11 +25,6 @@ public class Channel {
     private ChannelMessageReceiver messageReceiver;
     private Thread messageReceiverThread;
     private boolean inChannel;
-    public final MessageSendQueue sendQueue = new MessageSendQueue(this);
-    public final MessageReceiveQueue receiveQueue = new MessageReceiveQueue();
-    public final CooldownSet commandCooldownSet = new CooldownSet();
-    public final CooldownSet userCooldownSet = new CooldownSet();
-    public final BlockingHashSet subscriberStorage = new BlockingHashSet();
 
     public Channel(String name, ChannelConfig config) {
         this.name = name;

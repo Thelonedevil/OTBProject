@@ -21,35 +21,34 @@ import java.sql.SQLException;
 public class ChannelMessageReceiver implements Runnable {
     private final Channel channel;
     private MessageReceiveQueue queue;
+    private boolean inBotChannel;
 
     public ChannelMessageReceiver(Channel channel, MessageReceiveQueue queue) {
         this.channel = channel;
         this.queue = queue;
+        inBotChannel = this.channel.getName().equals(App.bot.getNick());
     }
 
     public void run() {
         try {
             Thread.currentThread().setName(channel.getName() + " Message Receiver");
             PackagedMessage packagedMessage;
-            boolean inBotChannel = false;
             boolean internal;
             String channelName = channel.getName();
-            if (channelName.equals(App.bot.getNick())) {
-                inBotChannel = true;
-            }
 
             while (true) {
                 packagedMessage = queue.take();
                 String user = packagedMessage.getUser();
 
-                Channel destinationChannel = null;
+                String destChannelName = packagedMessage.getDestinationChannel();
+                Channel destChannel = null;
                 if (packagedMessage.getDestinationChannel().startsWith(InternalMessageSender.DESTINATION_PREFIX)) {
                     internal = true;
                 } else {
                     internal = false;
-                    destinationChannel = APIChannel.get(packagedMessage.getDestinationChannel());
-                    if (destinationChannel == null) {
-                        App.logger.warn("Attempted to send message in channel in which bot is not listening: " + packagedMessage.getDestinationChannel());
+                    destChannel = APIChannel.get(packagedMessage.getDestinationChannel());
+                    if (destChannel == null) {
+                        App.logger.warn("Attempted to process message to be sent in channel in which bot is not listening: " + destChannelName);
                         continue;
                     }
                 }
@@ -60,14 +59,14 @@ public class ChannelMessageReceiver implements Runnable {
                     UserLevel ul = packagedMessage.getUserLevel();
                     ProcessedMessage processedMsg = MessageProcessor.process(db, packagedMessage.getMessage(), channelName, user, ul, true);
                     if (processedMsg.isScript() || !processedMsg.getResponse().isEmpty()) {
-                        doResponse(db, processedMsg, channelName, packagedMessage.getDestinationChannel(), destinationChannel, user, ul, packagedMessage.getMessagePriority(), true, internal);
+                        doResponse(db, processedMsg, channelName, destChannelName, destChannel, user, ul, packagedMessage.getMessagePriority(), internal);
                         // Don't process response as regular channel if done as bot channel
                         continue;
                     }
                 }
 
                 // Pre-check if user is on cooldown (skip if internal)
-                if (!internal && destinationChannel.userCooldownSet.contains(user)) {
+                if (!internal && destChannel.userCooldownSet.contains(user)) {
                     continue;
                 }
 
@@ -79,8 +78,8 @@ public class ChannelMessageReceiver implements Runnable {
                 // Check if bot is enabled
                 if (channel.getConfig().isEnabled() || GeneralConfigHelper.isPermanentlyEnabled(APIConfig.getGeneralConfig(), processedMsg.getCommandName())) {
                     // Check if empty message, and then if command is on cooldown (skip cooldown check if internal)
-                    if ((processedMsg.isScript() || !processedMsg.getResponse().isEmpty()) && (internal || !destinationChannel.commandCooldownSet.contains(processedMsg.getCommandName()))) {
-                        doResponse(db, processedMsg, channelName, packagedMessage.getDestinationChannel(), destinationChannel, user, ul, packagedMessage.getMessagePriority(), inBotChannel, internal);
+                    if ((processedMsg.isScript() || !processedMsg.getResponse().isEmpty()) && (internal || !destChannel.commandCooldownSet.contains(processedMsg.getCommandName()))) {
+                        doResponse(db, processedMsg, channelName, destChannelName, destChannel, user, ul, packagedMessage.getMessagePriority(), internal);
                     }
                 }
             }
@@ -91,7 +90,7 @@ public class ChannelMessageReceiver implements Runnable {
         }
     }
 
-    private void doResponse(DatabaseWrapper db, ProcessedMessage processedMsg, String channelName, String destinationChannelName, Channel destinationChannel, String user, UserLevel ul, MessagePriority priority, boolean inBotChannel, boolean internal) {
+    private void doResponse(DatabaseWrapper db, ProcessedMessage processedMsg, String channelName, String destinationChannelName, Channel destinationChannel, String user, UserLevel ul, MessagePriority priority, boolean internal) {
         String message = processedMsg.getResponse();
         String command = processedMsg.getCommandName();
 

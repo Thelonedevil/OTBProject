@@ -1,5 +1,5 @@
 #OTB Project Documentation
-###Interacting with a bot in chat
+###Interacting with a Bot in Chat
 
 ##Table of Contents
 
@@ -22,12 +22,13 @@
 
 ##Version
 
-Version 0.2.0 [WIP]
+Version 0.2.0
 
 ####Changelog
 
 * 0.2.0
-  - Added descriptions of commands that come with release
+  - Release 1.0.0
+  - Added descriptions of aliases and script commands that come with release
   - Added more terms to the parser
 * 0.1.2
   - Special terms can contain spaces in defaults and other embedded strings
@@ -99,7 +100,9 @@ Flags are optional arguments for a command which give more control over what the
 
 #### User Levels
 
-| User Level | Marker(s) |
+The following are valid user levels to use with the `ul` flag.
+
+| User Level | Markers |
 |:-----------|:----------|
 |Default|`default | def | none | any | all`|
 |Subscriber|`subscriber | sub`|
@@ -110,7 +113,7 @@ Flags are optional arguments for a command which give more control over what the
 
 Additionally, there is the user level 'Ignored', which can be used with `!assignUserLevel`, but not with the `ul` flag. You can also reset a user's user level to whatever it would be using Twitch alone, as described below.
 
-| User Level | Marker(s) |
+| User Level | Markers |
 |:-----------|:----------|
 |Ignored|`ignored | ig`|
 |Reset|`reset | twitch`|
@@ -151,40 +154,40 @@ Because script commands can have multiple outcomes, they send responses to chat 
 
 | Command | Description | Default Response |
 |:--------|:------------|:-----------------|
-|`~%general:insufficient.args`|Some command or sub-command was not given enough arguments.||
-|`~%general:insufficient.user.level`|A user running some command attempted to perform an action for which they did not have a high enough user level.||
-|`~%general:invalid.arg`|An invalid argument was given for some command.||
-|`~%general:invalid.flag`|An invalid flag was given for some command.||
-|`~%command.general:does.not.exist`|A user attempted to run one of the subcommands of `!command` on a command which did not exist.||
-|`~%command.add.already.exists`|A user attempted to add a command which already existed using `!command` `add | new`.||
-|`~%command.set.success`|A command was successfully set.||
-|`~%command.is.alias`|A command whose name is also in use as an alias was successfully set.||
-|`~%command.remove.success`|A command was successfully removed.||
-|`~%command.enabled`|A command was enabled.||
-|`~%command.disabled`|A command was disabled.||
-|`~%alias.general:does.not.exist`|A user attempted to run one of the subcommands of `!alias` on an alias which did not exist.||
-|`~%alias.add.already.exists`|A user attempted to add an alias which already existed using `!alias` `add | new`.||
-|`~%alias.success`|An alias was successfully set.||
-|`~%unalias.success`|An alias was successfully removed.||
-|`~%alias.enabled`|An alias was enabled.||
-|`~%alias.disabled`|An alias was disabled.||
-|`~%command.set.exec.ul.success`|The minimum user level required to execute a command was successfully set.||
-|`~%command.set.min.args.success`|The minimum number of arguments with which a command must be executed was successfully set.||
-|`~%command.reset.count.success`|The count of a command was successfully reset to 0.||
-|`~%command.rename.success`|A command was successfully renamed.||
-|`~%command.rename.already.in.use`|A command could not be renamed because the new name given was already in use.||
-|`~%bot.unsilence.success`|The bot was successfully unsilenced.||
-|`~%bot.enable.success`|The bot was successfully enabled.||
-|`~%bot.leave.need.name`|Notifies the user running the `!leave` command that the bot's name must be specified to make it leave.||
-|`~%bot.joined.channel`|Notifies users in a channel that the bot has joined the channel.||
-|`~%assign.user.level.success`|A user level was successfully assigned to a user.||
-|`~%reset.user.level.success`|A user's user level was reset.||
-|`~%assign.unsupported.user.level`|The user level specified in the `!assignUserLevel` command is a valid user level to have as the minumum user level for the execution of a command, but cannot be assigned because it is controlled by Twitch.||
-|`~%join.mode.set`|The join mode for the bot was successfully set.||
-|`~%whitelist.add.success`|A channel was added to the channel join whitelist.||
-|`~%whitelist.remove.success`|A channel was removed from the channel join whitelist.||
-|`~%blacklist.add.success`|A channel was added to the channel join blacklist.||
-|`~%blacklist.remove.success`|A channel was removed from the channel join blacklist.||
+|`~%general:insufficient.args`|Some command or sub-command was not given enough arguments.|Insufficient arguments for command '[[arg1]]'[[ifarg2{{ when run with option(s): '[[fromarg2]]'}}]].|
+|`~%general:insufficient.user.level`|A user running some command attempted to perform an action for which they did not have a high enough user level.|Insufficient user level [[ifarg2{{to perform action '[[fromarg2]]' }}]]in command '[[arg1]]'.|
+|`~%general:invalid.arg`|An invalid argument was given for some command.|Invalid argument '[[arg2]]' in command '[[arg1]]'.|
+|`~%general:invalid.flag`|An invalid flag was given for some command.|Invalid flag '[[arg2]]' in command '[[arg1]]'.|
+|`~%command.general:does.not.exist`|A user attempted to run one of the subcommands of `!command` on a command which did not exist.|No such command '[[arg1]]'.|
+|`~%command.add.already.exists`|A user attempted to add a command which already existed using `!command` `add | new`.|The command '[[arg1]]' already exists and cannot be added.|
+|`~%command.set.success`|A command was successfully set.|Set command '[[arg1]]'.|
+|`~%command.set.is.alias`|A command whose name is also in use as an alias was successfully set.|Set command '[[arg1]]'. Warning: '[[arg1]]' is an already an alias, so running it may not run the command.|
+|`~%command.remove.success`|A command was successfully removed.|Removed command '[[arg1]]'.|
+|`~%command.enabled`|A command was enabled.|Enabled command '[[arg1]]'.|
+|`~%command.disabled`|A command was disabled.|Disabled command '[[arg1]]'.|
+|`~%alias.general:does.not.exist`|A user attempted to run one of the subcommands of `!alias` on an alias which did not exist.|No such alias '[[arg1]]'.|
+|`~%alias.add.already.exists`|A user attempted to add an alias which already existed using `!alias` `add | new`.|The alias '[[arg1]]' already exists and cannot be added.|
+|`~%alias.success`|An alias was successfully set.|Set alias '[[arg1]]'.|
+|`~%unalias.success`|An alias was successfully removed.|Unaliased '[[arg1]]'.|
+|`~%alias.enabled`|An alias was enabled.|Enabled alias '[[arg1]]'.|
+|`~%alias.disabled`|An alias was disabled.|Disabled alias '[[arg1]]'.|
+|`~%command.set.exec.ul.success`|The minimum user level required to execute a command was successfully set.|Set exec user level for command '[[arg1]]'.|
+|`~%command.set.min.args.success`|The minimum number of arguments with which a command must be executed was successfully set.|Set minimum arguments for command '[[arg1]]'.|
+|`~%command.reset.count.success`|The count of a command was successfully reset to 0.|Reset count for command '[[arg1]]'.|
+|`~%command.rename.success`|A command was successfully renamed.|Renamed '[[arg1]]' to '[[arg2]]'.|
+|`~%command.rename.already.in.use`|A command could not be renamed because the new name given was already in use.|Cannot rename command to '[[arg1]]' - name is already in use.|
+|`~%bot.unsilence.success`|The bot was successfully unsilenced.|Bot is no longer silenced.|
+|`~%bot.enable.success`|The bot was successfully enabled.|Bot enabled.|
+|`~%bot.leave.need.name`|Notifies the user running the `!leave` command that the bot's name must be specified to make it leave.|To remove the bot from your channel, please type "!leave <bot name>".|
+|`~%bot.joined.channel`|Notifies users in a channel that the bot has joined the channel.|'Sup yo, is it aiight if I join yo channel?|
+|`~%assign.user.level.success`|A user level was successfully assigned to a user.|Assigned user level to [[arg1]].|
+|`~%reset.user.level.success`|A user's user level was reset.|Reset user level of [[arg1]] to be based on Twitch.|
+|`~%assign.unsupported.user.level`|The user level specified in the `!assignUserLevel` command is a valid user level to have as the minumum user level for the execution of a command, but cannot be assigned because it is controlled by Twitch.|The user level provided is not supported because it is based on the user's status on Twitch.|
+|`~%join.mode.set`|The join mode for the bot was successfully set.|Set join mode to: [[arg1]].|
+|`~%whitelist.add.success`|A channel was added to the channel join whitelist.|Added '[[arg1]]' to the whitelist.|
+|`~%whitelist.remove.success`|A channel was removed from the channel join whitelist.|Removed '[[arg1]]' from the whitelist.|
+|`~%blacklist.add.success`|A channel was added to the channel join blacklist.|Added '[[arg1]]' to the blacklist.|
+|`~%blacklist.remove.success`|A channel was removed from the channel join blacklist.|Removed '[[arg1]]' from the blacklist.|
 
 ##Special Terms
 
@@ -265,7 +268,7 @@ Here are some examples of special terms and modifiers:
 
 **Running the commands in chat**
 
-All commands are run by a user named “fred”, and responded to by a bot named “Bot”.
+All commands are run by a user named “fred” and responded to by a bot named “Bot” in the channel "the_lone_devil".
 
 | Message in chat | Response |
 |:----------------|:---------|
@@ -295,8 +298,8 @@ All commands are run by a user named “fred”, and responded to by a bot named
 |fred: !words one two|Bot: words one words two words two words two words|
 |fred: !words one two three|Bot: words one words two words three words two words|
 |fred: !words one two three four|Bot: words one words two words three words four words|
-|fred: !multi|Bot: Watch MaddiieManeater, MKtheWorst, and me at the same time! example.com/multistream/the_lone_devil/|
-|fred: !multi MaddiieManeater|Bot: Watch MaddiieManeater, MKtheWorst, and me at the same time! example.com/multistream/the_lone_devil/maddiiemaneater/|
+|fred: !multi|Bot: Watch me at the same time! example.com/multistream/the_lone_devil/|
+|fred: !multi MaddiieManeater|Bot: Watch MaddiieManeater, and me at the same time! example.com/multistream/the_lone_devil/maddiiemaneater/|
 |fred: !multi MaddiieManeater MKtheWorst|Bot: Watch MaddiieManeater, MKtheWorst, and me at the same time! example.com/multistream/the_lone_devil/maddiiemaneater/mktheworst/|
 |fred: !ifargs|Bot: A secret message appears if you run this command with args.|
 |fred: !ifargs some args|Bot: A secret message appears if you run this command with args. I mean, I suppose it's a secret, but it's not a very interesting one :P|
