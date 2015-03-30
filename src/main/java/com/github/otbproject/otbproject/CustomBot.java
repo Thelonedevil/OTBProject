@@ -26,6 +26,8 @@ public class CustomBot extends PircBotX {
     public CustomBot(Configuration<? extends PircBotX> configuration) {
         super(configuration);
         newOutputRaw = new OutputRawImproved(this);
+
+
     }
 
     public void shutdown() {
@@ -104,5 +106,9 @@ public class CustomBot extends PircBotX {
 
     public DatabaseWrapper getBotDB() {
         return botDB;
+    }
+
+    public boolean isLoggedIn(){
+        return loggedIn;
     }
 }
