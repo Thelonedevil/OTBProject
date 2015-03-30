@@ -8,7 +8,7 @@
 
 ##Issues
 
-If you find a bug in the bot, we would be happy for you to tell us; however, please use conform to the following guidelines when doing so.
+If you find a bug in the bot, we would be happy for you to tell us; however, please conform to the following guidelines when doing so.
 
 * Read the documentation first to make sure you are using the program correctly, and to make sure that it is not an intended feature.
 * Make sure someone else has not already reported the same bug.
