@@ -39,7 +39,7 @@ public class Alias {
     }
 
     public static boolean update(DatabaseWrapper db, HashMap map) {
-        return db.updateRecord(AliasFields.TABLE_NAME, (String) map.get(AliasFields.NAME), AliasFields.NAME, map);
+        return db.updateRecord(AliasFields.TABLE_NAME, map.get(AliasFields.NAME), AliasFields.NAME, map);
     }
 
     public static boolean exists(DatabaseWrapper db, String aliasName) {
@@ -47,7 +47,7 @@ public class Alias {
     }
 
     public static boolean add(DatabaseWrapper db, HashMap map) {
-        return db.insertRecord(AliasFields.TABLE_NAME, (String) map.get(AliasFields.NAME), AliasFields.NAME, map);
+        return db.insertRecord(AliasFields.TABLE_NAME, map);
     }
 
     public static boolean remove(DatabaseWrapper db, String aliasName) {

@@ -43,7 +43,7 @@ public class Users {
     }
 
     public static boolean add(DatabaseWrapper db, HashMap map) {
-        return db.insertRecord(UserFields.TABLE_NAME, (String) map.get(UserFields.NICK), UserFields.NICK, map);
+        return db.insertRecord(UserFields.TABLE_NAME, map);
     }
 
     public static boolean remove(DatabaseWrapper db, String userName) {
