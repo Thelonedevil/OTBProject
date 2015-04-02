@@ -48,7 +48,7 @@ public class Command {
     }
 
     public static boolean update(DatabaseWrapper db, HashMap map) {
-        return db.updateRecord(CommandFields.TABLE_NAME, (String) map.get(CommandFields.NAME), CommandFields.NAME, map);
+        return db.updateRecord(CommandFields.TABLE_NAME, map.get(CommandFields.NAME), CommandFields.NAME, map);
     }
 
     public static boolean exists(DatabaseWrapper db, String commandName) {
@@ -56,7 +56,7 @@ public class Command {
     }
 
     public static boolean add(DatabaseWrapper db, HashMap map) {
-        return db.insertRecord(CommandFields.TABLE_NAME, (String) map.get(CommandFields.NAME), CommandFields.NAME, map);
+        return db.insertRecord(CommandFields.TABLE_NAME, map);
     }
 
     public static boolean remove(DatabaseWrapper db, String commandName) {
