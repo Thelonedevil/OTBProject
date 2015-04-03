@@ -20,6 +20,7 @@ public class Channel {
     private final String name;
     private ChannelConfig config;
     private DatabaseWrapper db;
+    private DatabaseWrapper quoteDb;
     private ChannelMessageSender messageSender;
     private Thread messageSenderThread;
     private ChannelMessageReceiver messageReceiver;
@@ -35,7 +36,13 @@ public class Channel {
     public boolean join() {
         db = APIDatabase.getChannelMainDatabase(name);
         if (db == null) {
-            App.logger.error("Unable to get database for channel: " + name);
+            App.logger.error("Unable to get main database for channel: " + name);
+            return false;
+        }
+
+        quoteDb = APIDatabase.getChannelQuoteDatabase(name);
+        if (quoteDb == null) {
+            App.logger.error("Unable to get quote database for channel: " + name);
             return false;
         }
 
@@ -82,6 +89,10 @@ public class Channel {
 
     public DatabaseWrapper getDatabaseWrapper() {
         return db;
+    }
+
+    public DatabaseWrapper getQuoteDatabaseWrapper() {
+        return quoteDb;
     }
 
     public ChannelConfig getConfig() {

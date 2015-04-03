@@ -1,5 +1,9 @@
 package com.github.otbproject.otbproject.commands.parser;
 
+import com.github.otbproject.otbproject.api.APIChannel;
+import com.github.otbproject.otbproject.quotes.Quote;
+import com.github.otbproject.otbproject.quotes.Quotes;
+
 import java.util.Arrays;
 
 public class CommandResponseParser {
@@ -58,7 +62,11 @@ public class CommandResponseParser {
         }
         // [[quote.modifier]] - can have a modifier, but it's unclear why you want one
         else if (isTerm(term, "quote")) {
-            return "[Quotes are not yet implemented]"; // TODO fix when quotes implemented
+            Quote quote = Quotes.getRandomQuote(APIChannel.get(channel).getQuoteDatabaseWrapper());
+            if (quote == null) {
+                return "[Error getting quote]";
+            }
+            return quote.getText();
         }
         // [[game.modifier]]
         else if (isTerm(term, "game")) {
