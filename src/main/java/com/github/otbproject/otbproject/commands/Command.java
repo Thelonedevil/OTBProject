@@ -15,9 +15,8 @@ import java.util.stream.Collectors;
 public class Command {
 
     public static LoadedCommand get(DatabaseWrapper db, String commandName) {
-        LoadedCommand loadedCommand = null;
         if (db.exists(CommandFields.TABLE_NAME, commandName, CommandFields.NAME)) {
-            loadedCommand = new LoadedCommand();
+            LoadedCommand loadedCommand = new LoadedCommand();
             ResultSet rs = db.getRecord(CommandFields.TABLE_NAME, commandName, CommandFields.NAME);
             try {
                 loadedCommand.setName(rs.getString(CommandFields.NAME));
@@ -32,9 +31,9 @@ public class Command {
                 loadedCommand.modifyingUserLevels.setNameModifyingUL(UserLevel.valueOf(rs.getString(CommandFields.NAME_MODIFYING_UL)));
                 loadedCommand.modifyingUserLevels.setResponseModifyingUL(UserLevel.valueOf(rs.getString(CommandFields.RESPONSE_MODIFYING_UL)));
                 loadedCommand.modifyingUserLevels.setUserLevelModifyingUL(UserLevel.valueOf(rs.getString(CommandFields.USER_LEVEL_MODIFYING_UL)));
+                return loadedCommand;
             } catch (SQLException e) {
                 App.logger.catching(e);
-                return null;
             } finally {
                 try {
                     rs.close();
@@ -43,7 +42,7 @@ public class Command {
                 }
             }
         }
-        return loadedCommand;
+        return null;
     }
 
     public static ArrayList<String> getCommands(DatabaseWrapper db) {

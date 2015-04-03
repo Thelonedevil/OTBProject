@@ -11,12 +11,11 @@ import java.util.stream.Collectors;
 
 public class Quotes {
     public static Quote get(DatabaseWrapper db, Integer id) {
-        Quote quote = null;
         if (db.exists(QuoteFields.TABLE_NAME, id, QuoteFields.ID)) {
             ResultSet rs = db.getRecord(QuoteFields.TABLE_NAME, id, QuoteFields.ID);
-            quote = getQuoteFromResultSet(rs);
+            return getQuoteFromResultSet(rs);
         }
-        return quote;
+        return null;
     }
 
     public static Quote getRandomQuote(DatabaseWrapper db) {
@@ -25,10 +24,11 @@ public class Quotes {
     }
 
     private static Quote getQuoteFromResultSet(ResultSet rs) {
-        Quote quote = new Quote();
         try {
+            Quote quote = new Quote();
             quote.setId(rs.getInt(QuoteFields.ID));
             quote.setText(rs.getString(QuoteFields.TEXT));
+            return quote;
         } catch (SQLException e) {
             App.logger.catching(e);
             return null;
@@ -39,7 +39,6 @@ public class Quotes {
                 App.logger.catching(e);
             }
         }
-        return quote;
     }
 
     public static ArrayList<Integer> getQuoteIds(DatabaseWrapper db) {

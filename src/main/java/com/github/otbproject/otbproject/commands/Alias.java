@@ -14,18 +14,17 @@ import java.util.stream.Collectors;
 public class Alias {
 
     public static LoadedAlias get(DatabaseWrapper db, String aliasName) {
-        LoadedAlias loadedAlias = null;
         if (db.exists(AliasFields.TABLE_NAME, aliasName, AliasFields.NAME)) {
-            loadedAlias = new LoadedAlias();
+            LoadedAlias loadedAlias = new LoadedAlias();
             ResultSet rs = db.getRecord(AliasFields.TABLE_NAME, aliasName, AliasFields.NAME);
             try {
                 loadedAlias.setName(rs.getString(AliasFields.NAME));
                 loadedAlias.setCommand(rs.getString(AliasFields.COMMAND));
                 loadedAlias.setModifyingUserLevel(UserLevel.valueOf(rs.getString(AliasFields.MODIFYING_UL)));
                 loadedAlias.setEnabled(Boolean.valueOf(rs.getString(AliasFields.ENABLED)));
+                return loadedAlias;
             } catch (SQLException e) {
                 App.logger.catching(e);
-                return null;
             } finally {
                 try {
                     rs.close();
@@ -34,7 +33,7 @@ public class Alias {
                 }
             }
         }
-        return loadedAlias;
+        return null;
     }
 
     public static ArrayList<String> getAliases(DatabaseWrapper db) {
