@@ -14,7 +14,6 @@ import com.github.otbproject.otbproject.gui.Window;
 import com.github.otbproject.otbproject.util.InputParserImproved;
 import com.github.otbproject.otbproject.util.UnPacker;
 import com.github.otbproject.otbproject.util.VersionClass;
-import com.github.otbproject.otbproject.util.dev.DevHelper;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.ParseException;
 import org.apache.logging.log4j.LogManager;
@@ -152,9 +151,6 @@ public class App {
         FSCommandLoader.LoadAliases();
         FSCommandLoader.LoadBotCommands();
         FSCommandLoader.LoadBotAliases();
-
-        // TODO remove before release
-        DevHelper.run(args);
 
         // Load configs
         Account account;
