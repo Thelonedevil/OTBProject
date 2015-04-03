@@ -19,12 +19,12 @@ public class DatabaseWrapper {
      * Private constructor, should never be used directly. <br>
      * Instead use <code>createDatabase()</code>.
      *
-     * @param path The path to the database file, should already exist.
+     * @param path   The path to the database file, should already exist.
      * @param tables A HashMap of Table name to a HashSet of the field names.
      * @throws SQLException
      * @throws ClassNotFoundException
      */
-    private DatabaseWrapper(String path, HashMap<String, HashMap<String,String>> tables) throws SQLException, ClassNotFoundException {
+    private DatabaseWrapper(String path, HashMap<String, HashMap<String, String>> tables) throws SQLException, ClassNotFoundException {
         lock.lock();
         try {
             Class.forName("org.sqlite.JDBC");
@@ -41,12 +41,12 @@ public class DatabaseWrapper {
      * Static method for creation of a DataBase Wrapper Object. <br>
      * Will return a new DataBaseWrapper Object or null if either an <code>SQLException</code> or a <code>CLassNotFoundException</code>.
      *
-     * @param path The path to the database file, should already exist.
+     * @param path   The path to the database file, should already exist.
      * @param tables A HashMap of Table name to a HashSet of the field names.
-     * @see com.github.otbproject.otbproject.database.DatabaseHelper
      * @return a new DataBaseWrapper Object or null if either an <code>SQLException</code> or a <code>CLassNotFoundException</code>.
+     * @see com.github.otbproject.otbproject.database.DatabaseHelper
      */
-    public static DatabaseWrapper createDataBase(String path, HashMap<String, HashMap<String,String>> tables) {
+    public static DatabaseWrapper createDatabase(String path, HashMap<String, HashMap<String, String>> tables) {
         try {
             return new DatabaseWrapper(path, tables);
         } catch (SQLException | ClassNotFoundException e) {
@@ -58,30 +58,30 @@ public class DatabaseWrapper {
     /**
      * Creates a table in the database with no primary key.
      *
-     * @param name The name of the table to create.
+     * @param name  The name of the table to create.
      * @param table A HashMap of field names  to Field Types for the table.
      * @return False if an <code>SQLException</code> is thrown, else it returns true.
      */
-    private boolean createTable(String name, HashMap<String,String> table) {
+    private boolean createTable(String name, HashMap<String, String> table) {
         return createTable(name, table, null);
     }
 
     /**
      * Creates a table in the database with a primary key.
      *
-     * @param name The name of the table to create.
-     * @param table A HashSet of field names for the table.
+     * @param name       The name of the table to create.
+     * @param table      A HashSet of field names for the table.
      * @param primaryKey The field name for the primary key.
      * @return False if an <code>SQLException</code> is thrown, else it returns true.
      */
-    private boolean createTable(String name, HashMap<String,String> table, String primaryKey) {
+    private boolean createTable(String name, HashMap<String, String> table, String primaryKey) {
         PreparedStatement preparedStatement = null;
         String sql = "CREATE TABLE IF NOT EXISTS " + name + " (";
         for (String key : table.keySet()) {
             if (key.equals(primaryKey)) {
-                sql = sql + key + " "+table.get(key)+" COLLATE NOCASE PRIMARY KEY, ";
+                sql = sql + key + " " + table.get(key) + " COLLATE NOCASE PRIMARY KEY, ";
             } else {
-                sql = sql + key + " "+table.get(key)+" COLLATE NOCASE, ";
+                sql = sql + key + " " + table.get(key) + " COLLATE NOCASE, ";
             }
         }
         sql = sql.substring(0, sql.length() - 2) + ")";
@@ -115,9 +115,9 @@ public class DatabaseWrapper {
      * i.e. CommandName and !test where CommandName is a field name and !test is a value in that field, <br>
      * this method would return a result set of all records that had !test in the CommandName field.
      *
-     * @param table The table name.
+     * @param table      The table name.
      * @param identifier what the filter should match.
-     * @param fieldName the field you want to filter with.
+     * @param fieldName  the field you want to filter with.
      * @return a <code>ResultSet</code> that contains the records that match the Identifier in the field specified.
      * @see java.sql.ResultSet
      */
@@ -148,9 +148,9 @@ public class DatabaseWrapper {
     /**
      * Checks to see if a record with a Field Name, to Field Value pair exists in the table.
      *
-     * @param table The table name.
+     * @param table      The table name.
      * @param identifier what the filter should match.
-     * @param fieldName the field you want to filter with.
+     * @param fieldName  the field you want to filter with.
      * @return True if the identifier exists in the field in the table.
      */
     public boolean exists(String table, Object identifier, String fieldName) {
@@ -177,10 +177,10 @@ public class DatabaseWrapper {
     /**
      * Updates an existing record in the database.
      *
-     * @param table The table name.
+     * @param table      The table name.
      * @param identifier what the filter should match.
-     * @param fieldName the field you want to filter with.
-     * @param map A HashMap of Field Name to Field Value.
+     * @param fieldName  the field you want to filter with.
+     * @param map        A HashMap of Field Name to Field Value.
      * @return True if one or more records were updated in the database.
      */
     public boolean updateRecord(String table, Object identifier, String fieldName, HashMap<String, Object> map) {
@@ -201,10 +201,10 @@ public class DatabaseWrapper {
                 setValue(preparedStatement, index, map.get(key));
                 index++;
             }
-            if(identifier instanceof String) {
-                preparedStatement.setString(index, (String)identifier);
-            }else if(identifier instanceof Integer){
-                preparedStatement.setInt(index,(Integer)identifier);
+            if (identifier instanceof String) {
+                preparedStatement.setString(index, (String) identifier);
+            } else if (identifier instanceof Integer) {
+                preparedStatement.setInt(index, (Integer) identifier);
             }
             int i = preparedStatement.executeUpdate();
             if (i > 0) {
@@ -233,7 +233,7 @@ public class DatabaseWrapper {
      * Inserts a record into the Database.
      *
      * @param table The table name.
-     * @param map A HashMap of Field Name to Field Value.
+     * @param map   A HashMap of Field Name to Field Value.
      * @return True if the record was inserted into database.
      */
     public boolean insertRecord(String table, HashMap<String, Object> map) {
@@ -279,9 +279,9 @@ public class DatabaseWrapper {
     /**
      * Removes a record from the Database.
      *
-     * @param table The table name.
+     * @param table      The table name.
      * @param identifier what the filter should match.
-     * @param fieldName the field you want to filter with.
+     * @param fieldName  the field you want to filter with.
      * @return True if one or more records are removed.
      */
     public boolean removeRecord(String table, Object identifier, String fieldName) {
@@ -320,7 +320,7 @@ public class DatabaseWrapper {
      * Retrieves all records from a table.
      *
      * @param table The Table name.
-     * @return  result set that contains all records of the table.
+     * @return result set that contains all records of the table.
      */
     public ResultSet tableDump(String table) {
         String sql = "SELECT * FROM " + table;
@@ -340,7 +340,7 @@ public class DatabaseWrapper {
      * The list may contain duplicate elements, if the field specified is neither the <code>PRIMARY KEY</code>, or marked as <code>UNIQUE</code>.
      *
      * @param table The table name that you want the record list from.
-     * @param key The field in the table you want to get.
+     * @param key   The field in the table you want to get.
      * @return an <code>ArrayList&lt;String&gt;</code> that contains all entries in the table specified for the field key or <code>null</code> if an <code>SQLException</code> is thrown.
      */
     public ArrayList<String> getRecordsList(String table, String key) {
