@@ -7,18 +7,21 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.stream.Collectors;
 
 public class Users {
 
     public static User get(DatabaseWrapper db, String userNick) {
-        User user = new User();
+        User user = null;
         if (db.exists(UserFields.TABLE_NAME, userNick, UserFields.NICK)) {
+            user = new User();
             ResultSet rs = db.getRecord(UserFields.TABLE_NAME, userNick, UserFields.NICK);
             try {
                 user.setNick(rs.getString(UserFields.NICK));
                 user.setUserLevel(UserLevel.valueOf(rs.getString(UserFields.USER_LEVEL)));
             } catch (SQLException e) {
                 App.logger.catching(e);
+                return null;
             } finally {
                 try {
                     rs.close();
@@ -31,18 +34,29 @@ public class Users {
     }
 
     public static ArrayList<String> getUsers(DatabaseWrapper db) {
-        return db.getRecordsList(UserFields.TABLE_NAME, UserFields.NICK);
+        ArrayList<Object> objectArrayList =  db.getRecordsList(UserFields.TABLE_NAME, UserFields.NICK);
+        if (objectArrayList == null) {
+            return null;
+        }
+        ArrayList<String> usersList = new ArrayList<>();
+        try {
+            usersList.addAll(objectArrayList.stream().map(key -> (String) key).collect(Collectors.toList()));
+            return usersList;
+        } catch (ClassCastException e) {
+            App.logger.catching(e);
+            return null;
+        }
     }
 
-    public static boolean update(DatabaseWrapper db, HashMap map) {
-        return db.updateRecord(UserFields.TABLE_NAME, (String) map.get(UserFields.NICK), UserFields.NICK, map);
+    public static boolean update(DatabaseWrapper db, HashMap<String, Object> map) {
+        return db.updateRecord(UserFields.TABLE_NAME, map.get(UserFields.NICK), UserFields.NICK, map);
     }
 
     public static boolean exists(DatabaseWrapper db, String userName) {
         return db.exists(UserFields.TABLE_NAME, userName, UserFields.NICK);
     }
 
-    public static boolean add(DatabaseWrapper db, HashMap map) {
+    public static boolean add(DatabaseWrapper db, HashMap<String, Object> map) {
         return db.insertRecord(UserFields.TABLE_NAME, map);
     }
 
@@ -51,7 +65,7 @@ public class Users {
     }
 
     public static boolean addUserFromObj(DatabaseWrapper db, User user) {
-        HashMap<String, String> map = new HashMap<String, String>();
+        HashMap<String, Object> map = new HashMap<>();
 
         map.put(UserFields.NICK, user.getNick());
         map.put(UserFields.USER_LEVEL, user.getUserLevel().name());

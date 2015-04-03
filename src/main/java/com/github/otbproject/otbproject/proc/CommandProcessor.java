@@ -35,7 +35,7 @@ public class CommandProcessor {
         }
         if (Alias.exists(db, aliasName)) {
             LoadedAlias loadedAlias = Alias.get(db, aliasName);
-            if (loadedAlias.isEnabled()) {
+            if ((loadedAlias != null) && loadedAlias.isEnabled()) {
                 if (splitMsg.length == 1) {
                     return checkAlias(db, loadedAlias.getCommand(), usedAliases);
                 }
@@ -72,7 +72,7 @@ public class CommandProcessor {
 
         if (Command.exists(db, cmdName)) {
             LoadedCommand loadedCommand = Command.get(db, cmdName);
-            if (loadedCommand.isEnabled() && userLevel.getValue() >= loadedCommand.getExecUserLevel().getValue() && args.length >= loadedCommand.getMinArgs()) {
+            if ((loadedCommand != null) && loadedCommand.isEnabled() && userLevel.getValue() >= loadedCommand.getExecUserLevel().getValue() && args.length >= loadedCommand.getMinArgs()) {
                 String scriptPath = loadedCommand.getScript();
                 // Return script path
                 if ((scriptPath != null) && !scriptPath.equals("null")) {

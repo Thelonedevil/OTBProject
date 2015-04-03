@@ -13,7 +13,7 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class DatabaseWrapper {
     final Connection connection;
-    private final Lock lock = new ReentrantLock();
+    protected final Lock lock = new ReentrantLock();
 
     /**
      * Private constructor, should never be used directly. <br>
@@ -24,7 +24,7 @@ public class DatabaseWrapper {
      * @throws SQLException
      * @throws ClassNotFoundException
      */
-    private DatabaseWrapper(String path, HashMap<String, TableFields> tables) throws SQLException, ClassNotFoundException {
+    protected DatabaseWrapper(String path, HashMap<String, TableFields> tables) throws SQLException, ClassNotFoundException {
         lock.lock();
         try {
             Class.forName("org.sqlite.JDBC");
@@ -145,6 +145,27 @@ public class DatabaseWrapper {
         return rs;
     }
 
+    public ResultSet getRandomRecord(String table) {
+        String sql = "SELECT * FROM " + table + " ORDER BY RANDOM() LIMIT 1";
+        ResultSet rs = null;
+        lock.lock();
+        try {
+            connection.setAutoCommit(false);
+            rs = connection.createStatement().executeQuery(sql);
+            connection.commit();
+        } catch (SQLException e) {
+            App.logger.catching(e);
+        } finally {
+            try {
+                connection.setAutoCommit(true);
+            } catch (SQLException e) {
+                App.logger.catching(e);
+            }
+            lock.unlock();
+        }
+        return rs;
+    }
+
     /**
      * Checks to see if a record with a Field Name, to Field Value pair exists in the table.
      *
@@ -238,11 +259,14 @@ public class DatabaseWrapper {
      */
     public boolean insertRecord(String table, HashMap<String, Object> map) {
         PreparedStatement preparedStatement = null;
-        String sql = "INSERT INTO " + table + " VALUES (";
+        String sql = "INSERT INTO " + table + " (";
+        String sqlValues = " VALUES (";
         for (String key : map.keySet()) {
-            sql += "?, ";
+            sql += key + ", ";
+            sqlValues += "?, ";
         }
         sql = sql.substring(0, sql.length() - 2) + ")";
+        sql += sqlValues.substring(0, sqlValues.length() - 2) + ")";
         boolean bool = false;
         lock.lock();
         try {
@@ -343,10 +367,10 @@ public class DatabaseWrapper {
      * @param key   The field in the table you want to get.
      * @return an <code>ArrayList&lt;String&gt;</code> that contains all entries in the table specified for the field key or <code>null</code> if an <code>SQLException</code> is thrown.
      */
-    public ArrayList<String> getRecordsList(String table, String key) {
+    public ArrayList<Object> getRecordsList(String table, String key) {
         lock.lock();
         try {
-            ArrayList<String> set = new ArrayList<>();
+            ArrayList<Object> set = new ArrayList<>();
             String sql = "SELECT " + key + " FROM " + table;
             ResultSet resultSet = connection.createStatement().executeQuery(sql);
             while (resultSet.next()) {
@@ -361,7 +385,7 @@ public class DatabaseWrapper {
         }
     }
 
-    private static void setValue(PreparedStatement statement, int index, Object identifier) throws SQLException {
+    protected static void setValue(PreparedStatement statement, int index, Object identifier) throws SQLException {
         if (identifier instanceof String || identifier == null) {
             statement.setString(index, (String) identifier);
         } else if (identifier instanceof Integer) {

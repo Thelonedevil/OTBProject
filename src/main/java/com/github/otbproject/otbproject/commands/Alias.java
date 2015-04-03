@@ -9,12 +9,14 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.stream.Collectors;
 
 public class Alias {
 
     public static LoadedAlias get(DatabaseWrapper db, String aliasName) {
-        LoadedAlias loadedAlias = new LoadedAlias();
+        LoadedAlias loadedAlias = null;
         if (db.exists(AliasFields.TABLE_NAME, aliasName, AliasFields.NAME)) {
+            loadedAlias = new LoadedAlias();
             ResultSet rs = db.getRecord(AliasFields.TABLE_NAME, aliasName, AliasFields.NAME);
             try {
                 loadedAlias.setName(rs.getString(AliasFields.NAME));
@@ -23,6 +25,7 @@ public class Alias {
                 loadedAlias.setEnabled(Boolean.valueOf(rs.getString(AliasFields.ENABLED)));
             } catch (SQLException e) {
                 App.logger.catching(e);
+                return null;
             } finally {
                 try {
                     rs.close();
@@ -35,10 +38,21 @@ public class Alias {
     }
 
     public static ArrayList<String> getAliases(DatabaseWrapper db) {
-        return db.getRecordsList(AliasFields.TABLE_NAME, AliasFields.NAME);
+        ArrayList<Object> objectArrayList =  db.getRecordsList(AliasFields.TABLE_NAME, AliasFields.NAME);
+        if (objectArrayList == null) {
+            return null;
+        }
+        ArrayList<String> aliasesList = new ArrayList<>();
+        try {
+            aliasesList.addAll(objectArrayList.stream().map(key -> (String) key).collect(Collectors.toList()));
+            return aliasesList;
+        } catch (ClassCastException e) {
+            App.logger.catching(e);
+            return null;
+        }
     }
 
-    public static boolean update(DatabaseWrapper db, HashMap map) {
+    public static boolean update(DatabaseWrapper db, HashMap<String, Object> map) {
         return db.updateRecord(AliasFields.TABLE_NAME, map.get(AliasFields.NAME), AliasFields.NAME, map);
     }
 
@@ -46,7 +60,7 @@ public class Alias {
         return db.exists(AliasFields.TABLE_NAME, aliasName, AliasFields.NAME);
     }
 
-    public static boolean add(DatabaseWrapper db, HashMap map) {
+    public static boolean add(DatabaseWrapper db, HashMap<String, Object> map) {
         return db.insertRecord(AliasFields.TABLE_NAME, map);
     }
 
@@ -55,7 +69,7 @@ public class Alias {
     }
 
     public static boolean addAliasFromLoadedAlias(DatabaseWrapper db, LoadedAlias loadedAlias) {
-        HashMap<String, String> map = new HashMap<String, String>();
+        HashMap<String, Object> map = new HashMap<>();
 
         map.put(AliasFields.NAME, loadedAlias.getName());
         map.put(AliasFields.COMMAND, loadedAlias.getCommand());
