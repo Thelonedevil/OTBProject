@@ -10,12 +10,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.stream.Collectors;
 
 public class Command {
 
     public static LoadedCommand get(DatabaseWrapper db, String commandName) {
-        LoadedCommand loadedCommand = new LoadedCommand();
         if (db.exists(CommandFields.TABLE_NAME, commandName, CommandFields.NAME)) {
+            LoadedCommand loadedCommand = new LoadedCommand();
             ResultSet rs = db.getRecord(CommandFields.TABLE_NAME, commandName, CommandFields.NAME);
             try {
                 loadedCommand.setName(rs.getString(CommandFields.NAME));
@@ -30,6 +31,7 @@ public class Command {
                 loadedCommand.modifyingUserLevels.setNameModifyingUL(UserLevel.valueOf(rs.getString(CommandFields.NAME_MODIFYING_UL)));
                 loadedCommand.modifyingUserLevels.setResponseModifyingUL(UserLevel.valueOf(rs.getString(CommandFields.RESPONSE_MODIFYING_UL)));
                 loadedCommand.modifyingUserLevels.setUserLevelModifyingUL(UserLevel.valueOf(rs.getString(CommandFields.USER_LEVEL_MODIFYING_UL)));
+                return loadedCommand;
             } catch (SQLException e) {
                 App.logger.catching(e);
             } finally {
@@ -40,14 +42,25 @@ public class Command {
                 }
             }
         }
-        return loadedCommand;
+        return null;
     }
 
     public static ArrayList<String> getCommands(DatabaseWrapper db) {
-        return db.getRecordsList(CommandFields.TABLE_NAME, CommandFields.NAME);
+        ArrayList<Object> objectArrayList =  db.getRecordsList(CommandFields.TABLE_NAME, CommandFields.NAME);
+        if (objectArrayList == null) {
+            return null;
+        }
+        ArrayList<String> commandsList = new ArrayList<>();
+        try {
+            commandsList.addAll(objectArrayList.stream().map(key -> (String) key).collect(Collectors.toList()));
+            return commandsList;
+        } catch (ClassCastException e) {
+            App.logger.catching(e);
+            return null;
+        }
     }
 
-    public static boolean update(DatabaseWrapper db, HashMap map) {
+    public static boolean update(DatabaseWrapper db, HashMap<String, Object> map) {
         return db.updateRecord(CommandFields.TABLE_NAME, map.get(CommandFields.NAME), CommandFields.NAME, map);
     }
 
@@ -55,7 +68,7 @@ public class Command {
         return db.exists(CommandFields.TABLE_NAME, commandName, CommandFields.NAME);
     }
 
-    public static boolean add(DatabaseWrapper db, HashMap map) {
+    public static boolean add(DatabaseWrapper db, HashMap<String, Object> map) {
         return db.insertRecord(CommandFields.TABLE_NAME, map);
     }
 
@@ -65,18 +78,24 @@ public class Command {
 
     public static void incrementCount(DatabaseWrapper db, String commandName) throws SQLException {
         LoadedCommand loadedCommand = get(db, commandName);
+        if (loadedCommand == null) {
+            return;
+        }
         loadedCommand.setCount(loadedCommand.getCount() + 1);
         addCommandFromLoadedCommand(db, loadedCommand);
     }
 
     public static void resetCount(DatabaseWrapper db, String commandName) throws SQLException {
         LoadedCommand loadedCommand = get(db, commandName);
+        if (loadedCommand == null) {
+            return;
+        }
         loadedCommand.setCount(0);
         addCommandFromLoadedCommand(db, loadedCommand);
     }
 
     public static boolean addCommandFromLoadedCommand(DatabaseWrapper db, LoadedCommand loadedCommand) {
-        HashMap<String, String> map = new HashMap<String, String>();
+        HashMap<String, Object> map = new HashMap<>();
 
         map.put(CommandFields.NAME, loadedCommand.getName());
         map.put(CommandFields.RESPONSE, loadedCommand.getResponse());

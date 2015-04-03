@@ -11,11 +11,11 @@ public class DatabaseHelper {
      * @return a HashMap used to create all the tables by the DatabaseWrapper.
      * Tables are hard-coded into the method.
      */
-    public static HashMap<String, HashMap<String,String>> getTablesHashMap() {
-        HashMap<String, HashMap<String,String>> tables = new HashMap<>();
-        tables.put(CommandFields.TABLE_NAME, CommandFields.getTableHashMap());
-        tables.put(AliasFields.TABLE_NAME, AliasFields.getTableHashMap());
-        tables.put(UserFields.TABLE_NAME, UserFields.getTableHashMap());
+    public static HashMap<String, TableFields> getTablesHashMap() {
+        HashMap<String, TableFields> tables = new HashMap<>();
+        tables.put(CommandFields.TABLE_NAME, CommandFields.getTableFields());
+        tables.put(AliasFields.TABLE_NAME, AliasFields.getTableFields());
+        tables.put(UserFields.TABLE_NAME, UserFields.getTableFields());
         return tables;
     }
 }

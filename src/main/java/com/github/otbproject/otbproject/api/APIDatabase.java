@@ -9,11 +9,11 @@ import java.io.File;
 public class APIDatabase {
     public static DatabaseWrapper getChannelMainDatabase(String channel) {
         String path = FSUtil.dataDir() + File.separator + FSUtil.DirNames.CHANNELS + File.separator + channel + File.separator + FSUtil.DatabaseNames.MAIN;
-        return DatabaseWrapper.createDataBase(path, DatabaseHelper.getTablesHashMap());
+        return DatabaseWrapper.createDatabase(path, DatabaseHelper.getTablesHashMap());
     }
 
     public static DatabaseWrapper getBotDatabase() {
         String path = FSUtil.dataDir() + File.separator + FSUtil.DirNames.BOT_CHANNEL + File.separator + FSUtil.DatabaseNames.MAIN;
-        return DatabaseWrapper.createDataBase(path, DatabaseHelper.getTablesHashMap());
+        return DatabaseWrapper.createDatabase(path, DatabaseHelper.getTablesHashMap());
     }
 }
