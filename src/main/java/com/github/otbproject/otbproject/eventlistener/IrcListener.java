@@ -40,7 +40,7 @@ public class IrcListener extends ListenerAdapter {
                 }
             }
         } else {
-            UserLevel userLevel = ULUtil.getUserLevel(channel.getDatabaseWrapper(), channelName, user);
+            UserLevel userLevel = ULUtil.getUserLevel(channel.getMainDatabaseWrapper(), channelName, user);
             channel.receiveQueue.add(new PackagedMessage(message, user, channelName, userLevel, MessagePriority.DEFAULT));
         }
 

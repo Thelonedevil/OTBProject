@@ -19,7 +19,8 @@ public class Channel {
     public final BlockingHashSet subscriberStorage = new BlockingHashSet();
     private final String name;
     private ChannelConfig config;
-    private DatabaseWrapper db;
+    private DatabaseWrapper mainDb;
+    private DatabaseWrapper quoteDb;
     private ChannelMessageSender messageSender;
     private Thread messageSenderThread;
     private ChannelMessageReceiver messageReceiver;
@@ -33,9 +34,15 @@ public class Channel {
     }
 
     public boolean join() {
-        db = APIDatabase.getChannelMainDatabase(name);
-        if (db == null) {
-            App.logger.error("Unable to get database for channel: " + name);
+        mainDb = APIDatabase.getChannelMainDatabase(name);
+        if (mainDb == null) {
+            App.logger.error("Unable to get main database for channel: " + name);
+            return false;
+        }
+
+        quoteDb = APIDatabase.getChannelQuoteDatabase(name);
+        if (quoteDb == null) {
+            App.logger.error("Unable to get quote database for channel: " + name);
             return false;
         }
 
@@ -69,7 +76,7 @@ public class Channel {
         userCooldownSet.clear();
         subscriberStorage.clear();
 
-        db = null;
+        mainDb = null;
     }
 
     public String getName() {
@@ -80,8 +87,12 @@ public class Channel {
         return inChannel;
     }
 
-    public DatabaseWrapper getDatabaseWrapper() {
-        return db;
+    public DatabaseWrapper getMainDatabaseWrapper() {
+        return mainDb;
+    }
+
+    public DatabaseWrapper getQuoteDatabaseWrapper() {
+        return quoteDb;
     }
 
     public ChannelConfig getConfig() {
