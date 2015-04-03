@@ -24,13 +24,13 @@ public class DatabaseWrapper {
      * @throws SQLException
      * @throws ClassNotFoundException
      */
-    private DatabaseWrapper(String path, HashMap<String, HashMap<String, String>> tables) throws SQLException, ClassNotFoundException {
+    private DatabaseWrapper(String path, HashMap<String, TableFields> tables) throws SQLException, ClassNotFoundException {
         lock.lock();
         try {
             Class.forName("org.sqlite.JDBC");
             connection = DriverManager.getConnection("jdbc:sqlite:" + path);
             for (String key : tables.keySet()) {
-                createTable(key, tables.get(key));
+                createTable(key, tables.get(key).map, tables.get(key).primaryKey);
             }
         } finally {
             lock.unlock();
@@ -46,7 +46,7 @@ public class DatabaseWrapper {
      * @return a new DataBaseWrapper Object or null if either an <code>SQLException</code> or a <code>CLassNotFoundException</code>.
      * @see com.github.otbproject.otbproject.database.DatabaseHelper
      */
-    public static DatabaseWrapper createDatabase(String path, HashMap<String, HashMap<String, String>> tables) {
+    public static DatabaseWrapper createDatabase(String path, HashMap<String, TableFields> tables) {
         try {
             return new DatabaseWrapper(path, tables);
         } catch (SQLException | ClassNotFoundException e) {

@@ -2,6 +2,7 @@ package com.github.otbproject.otbproject.commands;
 
 
 import com.github.otbproject.otbproject.database.DataTypes;
+import com.github.otbproject.otbproject.database.TableFields;
 
 import java.util.HashMap;
 
@@ -19,8 +20,9 @@ public class CommandFields {
     public static final String DEBUG = "debug"; // If true, only sends if channel set for debug
 
     public static final String TABLE_NAME = "tblCommands";
+    public static final String PRIMARY_KEY = NAME;
 
-    public static HashMap<String,String> getTableHashMap() {
+    public static TableFields getTableFields() {
         HashMap<String,String> commandFields = new HashMap<>();
         commandFields.put(NAME, DataTypes.STRING);
         commandFields.put(RESPONSE, DataTypes.STRING);
@@ -34,7 +36,7 @@ public class CommandFields {
         commandFields.put(ENABLED, DataTypes.STRING);
         commandFields.put(DEBUG, DataTypes.STRING);
 
-        return commandFields;
+        return new TableFields(commandFields, PRIMARY_KEY);
     }
 
 }
