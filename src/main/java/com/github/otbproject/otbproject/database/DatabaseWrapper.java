@@ -362,12 +362,12 @@ public class DatabaseWrapper {
     }
 
     private static void setValue(PreparedStatement statement, int index, Object identifier) throws SQLException {
-        if (identifier instanceof String) {
+        if (identifier instanceof String || identifier == null) {
             statement.setString(index, (String) identifier);
         } else if (identifier instanceof Integer) {
             statement.setInt(index, (Integer) identifier);
         } else {
-            throw new SQLException("Invalid value to set in prepared statement.");
+            throw new SQLException("Invalid value to set in prepared statement: " + identifier.toString());
         }
     }
 }
