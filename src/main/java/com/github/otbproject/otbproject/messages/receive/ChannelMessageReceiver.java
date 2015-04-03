@@ -71,7 +71,7 @@ public class ChannelMessageReceiver implements Runnable {
                 }
 
                 // Process commands not as bot channel
-                DatabaseWrapper db = channel.getDatabaseWrapper();
+                DatabaseWrapper db = channel.getMainDatabaseWrapper();
                 UserLevel ul = packagedMessage.getUserLevel();
                 ProcessedMessage processedMsg = MessageProcessor.process(db, packagedMessage.getMessage(), channelName, user, ul, channel.getConfig().isDebug());
 
