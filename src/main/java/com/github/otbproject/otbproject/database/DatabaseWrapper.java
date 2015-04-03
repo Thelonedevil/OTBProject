@@ -49,10 +49,7 @@ public class DatabaseWrapper {
     public static DatabaseWrapper createDataBase(String path, HashMap<String, HashMap<String,String>> tables) {
         try {
             return new DatabaseWrapper(path, tables);
-        } catch (SQLException e) {
-            App.logger.catching(e);
-            return null;
-        } catch (ClassNotFoundException e) {
+        } catch (SQLException | ClassNotFoundException e) {
             App.logger.catching(e);
             return null;
         }
@@ -132,11 +129,7 @@ public class DatabaseWrapper {
         try {
             connection.setAutoCommit(false);
             preparedStatement = connection.prepareStatement(sql);
-            if(identifier instanceof String) {
-                preparedStatement.setString(1, (String)identifier);
-            }else if(identifier instanceof Integer){
-                preparedStatement.setInt(1,(Integer)identifier);
-            }
+            setValue(preparedStatement, 1, identifier);
             rs = preparedStatement.executeQuery();
             connection.commit();
         } catch (SQLException e) {
@@ -164,11 +157,11 @@ public class DatabaseWrapper {
         boolean bool = false;
         lock.lock();
         try {
-            ResultSet rs = getRecord(table,identifier,fieldName);
+            ResultSet rs = getRecord(table, identifier, fieldName);
             while (rs.next()) {
-                if (identifier instanceof String && rs.getString(fieldName).equalsIgnoreCase((String)identifier)) {
+                if (identifier instanceof String && rs.getString(fieldName).equalsIgnoreCase((String) identifier)) {
                     bool = true;
-                }else if(identifier instanceof Integer && rs.getInt(fieldName) == (Integer) identifier){
+                } else if (identifier instanceof Integer && rs.getInt(fieldName) == (Integer) identifier) {
                     bool = true;
                 }
             }
@@ -205,11 +198,7 @@ public class DatabaseWrapper {
             preparedStatement = connection.prepareStatement(sql);
             int index = 1;
             for (String key : map.keySet()) {
-                if(map.get(key) instanceof String) {
-                    preparedStatement.setString(index, (String)map.get(key));
-                }else if(map.get(key) instanceof Integer){
-                    preparedStatement.setInt(index,(Integer)map.get(key));
-                }
+                setValue(preparedStatement, index, map.get(key));
                 index++;
             }
             if(identifier instanceof String) {
@@ -261,11 +250,7 @@ public class DatabaseWrapper {
             preparedStatement = connection.prepareStatement(sql);
             int index = 1;
             for (String key : map.keySet()) {
-                if(map.get(key) instanceof String) {
-                    preparedStatement.setString(index, (String)map.get(key));
-                }else if(map.get(key) instanceof Integer){
-                    preparedStatement.setInt(index,(Integer)map.get(key));
-                }
+                setValue(preparedStatement, index, map.get(key));
                 index++;
             }
             int i = preparedStatement.executeUpdate();
@@ -307,11 +292,7 @@ public class DatabaseWrapper {
         try {
             connection.setAutoCommit(false);
             preparedStatement = connection.prepareStatement(sql);
-            if(identifier instanceof String) {
-                preparedStatement.setString(1, (String)identifier);
-            }else if(identifier instanceof Integer){
-                preparedStatement.setInt(1,(Integer)identifier);
-            }
+            setValue(preparedStatement, 1, identifier);
             int i = preparedStatement.executeUpdate();
             if (i > 0) {
                 bool = true;
@@ -380,4 +361,13 @@ public class DatabaseWrapper {
         }
     }
 
+    private static void setValue(PreparedStatement statement, int index, Object identifier) throws SQLException {
+        if (identifier instanceof String) {
+            statement.setString(index, (String) identifier);
+        } else if (identifier instanceof Integer) {
+            statement.setInt(index, (Integer) identifier);
+        } else {
+            throw new SQLException("Invalid value to set in prepared statement.");
+        }
+    }
 }
