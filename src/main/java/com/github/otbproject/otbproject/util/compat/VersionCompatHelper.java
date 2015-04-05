@@ -14,8 +14,8 @@ public class VersionCompatHelper {
     }
 
     private static void fix1dot0To1dot1() {
-        String oldAccountFilePath = FSUtil.dataDir() + File.separator + "account.json";
-        String twitchAccountFilePath = FSUtil.dataDir() + File.separator + FSUtil.ConfigFileNames.ACCOUNT_TWITCH;
+        String oldAccountFilePath = FSUtil.configDir() + File.separator + "account.json";
+        String twitchAccountFilePath = FSUtil.configDir() + File.separator + FSUtil.ConfigFileNames.ACCOUNT_TWITCH;
         File oldAcctFile = new File(oldAccountFilePath);
         File twitchAcctFile = new File(twitchAccountFilePath);
 

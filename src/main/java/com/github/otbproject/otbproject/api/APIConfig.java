@@ -82,15 +82,15 @@ public class APIConfig {
     }
 
     public static Account getAccount() {
-        return App.bot.configManager.getAccount();
+        return App.configManager.getAccount();
     }
 
     public static GeneralConfig getGeneralConfig() {
-        return App.bot.configManager.getGeneralConfig();
+        return App.configManager.getGeneralConfig();
     }
 
     public static BotConfig getBotConfig() {
-        return App.bot.configManager.getBotConfig();
+        return App.configManager.getBotConfig();
     }
 
     public static ChannelConfig getChannelConfig(String channel) {

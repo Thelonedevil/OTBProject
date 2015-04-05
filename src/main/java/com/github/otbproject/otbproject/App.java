@@ -4,10 +4,7 @@ import com.github.otbproject.otbproject.api.APIConfig;
 import com.github.otbproject.otbproject.cli.ArgParser;
 import com.github.otbproject.otbproject.cli.commands.CmdParser;
 import com.github.otbproject.otbproject.commands.loader.FSCommandLoader;
-import com.github.otbproject.otbproject.config.Account;
-import com.github.otbproject.otbproject.config.BotConfig;
-import com.github.otbproject.otbproject.config.GeneralConfig;
-import com.github.otbproject.otbproject.config.ServiceName;
+import com.github.otbproject.otbproject.config.*;
 import com.github.otbproject.otbproject.eventlistener.IrcListener;
 import com.github.otbproject.otbproject.fs.FSUtil;
 import com.github.otbproject.otbproject.fs.Setup;
@@ -39,6 +36,7 @@ public class App {
     public static final String PID = ManagementFactory.getRuntimeMXBean().getName().split("@")[0];
     public static final Logger logger = LogManager.getLogger();
     public static final String VERSION = new VersionClass().getVersion();
+    public static final ConfigManager configManager = new ConfigManager();
     public static CustomBot bot;
     public static Thread botThread;
     public static Runnable botRunnable;
@@ -156,7 +154,7 @@ public class App {
         FSCommandLoader.LoadAliases();
         FSCommandLoader.LoadBotCommands();
         FSCommandLoader.LoadBotAliases();
-
+        
         // Load configs
         GeneralConfig generalConfig = APIConfig.readGeneralConfig(); // Must be read first for service info
         if (cmd.hasOption(ArgParser.Opts.SERVICE)) {
@@ -172,6 +170,7 @@ public class App {
             }
             APIConfig.writeGeneralConfig();
         }
+        configManager.setGeneralConfig(generalConfig);
 
         Account account;
         if (cmd.hasOption(ArgParser.Opts.ACCOUNT_FILE)) {
@@ -179,8 +178,10 @@ public class App {
         } else {
             account = APIConfig.readAccount();
         }
+        configManager.setAccount(account);
 
         BotConfig botConfig = APIConfig.readBotConfig();
+        configManager.setBotConfig(botConfig);
 
         // Get account info
         if (cmd.hasOption(ArgParser.Opts.ACCOUNT)) {
@@ -202,10 +203,7 @@ public class App {
         Field input = c.getDeclaredField("inputParser");
         input.setAccessible(true);
         input.set(bot, new InputParserImproved(bot));
-        // Store configs
-        bot.configManager.setAccount(account);
-        bot.configManager.setGeneralConfig(generalConfig);
-        bot.configManager.setBotConfig(botConfig);
+        
         botRunnable = new BotRunnable();
         botThread = new Thread(botRunnable);
         botThread.start();
