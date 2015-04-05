@@ -7,6 +7,7 @@ import com.github.otbproject.otbproject.commands.loader.FSCommandLoader;
 import com.github.otbproject.otbproject.config.Account;
 import com.github.otbproject.otbproject.config.BotConfig;
 import com.github.otbproject.otbproject.config.GeneralConfig;
+import com.github.otbproject.otbproject.config.ServiceName;
 import com.github.otbproject.otbproject.eventlistener.IrcListener;
 import com.github.otbproject.otbproject.fs.FSUtil;
 import com.github.otbproject.otbproject.fs.Setup;
@@ -14,6 +15,7 @@ import com.github.otbproject.otbproject.gui.Window;
 import com.github.otbproject.otbproject.util.InputParserImproved;
 import com.github.otbproject.otbproject.util.UnPacker;
 import com.github.otbproject.otbproject.util.VersionClass;
+import com.github.otbproject.otbproject.util.compat.VersionCompatHelper;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.ParseException;
 import org.apache.logging.log4j.LogManager;
@@ -134,6 +136,9 @@ public class App {
             App.logger.catching(e);
         }
         if (cmd.hasOption(ArgParser.Opts.UNPACK) || (!VERSION.contains("SNAPSHOT") && !VERSION.equalsIgnoreCase(version))) {
+            if (!VERSION.equalsIgnoreCase(version)) {
+                VersionCompatHelper.fixCompatIssues(VERSION, version);
+            }
             UnPacker.unPack("preloads/json/commands/", FSUtil.commandsDir() + File.separator + "all-channels" + File.separator + "to-load");
             UnPacker.unPack("preloads/json/aliases/", FSUtil.aliasesDir() + File.separator + "all-channels" + File.separator + "to-load");
             UnPacker.unPack("preloads/json/bot-channel/commands/", FSUtil.commandsDir() + File.separator + "bot-channel" + File.separator + "to-load");
@@ -153,27 +158,42 @@ public class App {
         FSCommandLoader.LoadBotAliases();
 
         // Load configs
+        GeneralConfig generalConfig = APIConfig.readGeneralConfig(); // Must be read first for service info
+        if (cmd.hasOption(ArgParser.Opts.SERVICE)) {
+            String serviceName = cmd.getOptionValue(ArgParser.Opts.SERVICE).toUpperCase();
+            if (serviceName.equals(ServiceName.TWITCH.toString())) {
+                APIConfig.getGeneralConfig().setServiceName(ServiceName.TWITCH);
+            } else if (serviceName.equals(ServiceName.BEAM.toString())) {
+                APIConfig.getGeneralConfig().setServiceName(ServiceName.BEAM);
+            } else {
+                App.logger.error("Invalid service name: " + serviceName);
+                ArgParser.printHelp();
+                System.exit(1);
+            }
+            APIConfig.writeGeneralConfig();
+        }
+
         Account account;
         if (cmd.hasOption(ArgParser.Opts.ACCOUNT_FILE)) {
             account = APIConfig.readAccount(cmd.getOptionValue(ArgParser.Opts.ACCOUNT_FILE));
         } else {
             account = APIConfig.readAccount();
         }
-        GeneralConfig generalConfig = APIConfig.readGeneralConfig();
+
         BotConfig botConfig = APIConfig.readBotConfig();
 
         // Get account info
         if (cmd.hasOption(ArgParser.Opts.ACCOUNT)) {
             account.setName(cmd.getOptionValue(ArgParser.Opts.ACCOUNT));
         }
-        if (cmd.hasOption(ArgParser.Opts.OAUTH)) {
-            account.setOauth(cmd.getOptionValue(ArgParser.Opts.OAUTH));
+        if (cmd.hasOption(ArgParser.Opts.PASSKEY)) {
+            account.setPassKey(cmd.getOptionValue(ArgParser.Opts.PASSKEY));
         }
         APIConfig.writeAccount(account);
 
         //TODO get botname and oauth from config asell as possible server address and port
         Configuration.Builder configurationBuilder = new Configuration.Builder().setName(account.getName()).setAutoNickChange(false).setCapEnabled(false).addListener(listener).setServerHostname("irc.twitch.tv")
-                .setServerPort(6667).setServerPassword(account.getOauth()).setEncoding(Charset.forName("UTF-8"));
+                .setServerPort(6667).setServerPassword(account.getPassKey()).setEncoding(Charset.forName("UTF-8"));
         Configuration configuration = configurationBuilder.buildConfiguration();
 
         logger.info("Bot configuration built");

@@ -16,30 +16,30 @@ public class ArgParser {
 
         options.addOption(Opts.HELP_SHORT, Opts.HELP, false, "Prints this help message and exits");
 
-        // --base-dir
+        // --base-dir=
         OptionBuilder.withLongOpt(Opts.BASE_DIR);
         OptionBuilder.withDescription("The directory in which to find or create a '.otbproject' directory");
         OptionBuilder.hasArg();
         OptionBuilder.withArgName("PATH");
         options.addOption(OptionBuilder.create());
 
-        // --account-file
+        // --account-file=
         OptionBuilder.withLongOpt(Opts.ACCOUNT_FILE);
         OptionBuilder.withDescription("The name of the file in the config directory from which to load account information");
         OptionBuilder.hasArg();
         OptionBuilder.withArgName("FILE_NAME");
         options.addOption(OptionBuilder.create());
 
-        // --account
+        // --account=
         OptionBuilder.withLongOpt(Opts.ACCOUNT);
-        OptionBuilder.withDescription("The twitch account with which to log in. Overrides account name from --" + Opts.ACCOUNT_FILE);
+        OptionBuilder.withDescription("The Twitch or Beam account with which to log in. Overrides account name from --" + Opts.ACCOUNT_FILE);
         OptionBuilder.hasArg();
         OptionBuilder.withArgName("ACCT_NAME");
         options.addOption(OptionBuilder.create());
 
-        // --oauth
-        OptionBuilder.withLongOpt(Opts.OAUTH);
-        OptionBuilder.withDescription("The oauth token with which to log in. Overrides oauth token from --" + Opts.ACCOUNT_FILE);
+        // --oauth=
+        OptionBuilder.withLongOpt(Opts.PASSKEY);
+        OptionBuilder.withDescription("The passkey with which to log in. Overrides passkey from --" + Opts.ACCOUNT_FILE);
         OptionBuilder.hasArg();
         OptionBuilder.withArgName("TOKEN");
         options.addOption(OptionBuilder.create());
@@ -52,6 +52,13 @@ public class ArgParser {
         // --unpack
         OptionBuilder.withLongOpt(Opts.UNPACK);
         OptionBuilder.withDescription("Unpacks scripts and preloaded commands and aliases even if it is not a new version");
+        options.addOption(OptionBuilder.create());
+
+        // --service=
+        OptionBuilder.withLongOpt(Opts.SERVICE);
+        OptionBuilder.withDescription("The name of the chat service to connect to");
+        OptionBuilder.hasArg();
+        OptionBuilder.withArgName("SERVICE_NAME");
         options.addOption(OptionBuilder.create());
 
         return options;
@@ -67,8 +74,9 @@ public class ArgParser {
         public static final String BASE_DIR = "base-dir";
         public static final String ACCOUNT_FILE = "account-file";
         public static final String ACCOUNT = "account";
-        public static final String OAUTH = "oauth";
+        public static final String PASSKEY = "passkey";
         public static final String DEBUG = "debug";
         public static final String UNPACK = "unpack";
+        public static final String SERVICE = "service";
     }
 }

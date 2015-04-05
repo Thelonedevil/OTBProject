@@ -5,7 +5,7 @@ public class DefaultConfigGenerator {
     public static Account createAccountConfig() {
         Account account = new Account();
         account.setName("your_name_here");
-        account.setOauth("oauth:some_characters_here");
+        account.setPassKey("your_passkey_here");
 
         return account;
     }
@@ -43,6 +43,7 @@ public class DefaultConfigGenerator {
 
     public static GeneralConfig createGeneralConfig() {
         GeneralConfig generalConfig = new GeneralConfig();
+        generalConfig.setServiceName(ServiceName.TWITCH);
         generalConfig.setPortNumber(80);
         generalConfig.setIp_binding("0.0.0.0");
         GeneralConfigHelper.initialize(generalConfig);
