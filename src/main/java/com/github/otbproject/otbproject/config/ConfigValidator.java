@@ -14,8 +14,8 @@ public class ConfigValidator {
             validatedAccount.setName(defaultAccount.getName());
         }
 
-        if (validatedAccount.getOauth() == null) {
-            validatedAccount.setName(defaultAccount.getOauth());
+        if (validatedAccount.getPassKey() == null) {
+            validatedAccount.setName(defaultAccount.getPassKey());
         }
 
         return validatedAccount;
@@ -29,6 +29,10 @@ public class ConfigValidator {
         }
 
         GeneralConfig validatedConfig = GeneralConfigHelper.getCopy(config);
+
+        if (validatedConfig.getServiceName() == null) {
+            validatedConfig.setServiceName(defaultConfig.getServiceName());
+        }
 
         if (validatedConfig.getIp_binding() == null) {
             validatedConfig.setIp_binding(defaultConfig.getIp_binding());

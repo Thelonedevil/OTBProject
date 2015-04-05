@@ -68,7 +68,8 @@ public class FSUtil {
     }
 
     public static class ConfigFileNames {
-        public static final String ACCOUNT = "account.json";
+        public static final String ACCOUNT_TWITCH = "account-twitch.json";
+        public static final String ACCOUNT_BEAM = "account-beam.json";
         public static final String GENERAL_CONFIG = "general-config.json";
         public static final String BOT_CONFIG = "bot-config.json";
         public static final String CHANNEL_CONFIG = "config.json";

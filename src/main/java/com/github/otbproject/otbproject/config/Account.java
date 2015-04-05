@@ -2,7 +2,7 @@ package com.github.otbproject.otbproject.config;
 
 public class Account {
     private String name;
-    private String oauth;
+    private String passKey;
 
     public String getName() {
         return name;
@@ -12,11 +12,11 @@ public class Account {
         this.name = name;
     }
 
-    public String getOauth() {
-        return oauth;
+    public String getPassKey() {
+        return passKey;
     }
 
-    public void setOauth(String oauth) {
-        this.oauth = oauth;
+    public void setPassKey(String passKey) {
+        this.passKey = passKey;
     }
 }

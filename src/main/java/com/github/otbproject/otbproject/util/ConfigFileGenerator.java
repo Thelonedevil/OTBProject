@@ -6,9 +6,10 @@ import com.github.otbproject.otbproject.fs.FSUtil;
 import java.io.File;
 
 public class ConfigFileGenerator {
-    public static void generateAccountConfig() {
+    public static void generateAccountConfigs() {
         Account account = DefaultConfigGenerator.createAccountConfig();
-        JsonHandler.writeValue(FSUtil.defaultsDir() + File.separator + FSUtil.ConfigFileNames.ACCOUNT, account);
+        JsonHandler.writeValue(FSUtil.defaultsDir() + File.separator + FSUtil.ConfigFileNames.ACCOUNT_TWITCH, account);
+        JsonHandler.writeValue(FSUtil.defaultsDir() + File.separator + FSUtil.ConfigFileNames.ACCOUNT_BEAM, account);
     }
 
     public static void generateBotConfig() {

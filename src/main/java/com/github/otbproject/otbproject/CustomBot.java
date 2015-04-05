@@ -17,8 +17,6 @@ import java.util.HashMap;
  * Created by justin on 05/02/2015.
  */
 public class CustomBot extends PircBotX {
-
-    public final ConfigManager configManager = new ConfigManager();
     private final OutputRaw newOutputRaw;
     private final DatabaseWrapper botDB = APIDatabase.getBotDatabase();
     public HashMap<String, Channel> channels = new HashMap<>();

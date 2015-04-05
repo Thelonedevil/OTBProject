@@ -19,7 +19,7 @@ public class APIConfig {
     }
 
     public static Account readAccount() {
-        return readAccount(FSUtil.ConfigFileNames.ACCOUNT);
+        return readAccount(getAccountFileName());
     }
 
     public static GeneralConfig readGeneralConfig() {
@@ -46,7 +46,7 @@ public class APIConfig {
     }
 
     public static void writeAccount(Account account) {
-        writeAccount(account, FSUtil.ConfigFileNames.ACCOUNT);
+        writeAccount(account, getAccountFileName());
     }
 
     public static void writeAccount(String filename) {
@@ -82,15 +82,15 @@ public class APIConfig {
     }
 
     public static Account getAccount() {
-        return App.bot.configManager.getAccount();
+        return App.configManager.getAccount();
     }
 
     public static GeneralConfig getGeneralConfig() {
-        return App.bot.configManager.getGeneralConfig();
+        return App.configManager.getGeneralConfig();
     }
 
     public static BotConfig getBotConfig() {
-        return App.bot.configManager.getBotConfig();
+        return App.configManager.getBotConfig();
     }
 
     public static ChannelConfig getChannelConfig(String channel) {
@@ -98,6 +98,15 @@ public class APIConfig {
             return null;
         }
         return APIChannel.get(channel).getConfig();
+    }
+
+    public static String getAccountFileName() {
+        ServiceName serviceName = getGeneralConfig().getServiceName();
+        if (serviceName == ServiceName.BEAM) {
+            return FSUtil.ConfigFileNames.ACCOUNT_BEAM;
+        } else { // Defaults to Twitch
+            return FSUtil.ConfigFileNames.ACCOUNT_TWITCH;
+        }
     }
 
     private static String getAccountPath(String filename) {
