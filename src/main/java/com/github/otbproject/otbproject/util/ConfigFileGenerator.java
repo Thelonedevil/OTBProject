@@ -1,15 +1,15 @@
 package com.github.otbproject.otbproject.util;
 
-import com.github.otbproject.otbproject.api.APIConfig;
 import com.github.otbproject.otbproject.config.*;
 import com.github.otbproject.otbproject.fs.FSUtil;
 
 import java.io.File;
 
 public class ConfigFileGenerator {
-    public static void generateAccountConfig() {
+    public static void generateAccountConfigs() {
         Account account = DefaultConfigGenerator.createAccountConfig();
-        JsonHandler.writeValue(FSUtil.defaultsDir() + File.separator + APIConfig.getAccountFileName(), account);
+        JsonHandler.writeValue(FSUtil.defaultsDir() + File.separator + FSUtil.ConfigFileNames.ACCOUNT_TWITCH, account);
+        JsonHandler.writeValue(FSUtil.defaultsDir() + File.separator + FSUtil.ConfigFileNames.ACCOUNT_BEAM, account);
     }
 
     public static void generateBotConfig() {
