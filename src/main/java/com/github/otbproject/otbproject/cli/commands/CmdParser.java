@@ -63,17 +63,13 @@ public class CmdParser {
 
     void stop() {
         App.logger.info("Stopping the process");
-        if (App.bot.isConnected()) {
-            App.bot.shutdown();
-        }
+        App.bot.shutdown();
         App.logger.info("Process Stopped, Goodbye");
         System.exit(0);
     }
 
     void restart() {
-        if (App.bot.isConnected()) {
-            App.bot.shutdown();
-        }
+        App.bot.shutdown();
         FSCommandLoader.LoadCommands();
         FSCommandLoader.LoadAliases();
         try {

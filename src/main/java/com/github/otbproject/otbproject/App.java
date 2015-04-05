@@ -1,11 +1,13 @@
 package com.github.otbproject.otbproject;
 
 import com.github.otbproject.otbproject.api.APIConfig;
+import com.github.otbproject.otbproject.beam.BeamBot;
 import com.github.otbproject.otbproject.cli.ArgParser;
 import com.github.otbproject.otbproject.cli.commands.CmdParser;
 import com.github.otbproject.otbproject.commands.loader.FSCommandLoader;
 import com.github.otbproject.otbproject.config.*;
-import com.github.otbproject.otbproject.eventlistener.IrcListener;
+import com.github.otbproject.otbproject.irc.IRCBot;
+import com.github.otbproject.otbproject.irc.IrcListener;
 import com.github.otbproject.otbproject.fs.FSUtil;
 import com.github.otbproject.otbproject.fs.Setup;
 import com.github.otbproject.otbproject.gui.Window;
@@ -19,7 +21,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.pircbotx.Configuration;
-import org.pircbotx.exception.IrcException;
 import org.pircbotx.hooks.Listener;
 
 import java.awt.*;
@@ -37,7 +38,7 @@ public class App {
     public static final Logger logger = LogManager.getLogger();
     public static final String VERSION = new VersionClass().getVersion();
     public static final ConfigManager configManager = new ConfigManager();
-    public static CustomBot bot;
+    public static IBot bot;
     public static Thread botThread;
     public static Runnable botRunnable;
     static Listener listener = new IrcListener();
@@ -192,21 +193,26 @@ public class App {
         }
         APIConfig.writeAccount(account);
 
-        //TODO get botname and oauth from config asell as possible server address and port
-        Configuration.Builder configurationBuilder = new Configuration.Builder().setName(account.getName()).setAutoNickChange(false).setCapEnabled(false).addListener(listener).setServerHostname("irc.twitch.tv")
-                .setServerPort(6667).setServerPassword(account.getPassKey()).setEncoding(Charset.forName("UTF-8"));
-        Configuration configuration = configurationBuilder.buildConfiguration();
-
-        logger.info("Bot configuration built");
-        bot = new CustomBot(configuration);
-        Class c = bot.getClass().getSuperclass();
-        Field input = c.getDeclaredField("inputParser");
-        input.setAccessible(true);
-        input.set(bot, new InputParserImproved(bot));
-        
+        switch (APIConfig.getGeneralConfig().getServiceName()){
+            case TWITCH:
+                Configuration.Builder configurationBuilder = new Configuration.Builder().setName(account.getName()).setAutoNickChange(false).setCapEnabled(false).addListener(listener).setServerHostname("irc.twitch.tv")
+                        .setServerPort(6667).setServerPassword(account.getPassKey()).setEncoding(Charset.forName("UTF-8"));
+                Configuration configuration = configurationBuilder.buildConfiguration();
+                logger.info("Bot configuration built");
+                bot = new IRCBot(configuration);
+                Class c = bot.getClass().getSuperclass();
+                Field input = c.getDeclaredField("inputParser");
+                input.setAccessible(true);
+                input.set(bot, new InputParserImproved((IRCBot)bot));
+                break;
+            case BEAM:
+                bot = new BeamBot();
+                break;
+        }
         botRunnable = new BotRunnable();
         botThread = new Thread(botRunnable);
         botThread.start();
+
 
         if (!GraphicsEnvironment.isHeadless()) {
             Window gui = new Window();// I know this variable "gui" is never used, that is just how it works okay.
@@ -221,17 +227,4 @@ public class App {
         scanner.close();
     }
 
-    public static class BotRunnable implements Runnable {
-        @Override
-        public void run() {
-            try {
-                Thread.currentThread().setName("Main Bot");
-                logger.info("Bot Started");
-                bot.startBot();
-                logger.info("Bot Stopped");
-            } catch (IOException | IrcException e) {
-                logger.catching(e);
-            }
-        }
-    }
 }

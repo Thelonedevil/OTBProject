@@ -20,7 +20,7 @@ public class ChannelMessageSender implements Runnable {
 
             while (true) {
                 message = queue.take();
-                SendingWrapper.send(channel.getName(), message.getMessage());
+                App.bot.sendMessage(channel.getName(), message.getMessage());
                 Thread.sleep(APIConfig.getBotConfig().getMessageSendDelayInMilliseconds());
             }
         } catch (InterruptedException e) {

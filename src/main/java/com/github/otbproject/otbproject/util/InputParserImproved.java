@@ -1,7 +1,7 @@
 package com.github.otbproject.otbproject.util;
 
 import com.github.otbproject.otbproject.App;
-import com.github.otbproject.otbproject.CustomBot;
+import com.github.otbproject.otbproject.irc.IRCBot;
 import org.pircbotx.InputParser;
 import org.pircbotx.PircBotX;
 import org.pircbotx.Utils;
@@ -18,7 +18,7 @@ import java.util.List;
  */
 public class InputParserImproved extends InputParser {
 
-    public InputParserImproved(CustomBot bot) {
+    public InputParserImproved(IRCBot bot) {
         super(bot);
     }
 
@@ -47,7 +47,7 @@ public class InputParserImproved extends InputParser {
             return;
         } else if (command.startsWith("ERROR")) {
             //Server is shutting us down
-            ((CustomBot) bot).shutdown();
+            ((IRCBot) bot).shutdown();
             return;
         }
 
@@ -69,7 +69,7 @@ public class InputParserImproved extends InputParser {
             } else {
                 int code = Utils.tryParseInt(command, -1);
                 if (code != -1) {
-                    if (!((CustomBot) bot).isLoggedIn())
+                    if (!((IRCBot) bot).isLoggedIn())
                         processConnect(line, command, target, parsedLine);
                     processServerResponse(code, line, parsedLine);
                     // Return from the method.
@@ -85,7 +85,7 @@ public class InputParserImproved extends InputParser {
             // We don't know what this line means.
             configuration.getListenerManager().dispatchEvent(new UnknownEvent<PircBotX>(bot, line));
 
-            if (!((CustomBot) bot).isLoggedIn())
+            if (!((IRCBot) bot).isLoggedIn())
                 //Pass to CapHandlers, could be important
                 for (CapHandler curCapHandler : configuration.getCapHandlers())
                     if (curCapHandler.handleUnknown(bot, line))
@@ -97,7 +97,7 @@ public class InputParserImproved extends InputParser {
         if (sourceNick.startsWith(":"))
             sourceNick = sourceNick.substring(1);
 
-        if (!((CustomBot) bot).isLoggedIn())
+        if (!((IRCBot) bot).isLoggedIn())
             processConnect(line, command, target, parsedLine);
         processCommand(target, sourceNick, sourceLogin, sourceHostname, command, line, parsedLine);
     }

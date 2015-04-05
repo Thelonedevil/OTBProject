@@ -1,9 +1,9 @@
-package com.github.otbproject.otbproject;
+package com.github.otbproject.otbproject.irc;
 
-import com.github.otbproject.otbproject.api.APIDatabase;
-import com.github.otbproject.otbproject.channels.Channel;
-import com.github.otbproject.otbproject.config.ConfigManager;
+import com.github.otbproject.otbproject.App;
+import com.github.otbproject.otbproject.IBot;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
+import com.github.otbproject.otbproject.serviceapi.ApiRequest;
 import com.github.otbproject.otbproject.util.OutputRawImproved;
 import org.pircbotx.Configuration;
 import org.pircbotx.PircBotX;
@@ -11,25 +11,36 @@ import org.pircbotx.output.OutputRaw;
 
 import java.io.InterruptedIOException;
 import java.net.SocketException;
-import java.util.HashMap;
 
 /**
  * Created by justin on 05/02/2015.
  */
-public class CustomBot extends PircBotX {
+public class IRCBot extends PircBotX implements IBot{
     private final OutputRaw newOutputRaw;
-    private final DatabaseWrapper botDB = APIDatabase.getBotDatabase();
-    public HashMap<String, Channel> channels = new HashMap<>();
 
-    public CustomBot(Configuration<? extends PircBotX> configuration) {
+    public IRCBot(Configuration<? extends PircBotX> configuration) {
         super(configuration);
         newOutputRaw = new OutputRawImproved(this);
-
-
     }
 
+    @Override
+    public boolean isConnected(String channelName) {
+        return isConnected();
+    }
+
+    @Override
+    public boolean isChannel(String channelName) {
+        return ApiRequest.attemptRequest("channels/" + channelName, 3, 500) == null;
+    }
+
+    @Override
     public void shutdown() {
         super.shutdown(true);
+    }
+
+    @Override
+    public String getUserName() {
+        return getNick();
     }
 
     @Override
@@ -105,6 +116,37 @@ public class CustomBot extends PircBotX {
     public DatabaseWrapper getBotDB() {
         return botDB;
     }
+
+    @Override
+    public boolean isUserMod(String channel, String user) {
+        return getUserChannelDao().getChannel(getIrcChannelName(channel)).isOp(getUserChannelDao().getUser(user));
+    }
+
+    @Override
+    public void sendMessage(String channel, String message) {
+        getUserChannelDao().getChannel(getIrcChannelName(channel)).send().message(message);
+    }
+
+    @Override
+    public boolean leave(String channel) {
+        getUserChannelDao().getChannel(getIrcChannelName(channel)).send().part();
+        return !getUserChannelDao().getAllChannels().contains(getUserChannelDao().getChannel(channel));
+    }
+
+    @Override
+    public boolean join(String channel) {
+        sendIRC().joinChannel(getIrcChannelName(channel));
+        return getUserChannelDao().getAllChannels().contains(getUserChannelDao().getChannel(channel));
+    }
+
+    public static String getIrcChannelName(String channel) {
+        return "#" + channel;
+    }
+
+    public static String getInternalChannelName(String channel) {
+        return channel.replace("#", "");
+    }
+
 
     public boolean isLoggedIn(){
         return loggedIn;

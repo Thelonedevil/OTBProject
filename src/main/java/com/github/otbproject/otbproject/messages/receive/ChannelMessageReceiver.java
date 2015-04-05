@@ -26,7 +26,7 @@ public class ChannelMessageReceiver implements Runnable {
     public ChannelMessageReceiver(Channel channel, MessageReceiveQueue queue) {
         this.channel = channel;
         this.queue = queue;
-        inBotChannel = this.channel.getName().equals(App.bot.getNick());
+        inBotChannel = this.channel.getName().equals(App.bot.getUserName());
     }
 
     public void run() {
