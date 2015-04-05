@@ -71,6 +71,7 @@ public class Setup {
 
         // Data
         createDirs(FSUtil.dataDir() + File.separator + FSUtil.DirNames.CHANNELS + File.separator + channel);
+        // Create main database
         String mainDBPath = FSUtil.dataDir() + File.separator + FSUtil.DirNames.CHANNELS + File.separator + channel + File.separator + FSUtil.DatabaseNames.MAIN;
         File mainDB = new File(mainDBPath);
         if (!mainDB.exists()) {
@@ -80,6 +81,12 @@ public class Setup {
                 FSCommandLoader.LoadLoadedCommands(channel, LoadingSet.BOTH);
                 FSCommandLoader.LoadLoadedAliases(channel, LoadingSet.BOTH);
             }
+        }
+        // Create quotes database
+        String quotesDBPath = FSUtil.dataDir() + File.separator + FSUtil.DirNames.CHANNELS + File.separator + channel + File.separator + FSUtil.DatabaseNames.MAIN;
+        File quotesDB = new File(quotesDBPath);
+        if (!quotesDB.exists() && !quotesDB.createNewFile()) {
+            throw new IOException("Unable to create database file: " + quotesDBPath);
         }
     }
 
