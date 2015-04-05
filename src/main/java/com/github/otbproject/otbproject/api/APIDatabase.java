@@ -13,7 +13,7 @@ public class APIDatabase {
         return DatabaseWrapper.createDatabase(path, DatabaseHelper.getMainTablesHashMap());
     }
 
-    public static DatabaseWrapper getChannelQuoteDatabase(String channel) {
+    public static SQLiteQuoteWrapper getChannelQuoteDatabase(String channel) {
         String path = FSUtil.dataDir() + File.separator + FSUtil.DirNames.CHANNELS + File.separator + channel + File.separator + FSUtil.DatabaseNames.QUOTES;
         return SQLiteQuoteWrapper.createDatabase(path, DatabaseHelper.getQuoteTablesHashMap());
     }

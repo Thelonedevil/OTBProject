@@ -81,9 +81,9 @@ public class DatabaseWrapper {
         String sql = "CREATE TABLE IF NOT EXISTS " + name + " (";
         for (String key : table.keySet()) {
             if (key.equals(primaryKey)) {
-                sql = sql + key + " " + table.get(key) + " COLLATE NOCASE PRIMARY KEY, ";
+                sql = sql + key + " " + table.get(key) + " PRIMARY KEY, ";
             } else {
-                sql = sql + key + " " + table.get(key) + " COLLATE NOCASE, ";
+                sql = sql + key + " " + table.get(key) + ", ";
             }
         }
         sql = sql.substring(0, sql.length() - 2) + ")";

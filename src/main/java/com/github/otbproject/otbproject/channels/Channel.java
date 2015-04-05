@@ -4,6 +4,7 @@ import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.api.APIDatabase;
 import com.github.otbproject.otbproject.config.ChannelConfig;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
+import com.github.otbproject.otbproject.database.SQLiteQuoteWrapper;
 import com.github.otbproject.otbproject.messages.receive.ChannelMessageReceiver;
 import com.github.otbproject.otbproject.messages.receive.MessageReceiveQueue;
 import com.github.otbproject.otbproject.messages.send.ChannelMessageSender;
@@ -20,7 +21,7 @@ public class Channel {
     private final String name;
     private ChannelConfig config;
     private DatabaseWrapper mainDb;
-    private DatabaseWrapper quoteDb;
+    private SQLiteQuoteWrapper quoteDb;
     private ChannelMessageSender messageSender;
     private Thread messageSenderThread;
     private ChannelMessageReceiver messageReceiver;
@@ -91,7 +92,7 @@ public class Channel {
         return mainDb;
     }
 
-    public DatabaseWrapper getQuoteDatabaseWrapper() {
+    public SQLiteQuoteWrapper getQuoteDatabaseWrapper() {
         return quoteDb;
     }
 

@@ -14,7 +14,7 @@ public class QuoteFields {
 
     public static TableFields getTableFields() {
         HashMap<String,String> quoteFields = new HashMap<>();
-        quoteFields.put(ID, DataTypes.INT_AUTO_INC);
+        quoteFields.put(ID, DataTypes.INTEGER);
         quoteFields.put(TEXT, DataTypes.STRING);
         return new TableFields(quoteFields, PRIMARY_KEY);
     }
