@@ -152,6 +152,7 @@ public class App {
         
         // Load configs
         GeneralConfig generalConfig = APIConfig.readGeneralConfig(); // Must be read first for service info
+        configManager.setGeneralConfig(generalConfig);
         if (cmd.hasOption(ArgParser.Opts.SERVICE)) {
             String serviceName = cmd.getOptionValue(ArgParser.Opts.SERVICE).toUpperCase();
             if (serviceName.equals(ServiceName.TWITCH.toString())) {
@@ -165,7 +166,7 @@ public class App {
             }
             APIConfig.writeGeneralConfig();
         }
-        configManager.setGeneralConfig(generalConfig);
+
 
         Account account;
         if (cmd.hasOption(ArgParser.Opts.ACCOUNT_FILE)) {

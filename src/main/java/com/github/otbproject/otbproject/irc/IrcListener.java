@@ -63,7 +63,7 @@ public class IrcListener extends ListenerAdapter {
     public void onConnect(ConnectEvent event) {
         ((IRCBot) APIBot.getBot()).sendRaw().rawLine("TWITCHCLIENT 3");
         // Join bot channel
-        APIChannel.join(APIBot.getBot().getUserName());
+        APIChannel.join(APIBot.getBot().getUserName(),false);
         // Join channels
         for (String channelName : APIConfig.getBotConfig().currentChannels) {
             APIChannel.join(channelName, false);
