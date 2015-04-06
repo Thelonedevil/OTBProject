@@ -144,50 +144,10 @@ public class App {
             App.logger.catching(e);
         }
 
+        // Perform various startup actions
+        startup(cmd);
 
-        FSCommandLoader.LoadCommands();
-        FSCommandLoader.LoadAliases();
-        FSCommandLoader.LoadBotCommands();
-        FSCommandLoader.LoadBotAliases();
-        
-        // Load configs
-        GeneralConfig generalConfig = APIConfig.readGeneralConfig(); // Must be read first for service info
-        configManager.setGeneralConfig(generalConfig);
-        if (cmd.hasOption(ArgParser.Opts.SERVICE)) {
-            String serviceName = cmd.getOptionValue(ArgParser.Opts.SERVICE).toUpperCase();
-            if (serviceName.equals(ServiceName.TWITCH.toString())) {
-                APIConfig.getGeneralConfig().setServiceName(ServiceName.TWITCH);
-            } else if (serviceName.equals(ServiceName.BEAM.toString())) {
-                APIConfig.getGeneralConfig().setServiceName(ServiceName.BEAM);
-            } else {
-                App.logger.error("Invalid service name: " + serviceName);
-                ArgParser.printHelp();
-                System.exit(1);
-            }
-            APIConfig.writeGeneralConfig();
-        }
-
-
-        Account account;
-        if (cmd.hasOption(ArgParser.Opts.ACCOUNT_FILE)) {
-            account = APIConfig.readAccount(cmd.getOptionValue(ArgParser.Opts.ACCOUNT_FILE));
-        } else {
-            account = APIConfig.readAccount();
-        }
-        configManager.setAccount(account);
-
-        BotConfig botConfig = APIConfig.readBotConfig();
-        configManager.setBotConfig(botConfig);
-
-        // Get account info
-        if (cmd.hasOption(ArgParser.Opts.ACCOUNT)) {
-            account.setName(cmd.getOptionValue(ArgParser.Opts.ACCOUNT));
-        }
-        if (cmd.hasOption(ArgParser.Opts.PASSKEY)) {
-            account.setPassKey(cmd.getOptionValue(ArgParser.Opts.PASSKEY));
-        }
-        APIConfig.writeAccount(account);
-
+        // Connect to service
         switch (APIConfig.getGeneralConfig().getServiceName()){
             case TWITCH:
                 APIBot.setBot(new IRCBot());
@@ -218,4 +178,50 @@ public class App {
         scanner.close();
     }
 
+    public static void startup(CommandLine cmd) {
+        // Load commands and aliases
+        FSCommandLoader.LoadCommands();
+        FSCommandLoader.LoadAliases();
+        FSCommandLoader.LoadBotCommands();
+        FSCommandLoader.LoadBotAliases();
+
+        loadConfigs(cmd);
+    }
+
+    public static void loadConfigs(CommandLine cmd) {
+        // General config
+        GeneralConfig generalConfig = APIConfig.readGeneralConfig(); // Must be read first for service info
+        configManager.setGeneralConfig(generalConfig);
+        if (cmd.hasOption(ArgParser.Opts.SERVICE)) {
+            String serviceName = cmd.getOptionValue(ArgParser.Opts.SERVICE).toUpperCase();
+            if (serviceName.equals(ServiceName.TWITCH.toString())) {
+                APIConfig.getGeneralConfig().setServiceName(ServiceName.TWITCH);
+            } else if (serviceName.equals(ServiceName.BEAM.toString())) {
+                APIConfig.getGeneralConfig().setServiceName(ServiceName.BEAM);
+            } else {
+                App.logger.error("Invalid service name: " + serviceName);
+                ArgParser.printHelp();
+                System.exit(1);
+            }
+            APIConfig.writeGeneralConfig();
+        }
+
+        // Account config
+        if (cmd.hasOption(ArgParser.Opts.ACCOUNT_FILE)) {
+            APIConfig.setAccountFileName(cmd.getOptionValue(ArgParser.Opts.ACCOUNT_FILE));
+        }
+        Account account = APIConfig.readAccount();
+        if (cmd.hasOption(ArgParser.Opts.ACCOUNT)) {
+            account.setName(cmd.getOptionValue(ArgParser.Opts.ACCOUNT));
+        }
+        if (cmd.hasOption(ArgParser.Opts.PASSKEY)) {
+            account.setPassKey(cmd.getOptionValue(ArgParser.Opts.PASSKEY));
+        }
+        configManager.setAccount(account);
+        APIConfig.writeAccount();
+
+        // Bot config
+        BotConfig botConfig = APIConfig.readBotConfig();
+        configManager.setBotConfig(botConfig);
+    }
 }
