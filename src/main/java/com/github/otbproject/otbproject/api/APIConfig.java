@@ -8,18 +8,16 @@ import com.github.otbproject.otbproject.util.JsonHandler;
 import java.io.File;
 
 public class APIConfig {
+    private static String accountFileName = "";
+
     public static final String GENERAL_CONFIG_PATH = FSUtil.configDir() + File.separator + FSUtil.ConfigFileNames.GENERAL_CONFIG;
     public static final String BOT_CONFIG_PATH = FSUtil.dataDir() + File.separator + FSUtil.DirNames.BOT_CHANNEL + File.separator + FSUtil.ConfigFileNames.BOT_CONFIG;
 
     // Reading
-    public static Account readAccount(String filename) {
-        Account account = ConfigValidator.validateAccount(JsonHandler.readValue(getAccountPath(filename), Account.class));
-        writeAccount(account, filename);
-        return account;
-    }
-
     public static Account readAccount() {
-        return readAccount(getAccountFileName());
+        Account account = ConfigValidator.validateAccount(JsonHandler.readValue(getAccountPath(), Account.class));
+        writeAccount(account);
+        return account;
     }
 
     public static GeneralConfig readGeneralConfig() {
@@ -41,23 +39,15 @@ public class APIConfig {
     }
 
     // Writing
-    public static void writeAccount(Account account, String filename) {
-        JsonHandler.writeValue(getAccountPath(filename), account);
-    }
-
-    public static void writeAccount(Account account) {
-        writeAccount(account, getAccountFileName());
-    }
-
-    public static void writeAccount(String filename) {
-        writeAccount(getAccount(), filename);
+    private static void writeAccount(Account account) {
+        JsonHandler.writeValue(getAccountPath(), account);
     }
 
     public static void writeAccount() {
         writeAccount(getAccount());
     }
 
-    public static void writeGeneralConfig(GeneralConfig config) {
+    private static void writeGeneralConfig(GeneralConfig config) {
         JsonHandler.writeValue(GENERAL_CONFIG_PATH, config);
     }
 
@@ -65,7 +55,7 @@ public class APIConfig {
         writeGeneralConfig(getGeneralConfig());
     }
 
-    public static void writeBotConfig(BotConfig config) {
+    private static void writeBotConfig(BotConfig config) {
         JsonHandler.writeValue(BOT_CONFIG_PATH, config);
     }
 
@@ -73,7 +63,7 @@ public class APIConfig {
         writeBotConfig(getBotConfig());
     }
 
-    public static void writeChannelConfig(ChannelConfig config, String channel) {
+    private static void writeChannelConfig(ChannelConfig config, String channel) {
         JsonHandler.writeValue(getChannelPath(channel), config);
     }
 
@@ -81,6 +71,7 @@ public class APIConfig {
         writeChannelConfig(getChannelConfig(channel), channel);
     }
 
+    // Getting
     public static Account getAccount() {
         return App.configManager.getAccount();
     }
@@ -100,7 +91,12 @@ public class APIConfig {
         return APIChannel.get(channel).getConfig();
     }
 
+    // Misc
     public static String getAccountFileName() {
+        if (!accountFileName.equals("")) {
+            return accountFileName;
+        }
+
         ServiceName serviceName = getGeneralConfig().getServiceName();
         if (serviceName == ServiceName.BEAM) {
             return FSUtil.ConfigFileNames.ACCOUNT_BEAM;
@@ -109,8 +105,12 @@ public class APIConfig {
         }
     }
 
-    private static String getAccountPath(String filename) {
-        return FSUtil.configDir() + File.separator + filename;
+    public static void setAccountFileName(String accountFileName) {
+        APIConfig.accountFileName = accountFileName;
+    }
+
+    private static String getAccountPath() {
+        return FSUtil.configDir() + File.separator + getAccountFileName();
     }
 
     private static String getChannelPath(String channel) {
