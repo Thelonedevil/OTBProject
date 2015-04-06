@@ -1,6 +1,7 @@
 package com.github.otbproject.otbproject.messages.receive;
 
 import com.github.otbproject.otbproject.App;
+import com.github.otbproject.otbproject.api.APIBot;
 import com.github.otbproject.otbproject.api.APIChannel;
 import com.github.otbproject.otbproject.api.APIConfig;
 import com.github.otbproject.otbproject.channels.Channel;
@@ -26,7 +27,7 @@ public class ChannelMessageReceiver implements Runnable {
     public ChannelMessageReceiver(Channel channel, MessageReceiveQueue queue) {
         this.channel = channel;
         this.queue = queue;
-        inBotChannel = this.channel.getName().equals(App.bot.getNick());
+        inBotChannel = this.channel.getName().equals(APIBot.getBot().getUserName());
     }
 
     public void run() {
@@ -55,7 +56,7 @@ public class ChannelMessageReceiver implements Runnable {
 
                 // Process commands for bot channel
                 if (inBotChannel) {
-                    DatabaseWrapper db = App.bot.getBotDB();
+                    DatabaseWrapper db = APIBot.getBot().getBotDB();
                     UserLevel ul = packagedMessage.getUserLevel();
                     ProcessedMessage processedMsg = MessageProcessor.process(db, packagedMessage.getMessage(), channelName, user, ul, true);
                     if (processedMsg.isScript() || !processedMsg.getResponse().isEmpty()) {

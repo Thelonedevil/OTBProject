@@ -1,10 +1,10 @@
-package com.github.otbproject.otbproject.eventlistener;
+package com.github.otbproject.otbproject.irc;
 
 import com.github.otbproject.otbproject.App;
+import com.github.otbproject.otbproject.api.APIBot;
 import com.github.otbproject.otbproject.api.APIChannel;
 import com.github.otbproject.otbproject.api.APIConfig;
 import com.github.otbproject.otbproject.channels.Channel;
-import com.github.otbproject.otbproject.irc.IrcHelper;
 import com.github.otbproject.otbproject.messages.receive.PackagedMessage;
 import com.github.otbproject.otbproject.messages.send.MessagePriority;
 import com.github.otbproject.otbproject.users.UserLevel;
@@ -19,12 +19,19 @@ public class IrcListener extends ListenerAdapter {
 
     @Override
     public void onMessage(MessageEvent event) throws Exception {
-        String channelName = IrcHelper.getInternalChannelName(event.getChannel().getName());
+        String channelName = IRCBot.getInternalChannelName(event.getChannel().getName());
         Channel channel = APIChannel.get(channelName);
-        if ((channel == null) && !APIChannel.join(channelName)) {
-            App.logger.error("");
-            IrcHelper.part(channelName);
-            return;
+        if (channel == null) {
+            if (!APIChannel.join(channelName)) {
+                App.logger.error("Failed to join channel: " + channelName);
+                APIBot.getBot().leave(channelName);
+                return;
+            }
+            channel = APIChannel.get(channelName);
+            if (channel == null) {
+                App.logger.error("The channel '" + channelName + "' really shouldn't be null here. Something has gone terribly wrong.");
+                return;
+            }
         }
 
         String user = event.getUser().getNick();
@@ -61,9 +68,9 @@ public class IrcListener extends ListenerAdapter {
 
     @Override
     public void onConnect(ConnectEvent event) {
-        App.bot.sendRaw().rawLine("TWITCHCLIENT 3");
+        ((IRCBot) APIBot.getBot()).sendRaw().rawLine("TWITCHCLIENT 3");
         // Join bot channel
-        APIChannel.join(App.bot.getNick());
+        APIChannel.join(APIBot.getBot().getUserName(),false);
         // Join channels
         for (String channelName : APIConfig.getBotConfig().currentChannels) {
             APIChannel.join(channelName, false);
