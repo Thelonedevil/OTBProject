@@ -66,8 +66,10 @@ public class APIChannel {
         }
         if(APIBot.getBot().isConnected()) {
             if(!APIBot.getBot().isConnected(channelName)) {
-                APIBot.getBot().join(channelName);
-                App.logger.debug("Testing 1");
+                if (!APIBot.getBot().join(channelName)) {
+                    App.logger.error("Failed to join channel: " + channelName);
+                    return false;
+                }
             }else{
                 App.logger.error("Already in the channel: "+ channelName);
             }
@@ -80,8 +82,6 @@ public class APIChannel {
             ChannelConfig channelConfig = APIConfig.readChannelConfig(channelName);
             channel = new Channel(channelName, channelConfig);
             APIBot.getBot().getChannels().put(channelName, channel);
-            APIBot.getBot().join(channelName);
-            App.logger.debug("Testing 2");
         } else {
             channel = get(channelName);
         }
@@ -94,6 +94,7 @@ public class APIChannel {
             BotConfigHelper.addToCurrentChannels(botConfig, channelName);
             APIConfig.writeBotConfig();
         }
+        App.logger.info("Succssfully joined channel: "+channelName);
         return true;
     }
 

@@ -13,7 +13,7 @@ import com.github.otbproject.otbproject.users.Users;
 public class ULUtil {
 
     public static UserLevel getUserLevel(DatabaseWrapper db, String channel, String user) {
-        if (user.equals(channel)) {
+        if (user.equalsIgnoreCase(channel)) {
             return UserLevel.BROADCASTER;
         }
 

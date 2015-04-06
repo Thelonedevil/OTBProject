@@ -2,6 +2,7 @@ package com.github.otbproject.otbproject.beam;
 
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.api.APIChannel;
+import com.github.otbproject.otbproject.channels.Channel;
 import com.github.otbproject.otbproject.messages.receive.PackagedMessage;
 import com.github.otbproject.otbproject.messages.send.MessagePriority;
 import com.github.otbproject.otbproject.util.ULUtil;
@@ -22,12 +23,15 @@ public class MessageHandler implements EventHandler<IncomingMessageEvent> {
     @Override
     public void onEvent(IncomingMessageEvent event) {
         IncomingMessageData data = event.data;
-        PackagedMessage packagedMessage = new PackagedMessage(data.getMessage(),data.user_name, channelName, ULUtil.getUserLevel(APIChannel.get(channelName).getMainDatabaseWrapper(), channelName,data.user_name), MessagePriority.DEFAULT);
-        try {
-            APIChannel.get(channelName).receiveQueue.add(packagedMessage);
-        } catch (NullPointerException npe) {
-            App.logger.catching(npe);
+        App.logger.info("<"+ channelName +"> "+ data.user_name + ": " + data.getMessage());
+        PackagedMessage packagedMessage = new PackagedMessage(data.getMessage(),data.user_name, channelName, ULUtil.getUserLevel(APIChannel.get(channelName).getMainDatabaseWrapper(), channelName ,data.user_name), MessagePriority.DEFAULT);
+        Channel channel = APIChannel.get(channelName);
+        if(channel != null){
+            channel.receiveQueue.add(packagedMessage);
+        }else{
+            App.logger.error("Channel: " + channelName + " appears not not exist");
         }
-        System.out.println("<"+ channelName +"> "+ data.user_name + ": " + data.getMessage());
+
+
     }
 }
