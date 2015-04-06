@@ -1,6 +1,7 @@
 package com.github.otbproject.otbproject.messages.send;
 
 import com.github.otbproject.otbproject.App;
+import com.github.otbproject.otbproject.api.APIBot;
 import com.github.otbproject.otbproject.api.APIConfig;
 import com.github.otbproject.otbproject.channels.Channel;
 
@@ -20,7 +21,7 @@ public class ChannelMessageSender implements Runnable {
 
             while (true) {
                 message = queue.take();
-                App.bot.sendMessage(channel.getName(), message.getMessage());
+                APIBot.getBot().sendMessage(channel.getName(), message.getMessage());
                 Thread.sleep(APIConfig.getBotConfig().getMessageSendDelayInMilliseconds());
             }
         } catch (InterruptedException e) {

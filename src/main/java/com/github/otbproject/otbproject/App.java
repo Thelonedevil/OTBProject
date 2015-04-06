@@ -1,7 +1,9 @@
 package com.github.otbproject.otbproject;
 
+import com.github.otbproject.otbproject.api.APIBot;
 import com.github.otbproject.otbproject.api.APIConfig;
 import com.github.otbproject.otbproject.beam.BeamBot;
+import com.github.otbproject.otbproject.bot.BotRunnable;
 import com.github.otbproject.otbproject.cli.ArgParser;
 import com.github.otbproject.otbproject.cli.commands.CmdParser;
 import com.github.otbproject.otbproject.commands.loader.FSCommandLoader;
@@ -34,9 +36,6 @@ public class App {
     public static final Logger logger = LogManager.getLogger();
     public static final String VERSION = new VersionClass().getVersion();
     public static final ConfigManager configManager = new ConfigManager();
-    public static IBot bot;
-    public static Thread botThread;
-    public static Runnable botRunnable;
 
     public static void main(String[] args) {
         try {
@@ -190,19 +189,19 @@ public class App {
 
         switch (APIConfig.getGeneralConfig().getServiceName()){
             case TWITCH:
-                bot = new IRCBot();
-                Class c = bot.getClass().getSuperclass();
+                APIBot.setBot(new IRCBot());
+                Class c = APIBot.getBot().getClass().getSuperclass();
                 Field input = c.getDeclaredField("inputParser");
                 input.setAccessible(true);
-                input.set(bot, new InputParserImproved((IRCBot)bot));
+                input.set(APIBot.getBot(), new InputParserImproved((IRCBot) APIBot.getBot()));
                 break;
             case BEAM:
-                bot = new BeamBot();
+                APIBot.setBot(new BeamBot());
                 break;
         }
-        botRunnable = new BotRunnable();
-        botThread = new Thread(botRunnable);
-        botThread.start();
+        APIBot.setBotRunnable(new BotRunnable());
+        APIBot.setBotThread(new Thread(APIBot.getBotRunnable()));
+        APIBot.getBotThread().start();
 
         if (!GraphicsEnvironment.isHeadless()) {
             Window gui = new Window();// I know this variable "gui" is never used, that is just how it works okay.

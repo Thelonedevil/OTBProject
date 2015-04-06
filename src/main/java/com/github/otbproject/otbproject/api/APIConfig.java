@@ -94,7 +94,7 @@ public class APIConfig {
     }
 
     public static ChannelConfig getChannelConfig(String channel) {
-        if (!App.bot.getChannels().containsKey(channel)) {
+        if (!APIBot.getBot().getChannels().containsKey(channel)) {
             return null;
         }
         return APIChannel.get(channel).getConfig();

@@ -13,11 +13,11 @@ import java.io.IOException;
 
 public class APIChannel {
     public static boolean in(String channel) {
-        return App.bot.getChannels().containsKey(channel) && get(channel).isInChannel();
+        return APIBot.getBot().getChannels().containsKey(channel) && get(channel).isInChannel();
     }
     
     public static Channel get(String channel) {
-        return App.bot.getChannels().get(channel);
+        return APIBot.getBot().getChannels().get(channel);
     }
 
     public static boolean join(String channelName) {
@@ -32,7 +32,7 @@ public class APIChannel {
             return false;
         }
 
-        boolean isBotChannel = channelName.equals(App.bot.getUserName());
+        boolean isBotChannel = channelName.equals(APIBot.getBot().getUserName());
 
         // Check whitelist/blacklist
         BotConfig botConfig = APIConfig.getBotConfig();
@@ -51,7 +51,7 @@ public class APIChannel {
             }
         }
 
-        if (checkValidChannel && !App.bot.isChannel(channelName)) {
+        if (checkValidChannel && !APIBot.getBot().isChannel(channelName)) {
            App.logger.info("Failed to join channel: " + channelName + ". Channel does not exist.");
            return false;
 
@@ -64,9 +64,9 @@ public class APIChannel {
             App.logger.catching(e);
             return false;
         }
-        if(App.bot.isConnected()) {
-            if(!App.bot.isConnected(channelName)) {
-                App.bot.join(channelName);
+        if(APIBot.getBot().isConnected()) {
+            if(!APIBot.getBot().isConnected(channelName)) {
+                APIBot.getBot().join(channelName);
             }else{
                 App.logger.error("Already in the channel: "+ channelName);
             }
@@ -75,17 +75,17 @@ public class APIChannel {
             return false;
         }
         Channel channel;
-        if (!App.bot.getChannels().containsKey(channelName)) {
+        if (!APIBot.getBot().getChannels().containsKey(channelName)) {
             ChannelConfig channelConfig = APIConfig.readChannelConfig(channelName);
             channel = new Channel(channelName, channelConfig);
-            App.bot.getChannels().put(channelName, channel);
-            App.bot.join(channelName);
+            APIBot.getBot().getChannels().put(channelName, channel);
+            APIBot.getBot().join(channelName);
         } else {
             channel = get(channelName);
         }
         if (!channel.join()) {
             App.logger.error("Failed to join channel '" + channelName + "' internally. Disconnecting from remote channel.");
-            App.bot.leave(channelName);
+            APIBot.getBot().leave(channelName);
             return false;
         }
         if (!isBotChannel) {
@@ -97,15 +97,15 @@ public class APIChannel {
 
     public static void leave(String channelName) {
         channelName = channelName.toLowerCase();
-        if (!in(channelName) || channelName.equals(App.bot.getUserName())) {
+        if (!in(channelName) || channelName.equals(APIBot.getBot().getUserName())) {
             App.logger.debug("In channel: " + in(channelName));
-            App.logger.debug("Bot channel: " + channelName.equals(App.bot.getUserName()));
+            App.logger.debug("Bot channel: " + channelName.equals(APIBot.getBot().getUserName()));
             return;
         }
         App.logger.info("Leaving channel: " + channelName);
         get(channelName).leave();
         BotConfigHelper.removeFromCurrentChannels(APIConfig.getBotConfig(), channelName);
         APIConfig.writeBotConfig();
-        App.bot.leave(channelName);
+        APIBot.getBot().leave(channelName);
     }
 }

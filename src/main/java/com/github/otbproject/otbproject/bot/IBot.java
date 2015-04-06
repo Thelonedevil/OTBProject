@@ -1,4 +1,4 @@
-package com.github.otbproject.otbproject;
+package com.github.otbproject.otbproject.bot;
 
 import com.github.otbproject.otbproject.channels.Channel;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;

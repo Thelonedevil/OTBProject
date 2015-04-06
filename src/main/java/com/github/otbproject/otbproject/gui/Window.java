@@ -1,6 +1,7 @@
 package com.github.otbproject.otbproject.gui;
 
 import com.github.otbproject.otbproject.App;
+import com.github.otbproject.otbproject.api.APIBot;
 
 import javax.swing.*;
 import java.awt.*;
@@ -54,8 +55,8 @@ public class Window extends JFrame implements ActionListener {
 
         } else if (event.getSource().equals(exit)) {
             if (JOptionPane.showConfirmDialog(this, "This will stop the bot from running", "Are you sure?", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-                if (App.bot != null && App.bot.isConnected()) {
-                    App.bot.shutdown();
+                if (APIBot.getBot() != null && APIBot.getBot().isConnected()) {
+                    APIBot.getBot().shutdown();
                 }
                 System.exit(0);
             }
@@ -81,8 +82,8 @@ public class Window extends JFrame implements ActionListener {
         @Override
         public void windowClosing(java.awt.event.WindowEvent windowEvent) {
             if (JOptionPane.showConfirmDialog(frame, "This will stop the bot from running", "Are you sure?", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-                if (App.bot != null && App.bot.isConnected()) {
-                    App.bot.shutdown();
+                if (APIBot.getBot() != null && APIBot.getBot().isConnected()) {
+                    APIBot.getBot().shutdown();
                 }
                 System.exit(0);
             }

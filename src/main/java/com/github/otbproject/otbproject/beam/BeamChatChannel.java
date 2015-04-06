@@ -1,6 +1,7 @@
 package com.github.otbproject.otbproject.beam;
 
 import com.github.otbproject.otbproject.App;
+import com.github.otbproject.otbproject.api.APIBot;
 import pro.beam.api.resource.BeamUser;
 import pro.beam.api.resource.channel.BeamChannel;
 import pro.beam.api.resource.chat.BeamChat;
@@ -21,7 +22,7 @@ public class BeamChatChannel {
     BeamChatConnectable beamChatConnectable;
 
     public BeamChatChannel(String channelName){
-        beamBot = ((BeamBot) App.bot);
+        beamBot = ((BeamBot) APIBot.getBot());
         try {
             BeamChannel channel = beamBot.beamUser.channel;
             for(BeamUser user : beamBot.beam.use(UsersService.class).search(channelName).get()){
