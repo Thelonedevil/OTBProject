@@ -19,12 +19,19 @@ public class IrcListener extends ListenerAdapter {
 
     @Override
     public void onMessage(MessageEvent event) throws Exception {
-        String channelName = ((IRCBot) APIBot.getBot()).getInternalChannelName(event.getChannel().getName());
+        String channelName = IRCBot.getInternalChannelName(event.getChannel().getName());
         Channel channel = APIChannel.get(channelName);
-        if ((channel == null) && !APIChannel.join(channelName)) {
-            App.logger.error("");
-            APIBot.getBot().leave(channelName);
-            return;
+        if (channel == null) {
+            if (!APIChannel.join(channelName)) {
+                App.logger.error("Failed to join channel: " + channelName);
+                APIBot.getBot().leave(channelName);
+                return;
+            }
+            channel = APIChannel.get(channelName);
+            if (channel == null) {
+                App.logger.error("The channel '" + channelName + "' really shouldn't be null here. Something has gone terribly wrong.");
+                return;
+            }
         }
 
         String user = event.getUser().getNick();
