@@ -20,8 +20,8 @@ import java.util.concurrent.ExecutionException;
  * Created by Justin on 05/04/2015.
  */
 public class BeamBot implements IBot {
-    public HashMap<String, Channel> channels = new HashMap<>();
-    final DatabaseWrapper botDB = APIDatabase.getBotDatabase();
+    private HashMap<String, Channel> channels = new HashMap<>();
+    private final DatabaseWrapper botDB = APIDatabase.getBotDatabase();
 
     BeamAPI beam = new BeamAPI();
     BeamUser beamUser;

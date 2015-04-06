@@ -21,8 +21,8 @@ import java.util.HashMap;
  * Created by justin on 05/02/2015.
  */
 public class IRCBot extends PircBotX implements IBot{
-    public HashMap<String, Channel> channels = new HashMap<>();
-    final DatabaseWrapper botDB = APIDatabase.getBotDatabase();
+    private HashMap<String, Channel> channels = new HashMap<>();
+    private final DatabaseWrapper botDB = APIDatabase.getBotDatabase();
     private final OutputRaw newOutputRaw;
 
     @SuppressWarnings("unchecked")

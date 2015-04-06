@@ -67,7 +67,7 @@ public class APIChannel {
         if(APIBot.getBot().isConnected()) {
             if(!APIBot.getBot().isConnected(channelName)) {
                 if (!APIBot.getBot().join(channelName)) {
-                    App.logger.error("Failed to join channel: " + channelName);
+                    App.logger.warn("Failed to join channel: " + channelName);
                     return false;
                 }
             }else{

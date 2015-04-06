@@ -31,7 +31,5 @@ public class MessageHandler implements EventHandler<IncomingMessageEvent> {
         }else{
             App.logger.error("Channel: " + channelName + " appears not not exist");
         }
-
-
     }
 }
