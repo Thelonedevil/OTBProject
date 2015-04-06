@@ -1,10 +1,10 @@
 package com.github.otbproject.otbproject.beam;
 
 import com.github.otbproject.otbproject.App;
-import com.github.otbproject.otbproject.bot.IBot;
 import com.github.otbproject.otbproject.api.APIChannel;
 import com.github.otbproject.otbproject.api.APIConfig;
 import com.github.otbproject.otbproject.api.APIDatabase;
+import com.github.otbproject.otbproject.bot.IBot;
 import com.github.otbproject.otbproject.channels.Channel;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import pro.beam.api.BeamAPI;
@@ -12,6 +12,7 @@ import pro.beam.api.resource.BeamUser;
 import pro.beam.api.resource.chat.methods.ChatSendMethod;
 import pro.beam.api.services.impl.UsersService;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.concurrent.ExecutionException;
 
@@ -83,7 +84,19 @@ public class BeamBot implements IBot {
 
     @Override
     public boolean isUserMod(String channel, String user) {
-        return beamChannels.get(channel).beamChat.role.equalsIgnoreCase("Mod");
+        String path = BeamAPI.BASE_PATH.resolve("chats/"+beamChannels.get(getUserName()).channel.id+"/users").toString();
+        try {
+            BeamChatUser[] users = beam.http.get(path,BeamChatUser[].class , new HashMap<>()).get();
+            for (BeamChatUser beamChatUser : users) {
+                if(beamChatUser.getUser_name().equalsIgnoreCase(user)){
+                    return Arrays.asList(beamChatUser.getUser_roles()).contains("Mod");
+                }
+            }
+        } catch (InterruptedException | ExecutionException e) {
+            App.logger.catching(e);
+            return false;
+        }
+        return false;
     }
 
     @Override

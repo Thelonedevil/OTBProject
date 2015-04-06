@@ -20,11 +20,12 @@ public class BeamChatChannel {
     BeamBot beamBot;
     BeamChat beamChat;
     BeamChatConnectable beamChatConnectable;
+    BeamChannel channel;
 
     public BeamChatChannel(String channelName){
         beamBot = ((BeamBot) APIBot.getBot());
         try {
-            BeamChannel channel = beamBot.beamUser.channel;
+            channel = beamBot.beamUser.channel;
             for(BeamUser user : beamBot.beam.use(UsersService.class).search(channelName).get()){
                 if (user.username.equalsIgnoreCase(channelName)){
                      channel = beamBot.beam.use(UsersService.class).findOne(user.id).get().channel;

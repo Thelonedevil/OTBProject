@@ -24,7 +24,7 @@ public class MessageHandler implements EventHandler<IncomingMessageEvent> {
     public void onEvent(IncomingMessageEvent event) {
         IncomingMessageData data = event.data;
         App.logger.info("<"+ channelName +"> "+ data.user_name + ": " + data.getMessage());
-        PackagedMessage packagedMessage = new PackagedMessage(data.getMessage(),data.user_name, channelName, ULUtil.getUserLevel(APIChannel.get(channelName).getMainDatabaseWrapper(), channelName ,data.user_name), MessagePriority.DEFAULT);
+        PackagedMessage packagedMessage = new PackagedMessage(data.getMessage(),data.user_name.toLowerCase(), channelName, ULUtil.getUserLevel(APIChannel.get(channelName).getMainDatabaseWrapper(), channelName ,data.user_name.toLowerCase()), MessagePriority.DEFAULT);
         Channel channel = APIChannel.get(channelName);
         if(channel != null){
             channel.receiveQueue.add(packagedMessage);
