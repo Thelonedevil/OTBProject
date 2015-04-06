@@ -67,6 +67,7 @@ public class APIChannel {
         if(APIBot.getBot().isConnected()) {
             if(!APIBot.getBot().isConnected(channelName)) {
                 APIBot.getBot().join(channelName);
+                App.logger.debug("Testing 1");
             }else{
                 App.logger.error("Already in the channel: "+ channelName);
             }
@@ -80,6 +81,7 @@ public class APIChannel {
             channel = new Channel(channelName, channelConfig);
             APIBot.getBot().getChannels().put(channelName, channel);
             APIBot.getBot().join(channelName);
+            App.logger.debug("Testing 2");
         } else {
             channel = get(channelName);
         }

@@ -41,7 +41,7 @@ public class BeamBot implements IBot {
 
     @Override
     public boolean isConnected() {
-        return !beamChannels.isEmpty();
+        return true;
     }
 
     @Override
@@ -73,7 +73,7 @@ public class BeamBot implements IBot {
 
     @Override
     public String getUserName() {
-        return beamUser.username;
+        return beamUser.username.toLowerCase();
     }
 
     @Override
@@ -96,6 +96,12 @@ public class BeamBot implements IBot {
         APIChannel.join(getUserName(),false);
         for (String channelName : APIConfig.getBotConfig().currentChannels) {
             APIChannel.join(channelName, false);
+        }
+        while(!beamChannels.isEmpty()){
+            try {
+                Thread.sleep(200);
+            } catch (InterruptedException e) {
+            }
         }
     }
 

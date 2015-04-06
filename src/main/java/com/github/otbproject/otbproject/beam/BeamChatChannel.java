@@ -35,7 +35,6 @@ public class BeamChatChannel {
         } catch (InterruptedException | ExecutionException e) {
             App.logger.catching(e);
         }
-        System.out.println(beamBot.beamUser);
         beamChatConnectable = beamChat.makeConnectable(beamBot.beam);
         boolean connected = false;
         try {
