@@ -2,7 +2,10 @@ package com.github.otbproject.otbproject.beam;
 
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.IBot;
+import com.github.otbproject.otbproject.api.APIChannel;
 import com.github.otbproject.otbproject.api.APIConfig;
+import com.github.otbproject.otbproject.api.APIDatabase;
+import com.github.otbproject.otbproject.channels.Channel;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import pro.beam.api.BeamAPI;
 import pro.beam.api.resource.BeamUser;
@@ -16,6 +19,8 @@ import java.util.concurrent.ExecutionException;
  * Created by Justin on 05/04/2015.
  */
 public class BeamBot implements IBot {
+    public HashMap<String, Channel> channels = new HashMap<>();
+    final DatabaseWrapper botDB = APIDatabase.getBotDatabase();
 
     BeamAPI beam = new BeamAPI();
     BeamUser beamUser;
@@ -32,6 +37,16 @@ public class BeamBot implements IBot {
     @Override
     public boolean isConnected(String channelName) {
         return beamChannels.containsKey(channelName);
+    }
+
+    @Override
+    public boolean isConnected() {
+        return !beamChannels.isEmpty();
+    }
+
+    @Override
+    public HashMap<String, Channel> getChannels() {
+        return channels;
     }
 
     @Override
@@ -68,7 +83,7 @@ public class BeamBot implements IBot {
 
     @Override
     public boolean isUserMod(String channel, String user) {
-        return false;
+        return beamChannels.get(channel).beamChat.role.equalsIgnoreCase("Mod");
     }
 
     @Override
@@ -78,7 +93,10 @@ public class BeamBot implements IBot {
 
     @Override
     public void startBot() {
-
+        APIChannel.join(getUserName(),false);
+        for (String channelName : APIConfig.getBotConfig().currentChannels) {
+            APIChannel.join(channelName, false);
+        }
     }
 
     @Override

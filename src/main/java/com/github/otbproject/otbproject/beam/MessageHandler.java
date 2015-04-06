@@ -1,5 +1,10 @@
 package com.github.otbproject.otbproject.beam;
 
+import com.github.otbproject.otbproject.App;
+import com.github.otbproject.otbproject.api.APIChannel;
+import com.github.otbproject.otbproject.messages.receive.PackagedMessage;
+import com.github.otbproject.otbproject.messages.send.MessagePriority;
+import com.github.otbproject.otbproject.util.ULUtil;
 import pro.beam.api.resource.chat.events.EventHandler;
 import pro.beam.api.resource.chat.events.IncomingMessageEvent;
 import pro.beam.api.resource.chat.events.data.IncomingMessageData;
@@ -9,14 +14,20 @@ import pro.beam.api.resource.chat.events.data.IncomingMessageData;
  */
 public class MessageHandler implements EventHandler<IncomingMessageEvent> {
 
-    String channelname;
+    String channelName;
     public MessageHandler(String channel){
-        this.channelname = channel;
+        this.channelName = channel;
     }
 
     @Override
     public void onEvent(IncomingMessageEvent event) {
         IncomingMessageData data = event.data;
-        System.out.println("<"+channelname +"> "+ data.user_name + ": " + data.getMessage());
+        PackagedMessage packagedMessage = new PackagedMessage(data.getMessage(),data.user_name, channelName, ULUtil.getUserLevel(APIChannel.get(channelName).getMainDatabaseWrapper(), channelName,data.user_name), MessagePriority.DEFAULT);
+        try {
+            APIChannel.get(channelName).receiveQueue.add(packagedMessage);
+        } catch (NullPointerException npe) {
+            App.logger.catching(npe);
+        }
+        System.out.println("<"+ channelName +"> "+ data.user_name + ": " + data.getMessage());
     }
 }

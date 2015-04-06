@@ -2,6 +2,9 @@ package com.github.otbproject.otbproject.irc;
 
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.IBot;
+import com.github.otbproject.otbproject.api.APIConfig;
+import com.github.otbproject.otbproject.api.APIDatabase;
+import com.github.otbproject.otbproject.channels.Channel;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.serviceapi.ApiRequest;
 import com.github.otbproject.otbproject.util.OutputRawImproved;
@@ -11,21 +14,33 @@ import org.pircbotx.output.OutputRaw;
 
 import java.io.InterruptedIOException;
 import java.net.SocketException;
+import java.nio.charset.Charset;
+import java.util.HashMap;
 
 /**
  * Created by justin on 05/02/2015.
  */
 public class IRCBot extends PircBotX implements IBot{
+    public HashMap<String, Channel> channels = new HashMap<>();
+    final DatabaseWrapper botDB = APIDatabase.getBotDatabase();
     private final OutputRaw newOutputRaw;
 
-    public IRCBot(Configuration<? extends PircBotX> configuration) {
-        super(configuration);
+    @SuppressWarnings("unchecked")
+    public IRCBot() {
+        super(new Configuration.Builder().setName(APIConfig.getAccount().getName()).setAutoNickChange(false).setCapEnabled(false).addListener(new IrcListener()).setServerHostname("irc.twitch.tv")
+                .setServerPort(6667).setServerPassword(APIConfig.getAccount().getPassKey()).setEncoding(Charset.forName("UTF-8")).buildConfiguration());
+        App.logger.info("Bot configuration built");
         newOutputRaw = new OutputRawImproved(this);
     }
 
     @Override
     public boolean isConnected(String channelName) {
-        return isConnected();
+        return userChannelDao.getAllChannels().contains(userChannelDao.getChannel(channelName));
+    }
+
+    @Override
+    public HashMap<String, Channel> getChannels() {
+        return channels;
     }
 
     @Override

@@ -1,6 +1,5 @@
 package com.github.otbproject.otbproject;
 
-import com.github.otbproject.otbproject.api.APIDatabase;
 import com.github.otbproject.otbproject.channels.Channel;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import org.pircbotx.exception.IrcException;
@@ -12,10 +11,11 @@ import java.util.HashMap;
  * Created by Justin on 05/04/2015.
  */
 public interface IBot {
-    public HashMap<String, Channel> channels = new HashMap<>();
-    final DatabaseWrapper botDB = APIDatabase.getBotDatabase();
-
     public boolean isConnected(String channelName);
+
+    public boolean isConnected();
+
+    public HashMap<String, Channel> getChannels();
 
     public boolean isChannel(String channelName);
 

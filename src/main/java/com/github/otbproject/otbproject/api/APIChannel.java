@@ -2,6 +2,7 @@ package com.github.otbproject.otbproject.api;
 
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.channels.Channel;
+import com.github.otbproject.otbproject.commands.parser.ResponseParserUtil;
 import com.github.otbproject.otbproject.config.BotConfig;
 import com.github.otbproject.otbproject.config.BotConfigHelper;
 import com.github.otbproject.otbproject.config.ChannelConfig;
@@ -12,11 +13,11 @@ import java.io.IOException;
 
 public class APIChannel {
     public static boolean in(String channel) {
-        return App.bot.channels.containsKey(channel) && get(channel).isInChannel();
+        return App.bot.getChannels().containsKey(channel) && get(channel).isInChannel();
     }
     
     public static Channel get(String channel) {
-        return App.bot.channels.get(channel);
+        return App.bot.getChannels().get(channel);
     }
 
     public static boolean join(String channelName) {
@@ -63,18 +64,21 @@ public class APIChannel {
             App.logger.catching(e);
             return false;
         }
-        //TODO This logic is broken for beam, since if we are connected to the channel, we dont want to be joining it again
-        if(App.bot.isConnected(channelName)) {
-           App.bot.join(channelName);
+        if(App.bot.isConnected()) {
+            if(!App.bot.isConnected(channelName)) {
+                App.bot.join(channelName);
+            }else{
+                App.logger.error("Already in the channel: "+ channelName);
+            }
         } else{
-            App.logger.error("Not connected to Twitch");
+            App.logger.error("Not connected to " + ResponseParserUtil.wordCap(APIConfig.getGeneralConfig().getServiceName().toString(), true));
             return false;
         }
         Channel channel;
-        if (!App.bot.channels.containsKey(channelName)) {
+        if (!App.bot.getChannels().containsKey(channelName)) {
             ChannelConfig channelConfig = APIConfig.readChannelConfig(channelName);
             channel = new Channel(channelName, channelConfig);
-            App.bot.channels.put(channelName, channel);
+            App.bot.getChannels().put(channelName, channel);
             App.bot.join(channelName);
         } else {
             channel = get(channelName);

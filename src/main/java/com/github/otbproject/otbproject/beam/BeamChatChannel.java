@@ -7,7 +7,6 @@ import pro.beam.api.resource.chat.BeamChat;
 import pro.beam.api.resource.chat.BeamChatConnectable;
 import pro.beam.api.resource.chat.events.IncomingMessageEvent;
 import pro.beam.api.resource.chat.methods.AuthenticateMessage;
-import pro.beam.api.resource.chat.methods.ChatSendMethod;
 import pro.beam.api.services.impl.ChatService;
 import pro.beam.api.services.impl.UsersService;
 
@@ -49,15 +48,6 @@ public class BeamChatChannel {
                 Thread.sleep(200);// needed to allow the authentication
             } catch (InterruptedException e) {
                 e.printStackTrace();
-            }
-
-            for (int i = 0; i < 10; i++) {
-                try {
-                    Thread.sleep(2); // needed to ensure messages get sent in the right order
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                beamChatConnectable.send(ChatSendMethod.of("Test" + i));
             }
             beamChatConnectable.on(IncomingMessageEvent.class, new MessageHandler(channelName));
 

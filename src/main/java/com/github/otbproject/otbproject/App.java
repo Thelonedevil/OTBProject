@@ -6,11 +6,10 @@ import com.github.otbproject.otbproject.cli.ArgParser;
 import com.github.otbproject.otbproject.cli.commands.CmdParser;
 import com.github.otbproject.otbproject.commands.loader.FSCommandLoader;
 import com.github.otbproject.otbproject.config.*;
-import com.github.otbproject.otbproject.irc.IRCBot;
-import com.github.otbproject.otbproject.irc.IrcListener;
 import com.github.otbproject.otbproject.fs.FSUtil;
 import com.github.otbproject.otbproject.fs.Setup;
 import com.github.otbproject.otbproject.gui.Window;
+import com.github.otbproject.otbproject.irc.IRCBot;
 import com.github.otbproject.otbproject.util.InputParserImproved;
 import com.github.otbproject.otbproject.util.UnPacker;
 import com.github.otbproject.otbproject.util.VersionClass;
@@ -20,14 +19,11 @@ import org.apache.commons.cli.ParseException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
-import org.pircbotx.Configuration;
-import org.pircbotx.hooks.Listener;
 
 import java.awt.*;
 import java.io.*;
 import java.lang.management.ManagementFactory;
 import java.lang.reflect.Field;
-import java.nio.charset.Charset;
 import java.util.Scanner;
 
 /**
@@ -41,7 +37,6 @@ public class App {
     public static IBot bot;
     public static Thread botThread;
     public static Runnable botRunnable;
-    static Listener listener = new IrcListener();
 
     public static void main(String[] args) {
         try {
@@ -195,11 +190,7 @@ public class App {
 
         switch (APIConfig.getGeneralConfig().getServiceName()){
             case TWITCH:
-                Configuration.Builder configurationBuilder = new Configuration.Builder().setName(account.getName()).setAutoNickChange(false).setCapEnabled(false).addListener(listener).setServerHostname("irc.twitch.tv")
-                        .setServerPort(6667).setServerPassword(account.getPassKey()).setEncoding(Charset.forName("UTF-8"));
-                Configuration configuration = configurationBuilder.buildConfiguration();
-                logger.info("Bot configuration built");
-                bot = new IRCBot(configuration);
+                bot = new IRCBot();
                 Class c = bot.getClass().getSuperclass();
                 Field input = c.getDeclaredField("inputParser");
                 input.setAccessible(true);
@@ -213,10 +204,10 @@ public class App {
         botThread = new Thread(botRunnable);
         botThread.start();
 
-
         if (!GraphicsEnvironment.isHeadless()) {
             Window gui = new Window();// I know this variable "gui" is never used, that is just how it works okay.
         }
+
         Scanner scanner = new Scanner(System.in);
         scanner.useDelimiter("\n");
         while (scanner.hasNext()) {

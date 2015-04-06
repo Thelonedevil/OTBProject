@@ -22,7 +22,7 @@ public class IrcListener extends ListenerAdapter {
         Channel channel = APIChannel.get(channelName);
         if ((channel == null) && !APIChannel.join(channelName)) {
             App.logger.error("");
-            ((IRCBot) App.bot).leave(channelName);
+            App.bot.leave(channelName);
             return;
         }
 
