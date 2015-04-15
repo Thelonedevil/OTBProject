@@ -50,7 +50,7 @@ The account configuration file can be found at:
 ```json
 {
   "name" : "your_name_here",
-  "passKey" : "oauth:some_characters_here"
+  "passkey" : "oauth:some_characters_here"
 }
 ```
 
@@ -59,7 +59,7 @@ The account configuration file can be found at:
 | Field | Description |
 |:-----------|:------------|
 |`name`|The name of the Twitch account being used for the bot.|
-|`passKey`|An oauth token associated with the Twitch account. You can generate an oauth token for your account <a href="http://twitchapps.com/tmi/" target="_blank">here</a>. (Note: generating a new oauth token voids any previous token)|
+|`passkey`|An oauth token associated with the Twitch account. You can generate an oauth token for your account <a href="http://twitchapps.com/tmi/" target="_blank">here</a>. (Note: generating a new oauth token voids any previous token)|
 
 ## General Config
 
