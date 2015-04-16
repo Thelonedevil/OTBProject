@@ -37,6 +37,7 @@ Version 0.2.0
   - Release 1.1.1
   - Added more special terms
   - Added commands relating to quotes
+  - Added `!at` command
 * 0.2.0
   - Release 1.0.0
   - Added descriptions of aliases and script commands that come with release
