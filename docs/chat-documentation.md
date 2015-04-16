@@ -3,6 +3,8 @@ title: Chat Documentation
 layout: markdown
 ---
 
+{% raw %}
+
 # OTB Project Documentation
 
 ### Interacting with a Bot in Chat
@@ -328,3 +330,5 @@ All commands are run by a user named “fred” and responded to by a bot named 
 |fred: !ifarg2|Bot: More args are needed. You need 2 args.|
 |fred: !ifarg2 one|Bot: More args are needed. You need 2 args.|
 |fred: !ifarg2 one two|Bot: More args are not needed. You needed 2 args.|
+
+{% endraw %}
