@@ -7,8 +7,6 @@ layout: markdown
 
 ### Interacting with a Bot in Chat
 
-====================================
-
 ## Table of Contents
 
 
