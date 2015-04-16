@@ -210,11 +210,11 @@ Because script commands can have multiple outcomes, they send responses to chat 
 |`~%quote.remove.success`|Successfully removed a quote.|Removed quote with ID '[[arg1]]'.|
 |`~%quote.does.not.exist`|Some opperation could not be performed because the provided quote does not exist.|No such quote [[args]].|
 
-##Special Terms
+## Special Terms
 
 There are some special terms which can be used when creating a command to create a response which varies depending on how the command is run. Each special term is replaced by some value, as described in the following table. Some examples of special term usage are shown at the end of the section.
 
-####Terms
+#### Terms
 
 | Term | Description |
 |:-----|:------------|
@@ -229,7 +229,7 @@ There are some special terms which can be used when creating a command to create
 |`[[service]]`|The name of the service the bot is connected to ("Twitch" or "Beam").|
 |`[[game]]`|The name of the game being played (as listed above the stream). Not yet implemented.|
 
-####Modifiers
+#### Modifiers
 
 Modifiers can be used to modify the string with which the term is replaced. Modifiers are used in the following format:
 
@@ -249,7 +249,7 @@ The modifiers are described in the following table.
 |`first_cap_soft`|The first letter of the string is made uppercase. All other letters are not changed.|
 |`word_cap_soft`|The first letter of each word (separated by a space)  in the string is made uppercase. All other letters are not changed. Identical to `first_cap_soft` for anything which is a single word (e.g. `[[user]]`, `[[argN]]`).|
 
-####Embedded Strings
+#### Embedded Strings
 
 Some terms can contain embedded strings. The `{{default}}` in the `[[args]]` and `[[argN]]` terms is an example of an embedded string. Embedded strings are surrounded by `{{` and `}}`. Embedded strings can be useful for providing more information or options for a term, and are used extensively in more advanced and versatile terms.
 
