@@ -2,6 +2,9 @@
 title: Tutorial
 layout: markdown
 ---
+
+{% raw %}
+
 # OTB Project Documentation
 
 ### Tutorial: How to Run a Bot
@@ -76,3 +79,5 @@ If you have any questions about the bot, feel free to leave them in the [issue t
 ### Other Notes
 
 This tutorial is geared towards users who are not familiar with terminals and might not be comfortable poking around config files on their own. The tutorial is not entirely accurate for users running the bot in a headless environment.
+
+{% endraw %}
