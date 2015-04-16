@@ -1,5 +1,10 @@
 package com.github.otbproject.otbproject.commands.parser;
 
+import com.github.otbproject.otbproject.api.APIChannel;
+import com.github.otbproject.otbproject.api.APIConfig;
+import com.github.otbproject.otbproject.quotes.Quote;
+import com.github.otbproject.otbproject.quotes.Quotes;
+
 import java.util.Arrays;
 
 public class CommandResponseParser {
@@ -58,7 +63,25 @@ public class CommandResponseParser {
         }
         // [[quote.modifier]] - can have a modifier, but it's unclear why you want one
         else if (isTerm(term, "quote")) {
-            return "[Quotes are not yet implemented]"; // TODO fix when quotes implemented
+            String quoteNumStr = getEmbeddedString(term, 1);
+            Quote quote;
+            if (quoteNumStr.isEmpty()) {
+                quote = Quotes.getRandomQuote(APIChannel.get(channel).getQuoteDatabaseWrapper());
+                if (quote == null) {
+                    return "[Error getting random quote]";
+                }
+            } else {
+                try {
+                    int quoteNum = Integer.valueOf(quoteNumStr);
+                    quote = Quotes.get(APIChannel.get(channel).getQuoteDatabaseWrapper(), quoteNum);
+                    if (quote == null) {
+                        return "";
+                    }
+                } catch (NumberFormatException e) {
+                    return "";
+                }
+            }
+            return quote.getText();
         }
         // [[game.modifier]]
         else if (isTerm(term, "game")) {
@@ -132,6 +155,10 @@ public class CommandResponseParser {
                 return getEmbeddedString(term, 3);
             }
             return getEmbeddedString(term, 4);
+        }
+        // [[service]]
+        else if (isTerm(term, "service")) {
+            return doModifier(ResponseParserUtil.firstCap(APIConfig.getGeneralConfig().getServiceName().toString(), true), term);
         } else {
             throw new InvalidTermException();
         }
@@ -222,11 +249,16 @@ public class CommandResponseParser {
     private static int getArgNum(String term, String prefix) throws InvalidTermException {
         // Gets arg number
         String argNumStr = term.replaceFirst(prefix, "").split(EMBED_START, 2)[0].split(MODIFIER_DELIM, 2)[0];
-        int argNum = Integer.parseInt(argNumStr);
+        int argNum;
+        try {
+            argNum = Integer.parseInt(argNumStr);
+        } catch (NumberFormatException e) {
+            throw new InvalidTermException("'" + argNumStr + "' is not a valid number and cannot be parsed.");
+        }
 
         // If argNum is 0 (or max int overflow)-, invalid term
         if (argNum <= 0) {
-            throw new InvalidTermException();
+            throw new InvalidTermException("Value must be positive.");
         }
 
         return argNum;

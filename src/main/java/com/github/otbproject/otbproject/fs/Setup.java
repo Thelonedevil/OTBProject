@@ -2,6 +2,8 @@ package com.github.otbproject.otbproject.fs;
 
 import com.github.otbproject.otbproject.commands.loader.FSCommandLoader;
 import com.github.otbproject.otbproject.commands.loader.LoadingSet;
+import com.github.otbproject.otbproject.config.DefaultConfigGenerator;
+import com.github.otbproject.otbproject.util.JsonHandler;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,6 +30,7 @@ public class Setup {
 
         // Config Directory
         createDirs(FSUtil.configDir());
+        // createAccountFiles(); TODO uncomment in later release
 
         // Data Directory
         createDirs(FSUtil.dataDir() + File.separator + FSUtil.DirNames.BOT_CHANNEL);
@@ -71,6 +74,7 @@ public class Setup {
 
         // Data
         createDirs(FSUtil.dataDir() + File.separator + FSUtil.DirNames.CHANNELS + File.separator + channel);
+        // Create main database
         String mainDBPath = FSUtil.dataDir() + File.separator + FSUtil.DirNames.CHANNELS + File.separator + channel + File.separator + FSUtil.DatabaseNames.MAIN;
         File mainDB = new File(mainDBPath);
         if (!mainDB.exists()) {
@@ -81,12 +85,29 @@ public class Setup {
                 FSCommandLoader.LoadLoadedAliases(channel, LoadingSet.BOTH);
             }
         }
+        // Create quotes database
+        String quotesDBPath = FSUtil.dataDir() + File.separator + FSUtil.DirNames.CHANNELS + File.separator + channel + File.separator + FSUtil.DatabaseNames.MAIN;
+        File quotesDB = new File(quotesDBPath);
+        if (!quotesDB.exists() && !quotesDB.createNewFile()) {
+            throw new IOException("Unable to create database file: " + quotesDBPath);
+        }
     }
 
     private static void createDirs(String path) throws IOException {
         File dirPath = new File(path);
         if ((!dirPath.exists()) && (!dirPath.mkdirs())) {
             throw new IOException(FSUtil.ERROR_MSG + path);
+        }
+    }
+
+    public static void createAccountFiles() {
+        String twitchAcctPath = FSUtil.configDir() + File.separator + FSUtil.ConfigFileNames.ACCOUNT_TWITCH;
+        String beamAcctPath = FSUtil.configDir() + File.separator + FSUtil.ConfigFileNames.ACCOUNT_BEAM;
+        if (!new File(twitchAcctPath).exists()) {
+            JsonHandler.writeValue(twitchAcctPath, DefaultConfigGenerator.createAccountConfig());
+        }
+        if (!new File(beamAcctPath).exists()) {
+            JsonHandler.writeValue(beamAcctPath, DefaultConfigGenerator.createAccountConfig());
         }
     }
 }

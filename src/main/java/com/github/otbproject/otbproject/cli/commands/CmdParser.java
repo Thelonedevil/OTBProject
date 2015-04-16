@@ -1,6 +1,7 @@
 package com.github.otbproject.otbproject.cli.commands;
 
 import com.github.otbproject.otbproject.App;
+import com.github.otbproject.otbproject.api.APIBot;
 import com.github.otbproject.otbproject.api.APIChannel;
 import com.github.otbproject.otbproject.commands.loader.FSCommandLoader;
 import com.github.otbproject.otbproject.commands.loader.LoadingSet;
@@ -63,22 +64,18 @@ public class CmdParser {
 
     void stop() {
         App.logger.info("Stopping the process");
-        if (App.bot.isConnected()) {
-            App.bot.shutdown();
-        }
+        APIBot.getBot().shutdown();
         App.logger.info("Process Stopped, Goodbye");
         System.exit(0);
     }
 
     void restart() {
-        if (App.bot.isConnected()) {
-            App.bot.shutdown();
-        }
+        APIBot.getBot().shutdown();
         FSCommandLoader.LoadCommands();
         FSCommandLoader.LoadAliases();
         try {
-            App.botThread = new Thread(App.botRunnable);
-            App.botThread.start();
+            APIBot.setBotThread(new Thread(APIBot.getBotRunnable()));
+            APIBot.getBotThread().start();
         } catch (IllegalThreadStateException e) {
             App.logger.catching(e);
         }

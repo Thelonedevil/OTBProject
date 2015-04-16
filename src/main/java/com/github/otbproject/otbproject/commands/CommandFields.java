@@ -1,7 +1,10 @@
 package com.github.otbproject.otbproject.commands;
 
 
-import java.util.HashSet;
+import com.github.otbproject.otbproject.database.DataTypes;
+import com.github.otbproject.otbproject.database.TableFields;
+
+import java.util.HashMap;
 
 public class CommandFields {
     public static final String NAME = "name";
@@ -17,21 +20,23 @@ public class CommandFields {
     public static final String DEBUG = "debug"; // If true, only sends if channel set for debug
 
     public static final String TABLE_NAME = "tblCommands";
+    public static final String PRIMARY_KEY = NAME;
 
-    public static HashSet<String> getTableHashSet() {
-        HashSet<String> commandFields = new HashSet<>();
-        commandFields.add(NAME);
-        commandFields.add(RESPONSE);
-        commandFields.add(EXEC_USER_LEVEL);
-        commandFields.add(MIN_ARGS);
-        commandFields.add(COUNT);
-        commandFields.add(NAME_MODIFYING_UL);
-        commandFields.add(RESPONSE_MODIFYING_UL);
-        commandFields.add(USER_LEVEL_MODIFYING_UL);
-        commandFields.add(SCRIPT);
-        commandFields.add(ENABLED);
-        commandFields.add(DEBUG);
+    public static TableFields getTableFields() {
+        HashMap<String,String> commandFields = new HashMap<>();
+        commandFields.put(NAME, DataTypes.STRING);
+        commandFields.put(RESPONSE, DataTypes.STRING);
+        commandFields.put(EXEC_USER_LEVEL, DataTypes.STRING);
+        commandFields.put(MIN_ARGS, DataTypes.STRING);
+        commandFields.put(COUNT, DataTypes.STRING);
+        commandFields.put(NAME_MODIFYING_UL, DataTypes.STRING);
+        commandFields.put(RESPONSE_MODIFYING_UL, DataTypes.STRING);
+        commandFields.put(USER_LEVEL_MODIFYING_UL, DataTypes.STRING);
+        commandFields.put(SCRIPT, DataTypes.STRING);
+        commandFields.put(ENABLED, DataTypes.STRING);
+        commandFields.put(DEBUG, DataTypes.STRING);
 
-        return commandFields;
+        return new TableFields(commandFields, PRIMARY_KEY);
     }
+
 }

@@ -5,7 +5,7 @@ public class AccountHelper {
         Account copy = new Account();
 
         copy.setName(account.getName());
-        copy.setOauth(account.getOauth());
+        copy.setPasskey(account.getPasskey());
 
         return copy;
     }

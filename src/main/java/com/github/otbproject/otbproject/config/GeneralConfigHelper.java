@@ -32,6 +32,7 @@ public class GeneralConfigHelper {
     public static GeneralConfig getCopy(GeneralConfig config) {
         GeneralConfig copy = new GeneralConfig();
 
+        copy.setServiceName(config.getServiceName());
         copy.setPortNumber(config.getPortNumber());
         copy.setIp_binding(config.getIp_binding());
 

@@ -2,24 +2,22 @@ package com.github.otbproject.otbproject.api;
 
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.channels.Channel;
-import com.github.otbproject.otbproject.config.*;
-import com.github.otbproject.otbproject.fs.FSUtil;
+import com.github.otbproject.otbproject.commands.parser.ResponseParserUtil;
+import com.github.otbproject.otbproject.config.BotConfig;
+import com.github.otbproject.otbproject.config.BotConfigHelper;
+import com.github.otbproject.otbproject.config.ChannelConfig;
+import com.github.otbproject.otbproject.config.ChannelJoinSetting;
 import com.github.otbproject.otbproject.fs.Setup;
-import com.github.otbproject.otbproject.irc.IrcHelper;
-import com.github.otbproject.otbproject.serviceapi.ApiRequest;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
 
 public class APIChannel {
     public static boolean in(String channel) {
-        return App.bot.channels.containsKey(channel) && get(channel).isInChannel();
+        return APIBot.getBot().getChannels().containsKey(channel) && get(channel).isInChannel();
     }
     
     public static Channel get(String channel) {
-        return App.bot.channels.get(channel);
+        return APIBot.getBot().getChannels().get(channel);
     }
 
     public static boolean join(String channelName) {
@@ -34,7 +32,7 @@ public class APIChannel {
             return false;
         }
 
-        boolean isBotChannel = channelName.equals(App.bot.getNick());
+        boolean isBotChannel = channelName.equals(APIBot.getBot().getUserName());
 
         // Check whitelist/blacklist
         BotConfig botConfig = APIConfig.getBotConfig();
@@ -53,15 +51,10 @@ public class APIChannel {
             }
         }
 
-        if (checkValidChannel) {
-            File channelsDir = new File(FSUtil.dataDir() + File.separator + FSUtil.DirNames.CHANNELS);
-            // Checks that directory exists (so no null pointer), and if channel is already set up
-            // If not, does API call to check if channel is valid
-            if (    (!channelsDir.isDirectory() || !(new ArrayList<>(Arrays.asList(channelsDir.list())).contains(channelName)) )
-                    && (ApiRequest.attemptRequest("channels/" + channelName, 3, 500) == null)   ) {
-                App.logger.info("Failed to join channel: " + channelName + ". Channel does not exist.");
-                return false;
-            }
+        if (checkValidChannel && !APIBot.getBot().isChannel(channelName)) {
+           App.logger.info("Failed to join channel: " + channelName + ". Channel does not exist.");
+           return false;
+
         }
 
         try {
@@ -71,43 +64,51 @@ public class APIChannel {
             App.logger.catching(e);
             return false;
         }
-        if(App.bot.isConnected()) {
-            IrcHelper.join(channelName);
+        if(APIBot.getBot().isConnected()) {
+            if(!APIBot.getBot().isConnected(channelName)) {
+                if (!APIBot.getBot().join(channelName)) {
+                    App.logger.warn("Failed to join channel: " + channelName);
+                    return false;
+                }
+            }else{
+                App.logger.error("Already in the channel: "+ channelName);
+            }
         } else{
-            App.logger.error("Not connected to Twitch");
+            App.logger.error("Not connected to " + ResponseParserUtil.wordCap(APIConfig.getGeneralConfig().getServiceName().toString(), true));
             return false;
         }
         Channel channel;
-        if (!App.bot.channels.containsKey(channelName)) {
+        if (!APIBot.getBot().getChannels().containsKey(channelName)) {
             ChannelConfig channelConfig = APIConfig.readChannelConfig(channelName);
             channel = new Channel(channelName, channelConfig);
-            App.bot.channels.put(channelName, channel);
+            APIBot.getBot().getChannels().put(channelName, channel);
         } else {
             channel = get(channelName);
         }
         if (!channel.join()) {
-            App.logger.error("Failed to join channel '" + channelName + "' internally. Parting in IRC.");
-            IrcHelper.part(channelName);
+            App.logger.error("Failed to join channel '" + channelName + "' internally. Disconnecting from remote channel.");
+            APIBot.getBot().leave(channelName);
             return false;
         }
         if (!isBotChannel) {
             BotConfigHelper.addToCurrentChannels(botConfig, channelName);
             APIConfig.writeBotConfig();
         }
+        App.logger.info("Succssfully joined channel: "+channelName);
         return true;
     }
 
     public static void leave(String channelName) {
         channelName = channelName.toLowerCase();
-        if (!in(channelName) || channelName.equals(App.bot.getNick())) {
+        if (!in(channelName) || channelName.equals(APIBot.getBot().getUserName())) {
             App.logger.debug("In channel: " + in(channelName));
-            App.logger.debug("Bot channel: " + channelName.equals(App.bot.getNick()));
+            App.logger.debug("Bot channel: " + channelName.equals(APIBot.getBot().getUserName()));
             return;
         }
         App.logger.info("Leaving channel: " + channelName);
         get(channelName).leave();
         BotConfigHelper.removeFromCurrentChannels(APIConfig.getBotConfig(), channelName);
         APIConfig.writeBotConfig();
-        IrcHelper.part(channelName);
+        APIBot.getBot().leave(channelName);
     }
 }

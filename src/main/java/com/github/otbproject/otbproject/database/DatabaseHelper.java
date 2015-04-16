@@ -2,24 +2,27 @@ package com.github.otbproject.otbproject.database;
 
 import com.github.otbproject.otbproject.commands.AliasFields;
 import com.github.otbproject.otbproject.commands.CommandFields;
-import com.github.otbproject.otbproject.fs.FSUtil;
+import com.github.otbproject.otbproject.quotes.QuoteFields;
 import com.github.otbproject.otbproject.users.UserFields;
 
-import java.io.File;
 import java.util.HashMap;
-import java.util.HashSet;
 
 public class DatabaseHelper {
     /**
      * @return a HashMap used to create all the tables by the DatabaseWrapper.
      * Tables are hard-coded into the method.
      */
-    public static HashMap<String, HashSet<String>> getTablesHashMap() {
-        HashMap<String, HashSet<String>> tables = new HashMap<>();
-        tables.put(CommandFields.TABLE_NAME, CommandFields.getTableHashSet());
-        tables.put(AliasFields.TABLE_NAME, AliasFields.getTableHashSet());
-        tables.put(UserFields.TABLE_NAME, UserFields.getTableHashSet());
+    public static HashMap<String, TableFields> getMainTablesHashMap() {
+        HashMap<String, TableFields> tables = new HashMap<>();
+        tables.put(CommandFields.TABLE_NAME, CommandFields.getTableFields());
+        tables.put(AliasFields.TABLE_NAME, AliasFields.getTableFields());
+        tables.put(UserFields.TABLE_NAME, UserFields.getTableFields());
+        return tables;
+    }
 
+    public static HashMap<String, TableFields> getQuoteTablesHashMap() {
+        HashMap<String, TableFields> tables = new HashMap<>();
+        tables.put(QuoteFields.TABLE_NAME, QuoteFields.getTableFields());
         return tables;
     }
 }

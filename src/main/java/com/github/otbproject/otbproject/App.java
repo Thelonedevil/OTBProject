@@ -1,32 +1,31 @@
 package com.github.otbproject.otbproject;
 
+import com.github.otbproject.otbproject.api.APIBot;
 import com.github.otbproject.otbproject.api.APIConfig;
+import com.github.otbproject.otbproject.beam.BeamBot;
+import com.github.otbproject.otbproject.bot.BotRunnable;
 import com.github.otbproject.otbproject.cli.ArgParser;
 import com.github.otbproject.otbproject.cli.commands.CmdParser;
 import com.github.otbproject.otbproject.commands.loader.FSCommandLoader;
-import com.github.otbproject.otbproject.config.Account;
-import com.github.otbproject.otbproject.config.BotConfig;
-import com.github.otbproject.otbproject.config.GeneralConfig;
-import com.github.otbproject.otbproject.eventlistener.IrcListener;
+import com.github.otbproject.otbproject.config.*;
 import com.github.otbproject.otbproject.fs.FSUtil;
 import com.github.otbproject.otbproject.fs.Setup;
 import com.github.otbproject.otbproject.gui.Window;
+import com.github.otbproject.otbproject.irc.IRCBot;
+import com.github.otbproject.otbproject.util.InputParserImproved;
 import com.github.otbproject.otbproject.util.UnPacker;
 import com.github.otbproject.otbproject.util.VersionClass;
-import com.github.otbproject.otbproject.util.dev.DevHelper;
+import com.github.otbproject.otbproject.util.compat.VersionCompatHelper;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.ParseException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
-import org.pircbotx.Configuration;
-import org.pircbotx.exception.IrcException;
-import org.pircbotx.hooks.Listener;
 
 import java.awt.*;
 import java.io.*;
 import java.lang.management.ManagementFactory;
-import java.nio.charset.Charset;
+import java.lang.reflect.Field;
 import java.util.Scanner;
 
 /**
@@ -36,10 +35,7 @@ public class App {
     public static final String PID = ManagementFactory.getRuntimeMXBean().getName().split("@")[0];
     public static final Logger logger = LogManager.getLogger();
     public static final String VERSION = new VersionClass().getVersion();
-    public static CustomBot bot;
-    public static Thread botThread;
-    public static Runnable botRunnable;
-    static Listener listener = new IrcListener();
+    public static final ConfigManager configManager = new ConfigManager();
 
     public static void main(String[] args) {
         try {
@@ -63,7 +59,8 @@ public class App {
     }
 
 
-    public static void doMain(String[] args) {
+
+    public static void doMain(String[] args) throws NoSuchFieldException, IllegalAccessException {
         CommandLine cmd;
         try {
             cmd = ArgParser.parse(args);
@@ -132,6 +129,9 @@ public class App {
             App.logger.catching(e);
         }
         if (cmd.hasOption(ArgParser.Opts.UNPACK) || (!VERSION.contains("SNAPSHOT") && !VERSION.equalsIgnoreCase(version))) {
+            if (!VERSION.equalsIgnoreCase(version)) {
+                VersionCompatHelper.fixCompatIssues(VERSION, version);
+            }
             UnPacker.unPack("preloads/json/commands/", FSUtil.commandsDir() + File.separator + "all-channels" + File.separator + "to-load");
             UnPacker.unPack("preloads/json/aliases/", FSUtil.aliasesDir() + File.separator + "all-channels" + File.separator + "to-load");
             UnPacker.unPack("preloads/json/bot-channel/commands/", FSUtil.commandsDir() + File.separator + "bot-channel" + File.separator + "to-load");
@@ -144,53 +144,34 @@ public class App {
             App.logger.catching(e);
         }
 
+        // TODO remove in later release
+        // Must be done after version check for version 1.1 so the compatibility fix will work
+        Setup.createAccountFiles();
 
-        FSCommandLoader.LoadCommands();
-        FSCommandLoader.LoadAliases();
-        FSCommandLoader.LoadBotCommands();
-        FSCommandLoader.LoadBotAliases();
+        // Perform various startup actions
+        startup(cmd);
 
-        // TODO remove before release
-        DevHelper.run(args);
-
-        // Load configs
-        Account account;
-        if (cmd.hasOption(ArgParser.Opts.ACCOUNT_FILE)) {
-            account = APIConfig.readAccount(cmd.getOptionValue(ArgParser.Opts.ACCOUNT_FILE));
-        } else {
-            account = APIConfig.readAccount();
+        // Connect to service
+        switch (APIConfig.getGeneralConfig().getServiceName()){
+            case TWITCH:
+                APIBot.setBot(new IRCBot());
+                Class c = APIBot.getBot().getClass().getSuperclass();
+                Field input = c.getDeclaredField("inputParser");
+                input.setAccessible(true);
+                input.set(APIBot.getBot(), new InputParserImproved((IRCBot) APIBot.getBot()));
+                break;
+            case BEAM:
+                APIBot.setBot(new BeamBot());
+                break;
         }
-        GeneralConfig generalConfig = APIConfig.readGeneralConfig();
-        BotConfig botConfig = APIConfig.readBotConfig();
-
-        // Get account info
-        if (cmd.hasOption(ArgParser.Opts.ACCOUNT)) {
-            account.setName(cmd.getOptionValue(ArgParser.Opts.ACCOUNT));
-        }
-        if (cmd.hasOption(ArgParser.Opts.OAUTH)) {
-            account.setOauth(cmd.getOptionValue(ArgParser.Opts.OAUTH));
-        }
-        APIConfig.writeAccount(account);
-
-        //TODO get botname and oauth from config asell as possible server address and port
-        Configuration.Builder configurationBuilder = new Configuration.Builder().setName(account.getName()).setAutoNickChange(false).setCapEnabled(false).addListener(listener).setServerHostname("irc.twitch.tv")
-                .setServerPort(6667).setServerPassword(account.getOauth()).setEncoding(Charset.forName("UTF-8"));
-        Configuration configuration = configurationBuilder.buildConfiguration();
-
-        logger.info("Bot configuration built");
-        bot = new CustomBot(configuration);
-
-        // Store configs
-        bot.configManager.setAccount(account);
-        bot.configManager.setGeneralConfig(generalConfig);
-        bot.configManager.setBotConfig(botConfig);
-        botRunnable = new BotRunnable();
-        botThread = new Thread(botRunnable);
-        botThread.start();
+        APIBot.setBotRunnable(new BotRunnable());
+        APIBot.setBotThread(new Thread(APIBot.getBotRunnable()));
+        APIBot.getBotThread().start();
 
         if (!GraphicsEnvironment.isHeadless()) {
             Window gui = new Window();// I know this variable "gui" is never used, that is just how it works okay.
         }
+
         Scanner scanner = new Scanner(System.in);
         scanner.useDelimiter("\n");
         while (scanner.hasNext()) {
@@ -201,17 +182,50 @@ public class App {
         scanner.close();
     }
 
-    public static class BotRunnable implements Runnable {
-        @Override
-        public void run() {
-            try {
-                Thread.currentThread().setName("Main Bot");
-                logger.info("Bot Started");
-                bot.startBot();
-                logger.info("Bot Stopped");
-            } catch (IOException | IrcException e) {
-                logger.catching(e);
+    public static void startup(CommandLine cmd) {
+        // Load commands and aliases
+        FSCommandLoader.LoadCommands();
+        FSCommandLoader.LoadAliases();
+        FSCommandLoader.LoadBotCommands();
+        FSCommandLoader.LoadBotAliases();
+
+        loadConfigs(cmd);
+    }
+
+    public static void loadConfigs(CommandLine cmd) {
+        // General config
+        GeneralConfig generalConfig = APIConfig.readGeneralConfig(); // Must be read first for service info
+        configManager.setGeneralConfig(generalConfig);
+        if (cmd.hasOption(ArgParser.Opts.SERVICE)) {
+            String serviceName = cmd.getOptionValue(ArgParser.Opts.SERVICE).toUpperCase();
+            if (serviceName.equals(ServiceName.TWITCH.toString())) {
+                APIConfig.getGeneralConfig().setServiceName(ServiceName.TWITCH);
+            } else if (serviceName.equals(ServiceName.BEAM.toString())) {
+                APIConfig.getGeneralConfig().setServiceName(ServiceName.BEAM);
+            } else {
+                App.logger.error("Invalid service name: " + serviceName);
+                ArgParser.printHelp();
+                System.exit(1);
             }
+            APIConfig.writeGeneralConfig();
         }
+
+        // Account config
+        if (cmd.hasOption(ArgParser.Opts.ACCOUNT_FILE)) {
+            APIConfig.setAccountFileName(cmd.getOptionValue(ArgParser.Opts.ACCOUNT_FILE));
+        }
+        Account account = APIConfig.readAccount();
+        if (cmd.hasOption(ArgParser.Opts.ACCOUNT)) {
+            account.setName(cmd.getOptionValue(ArgParser.Opts.ACCOUNT));
+        }
+        if (cmd.hasOption(ArgParser.Opts.PASSKEY)) {
+            account.setPasskey(cmd.getOptionValue(ArgParser.Opts.PASSKEY));
+        }
+        configManager.setAccount(account);
+        APIConfig.writeAccount();
+
+        // Bot config
+        BotConfig botConfig = APIConfig.readBotConfig();
+        configManager.setBotConfig(botConfig);
     }
 }

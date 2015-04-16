@@ -1,6 +1,7 @@
 package com.github.otbproject.otbproject.messages.receive;
 
 import com.github.otbproject.otbproject.App;
+import com.github.otbproject.otbproject.api.APIBot;
 import com.github.otbproject.otbproject.api.APIChannel;
 import com.github.otbproject.otbproject.api.APIConfig;
 import com.github.otbproject.otbproject.channels.Channel;
@@ -26,7 +27,7 @@ public class ChannelMessageReceiver implements Runnable {
     public ChannelMessageReceiver(Channel channel, MessageReceiveQueue queue) {
         this.channel = channel;
         this.queue = queue;
-        inBotChannel = this.channel.getName().equals(App.bot.getNick());
+        inBotChannel = this.channel.getName().equals(APIBot.getBot().getUserName());
     }
 
     public void run() {
@@ -47,7 +48,7 @@ public class ChannelMessageReceiver implements Runnable {
                 } else {
                     internal = false;
                     destChannel = APIChannel.get(packagedMessage.getDestinationChannel());
-                    if (destChannel == null) {
+                    if (destChannel == null || !APIChannel.in(destChannelName)) {
                         App.logger.warn("Attempted to process message to be sent in channel in which bot is not listening: " + destChannelName);
                         continue;
                     }
@@ -55,7 +56,7 @@ public class ChannelMessageReceiver implements Runnable {
 
                 // Process commands for bot channel
                 if (inBotChannel) {
-                    DatabaseWrapper db = App.bot.getBotDB();
+                    DatabaseWrapper db = APIBot.getBot().getBotDB();
                     UserLevel ul = packagedMessage.getUserLevel();
                     ProcessedMessage processedMsg = MessageProcessor.process(db, packagedMessage.getMessage(), channelName, user, ul, true);
                     if (processedMsg.isScript() || !processedMsg.getResponse().isEmpty()) {
@@ -71,7 +72,7 @@ public class ChannelMessageReceiver implements Runnable {
                 }
 
                 // Process commands not as bot channel
-                DatabaseWrapper db = channel.getDatabaseWrapper();
+                DatabaseWrapper db = channel.getMainDatabaseWrapper();
                 UserLevel ul = packagedMessage.getUserLevel();
                 ProcessedMessage processedMsg = MessageProcessor.process(db, packagedMessage.getMessage(), channelName, user, ul, channel.getConfig().isDebug());
 
@@ -108,7 +109,7 @@ public class ChannelMessageReceiver implements Runnable {
                 new InternalMessageSender(destinationChannelName.replace(InternalMessageSender.DESTINATION_PREFIX, ""), messageOut.getMessage()).sendMessage();
             }
             // If queue rejects message because it's too full, return
-            else if (!destinationChannel.sendQueue.add(messageOut)) {
+            else if (!APIChannel.in(destinationChannelName) || !destinationChannel.sendQueue.add(messageOut)) {
                 return;
             }
         }

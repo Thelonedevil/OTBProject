@@ -4,6 +4,7 @@ import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.api.APIDatabase;
 import com.github.otbproject.otbproject.config.ChannelConfig;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
+import com.github.otbproject.otbproject.database.SQLiteQuoteWrapper;
 import com.github.otbproject.otbproject.messages.receive.ChannelMessageReceiver;
 import com.github.otbproject.otbproject.messages.receive.MessageReceiveQueue;
 import com.github.otbproject.otbproject.messages.send.ChannelMessageSender;
@@ -19,7 +20,8 @@ public class Channel {
     public final BlockingHashSet subscriberStorage = new BlockingHashSet();
     private final String name;
     private ChannelConfig config;
-    private DatabaseWrapper db;
+    private DatabaseWrapper mainDb;
+    private SQLiteQuoteWrapper quoteDb;
     private ChannelMessageSender messageSender;
     private Thread messageSenderThread;
     private ChannelMessageReceiver messageReceiver;
@@ -33,11 +35,21 @@ public class Channel {
     }
 
     public boolean join() {
-        db = APIDatabase.getChannelMainDatabase(name);
-        if (db == null) {
-            App.logger.error("Unable to get database for channel: " + name);
+        mainDb = APIDatabase.getChannelMainDatabase(name);
+        if (mainDb == null) {
+            App.logger.error("Unable to get main database for channel: " + name);
             return false;
         }
+
+        quoteDb = APIDatabase.getChannelQuoteDatabase(name);
+        if (quoteDb == null) {
+            App.logger.error("Unable to get quote database for channel: " + name);
+            return false;
+        }
+
+        // Just in case a message got added after queue was emptied in a leave() call due to bad thread timing
+        sendQueue.clear();
+        receiveQueue.clear();
 
         messageSender = new ChannelMessageSender(this, sendQueue);
         messageSenderThread = new Thread(messageSender);
@@ -69,7 +81,7 @@ public class Channel {
         userCooldownSet.clear();
         subscriberStorage.clear();
 
-        db = null;
+        mainDb = null;
     }
 
     public String getName() {
@@ -80,8 +92,12 @@ public class Channel {
         return inChannel;
     }
 
-    public DatabaseWrapper getDatabaseWrapper() {
-        return db;
+    public DatabaseWrapper getMainDatabaseWrapper() {
+        return mainDb;
+    }
+
+    public SQLiteQuoteWrapper getQuoteDatabaseWrapper() {
+        return quoteDb;
     }
 
     public ChannelConfig getConfig() {
