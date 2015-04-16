@@ -22,9 +22,9 @@ layout: markdown
    - [Other Notes](#other-notes)
 
 ## Version
-Version 1.0
+Version 1.1
 
-Corresponds to release 1.0.0
+Corresponds to release 1.1.0
 
 ## Tutorial
 
