@@ -34,10 +34,11 @@ layout: markdown
 
 ## Version
 
-Version 0.1.0
+Version 0.2.0
 
-#### Changelog
+### Changelog
 
+* 0.2.0 - Changed field name for account. Added field to general config.
 * 0.1.0 - Account, general config, bot config, and channel config documentation added
 
 ## Warning
@@ -48,14 +49,14 @@ Additionally, you should not modify configuration files while the bot is running
 
 ## Account
 
-#### Path
+### Path
 
 The account configuration file can be found at:
 ```
 .otbproject/config/account.json
 ```
 
-#### Sample Account Configuration File
+### Sample Account Configuration File
 
 ```json
 {
@@ -64,7 +65,7 @@ The account configuration file can be found at:
 }
 ```
 
-#### Fields
+### Fields
 
 | Field | Description |
 |:-----------|:------------|
@@ -73,14 +74,14 @@ The account configuration file can be found at:
 
 ## General Config
 
-#### Path
+### Path
 
 The general configuration file can be found at:
 ```
 .otbproject/config/general-config.json
 ```
 
-#### Sample General Configuration File
+### Sample General Configuration File
 
 ```json
 {
@@ -91,7 +92,7 @@ The general configuration file can be found at:
 }
 ```
 
-#### Fields
+### Fields
 
 | Field | Description |
 |:-----------|:------------|
@@ -102,14 +103,14 @@ The general configuration file can be found at:
 
 ## Bot Config
 
-#### Path
+### Path
 
 The bot configuration file can be found at:
 ```
 .otbproject/data/bot-channel/bot-config.json
 ```
 
-#### Sample Bot Configuration File
+### Sample Bot Configuration File
 
 ```json
 {
@@ -121,7 +122,7 @@ The bot configuration file can be found at:
 }
 ```
 
-#### Fields
+### Fields
 
 | Field | Description |
 |:-----------|:------------|
@@ -133,14 +134,14 @@ The bot configuration file can be found at:
 
 ## Channel Config
 
-#### Path
+### Path
 
 The configuration file for a given channel can be found at:
 ```
 .otbproject/data/channels/<channel name>/config.json
 ```
 
-#### Sample Channel Configuration File
+### Sample Channel Configuration File
 
 ```json
 {
@@ -164,7 +165,7 @@ The configuration file for a given channel can be found at:
 }
 ```
 
-#### Fields
+### Fields
 
 | Field | Description |
 |:-----------|:------------|
@@ -174,7 +175,7 @@ The configuration file for a given channel can be found at:
 |`enabled`|Whether or not the bot is enabled. Set to `true` to enable.|
 |`queueLimits`|The number of messages queued to be sent in a channel after which messages of a given priority will be dropped (they will not be queued). See the table below.|
 
-##### userCooldowns
+#### userCooldowns
 
 | Field | Description |
 |:-----------|:------------|
@@ -186,7 +187,7 @@ The configuration file for a given channel can be found at:
 |`ul_subscriber`|The time (in seconds) after a user of the user level 'Subscriber' runs a command before they can run another command.|
 |`ul_default`|The time (in seconds) after a user of the user level 'Default' runs a command before they can run another command.|
 
-##### queueLimits
+#### queueLimits
 
 | Field | Description |
 |:-----------|:------------|
