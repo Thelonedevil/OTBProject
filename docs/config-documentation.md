@@ -2,6 +2,9 @@
 title: Config Documentation
 layout: markdown
 ---
+
+{% raw %}
+
 # OTB Project Documentation
 
 ### Understanding and Modifying Configuration Files
@@ -190,3 +193,5 @@ The configuration file for a given channel can be found at:
 |`highPriorityLimit`|The number of messages queued to be sent in a channel after which messages of the priority 'High' will be dropped (they will not be queued).|
 |`defaultPriorityLimit`|The number of messages queued to be sent in a channel after which messages of the priority 'Default' will be dropped (they will not be queued).|
 |`lowPriorityLimit`|The number of messages queued to be sent in a channel after which messages of the priority 'Low' will be dropped (they will not be queued).|
+
+{% endraw %}

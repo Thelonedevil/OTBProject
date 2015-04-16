@@ -3,6 +3,8 @@ title: Chat Documentation
 layout: markdown
 ---
 
+{% raw %}
+
 # OTB Project Documentation
 
 ### Interacting with a Bot in Chat
@@ -30,7 +32,7 @@ layout: markdown
 
 Version 0.2.0
 
-#### Changelog
+### Changelog
 
 * 0.2.0
   - Release 1.0.0
@@ -48,7 +50,7 @@ Version 0.2.0
 
 Commands are words which the bot will respond to if they are the first word in a message. Commands often start with an exclamation mark, such as `!example`, but they can be any string of characters without a space in them. Some commands can tell the bot to perform an action, instead of just printing a message in response; these are known as "script commands".
 
-#### Built-in Channel Commands
+### Built-in Channel Commands
 
 Each channel by default has script commands to add and remove commands and aliases, as well as script commands to do several other things. The built-in channel script commands are below. Flags and user levels are covered later.
 
@@ -105,7 +107,7 @@ The bot's channel has its own script commands to perform actions specific to the
 |`!blacklist` `remove`||`<channel>`|Removes the specified channel from the whitelist of channels which may not be joined.|
 |`!blacklist` `list`|||Lists the channels in the channel join blacklist.|
 
-#### Flags
+### Flags
 
 Flags are optional arguments for a command which give more control over what the command does or how it executes. Any flags mentioned above are listed here.
 
@@ -114,7 +116,7 @@ Flags are optional arguments for a command which give more control over what the
 |`ul`|`--ul=<option>`|A user level marker as described in the table below|Specifies the minimum user level required to execute a command.|
 |`ma`|`--ma=<option>`|An integer greater than 0|Specifies the minimum number of arguments with which a command must be run.|
 
-#### User Levels
+### User Levels
 
 The following are valid user levels to use with the `ul` flag.
 
@@ -136,13 +138,13 @@ Additionally, there is the user level 'Ignored', which can be used with `!assign
 
 The user levels 'Subscriber', 'Moderator', and 'Broadcaster' cannot be assigned using `!assignUserLevel` because they are user properties determined by Twitch.
 
-#### Aliases
+### Aliases
 
 An alias is a word which represents another word or group of words. Like commands, aliases are only processed by the bot if they are the first word of a message. However, an alias can expand into a command and parameters for the command, to make running certain commands easier. If an alias expands to something which is not a command, it won't do anything.
 
 Aliases will not loop; they will only be expanded once. For example, if you alias `!foo` to `!bar` and `!bar` to `!foo test`, it will process the message `!foo example` into `!foo test example`, and then check if `!foo` is a command to run.
 
-#### Built-in Aliases
+### Built-in Aliases
 
 | Alias | Command |
 |:------|:--------|
@@ -165,7 +167,7 @@ Aliases will not loop; they will only be expanded once. For example, if you alia
 |`!disable-bot`|`!bot-enable-meta false`|
 |`!quotes`|`!quote`|
 
-#### Command Responses
+### Command Responses
 
 Because script commands can have multiple outcomes, they send responses to chat as commands, not directly as messages. The commands which they use to respond are listed below. You can change the responses of the commands below to customize the responses of script commands. For example, if you don't like what the bot says when it creates a command, you can change it by changing the response to `~%command.set.success`.
 
@@ -210,11 +212,11 @@ Because script commands can have multiple outcomes, they send responses to chat 
 |`~%quote.remove.success`|Successfully removed a quote.|Removed quote with ID '[[arg1]]'.|
 |`~%quote.does.not.exist`|Some opperation could not be performed because the provided quote does not exist.|No such quote [[args]].|
 
-##Special Terms
+## Special Terms
 
 There are some special terms which can be used when creating a command to create a response which varies depending on how the command is run. Each special term is replaced by some value, as described in the following table. Some examples of special term usage are shown at the end of the section.
 
-####Terms
+### Terms
 
 | Term | Description |
 |:-----|:------------|
@@ -229,7 +231,7 @@ There are some special terms which can be used when creating a command to create
 |`[[service]]`|The name of the service the bot is connected to ("Twitch" or "Beam").|
 |`[[game]]`|The name of the game being played (as listed above the stream). Not yet implemented.|
 
-####Modifiers
+### Modifiers
 
 Modifiers can be used to modify the string with which the term is replaced. Modifiers are used in the following format:
 
@@ -249,7 +251,7 @@ The modifiers are described in the following table.
 |`first_cap_soft`|The first letter of the string is made uppercase. All other letters are not changed.|
 |`word_cap_soft`|The first letter of each word (separated by a space)  in the string is made uppercase. All other letters are not changed. Identical to `first_cap_soft` for anything which is a single word (e.g. `[[user]]`, `[[argN]]`).|
 
-####Embedded Strings
+### Embedded Strings
 
 Some terms can contain embedded strings. The `{{default}}` in the `[[args]]` and `[[argN]]` terms is an example of an embedded string. Embedded strings are surrounded by `{{` and `}}`. Embedded strings can be useful for providing more information or options for a term, and are used extensively in more advanced and versatile terms.
 
@@ -264,11 +266,11 @@ The following are terms which are significantly more useful when given embedded 
 |`[[foreach{{prepend}}{{append}}]]`|For each argument provided, prints the string specified as `prepend`, the argument, and then the string specified as `append`. If a modifier (described later) is used, it is applied to each argument (but not to `prepend` or `append`). If only one string is provided, it is `prepend`. If both are left out, the arguments are printed unmodified (and without spaces).|
 |`[[equal{{compare1}}{{compare2}}{{same}}{{different}}]]`|If the first two embedded strings are the same, then it prints the third embedded string. If not, it prints the fourth embedded string. Not particularly useful if neither of the first two embedded strings are a term.|
 
-####Examples
+### Examples
 
 Here are some examples of special terms and modifiers:
 
-**Commands**
+#### Commands
 
 | Name | Response |
 |:-----|:---------|
@@ -288,7 +290,7 @@ Here are some examples of special terms and modifiers:
 |!ifargs|A secret message appears if you run this command with args.[[ifargs{{ I mean, I suppose it's a secret, but it's not a very interesting one :P}}]]|
 |!ifarg2|More args are [[ifarg2{{not }}]]needed. You need[[ifarg2{{ed}}]] 2 args.|
 
-**Running the commands in chat**
+#### Running the commands in chat
 
 All commands are run by a user named “fred” and responded to by a bot named “Bot” in the channel "the_lone_devil".
 
@@ -328,3 +330,5 @@ All commands are run by a user named “fred” and responded to by a bot named 
 |fred: !ifarg2|Bot: More args are needed. You need 2 args.|
 |fred: !ifarg2 one|Bot: More args are needed. You need 2 args.|
 |fred: !ifarg2 one two|Bot: More args are not needed. You needed 2 args.|
+
+{% endraw %}
