@@ -119,7 +119,7 @@ public class BeamBot implements IBot {
         while(!beamChannels.isEmpty()){
             try {
                 Thread.sleep(200);
-            } catch (InterruptedException e) {
+            } catch (InterruptedException ignored) {
             }
         }
     }
@@ -132,8 +132,9 @@ public class BeamBot implements IBot {
 
     @Override
     public boolean leave(String channelName) {
-        beamChannels.remove(channelName);
-        beamChannels.get(channelName).beamChatConnectable.close();
+        if (beamChannels.containsKey(channelName)) {
+            beamChannels.remove(channelName).beamChatConnectable.close();
+        }
         return !beamChannels.containsKey(channelName);
     }
 
