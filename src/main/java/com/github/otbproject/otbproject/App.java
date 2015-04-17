@@ -26,6 +26,9 @@ import java.awt.*;
 import java.io.*;
 import java.lang.management.ManagementFactory;
 import java.lang.reflect.Field;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Scanner;
 
 /**
@@ -46,7 +49,9 @@ public class App {
                 t.printStackTrace();
                 System.err.println("Attempting to log problem.");
                 // log throwable
-                File file = new File("OTBProjectFatal.log");
+                DateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd-HH.mm.ss");
+                Date date = new Date();
+                File file = new File("OTBProjectFatal-"+dateFormat.format(date)+".log");
                 file.createNewFile();
                 PrintStream ps = new PrintStream(file);
                 t.printStackTrace(ps);
