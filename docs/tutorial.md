@@ -24,7 +24,7 @@ layout: markdown
 ## Version
 Version 2.0
 
-Corresponds to release 1.1.0
+Corresponds to release 1.1.x
 
 ## Tutorial
 

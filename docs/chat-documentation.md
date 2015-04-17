@@ -33,7 +33,11 @@ layout: markdown
 Version 0.2.0
 
 ### Changelog
-
+* 0.3.0
+  - Release 1.1.1
+  - Added more special terms
+  - Added commands relating to quotes
+  - Added `!at` command
 * 0.2.0
   - Release 1.0.0
   - Added descriptions of aliases and script commands that come with release
@@ -91,7 +95,7 @@ Additionally, there is also a `!getQuote` command which does not run a script. T
 |:--------|:---------|:-------|
 |`!getQuote`|[[quote{{[[arg1]]}}]]|Moderator|
 
-#### Built-in Bot-Channel Commands
+### Built-in Bot-Channel Commands
 
 The bot's channel has its own script commands to perform actions specific to the bot, such as joining channels. With the exception of the `!at` and `!join` commands, which can be run by any user, commands in the bot's channel can only be run by users with a user level of super-moderator or higher. The built-in bot-channel script commands are below.
 
