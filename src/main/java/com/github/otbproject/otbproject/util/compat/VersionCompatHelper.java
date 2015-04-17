@@ -8,6 +8,9 @@ import java.io.File;
 
 public class VersionCompatHelper {
     public static void fixCompatIssues(String currentVersion, String oldVersion) {
+        if (oldVersion == null) {
+            return;
+        }
         if (currentVersion.startsWith("1.1") && oldVersion.startsWith("1.0")) {
             fix1dot0To1dot1();
         }

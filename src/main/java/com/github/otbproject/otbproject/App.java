@@ -75,6 +75,11 @@ public class App {
             return;
         }
 
+        if (cmd.hasOption(ArgParser.Opts.VERSION)) {
+            System.out.println("OTBProject version " + VERSION);
+            return;
+        }
+
         if (cmd.hasOption(ArgParser.Opts.BASE_DIR)) {
             String path = cmd.getOptionValue(ArgParser.Opts.BASE_DIR);
             if (new File(path).isDirectory()) {

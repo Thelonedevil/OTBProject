@@ -16,6 +16,9 @@ public class ArgParser {
 
         options.addOption(Opts.HELP_SHORT, Opts.HELP, false, "Prints this help message and exits");
 
+        options.addOption(Opts.VERSION_SHORT, Opts.VERSION, false, "Prints the version and exits");
+
+
         // --base-dir=
         OptionBuilder.withLongOpt(Opts.BASE_DIR);
         OptionBuilder.withDescription("The directory in which to find or create a '.otbproject' directory");
@@ -78,5 +81,7 @@ public class ArgParser {
         public static final String DEBUG = "debug";
         public static final String UNPACK = "unpack";
         public static final String SERVICE = "service";
+        public static final String VERSION = "version";
+        public static final String VERSION_SHORT = "v";
     }
 }
