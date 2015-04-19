@@ -123,7 +123,7 @@ public class ChannelMessageReceiver implements Runnable {
         }
 
         // Skip cooldowns if bot channel or internal
-        if (inBotChannel || internal) {
+        if (inBotChannel || (destinationChannelName.equals(APIBot.getBot().getUserName())) || internal) {
             return;
         }
 
