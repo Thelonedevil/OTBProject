@@ -88,7 +88,12 @@ public class BeamBot implements IBot {
 
     @Override
     public boolean isUserMod(String channel, String user) {
-        String path = BeamAPI.BASE_PATH.resolve("chats/"+beamChannels.get(getUserName()).channel.id+"/users").toString();
+        BeamChatChannel beamChatChannel = beamChannels.get(channel);
+        if (beamChatChannel == null) {
+            return false;
+        }
+
+        String path = BeamAPI.BASE_PATH.resolve("chats/"+beamChatChannel.channel.id+"/users").toString();
         try {
             BeamChatUser[] users = beam.http.get(path,BeamChatUser[].class , new HashMap<>()).get();
             for (BeamChatUser beamChatUser : users) {
