@@ -15,6 +15,7 @@ import java.util.Iterator;
 
 public class CommandProcessor {
     public static ProcessedCommand process(DatabaseWrapper db, String message, String channel, String user, UserLevel userLevel, boolean debug) {
+        message = message.trim();
         String commandMsg = checkAlias(db, message);
         return checkCommand(db, commandMsg, channel, user, userLevel, debug);
     }
