@@ -30,8 +30,8 @@ public class Channel {
     private Thread messageSenderThread;
     private ChannelMessageReceiver messageReceiver;
     private Thread messageReceiverThread;
-    private Scheduler scheduler;
-    private Scheduler longScheduler;
+    private final Scheduler scheduler = new Scheduler();
+    private final Scheduler longScheduler = new Scheduler();
     private final HashMap<String,ScheduledFuture> scheduledCommands = new HashMap<>();
     private final HashMap<String,ScheduledFuture> hourlyResetSchedules = new HashMap<>();
     private boolean inChannel;
