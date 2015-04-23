@@ -18,11 +18,8 @@ public class APISchedule {
         APIChannel.get(channel).getScheduledCommands().put(command, APIChannel.get(channel).getScheduler().schedule(task, delay, period, TimeUnit.SECONDS));
         if (hourReset){
             Runnable reset  = new ResetTask(channel,command,delay,period,TimeUnit.SECONDS);
-            Date date = new Date();
-            Calendar calendar = GregorianCalendar.getInstance();
-            calendar.setTime(date);
-            int delay1 = 60 - calendar.get(Calendar.MINUTE);
-            APIChannel.get(channel).getHourlyResetSchedules().put(command,APIChannel.get(channel).getLongScheduler().schedule(reset,delay1,1,TimeUnit.HOURS));
+
+            APIChannel.get(channel).getHourlyResetSchedules().put(command,APIChannel.get(channel).getLongScheduler().schedule(reset,getMinutesTillTheHour(),1,TimeUnit.HOURS));
         }
     }
     public static void scheduleCommandInMinutes(String channel, String command, long delay,long period, boolean hourReset){
@@ -30,11 +27,7 @@ public class APISchedule {
         APIChannel.get(channel).getScheduledCommands().put(command, APIChannel.get(channel).getScheduler().schedule(task, delay, period, TimeUnit.MINUTES));
         if (hourReset){
             Runnable reset  = new ResetTask(channel,command,delay,period,TimeUnit.MINUTES);
-            Date date = new Date();
-            Calendar calendar = GregorianCalendar.getInstance();
-            calendar.setTime(date);
-            int delay1 = 60 - calendar.get(Calendar.MINUTE);
-            APIChannel.get(channel).getHourlyResetSchedules().put(command,APIChannel.get(channel).getLongScheduler().schedule(reset,delay1,1,TimeUnit.HOURS));
+            APIChannel.get(channel).getHourlyResetSchedules().put(command,APIChannel.get(channel).getLongScheduler().schedule(reset,getMinutesTillTheHour(),1,TimeUnit.HOURS));
         }
     }
     public static void scheduleCommandInHours(String channel, String command, long delay,long period){
@@ -47,5 +40,12 @@ public class APISchedule {
         if (APIChannel.get(channel).getHourlyResetSchedules().containsKey(command)){
             APIChannel.get(channel).getHourlyResetSchedules().get(command).cancel(false);
         }
+    }
+
+    public static int getMinutesTillTheHour(){
+        Date date = new Date();
+        Calendar calendar = GregorianCalendar.getInstance();
+        calendar.setTime(date);
+        return 60 - calendar.get(Calendar.MINUTE);
     }
 }
