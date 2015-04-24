@@ -8,6 +8,7 @@ public class BotConfig {
     public ArrayList<String> blacklist;
     public ArrayList<String> currentChannels;
     private Integer messageSendDelayInMilliseconds;
+    private Boolean botChannelDebug;
 
     public ChannelJoinSetting getChannelJoinSetting() {
         return channelJoinSetting;
@@ -15,6 +16,14 @@ public class BotConfig {
 
     public void setChannelJoinSetting(ChannelJoinSetting channelJoinSetting) {
         this.channelJoinSetting = channelJoinSetting;
+    }
+
+    public Boolean isBotChannelDebug() {
+        return botChannelDebug;
+    }
+
+    public void setBotChannelDebug(Boolean botChannelDebug) {
+        this.botChannelDebug = botChannelDebug;
     }
 
     public Integer getMessageSendDelayInMilliseconds() {

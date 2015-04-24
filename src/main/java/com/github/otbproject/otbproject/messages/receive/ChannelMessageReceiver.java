@@ -58,7 +58,7 @@ public class ChannelMessageReceiver implements Runnable {
                 if (inBotChannel) {
                     DatabaseWrapper db = APIBot.getBot().getBotDB();
                     UserLevel ul = packagedMessage.getUserLevel();
-                    ProcessedMessage processedMsg = MessageProcessor.process(db, packagedMessage.getMessage(), channelName, user, ul, true);
+                    ProcessedMessage processedMsg = MessageProcessor.process(db, packagedMessage.getMessage(), channelName, user, ul, APIConfig.getBotConfig().isBotChannelDebug());
                     if (processedMsg.isScript() || !processedMsg.getResponse().isEmpty()) {
                         doResponse(db, processedMsg, channelName, destChannelName, destChannel, user, ul, packagedMessage.getMessagePriority(), internal);
                         // Don't process response as regular channel if done as bot channel
@@ -74,7 +74,11 @@ public class ChannelMessageReceiver implements Runnable {
                 // Process commands not as bot channel
                 DatabaseWrapper db = channel.getMainDatabaseWrapper();
                 UserLevel ul = packagedMessage.getUserLevel();
-                ProcessedMessage processedMsg = MessageProcessor.process(db, packagedMessage.getMessage(), channelName, user, ul, channel.getConfig().isDebug());
+                boolean debug = channel.getConfig().isDebug();
+                if (inBotChannel) {
+                    debug = (debug || APIConfig.getBotConfig().isBotChannelDebug());
+                }
+                ProcessedMessage processedMsg = MessageProcessor.process(db, packagedMessage.getMessage(), channelName, user, ul, debug);
 
                 // Check if bot is enabled
                 if (channel.getConfig().isEnabled() || GeneralConfigHelper.isPermanentlyEnabled(APIConfig.getGeneralConfig(), processedMsg.getCommandName())) {
