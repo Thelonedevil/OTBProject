@@ -8,6 +8,8 @@ import com.github.otbproject.otbproject.channels.Channel;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.serviceapi.ApiRequest;
 import com.github.otbproject.otbproject.util.OutputRawImproved;
+import org.isomorphism.util.TokenBucket;
+import org.isomorphism.util.TokenBuckets;
 import org.pircbotx.Configuration;
 import org.pircbotx.PircBotX;
 import org.pircbotx.output.OutputRaw;
@@ -16,6 +18,7 @@ import java.io.InterruptedIOException;
 import java.net.SocketException;
 import java.nio.charset.Charset;
 import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by justin on 05/02/2015.
@@ -24,6 +27,9 @@ public class IRCBot extends PircBotX implements IBot{
     private HashMap<String, Channel> channels = new HashMap<>();
     private final DatabaseWrapper botDB = APIDatabase.getBotDatabase();
     private final OutputRaw newOutputRaw;
+    // Should take slightly more than 30 seconds to refill 99 tokens adding 1
+    // token every 304 milliseconds
+    private final TokenBucket tokenBucket = TokenBuckets.builder().withCapacity(99).withFixedIntervalRefillStrategy(1, 304, TimeUnit.MILLISECONDS).build();
 
     @SuppressWarnings("unchecked")
     public IRCBot() {
@@ -139,17 +145,20 @@ public class IRCBot extends PircBotX implements IBot{
 
     @Override
     public void sendMessage(String channel, String message) {
+        tokenBucket.consume();
         getUserChannelDao().getChannel(getIrcChannelName(channel)).send().message(message);
     }
 
     @Override
     public boolean leave(String channel) {
+        tokenBucket.consume();
         getUserChannelDao().getChannel(getIrcChannelName(channel)).send().part();
         return !getUserChannelDao().getAllChannels().contains(getUserChannelDao().getChannel(channel));
     }
 
     @Override
     public boolean join(String channel) {
+        tokenBucket.consume();
         sendIRC().joinChannel(getIrcChannelName(channel));
         return getUserChannelDao().getAllChannels().contains(getUserChannelDao().getChannel(channel));
     }
