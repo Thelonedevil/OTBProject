@@ -54,6 +54,9 @@ public class Setup {
 
         // Scripts Directory
         createDirs(FSUtil.scriptDir());
+
+        // Scripts Libs Directory
+        createDirs(FSUtil.scriptLibsDir());
     }
 
     public static void setupChannel(String channel) throws IOException {
