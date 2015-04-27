@@ -1,5 +1,6 @@
 package com.github.otbproject.otbproject.proc;
 
+import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.commands.Alias;
 import com.github.otbproject.otbproject.commands.Command;
 import com.github.otbproject.otbproject.commands.loader.LoadedAlias;
@@ -15,6 +16,7 @@ import java.util.Iterator;
 
 public class CommandProcessor {
     public static ProcessedCommand process(DatabaseWrapper db, String message, String channel, String user, UserLevel userLevel, boolean debug) {
+        message = message.trim();
         String commandMsg = checkAlias(db, message);
         return checkCommand(db, commandMsg, channel, user, userLevel, debug);
     }
@@ -71,6 +73,7 @@ public class CommandProcessor {
         }
 
         if (Command.exists(db, cmdName)) {
+            App.logger.debug("Processing command: " + cmdName);
             LoadedCommand loadedCommand = Command.get(db, cmdName);
             if ((loadedCommand != null) && loadedCommand.isEnabled() && userLevel.getValue() >= loadedCommand.getExecUserLevel().getValue() && args.length >= loadedCommand.getMinArgs()) {
                 String scriptPath = loadedCommand.getScript();

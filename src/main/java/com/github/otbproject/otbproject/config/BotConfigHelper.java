@@ -79,6 +79,7 @@ public class BotConfigHelper {
         BotConfig copy = new BotConfig();
 
         copy.setChannelJoinSetting(config.getChannelJoinSetting());
+        copy.setBotChannelDebug(config.isBotChannelDebug());
 
         if (config.whitelist == null) {
             copy.whitelist = null;
