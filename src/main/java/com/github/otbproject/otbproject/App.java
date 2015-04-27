@@ -70,6 +70,9 @@ public class App {
         CommandLine cmd;
         try {
             cmd = ArgParser.parse(args);
+            if (cmd.hasOption(ArgParser.Opts.UNPACK) && cmd.hasOption(ArgParser.Opts.NO_UNPACK)) {
+                throw new ParseException("Cannot have mutually exclusive options '--" + ArgParser.Opts.UNPACK + "' and '--" + ArgParser.Opts.NO_UNPACK + "'");
+            }
         } catch (ParseException e) {
             System.out.println(e.getMessage());
             ArgParser.printHelp();
@@ -139,7 +142,7 @@ public class App {
         } catch (IOException e) {
             App.logger.catching(e);
         }
-        if (cmd.hasOption(ArgParser.Opts.UNPACK) || (!VERSION.contains("SNAPSHOT") && !VERSION.equalsIgnoreCase(version))) {
+        if (cmd.hasOption(ArgParser.Opts.UNPACK) || (!VERSION.contains("SNAPSHOT") && !VERSION.equalsIgnoreCase(version) && !cmd.hasOption(ArgParser.Opts.NO_UNPACK))) {
             if (!VERSION.equalsIgnoreCase(version)) {
                 VersionCompatHelper.fixCompatIssues(VERSION, version);
             }

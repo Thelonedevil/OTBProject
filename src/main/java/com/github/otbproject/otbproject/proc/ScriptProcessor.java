@@ -30,10 +30,11 @@ public class ScriptProcessor {
                 CACHE.put(path, script);
             }
 
-            App.logger.info("Running script: " + path);
+            App.logger.debug("Running script: " + path);
             scriptReturn = script.invokeMethod(METHOD_NAME, args);
-            App.logger.info("Finished running script: " + path);
+            App.logger.debug("Finished running script: " + path);
             if ((scriptReturn == null) || !(scriptReturn instanceof Boolean)) {
+                App.logger.warn("Missing or invalid return statement in script: " + path);
                 success = true;
             } else {
                 success = (Boolean) scriptReturn;
@@ -44,6 +45,7 @@ public class ScriptProcessor {
             success = false;
         }
 
+        App.logger.debug("Script '" + path + "' returned: " + success.toString());
         return success;
     }
 

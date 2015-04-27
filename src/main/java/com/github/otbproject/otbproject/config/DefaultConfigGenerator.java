@@ -14,6 +14,7 @@ public class DefaultConfigGenerator {
         BotConfig botConfig = new BotConfig();
         botConfig.setChannelJoinSetting(ChannelJoinSetting.NONE);
         botConfig.setMessageSendDelayInMilliseconds(1600);
+        botConfig.setBotChannelDebug(true);
         BotConfigHelper.initialize(botConfig);
 
         return botConfig;
@@ -21,7 +22,7 @@ public class DefaultConfigGenerator {
 
     public static ChannelConfig createChannelConfig() {
         ChannelConfig channelConfig = new ChannelConfig();
-        channelConfig.setCommandCooldown(10);
+        channelConfig.setCommandCooldown(8);
         channelConfig.userCooldowns = channelConfig.new UserCooldowns();
         channelConfig.userCooldowns.setUl_internal(0);
         channelConfig.userCooldowns.setUl_broadcaster(0);

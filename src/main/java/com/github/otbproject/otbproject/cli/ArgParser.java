@@ -57,6 +57,11 @@ public class ArgParser {
         OptionBuilder.withDescription("Unpacks scripts and preloaded commands and aliases even if it is not a new version");
         options.addOption(OptionBuilder.create());
 
+        // --no-unpack
+        OptionBuilder.withLongOpt(Opts.NO_UNPACK);
+        OptionBuilder.withDescription("Do not unpack scripts and preloaded commands and aliases even if it is a new version");
+        options.addOption(OptionBuilder.create());
+
         // --service=
         OptionBuilder.withLongOpt(Opts.SERVICE);
         OptionBuilder.withDescription("The name of the chat service to connect to");
@@ -80,6 +85,7 @@ public class ArgParser {
         public static final String PASSKEY = "passkey";
         public static final String DEBUG = "debug";
         public static final String UNPACK = "unpack";
+        public static final String NO_UNPACK = "no-unpack";
         public static final String SERVICE = "service";
         public static final String VERSION = "version";
         public static final String VERSION_SHORT = "v";
