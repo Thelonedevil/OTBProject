@@ -13,6 +13,7 @@ public class FSUtil {
     private static final String DEFAULTS_DIR_NAME = "defaults";
     private static final String LOGS_DIR_NAME = "logs";
     private static final String SCRIPT_DIR_NAME = "scripts";
+    private static final String LIBS_DIR_NAME = "libs";
     private static String baseDir = BASE_DIR_DEFAULT;
 
     public static String getBaseDir() {
@@ -50,6 +51,10 @@ public class FSUtil {
 
     public static String scriptDir() {
         return baseDir + File.separator + SCRIPT_DIR_NAME;
+    }
+
+    public static String scriptLibsDir(){
+        return scriptDir() + File.separator + LIBS_DIR_NAME;
     }
 
     public static class DirNames {

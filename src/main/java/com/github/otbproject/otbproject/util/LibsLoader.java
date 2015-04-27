@@ -16,11 +16,9 @@ import java.net.URLClassLoader;
  */
 public class LibsLoader {
     public static void load() {
-        File libsdir = new File(FSUtil.scriptDir()+File.separator+"libs");
-        libsdir.mkdir();
+        File libsdir = new File(FSUtil.scriptLibsDir());
         FilenameFilter fileNameFilter = (dir, name) -> {
-            if(name.lastIndexOf('.')>0)
-            {
+            if (name.lastIndexOf('.') > 0) {
                 // get last index for '.' char
                 int lastIndex = name.lastIndexOf('.');
 
@@ -28,14 +26,13 @@ public class LibsLoader {
                 String str = name.substring(lastIndex);
 
                 // match path name extension
-                if(str.equals(".jar"))
-                {
+                if (str.equals(".jar")) {
                     return true;
                 }
             }
             return false;
         };
-        for(File jar: libsdir.listFiles(fileNameFilter)){
+        for (File jar : libsdir.listFiles(fileNameFilter)) {
             try {
                 addSoftwareLibrary(jar);
             } catch (NoSuchMethodException | MalformedURLException | InvocationTargetException | IllegalAccessException e) {
