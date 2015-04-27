@@ -49,12 +49,16 @@ public class Window extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent event) {
         if (event.getSource().equals(close)) {
-            if (JOptionPane.showConfirmDialog(this, "Closing this window may make it difficult to stop the bot", "Are you sure?", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+            String confirmMsg = "WARNING: THIS DOES NOT STOP THE BOT.\nClosing this window may make it difficult\nto stop the bot.\nPress \"Cancel\" to keep the window open.";
+            String title = "Confirm Close Without Stopping Bot";
+            if (JOptionPane.showConfirmDialog(this, confirmMsg, title, JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE) == JOptionPane.OK_OPTION) {
                 this.setVisible(false);
             }
 
         } else if (event.getSource().equals(exit)) {
-            if (JOptionPane.showConfirmDialog(this, "This will stop the bot from running", "Are you sure?", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+            String confirmMsg = "This will stop the bot from running.\nPress \"Cancel\" to continue running the bot.";
+            String title = "Confirm Stop Bot";
+            if (JOptionPane.showConfirmDialog(this, confirmMsg, title, JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE) == JOptionPane.OK_OPTION) {
                 if (APIBot.getBot() != null && APIBot.getBot().isConnected()) {
                     APIBot.getBot().shutdown();
                 }
