@@ -31,7 +31,6 @@ public class Channel {
     private ChannelMessageReceiver messageReceiver;
     private Thread messageReceiverThread;
     private final Scheduler scheduler = new Scheduler();
-    private final Scheduler longScheduler = new Scheduler();
     private final HashMap<String,ScheduledFuture> scheduledCommands = new HashMap<>();
     private final HashMap<String,ScheduledFuture> hourlyResetSchedules = new HashMap<>();
     private boolean inChannel;
@@ -114,10 +113,6 @@ public class Channel {
 
     public Scheduler getScheduler() {
         return scheduler;
-    }
-
-    public Scheduler getLongScheduler() {
-        return longScheduler;
     }
 
     public HashMap<String, ScheduledFuture> getScheduledCommands() {
