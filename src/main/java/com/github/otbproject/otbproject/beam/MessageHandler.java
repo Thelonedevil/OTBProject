@@ -52,6 +52,7 @@ public class MessageHandler implements EventHandler<IncomingMessageEvent> {
         return Joiner.on("").join(Iterators.transform(data.message.iterator(), part -> {
             switch(part.type) {
                 case ME:
+                    return "/me " + part.text;
                 case EMOTICON:
                     return part.text;
                 case LINK:
