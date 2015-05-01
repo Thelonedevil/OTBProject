@@ -11,22 +11,10 @@ import java.io.IOException;
 public class Setup {
     public static void setup() throws IOException {
         // Aliases Directory
-        createDirs(FSUtil.aliasesDir() + File.separator + FSUtil.DirNames.ALL_CHANNELS + File.separator + FSUtil.DirNames.LOADED);
-        createDirs(FSUtil.aliasesDir() + File.separator + FSUtil.DirNames.ALL_CHANNELS + File.separator + FSUtil.DirNames.TO_LOAD);
-        createDirs(FSUtil.aliasesDir() + File.separator + FSUtil.DirNames.ALL_CHANNELS + File.separator + FSUtil.DirNames.FAILED);
-        createDirs(FSUtil.aliasesDir() + File.separator + FSUtil.DirNames.BOT_CHANNEL + File.separator + FSUtil.DirNames.LOADED);
-        createDirs(FSUtil.aliasesDir() + File.separator + FSUtil.DirNames.BOT_CHANNEL + File.separator + FSUtil.DirNames.TO_LOAD);
-        createDirs(FSUtil.aliasesDir() + File.separator + FSUtil.DirNames.BOT_CHANNEL + File.separator + FSUtil.DirNames.FAILED);
-        createDirs(FSUtil.aliasesDir() + File.separator + FSUtil.DirNames.CHANNELS);
+        createLoadingTree(FSUtil.aliasesDir());
 
         // Commands Directory
-        createDirs(FSUtil.commandsDir() + File.separator + FSUtil.DirNames.ALL_CHANNELS + File.separator + FSUtil.DirNames.LOADED);
-        createDirs(FSUtil.commandsDir() + File.separator + FSUtil.DirNames.ALL_CHANNELS + File.separator + FSUtil.DirNames.TO_LOAD);
-        createDirs(FSUtil.commandsDir() + File.separator + FSUtil.DirNames.ALL_CHANNELS + File.separator + FSUtil.DirNames.FAILED);
-        createDirs(FSUtil.commandsDir() + File.separator + FSUtil.DirNames.BOT_CHANNEL + File.separator + FSUtil.DirNames.LOADED);
-        createDirs(FSUtil.commandsDir() + File.separator + FSUtil.DirNames.BOT_CHANNEL + File.separator + FSUtil.DirNames.TO_LOAD);
-        createDirs(FSUtil.commandsDir() + File.separator + FSUtil.DirNames.BOT_CHANNEL + File.separator + FSUtil.DirNames.FAILED);
-        createDirs(FSUtil.commandsDir() + File.separator + FSUtil.DirNames.CHANNELS);
+        createLoadingTree(FSUtil.commandsDir());
 
         // Config Directory
         createDirs(FSUtil.configDir());
@@ -49,6 +37,12 @@ public class Setup {
         // Defaults Directory
         createDirs(FSUtil.defaultsDir());
 
+        // Filters Directory
+        createLoadingTree(FSUtil.filtersDir());
+
+        // Filter Groups Directory
+        createLoadingTree(FSUtil.filterGroupsDir());
+
         // Logs Directory
         createDirs(FSUtil.logsDir());
 
@@ -66,14 +60,10 @@ public class Setup {
         }
 
         // Aliases
-        createDirs(FSUtil.aliasesDir() + File.separator + FSUtil.DirNames.CHANNELS + File.separator + channel + File.separator + FSUtil.DirNames.LOADED);
-        createDirs(FSUtil.aliasesDir() + File.separator + FSUtil.DirNames.CHANNELS + File.separator + channel + File.separator + FSUtil.DirNames.TO_LOAD);
-        createDirs(FSUtil.aliasesDir() + File.separator + FSUtil.DirNames.CHANNELS + File.separator + channel + File.separator + FSUtil.DirNames.FAILED);
+        createChannelLoadingTree(FSUtil.aliasesDir(), channel);
 
         // Commands
-        createDirs(FSUtil.commandsDir() + File.separator + FSUtil.DirNames.CHANNELS + File.separator + channel + File.separator + FSUtil.DirNames.LOADED);
-        createDirs(FSUtil.commandsDir() + File.separator + FSUtil.DirNames.CHANNELS + File.separator + channel + File.separator + FSUtil.DirNames.TO_LOAD);
-        createDirs(FSUtil.commandsDir() + File.separator + FSUtil.DirNames.CHANNELS + File.separator + channel + File.separator + FSUtil.DirNames.FAILED);
+        createChannelLoadingTree(FSUtil.commandsDir(), channel);
 
         // Data
         createDirs(FSUtil.dataDir() + File.separator + FSUtil.DirNames.CHANNELS + File.separator + channel);
@@ -94,6 +84,12 @@ public class Setup {
         if (!quotesDB.exists() && !quotesDB.createNewFile()) {
             throw new IOException("Unable to create database file: " + quotesDBPath);
         }
+
+        // Filters
+        createChannelLoadingTree(FSUtil.filtersDir(), channel);
+
+        // Filter Groups
+        createChannelLoadingTree(FSUtil.filterGroupsDir(), channel);
     }
 
     private static void createDirs(String path) throws IOException {
@@ -112,5 +108,21 @@ public class Setup {
         if (!new File(beamAcctPath).exists()) {
             JsonHandler.writeValue(beamAcctPath, DefaultConfigGenerator.createAccountConfig());
         }
+    }
+
+    private static void createLoadingTree(String directory) throws IOException {
+        createDirs(directory + File.separator + FSUtil.DirNames.ALL_CHANNELS + File.separator + FSUtil.DirNames.LOADED);
+        createDirs(directory + File.separator + FSUtil.DirNames.ALL_CHANNELS + File.separator + FSUtil.DirNames.TO_LOAD);
+        createDirs(directory + File.separator + FSUtil.DirNames.ALL_CHANNELS + File.separator + FSUtil.DirNames.FAILED);
+        createDirs(directory + File.separator + FSUtil.DirNames.BOT_CHANNEL + File.separator + FSUtil.DirNames.LOADED);
+        createDirs(directory + File.separator + FSUtil.DirNames.BOT_CHANNEL + File.separator + FSUtil.DirNames.TO_LOAD);
+        createDirs(directory + File.separator + FSUtil.DirNames.BOT_CHANNEL + File.separator + FSUtil.DirNames.FAILED);
+        createDirs(directory + File.separator + FSUtil.DirNames.CHANNELS);
+    }
+
+    private static void createChannelLoadingTree(String directory, String channel) throws IOException {
+        createDirs(directory + File.separator + FSUtil.DirNames.CHANNELS + File.separator + channel + File.separator + FSUtil.DirNames.LOADED);
+        createDirs(directory + File.separator + FSUtil.DirNames.CHANNELS + File.separator + channel + File.separator + FSUtil.DirNames.TO_LOAD);
+        createDirs(directory + File.separator + FSUtil.DirNames.CHANNELS + File.separator + channel + File.separator + FSUtil.DirNames.FAILED);
     }
 }

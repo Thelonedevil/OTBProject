@@ -14,7 +14,7 @@ import com.github.otbproject.otbproject.messages.send.MessageOut;
 import com.github.otbproject.otbproject.messages.send.MessagePriority;
 import com.github.otbproject.otbproject.proc.MessageProcessor;
 import com.github.otbproject.otbproject.proc.ProcessedMessage;
-import com.github.otbproject.otbproject.proc.ScriptProcessor;
+import com.github.otbproject.otbproject.proc.CommandScriptProcessor;
 import com.github.otbproject.otbproject.users.UserLevel;
 
 import java.sql.SQLException;
@@ -101,7 +101,7 @@ public class ChannelMessageReceiver implements Runnable {
 
         // Do script (processedMsg.getResponse is the script path)
         if (processedMsg.isScript()) {
-            boolean success = ScriptProcessor.process(message, db, command, processedMsg.getArgs(), channelName, destinationChannelName, user, ul);
+            boolean success = CommandScriptProcessor.process(message, db, command, processedMsg.getArgs(), channelName, destinationChannelName, user, ul);
             if (!success) {
                 return;
             }
