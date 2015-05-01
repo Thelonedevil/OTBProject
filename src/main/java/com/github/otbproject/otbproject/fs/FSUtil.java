@@ -11,6 +11,8 @@ public class FSUtil {
     private static final String CONFIG_DIR_NAME = "config";
     private static final String DATA_DIR_NAME = "data";
     private static final String DEFAULTS_DIR_NAME = "defaults";
+    private static final String FILTERS_DIR_NAME = "filters";
+    private static final String FILTER_GROUPS_DIR_NAME = "filter-groups";
     private static final String LOGS_DIR_NAME = "logs";
     private static final String SCRIPT_DIR_NAME = "scripts";
     private static final String LIBS_DIR_NAME = "libs";
@@ -43,6 +45,18 @@ public class FSUtil {
 
     public static String defaultsDir() {
         return baseDir + File.separator + DEFAULTS_DIR_NAME;
+    }
+
+    private static String filtersBaseDir() {
+        return baseDir + File.separator + FILTERS_DIR_NAME;
+    }
+
+    public static String filtersDir() {
+        return filtersBaseDir() + File.separator + FILTERS_DIR_NAME;
+    }
+
+    public static String filterGroupsDir() {
+        return filtersBaseDir() + File.separator + FILTER_GROUPS_DIR_NAME;
     }
 
     public static String logsDir() {
