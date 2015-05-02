@@ -157,6 +157,15 @@ public class IRCBot extends PircBotX implements IBot{
     }
 
     @Override
+    public boolean timeout(String channelName, String user, int timeInSeconds) {
+        if (isUserMod(channelName, user)) {
+            return false;
+        }
+        sendMessage(channelName, ".timeout " + user + " " + timeInSeconds);
+        return true;
+    }
+
+    @Override
     public boolean join(String channel) {
         tokenBucket.consume();
         sendIRC().joinChannel(getIrcChannelName(channel));

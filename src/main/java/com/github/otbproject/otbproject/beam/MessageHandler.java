@@ -7,10 +7,8 @@ import com.github.otbproject.otbproject.channels.Channel;
 import com.github.otbproject.otbproject.messages.receive.PackagedMessage;
 import com.github.otbproject.otbproject.messages.send.MessagePriority;
 import com.github.otbproject.otbproject.util.ULUtil;
-import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Iterators;
-import pro.beam.api.resource.chat.AbstractChatEvent;
 import pro.beam.api.resource.chat.events.EventHandler;
 import pro.beam.api.resource.chat.events.IncomingMessageEvent;
 import pro.beam.api.resource.chat.events.data.IncomingMessageData;
@@ -30,8 +28,18 @@ public class MessageHandler implements EventHandler<IncomingMessageEvent> {
         IncomingMessageData data = event.data;
         App.logger.info("<"+ channelName +"> "+ data.user_name + ": " + getMessage(data));
 
+        BeamBot bot = (BeamBot) APIBot.getBot();
+
+        // Check if user is in timeout set
+        BeamChatChannel beamChatChannel = bot.beamChannels.get(channelName);
+        if (beamChatChannel == null) {
+            App.logger.error("Failed to check timeout set: BeamChatChannel for channel '" + channelName + "' is null.");
+        } else if (beamChatChannel.getTimeoutSet().contains(data.user_name.toLowerCase())) {
+            return;
+        }
+
         // Check if message is from bot and sent by bot
-        if (event.data.user_name.equalsIgnoreCase(APIBot.getBot().getUserName()) && ((BeamBot) APIBot.getBot()).sentMessageCache.contains(event.data.getMessage())) {
+        if (event.data.user_name.equalsIgnoreCase(APIBot.getBot().getUserName()) && (bot.sentMessageCache.contains(event.data.getMessage()))) {
             App.logger.debug("Ignoring message sent by bot");
             return;
         }

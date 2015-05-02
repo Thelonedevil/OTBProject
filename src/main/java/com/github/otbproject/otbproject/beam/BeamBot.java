@@ -117,7 +117,7 @@ public class BeamBot implements IBot {
 
     @Override
     public void startBot() {
-        APIChannel.join(getUserName(),false);
+        APIChannel.join(getUserName(), false);
         for (String channelName : APIConfig.getBotConfig().currentChannels) {
             APIChannel.join(channelName, false);
         }
@@ -131,7 +131,7 @@ public class BeamBot implements IBot {
 
     @Override
     public boolean join(String channelName) {
-        beamChannels.put(channelName,new BeamChatChannel(channelName));
+        beamChannels.put(channelName, new BeamChatChannel(channelName));
         return beamChannels.containsKey(channelName);
     }
 
@@ -143,4 +143,21 @@ public class BeamBot implements IBot {
         return !beamChannels.containsKey(channelName);
     }
 
+    @Override
+    public boolean timeout(String channelName, String user, int timeInSeconds) {
+        user = user.toLowerCase(); // Just in case
+        if (isUserMod(channelName, user)) {
+            return false;
+        }
+
+        BeamChatChannel channel = beamChannels.get(channelName);
+        if (channel == null) {
+            App.logger.error("Failed to timeout user: BeamChatChannel for channel '" + channelName + "' is null.");
+            return false;
+        }
+
+
+        channel.getTimeoutSet().add(user, timeInSeconds);
+        return true;
+    }
 }

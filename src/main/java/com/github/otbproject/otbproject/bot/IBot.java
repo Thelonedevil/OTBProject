@@ -11,19 +11,19 @@ import java.util.HashMap;
  * Created by Justin on 05/04/2015.
  */
 public interface IBot {
-    public boolean isConnected(String channelName);
+    boolean isConnected(String channelName);
 
-    public boolean isConnected();
+    boolean isConnected();
 
-    public HashMap<String, Channel> getChannels();
+    HashMap<String, Channel> getChannels();
 
-    public boolean isChannel(String channelName);
+    boolean isChannel(String channelName);
 
-    public void shutdown();
+    void shutdown();
 
-    public String getUserName();
+    String getUserName();
 
-    public DatabaseWrapper getBotDB();
+    DatabaseWrapper getBotDB();
 
     boolean isUserMod(String channel, String user);
 
@@ -34,4 +34,6 @@ public interface IBot {
     boolean join(String channelName);
 
     boolean leave(String channelName);
+
+    boolean timeout(String channelName, String user, int timeInSeconds);
 }
