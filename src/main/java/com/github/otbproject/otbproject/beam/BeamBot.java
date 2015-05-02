@@ -146,7 +146,6 @@ public class BeamBot implements IBot {
     }
 
     @Override
-    // TODO still need to handle deleting the user's last message
     public boolean timeout(String channelName, String user, int timeInSeconds) {
         user = user.toLowerCase(); // Just in case
 
