@@ -166,7 +166,7 @@ public class IRCBot extends PircBotX implements IBot{
                 return false;
             }
         } catch (ChannelNotFoundException e) {
-            App.logger.error("Channel did not exist in which to timeout user");
+            App.logger.error("Channel '" + channelName + "' did not exist in which to timeout user");
             App.logger.catching(e);
         }
 
