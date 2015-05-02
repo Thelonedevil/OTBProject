@@ -179,7 +179,11 @@ public class BeamBot implements IBot {
                 timeoutSet.remove(user);
             }
         }
-        return timeoutSet.add(user, timeInSeconds);
+        boolean success = timeoutSet.add(user, timeInSeconds);
+        if (success) {
+            App.logger.info("Timed out '" + user + "' in channel '" + channelName + "' for " + timeInSeconds + " seconds");
+        }
+        return success;
     }
 
     @Override
