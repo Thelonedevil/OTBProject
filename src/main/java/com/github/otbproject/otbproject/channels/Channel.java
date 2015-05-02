@@ -2,6 +2,7 @@ package com.github.otbproject.otbproject.channels;
 
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.api.APIDatabase;
+import com.github.otbproject.otbproject.commands.scheduler.Scheduler;
 import com.github.otbproject.otbproject.config.ChannelConfig;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.database.SQLiteQuoteWrapper;
@@ -11,6 +12,9 @@ import com.github.otbproject.otbproject.messages.send.ChannelMessageSender;
 import com.github.otbproject.otbproject.messages.send.MessageSendQueue;
 import com.github.otbproject.otbproject.proc.CooldownSet;
 import com.github.otbproject.otbproject.util.BlockingHashSet;
+
+import java.util.HashMap;
+import java.util.concurrent.ScheduledFuture;
 
 public class Channel {
     public final MessageSendQueue sendQueue = new MessageSendQueue(this);
@@ -26,6 +30,9 @@ public class Channel {
     private Thread messageSenderThread;
     private ChannelMessageReceiver messageReceiver;
     private Thread messageReceiverThread;
+    private final Scheduler scheduler = new Scheduler();
+    private final HashMap<String,ScheduledFuture> scheduledCommands = new HashMap<>();
+    private final HashMap<String,ScheduledFuture> hourlyResetSchedules = new HashMap<>();
     private boolean inChannel;
 
     public Channel(String name, ChannelConfig config) {
@@ -102,5 +109,17 @@ public class Channel {
 
     public ChannelConfig getConfig() {
         return config;
+    }
+
+    public Scheduler getScheduler() {
+        return scheduler;
+    }
+
+    public HashMap<String, ScheduledFuture> getScheduledCommands() {
+        return scheduledCommands;
+    }
+
+    public HashMap<String, ScheduledFuture> getHourlyResetSchedules() {
+        return hourlyResetSchedules;
     }
 }

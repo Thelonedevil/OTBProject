@@ -2,6 +2,7 @@ package com.github.otbproject.otbproject.database;
 
 import com.github.otbproject.otbproject.commands.AliasFields;
 import com.github.otbproject.otbproject.commands.CommandFields;
+import com.github.otbproject.otbproject.commands.scheduler.SchedulerFields;
 import com.github.otbproject.otbproject.quotes.QuoteFields;
 import com.github.otbproject.otbproject.users.UserFields;
 
@@ -17,6 +18,7 @@ public class DatabaseHelper {
         tables.put(CommandFields.TABLE_NAME, CommandFields.getTableFields());
         tables.put(AliasFields.TABLE_NAME, AliasFields.getTableFields());
         tables.put(UserFields.TABLE_NAME, UserFields.getTableFields());
+        tables.put(SchedulerFields.TABLE_NAME, SchedulerFields.getTableFields());
         return tables;
     }
 
