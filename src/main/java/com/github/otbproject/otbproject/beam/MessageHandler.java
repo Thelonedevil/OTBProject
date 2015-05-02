@@ -44,7 +44,7 @@ public class MessageHandler implements EventHandler<IncomingMessageEvent> {
                 } else {
                     // Delete message
                     beamChatChannel.beamChatConnectable.delete(event.data);
-                    App.logger.debug("Deleted message from user: " + event.data.user_name);
+                    App.logger.info("Deleted message in channel <" + channelName + "> from user: " + event.data.user_name);
                     return;
                 }
             } catch (ChannelNotFoundException e) {
