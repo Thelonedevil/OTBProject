@@ -35,6 +35,8 @@ public class MessageHandler implements EventHandler<IncomingMessageEvent> {
         if (beamChatChannel == null) {
             App.logger.error("Failed to check timeout set: BeamChatChannel for channel '" + channelName + "' is null.");
         } else if (beamChatChannel.getTimeoutSet().contains(data.user_name.toLowerCase())) {
+            // Delete message
+            beamChatChannel.beamChatConnectable.delete(event.data);
             return;
         }
 

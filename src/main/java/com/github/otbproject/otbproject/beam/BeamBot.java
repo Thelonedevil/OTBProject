@@ -4,6 +4,7 @@ import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.api.APIChannel;
 import com.github.otbproject.otbproject.api.APIConfig;
 import com.github.otbproject.otbproject.api.APIDatabase;
+import com.github.otbproject.otbproject.bot.BotUtil;
 import com.github.otbproject.otbproject.bot.IBot;
 import com.github.otbproject.otbproject.channels.Channel;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
@@ -147,17 +148,21 @@ public class BeamBot implements IBot {
     // TODO still need to handle deleting the user's last message
     public boolean timeout(String channelName, String user, int timeInSeconds) {
         user = user.toLowerCase(); // Just in case
-        if (isUserMod(channelName, user)) {
+
+        // Check if user has user level mod or higher
+        if (BotUtil.isModOrHigher(channelName, user)) {
             return false;
         }
 
-        BeamChatChannel channel = beamChannels.get(channelName);
-        if (channel == null) {
+        BeamChatChannel beamChatChannel = beamChannels.get(channelName);
+        // More null checks!
+        if (beamChatChannel == null) {
             App.logger.error("Failed to timeout user: BeamChatChannel for channel '" + channelName + "' is null.");
             return false;
         }
 
-        CooldownSet timeoutSet = channel.getTimeoutSet();
+
+        CooldownSet timeoutSet = beamChatChannel.getTimeoutSet();
         if (timeoutSet.contains(user)) {
             int waitTime = timeoutSet.getCooldownRemover(user).getWaitInSeconds();
             // Not perfect because it's based on the original timeout time, not the time left

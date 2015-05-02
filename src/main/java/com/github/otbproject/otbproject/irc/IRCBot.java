@@ -1,6 +1,7 @@
 package com.github.otbproject.otbproject.irc;
 
 import com.github.otbproject.otbproject.App;
+import com.github.otbproject.otbproject.bot.BotUtil;
 import com.github.otbproject.otbproject.bot.IBot;
 import com.github.otbproject.otbproject.api.APIConfig;
 import com.github.otbproject.otbproject.api.APIDatabase;
@@ -158,7 +159,7 @@ public class IRCBot extends PircBotX implements IBot{
 
     @Override
     public boolean timeout(String channelName, String user, int timeInSeconds) {
-        if (isUserMod(channelName, user)) {
+        if (BotUtil.isModOrHigher(channelName, user)) {
             return false;
         }
         sendMessage(channelName, ".timeout " + user + " " + timeInSeconds);
