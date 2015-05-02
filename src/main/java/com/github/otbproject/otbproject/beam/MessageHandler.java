@@ -37,6 +37,7 @@ public class MessageHandler implements EventHandler<IncomingMessageEvent> {
         } else if (beamChatChannel.getTimeoutSet().contains(data.user_name.toLowerCase())) {
             // Delete message
             beamChatChannel.beamChatConnectable.delete(event.data);
+            App.logger.debug("Deleted message from user: " + event.data.user_name);
             return;
         }
 

@@ -8,15 +8,18 @@ public class CooldownRemover implements Runnable {
     private String item;
     private int waitInSeconds;
     private CooldownSet cooldownSet;
+    private Thread thread;
 
     public CooldownRemover(String item, int waitInSeconds, CooldownSet cooldownSet) {
         this.item = item;
         this.waitInSeconds = waitInSeconds;
         this.cooldownSet = cooldownSet;
+        this.thread = null;
     }
 
     public void run() {
         Thread.currentThread().setName("Cooldown Remover " + increment++);
+        thread = Thread.currentThread();
         try {
             Thread.sleep(waitInSeconds * 1000);
         } catch (InterruptedException e) {
@@ -30,7 +33,9 @@ public class CooldownRemover implements Runnable {
     }
 
     public void interrupt() {
-        Thread.currentThread().interrupt();
+        if (thread != null) {
+            thread.interrupt();
+        }
     }
 
     public int getWaitInSeconds() {
