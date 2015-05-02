@@ -42,7 +42,7 @@ public class APISchedule {
         Date date = new Date();
         Calendar calendar = GregorianCalendar.getInstance();
         calendar.setTime(date);
-        return calendar.get(Calendar.SECOND);
+        return calendar.get(Calendar.MINUTE) * 60 + calendar.get(Calendar.SECOND);
     }
 
     public static int getSecondsTillTheHour() {
