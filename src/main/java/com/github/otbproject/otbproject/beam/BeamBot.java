@@ -144,6 +144,7 @@ public class BeamBot implements IBot {
     }
 
     @Override
+    // TODO still need to handle deleting the user's last message
     public boolean timeout(String channelName, String user, int timeInSeconds) {
         user = user.toLowerCase(); // Just in case
         if (isUserMod(channelName, user)) {
@@ -156,8 +157,28 @@ public class BeamBot implements IBot {
             return false;
         }
 
+        CooldownSet timeoutSet = channel.getTimeoutSet();
+        if (timeoutSet.contains(user)) {
+            int waitTime = timeoutSet.getCooldownRemover(user).getWaitInSeconds();
+            // Not perfect because it's based on the original timeout time, not the time left
+            //  but there's no way to get the time left
+            if (waitTime > timeInSeconds) {
+                App.logger.info("Did not timeout user '" + user + "' because they were already timed out for longer than that.");
+                return false;
+            } else {
+                timeoutSet.remove(user);
+            }
+        }
+        return timeoutSet.add(user, timeInSeconds);
+    }
 
-        channel.getTimeoutSet().add(user, timeInSeconds);
-        return true;
+    @Override
+    public boolean removeTimeout(String channelName, String user) {
+        BeamChatChannel channel = beamChannels.get(channelName);
+        if (channel == null) {
+            App.logger.error("Failed to remove timeout for user: BeamChatChannel for channel '" + channelName + "' is null.");
+            return false;
+        }
+        return channel.getTimeoutSet().remove(user);
     }
 }

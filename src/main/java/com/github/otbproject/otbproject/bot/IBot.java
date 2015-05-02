@@ -36,4 +36,6 @@ public interface IBot {
     boolean leave(String channelName);
 
     boolean timeout(String channelName, String user, int timeInSeconds);
+
+    boolean removeTimeout(String channelName, String user);
 }

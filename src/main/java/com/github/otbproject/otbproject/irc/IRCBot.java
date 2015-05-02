@@ -166,6 +166,12 @@ public class IRCBot extends PircBotX implements IBot{
     }
 
     @Override
+    public boolean removeTimeout(String channelName, String user) {
+        sendMessage(channelName, ".unban " + user);
+        return true;
+    }
+
+    @Override
     public boolean join(String channel) {
         tokenBucket.consume();
         sendIRC().joinChannel(getIrcChannelName(channel));
