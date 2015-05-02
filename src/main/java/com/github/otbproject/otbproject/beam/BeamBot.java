@@ -7,6 +7,7 @@ import com.github.otbproject.otbproject.api.APIDatabase;
 import com.github.otbproject.otbproject.bot.BotUtil;
 import com.github.otbproject.otbproject.bot.IBot;
 import com.github.otbproject.otbproject.channels.Channel;
+import com.github.otbproject.otbproject.channels.ChannelNotFoundException;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.proc.CooldownSet;
 import pro.beam.api.BeamAPI;
@@ -150,8 +151,13 @@ public class BeamBot implements IBot {
         user = user.toLowerCase(); // Just in case
 
         // Check if user has user level mod or higher
-        if (BotUtil.isModOrHigher(channelName, user)) {
-            return false;
+        try {
+            if (BotUtil.isModOrHigher(channelName, user)) {
+                return false;
+            }
+        } catch (ChannelNotFoundException e) {
+            App.logger.error("Channel did not exist in which to timeout user");
+            App.logger.catching(e);
         }
 
         BeamChatChannel beamChatChannel = beamChannels.get(channelName);
