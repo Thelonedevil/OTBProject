@@ -1,10 +1,12 @@
 package com.github.otbproject.otbproject.irc;
 
 import com.github.otbproject.otbproject.App;
+import com.github.otbproject.otbproject.bot.BotUtil;
 import com.github.otbproject.otbproject.bot.IBot;
 import com.github.otbproject.otbproject.api.APIConfig;
 import com.github.otbproject.otbproject.api.APIDatabase;
 import com.github.otbproject.otbproject.channels.Channel;
+import com.github.otbproject.otbproject.channels.ChannelNotFoundException;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.serviceapi.ApiRequest;
 import com.github.otbproject.otbproject.util.OutputRawImproved;
@@ -154,6 +156,28 @@ public class IRCBot extends PircBotX implements IBot{
         tokenBucket.consume();
         getUserChannelDao().getChannel(getIrcChannelName(channel)).send().part();
         return !getUserChannelDao().getAllChannels().contains(getUserChannelDao().getChannel(channel));
+    }
+
+    @Override
+    public boolean timeout(String channelName, String user, int timeInSeconds) {
+        // Check if user has user level mod or higher
+        try {
+            if (BotUtil.isModOrHigher(channelName, user)) {
+                return false;
+            }
+        } catch (ChannelNotFoundException e) {
+            App.logger.error("Channel '" + channelName + "' did not exist in which to timeout user");
+            App.logger.catching(e);
+        }
+
+        sendMessage(channelName, ".timeout " + user + " " + timeInSeconds);
+        return true;
+    }
+
+    @Override
+    public boolean removeTimeout(String channelName, String user) {
+        sendMessage(channelName, ".unban " + user);
+        return true;
     }
 
     @Override

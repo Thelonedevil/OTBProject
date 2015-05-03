@@ -4,6 +4,7 @@ package com.github.otbproject.otbproject.util;
 import com.github.otbproject.otbproject.api.APIBot;
 import com.github.otbproject.otbproject.api.APIChannel;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
+import com.github.otbproject.otbproject.users.User;
 import com.github.otbproject.otbproject.users.UserLevel;
 import com.github.otbproject.otbproject.users.Users;
 
@@ -18,8 +19,9 @@ public class ULUtil {
         }
 
         UserLevel ul = null;
-        if (Users.exists(db, user)) {
-            ul = Users.get(db, user).getUserLevel();
+        User userObj = Users.get(db, user);
+        if (userObj != null) {
+            ul = userObj.getUserLevel();
         }
 
         if (ul == UserLevel.SUPER_MODERATOR) {

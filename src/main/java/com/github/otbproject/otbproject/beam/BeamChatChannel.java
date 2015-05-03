@@ -2,6 +2,7 @@ package com.github.otbproject.otbproject.beam;
 
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.api.APIBot;
+import com.github.otbproject.otbproject.proc.CooldownSet;
 import pro.beam.api.resource.BeamUser;
 import pro.beam.api.resource.channel.BeamChannel;
 import pro.beam.api.resource.chat.BeamChat;
@@ -21,6 +22,7 @@ public class BeamChatChannel {
     BeamChat beamChat;
     BeamChatConnectable beamChatConnectable;
     BeamChannel channel;
+    private final CooldownSet timeoutSet = new CooldownSet();
 
     public BeamChatChannel(String channelName){
         beamBot = ((BeamBot) APIBot.getBot());
@@ -54,5 +56,9 @@ public class BeamChatChannel {
             App.logger.info("Connected to: " + channelName);
 
         }
+    }
+
+    public CooldownSet getTimeoutSet() {
+        return timeoutSet;
     }
 }

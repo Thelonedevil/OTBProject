@@ -5,27 +5,40 @@ import org.apache.logging.log4j.Level;
 
 public class CooldownRemover implements Runnable {
     private static int increment = 1;
-    private String command;
+    private String item;
     private int waitInSeconds;
     private CooldownSet cooldownSet;
+    private Thread thread;
 
-    public CooldownRemover(String command, int waitInSeconds, CooldownSet cooldownSet) {
-        this.command = command;
+    public CooldownRemover(String item, int waitInSeconds, CooldownSet cooldownSet) {
+        this.item = item;
         this.waitInSeconds = waitInSeconds;
         this.cooldownSet = cooldownSet;
+        this.thread = null;
     }
 
     public void run() {
         Thread.currentThread().setName("Cooldown Remover " + increment++);
+        thread = Thread.currentThread();
         try {
             Thread.sleep(waitInSeconds * 1000);
         } catch (InterruptedException e) {
-            App.logger.info("Interrupted CooldownRemover for command '" + command + "'");
+            App.logger.info("Interrupted CooldownRemover for item '" + item + "'");
             App.logger.catching(Level.DEBUG, e);
         } catch (Exception e) {
             App.logger.catching(e);
         } finally {
-            cooldownSet.remove(command);
+            cooldownSet.nonInterruptingRemove(item);
         }
+    }
+
+    public void interrupt() {
+        if (thread != null) {
+            thread.interrupt();
+        }
+    }
+
+    public int getWaitInSeconds() {
+        return waitInSeconds;
     }
 }
