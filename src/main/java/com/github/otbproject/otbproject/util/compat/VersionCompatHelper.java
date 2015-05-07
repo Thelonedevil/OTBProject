@@ -1,5 +1,6 @@
 package com.github.otbproject.otbproject.util.compat;
 
+import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.config.Account;
 import com.github.otbproject.otbproject.fs.FSUtil;
 import com.github.otbproject.otbproject.util.JsonHandler;
@@ -7,11 +8,11 @@ import com.github.otbproject.otbproject.util.JsonHandler;
 import java.io.File;
 
 public class VersionCompatHelper {
-    public static void fixCompatIssues(String currentVersion, String oldVersion) {
+    public static void fixCompatIssues(String oldVersion) {
         if (oldVersion == null) {
             return;
         }
-        if (currentVersion.startsWith("1.1") && oldVersion.startsWith("1.0")) {
+        if (App.VERSION.startsWith("1.1") && oldVersion.startsWith("1.0")) {
             fix1dot0To1dot1();
         }
     }
@@ -32,8 +33,8 @@ public class VersionCompatHelper {
             accountNew.setPasskey(accountOld.getOauth());
             JsonHandler.writeValue(twitchAccountFilePath, accountNew);
             // Not sure if need to recreate File for this
-            if (new File(twitchAccountFilePath).exists()) {
-                oldAcctFile.delete();
+            if (new File(twitchAccountFilePath).exists() && !oldAcctFile.delete()) {
+                App.logger.warn("Failed to delete old account file: " + oldAccountFilePath);
             }
         }
     }

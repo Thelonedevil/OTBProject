@@ -15,12 +15,9 @@ import pro.beam.api.resource.chat.events.EventHandler;
 import pro.beam.api.resource.chat.events.IncomingMessageEvent;
 import pro.beam.api.resource.chat.events.data.IncomingMessageData;
 
-/**
- * Created by Justin on 19/03/2015.
- */
 public class MessageHandler implements EventHandler<IncomingMessageEvent> {
 
-    String channelName;
+    private final String channelName;
     public MessageHandler(String channel){
         this.channelName = channel;
     }

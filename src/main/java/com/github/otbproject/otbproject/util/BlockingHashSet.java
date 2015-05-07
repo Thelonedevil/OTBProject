@@ -5,8 +5,8 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class BlockingHashSet {
-    protected final HashSet<String> set = new HashSet<String>();
-    protected final ReadWriteLock lock = new ReentrantReadWriteLock();
+    private final HashSet<String> set = new HashSet<>();
+    private final ReadWriteLock lock = new ReentrantReadWriteLock();
 
     public boolean contains(String s) {
         lock.readLock().lock();

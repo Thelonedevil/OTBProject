@@ -3,7 +3,7 @@ package com.github.otbproject.otbproject.messages.receive;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class MessageReceiveQueue {
-    private final LinkedBlockingQueue<PackagedMessage> queue = new LinkedBlockingQueue<PackagedMessage>();
+    private final LinkedBlockingQueue<PackagedMessage> queue = new LinkedBlockingQueue<>();
 
     public PackagedMessage take() throws InterruptedException {
         return queue.take();

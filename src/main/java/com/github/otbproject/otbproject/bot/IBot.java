@@ -7,9 +7,6 @@ import org.pircbotx.exception.IrcException;
 import java.io.IOException;
 import java.util.HashMap;
 
-/**
- * Created by Justin on 05/04/2015.
- */
 public interface IBot {
     boolean isConnected(String channelName);
 

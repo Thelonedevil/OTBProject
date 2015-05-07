@@ -2,9 +2,6 @@ package com.github.otbproject.otbproject.api;
 
 import com.github.otbproject.otbproject.bot.IBot;
 
-/**
- * Created by Justin on 06/04/2015.
- */
 public class APIBot {
     private static IBot bot;
     private static Thread botThread;

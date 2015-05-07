@@ -5,9 +5,6 @@ import com.github.otbproject.otbproject.database.TableFields;
 
 import java.util.HashMap;
 
-/**
- * Created by Justin on 20/04/2015.
- */
 public class SchedulerFields {
     public static final String COMMAND = "command";
     public static final String TYPE = "type";

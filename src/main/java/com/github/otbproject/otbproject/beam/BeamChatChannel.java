@@ -14,13 +14,10 @@ import pro.beam.api.services.impl.UsersService;
 
 import java.util.concurrent.ExecutionException;
 
-/**
- * Created by Justin on 05/04/2015.
- */
 public class BeamChatChannel {
-    BeamBot beamBot;
+    final BeamBot beamBot;
     BeamChat beamChat;
-    BeamChatConnectable beamChatConnectable;
+    final BeamChatConnectable beamChatConnectable;
     BeamChannel channel;
     private final CooldownSet timeoutSet = new CooldownSet();
 

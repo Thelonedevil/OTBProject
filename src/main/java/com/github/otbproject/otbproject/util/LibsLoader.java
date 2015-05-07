@@ -11,9 +11,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 
-/**
- * Created by Justin on 23/04/2015.
- */
 public class LibsLoader {
     public static void load() {
         File libsdir = new File(FSUtil.scriptLibsDir());

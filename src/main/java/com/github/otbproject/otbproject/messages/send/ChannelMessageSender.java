@@ -7,7 +7,7 @@ import com.github.otbproject.otbproject.channels.Channel;
 
 public class ChannelMessageSender implements Runnable {
     private final Channel channel;
-    private MessageSendQueue queue;
+    private final MessageSendQueue queue;
 
     public ChannelMessageSender(Channel channel, MessageSendQueue queue) {
         this.channel = channel;

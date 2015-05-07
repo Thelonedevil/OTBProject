@@ -17,12 +17,10 @@ import com.github.otbproject.otbproject.proc.ProcessedMessage;
 import com.github.otbproject.otbproject.proc.CommandScriptProcessor;
 import com.github.otbproject.otbproject.users.UserLevel;
 
-import java.sql.SQLException;
-
 public class ChannelMessageReceiver implements Runnable {
     private final Channel channel;
-    private MessageReceiveQueue queue;
-    private boolean inBotChannel;
+    private final MessageReceiveQueue queue;
+    private final boolean inBotChannel;
 
     public ChannelMessageReceiver(Channel channel, MessageReceiveQueue queue) {
         this.channel = channel;
@@ -119,12 +117,7 @@ public class ChannelMessageReceiver implements Runnable {
         }
 
         // Increment count
-        try {
-            Command.incrementCount(db, command);
-        } catch (SQLException e) {
-            App.logger.error("Failed to increment count for command: " + command);
-            App.logger.catching(e);
-        }
+        Command.incrementCount(db, command);
 
         // Skip cooldowns if bot channel or internal
         if (inBotChannel || (destinationChannelName.equals(APIBot.getBot().getUserName())) || internal) {

@@ -32,9 +32,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Scanner;
 
-/**
- * Created by justin on 02/01/2015.
- */
 public class App {
     public static final String PID = ManagementFactory.getRuntimeMXBean().getName().split("@")[0];
     public static final Logger logger = LogManager.getLogger();
@@ -53,7 +50,9 @@ public class App {
                 DateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd-HH.mm.ss");
                 Date date = new Date();
                 File file = new File("OTBProjectFatal-"+dateFormat.format(date)+".log");
-                file.createNewFile();
+                if  (!file.createNewFile()) {
+                    throw new IOException("Failed to create fatal log file for some reason.");
+                }
                 PrintStream ps = new PrintStream(file);
                 t.printStackTrace(ps);
             } catch (IOException e) {
@@ -66,7 +65,7 @@ public class App {
 
 
 
-    public static void doMain(String[] args) throws NoSuchFieldException, IllegalAccessException {
+    private static void doMain(String[] args) throws NoSuchFieldException, IllegalAccessException {
         CommandLine cmd;
         try {
             cmd = ArgParser.parse(args);
@@ -79,7 +78,7 @@ public class App {
             return;
         }
 
-        if ((cmd == null) || cmd.hasOption(ArgParser.Opts.HELP)) {
+        if (cmd.hasOption(ArgParser.Opts.HELP)) {
             ArgParser.printHelp();
             return;
         }
@@ -131,7 +130,9 @@ public class App {
 
         File versionFile = new File(FSUtil.configDir() + File.separator + "VERSION");
         try {
-            versionFile.createNewFile();
+            if (!versionFile.exists() && !versionFile.createNewFile()) {
+                throw new IOException("Failed to create version file");
+            }
         } catch (IOException e) {
             App.logger.catching(e);
         }
@@ -144,7 +145,7 @@ public class App {
         }
         if (cmd.hasOption(ArgParser.Opts.UNPACK) || (!VERSION.contains("SNAPSHOT") && !VERSION.equalsIgnoreCase(version) && !cmd.hasOption(ArgParser.Opts.NO_UNPACK))) {
             if (!VERSION.equalsIgnoreCase(version)) {
-                VersionCompatHelper.fixCompatIssues(VERSION, version);
+                VersionCompatHelper.fixCompatIssues(version);
             }
             UnPacker.unPack("preloads/json/commands/", FSUtil.commandsDir() + File.separator + "all-channels" + File.separator + "to-load");
             UnPacker.unPack("preloads/json/aliases/", FSUtil.aliasesDir() + File.separator + "all-channels" + File.separator + "to-load");
@@ -183,7 +184,7 @@ public class App {
         APIBot.getBotThread().start();
 
         if (!GraphicsEnvironment.isHeadless()) {
-            Window gui = new Window();// I know this variable "gui" is never used, that is just how it works okay.
+            new Window();
         }
 
         Scanner scanner = new Scanner(System.in);

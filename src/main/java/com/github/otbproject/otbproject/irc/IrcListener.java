@@ -12,9 +12,6 @@ import com.github.otbproject.otbproject.util.ULUtil;
 import org.pircbotx.hooks.ListenerAdapter;
 import org.pircbotx.hooks.events.*;
 
-/**
- * Created by justin on 29/01/2015.
- */
 public class IrcListener extends ListenerAdapter {
 
     @Override
