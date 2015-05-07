@@ -1,4 +1,4 @@
 package com.github.otbproject.otbproject.commands.loader;
 
-class InvalidAliasException extends Exception {
+public class InvalidAliasException extends Exception {
 }
