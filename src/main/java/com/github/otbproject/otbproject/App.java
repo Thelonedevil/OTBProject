@@ -53,7 +53,9 @@ public class App {
                 DateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd-HH.mm.ss");
                 Date date = new Date();
                 File file = new File("OTBProjectFatal-"+dateFormat.format(date)+".log");
-                file.createNewFile();
+                if  (!file.createNewFile()) {
+                    throw new IOException("Failed to create fatal log file for some reason.");
+                }
                 PrintStream ps = new PrintStream(file);
                 t.printStackTrace(ps);
             } catch (IOException e) {
@@ -79,7 +81,7 @@ public class App {
             return;
         }
 
-        if ((cmd == null) || cmd.hasOption(ArgParser.Opts.HELP)) {
+        if (cmd.hasOption(ArgParser.Opts.HELP)) {
             ArgParser.printHelp();
             return;
         }
@@ -131,7 +133,9 @@ public class App {
 
         File versionFile = new File(FSUtil.configDir() + File.separator + "VERSION");
         try {
-            versionFile.createNewFile();
+            if (!versionFile.createNewFile()) {
+                throw new IOException("Failed to create version file");
+            }
         } catch (IOException e) {
             App.logger.catching(e);
         }
