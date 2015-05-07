@@ -5,9 +5,9 @@ import org.apache.logging.log4j.Level;
 
 public class CooldownRemover implements Runnable {
     private static int increment = 1;
-    private String item;
-    private int waitInSeconds;
-    private CooldownSet cooldownSet;
+    private final String item;
+    private final int waitInSeconds;
+    private final CooldownSet cooldownSet;
     private Thread thread;
 
     public CooldownRemover(String item, int waitInSeconds, CooldownSet cooldownSet) {

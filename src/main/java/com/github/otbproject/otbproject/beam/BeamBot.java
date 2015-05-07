@@ -19,19 +19,16 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.concurrent.ExecutionException;
 
-/**
- * Created by Justin on 05/04/2015.
- */
 public class BeamBot implements IBot {
-    private HashMap<String, Channel> channels = new HashMap<>();
+    private final HashMap<String, Channel> channels = new HashMap<>();
     private final DatabaseWrapper botDB = APIDatabase.getBotDatabase();
 
     public final CooldownSet sentMessageCache = new CooldownSet();
     private static final int CACHE_TIME = 4;
 
-    BeamAPI beam = new BeamAPI();
+    final BeamAPI beam = new BeamAPI();
     BeamUser beamUser;
-    HashMap<String,BeamChatChannel> beamChannels = new HashMap<>();
+    final HashMap<String,BeamChatChannel> beamChannels = new HashMap<>();
 
     public BeamBot() {
         try {

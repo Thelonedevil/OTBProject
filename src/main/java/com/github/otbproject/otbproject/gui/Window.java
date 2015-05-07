@@ -9,17 +9,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 
-/**
- * Created by Justin on 09/03/2015.
- */
 public class Window extends JFrame implements ActionListener {
-    Window frame = this;
-    JPanel pnlButtons = new JPanel();
-    JPanel pnlText = new JPanel();
-    JButton close = new JButton("Close Window");
-    JButton exit = new JButton("Stop Bot");
+    private final Window frame = this;
+    private final JPanel pnlButtons = new JPanel();
+    private final JPanel pnlText = new JPanel();
+    private final JButton close = new JButton("Close Window");
+    private final JButton exit = new JButton("Stop Bot");
 
-    TextNote text = new TextNote("OTB does not currently have a graphical interface. \nAs such, if you close this window " +
+    private final TextNote text = new TextNote("OTB does not currently have a graphical interface. \nAs such, if you close this window " +
             "without stopping the bot, you may find it difficult to stop later if you wish to do so. \nIf you are not familiar " +
             "and comfortable with using a terminal, you should probably leave this window open until you wish to stop the bot. \n\n" +
             "The PID of the bot is probably " + App.PID + ", if you are using an Oracle JVM, but it may be different, especially if you are using a " +

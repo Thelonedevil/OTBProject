@@ -7,7 +7,7 @@ import java.io.File;
 
 public class FilterProcessor {
     public static final String METHOD_NAME = "checkMessage";
-    public static final ScriptProcessor PROCESSOR = new ScriptProcessor();
+    private static final ScriptProcessor PROCESSOR = new ScriptProcessor();
 
     public static boolean process(Filter filter, String message) {
         if (filter == null) {

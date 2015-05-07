@@ -23,7 +23,7 @@ public class Channel {
     public final CooldownSet userCooldownSet = new CooldownSet();
     public final BlockingHashSet subscriberStorage = new BlockingHashSet();
     private final String name;
-    private ChannelConfig config;
+    private final ChannelConfig config;
     private DatabaseWrapper mainDb;
     private SQLiteQuoteWrapper quoteDb;
     private ChannelMessageSender messageSender;

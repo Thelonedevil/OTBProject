@@ -76,7 +76,7 @@ public class Command {
         return db.removeRecord(CommandFields.TABLE_NAME, commandName, CommandFields.NAME);
     }
 
-    public static void incrementCount(DatabaseWrapper db, String commandName) throws SQLException {
+    public static void incrementCount(DatabaseWrapper db, String commandName) {
         LoadedCommand loadedCommand = get(db, commandName);
         if (loadedCommand == null) {
             return;
@@ -85,7 +85,7 @@ public class Command {
         addCommandFromLoadedCommand(db, loadedCommand);
     }
 
-    public static void resetCount(DatabaseWrapper db, String commandName) throws SQLException {
+    public static void resetCount(DatabaseWrapper db, String commandName) {
         LoadedCommand loadedCommand = get(db, commandName);
         if (loadedCommand == null) {
             return;

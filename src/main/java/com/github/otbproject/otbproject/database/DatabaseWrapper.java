@@ -8,9 +8,6 @@ import java.util.HashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-/**
- * Created by justin on 23/12/2014.
- */
 public class DatabaseWrapper {
     final Connection connection;
     protected final Lock lock = new ReentrantLock();
@@ -124,7 +121,7 @@ public class DatabaseWrapper {
      * @see java.sql.ResultSet
      */
     public ResultSet getRecord(String table, Object identifier, String fieldName) {
-        PreparedStatement preparedStatement = null;
+        PreparedStatement preparedStatement;
         String sql = "SELECT * FROM " + table + " WHERE " + fieldName + "= ?";
         ResultSet rs = null;
         lock.lock();

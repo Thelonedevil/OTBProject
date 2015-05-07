@@ -94,7 +94,7 @@ public class APIChannel {
             BotConfigHelper.addToCurrentChannels(botConfig, channelName);
             APIConfig.writeBotConfig();
         }
-        App.logger.info("Succssfully joined channel: "+channelName);
+        App.logger.info("Successfully joined channel: "+channelName);
         return true;
     }
 

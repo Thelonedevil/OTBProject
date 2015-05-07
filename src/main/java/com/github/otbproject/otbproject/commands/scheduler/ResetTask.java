@@ -4,9 +4,6 @@ import com.github.otbproject.otbproject.api.APISchedule;
 
 import java.util.concurrent.TimeUnit;
 
-/**
- * Created by Justin on 23/04/2015.
- */
 public class ResetTask implements Runnable {
 
     private final String channel;

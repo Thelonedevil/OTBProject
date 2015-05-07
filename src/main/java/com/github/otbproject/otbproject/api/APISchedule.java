@@ -13,9 +13,6 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
-/**
- * Created by Justin on 20/04/2015.
- */
 public class APISchedule {
     public static final int SECONDS_IN_MINUTE = 60;
     public static final int SECONDS_IN_HOUR = 360;

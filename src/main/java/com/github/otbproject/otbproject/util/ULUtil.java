@@ -8,9 +8,6 @@ import com.github.otbproject.otbproject.users.User;
 import com.github.otbproject.otbproject.users.UserLevel;
 import com.github.otbproject.otbproject.users.Users;
 
-/**
- * Created by Justin on 06/03/2015.
- */
 public class ULUtil {
 
     public static UserLevel getUserLevel(DatabaseWrapper db, String channel, String user) {

@@ -1,8 +1,5 @@
 package com.github.otbproject.otbproject.beam;
 
-/**
- * Created by Justin on 06/04/2015.
- */
 public class BeamChatUser {
 
     private int user_id;

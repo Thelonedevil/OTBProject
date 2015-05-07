@@ -19,7 +19,7 @@ public class ResponseParserUtil {
 
     public static String wordCap(String string, boolean forceLower) {
         String[] strArray = string.split(" ");
-        ArrayList<String> newStrArray = new ArrayList<String>();
+        ArrayList<String> newStrArray = new ArrayList<>();
 
         for (String word : strArray) {
             newStrArray.add(firstCap(word, forceLower));

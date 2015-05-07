@@ -18,7 +18,11 @@ public class FSCommandLoader {
         ArrayList<LoadedCommand> loadedCommands = getCommands(FSUtil.commandsDir() + File.separator + FSUtil.DirNames.ALL_CHANNELS + File.separator + FSUtil.DirNames.TO_LOAD);
 
         // Load commands
-        for (File file : new File(FSUtil.commandsDir() + File.separator + FSUtil.DirNames.CHANNELS).listFiles()) {
+        File[] files = new File(FSUtil.commandsDir() + File.separator + FSUtil.DirNames.CHANNELS).listFiles();
+        if (files == null) {
+            return;
+        }
+        for (File file : files) {
             if (file.isDirectory()) {
                 DatabaseWrapper db = APIDatabase.getChannelMainDatabase(file.getName());
                 // Load all-channels commands
@@ -39,7 +43,11 @@ public class FSCommandLoader {
         ArrayList<LoadedAlias> loadedAliases = getAliases(FSUtil.aliasesDir() + File.separator + FSUtil.DirNames.ALL_CHANNELS + File.separator + FSUtil.DirNames.TO_LOAD);
 
         // Load aliases
-        for (File file : new File(FSUtil.aliasesDir() + File.separator + FSUtil.DirNames.CHANNELS).listFiles()) {
+        File[] files = new File(FSUtil.aliasesDir() + File.separator + FSUtil.DirNames.CHANNELS).listFiles();
+        if (files == null) {
+            return;
+        }
+        for (File file : files) {
             if (file.isDirectory()) {
                 DatabaseWrapper db = APIDatabase.getChannelMainDatabase(file.getName());
                 // Load all-channels aliases
@@ -56,7 +64,11 @@ public class FSCommandLoader {
     }
 
     public static void LoadLoadedCommands(LoadingSet set) {
-        for (File file : new File(FSUtil.commandsDir() + File.separator + FSUtil.DirNames.CHANNELS).listFiles()) {
+        File[] files = new File(FSUtil.commandsDir() + File.separator + FSUtil.DirNames.CHANNELS).listFiles();
+        if (files == null) {
+            return;
+        }
+        for (File file : files) {
             if (file.isDirectory()) {
                 try {
                     LoadLoadedCommands(file.getName(), set);
@@ -94,7 +106,11 @@ public class FSCommandLoader {
     }
 
     public static void LoadLoadedAliases(LoadingSet set) {
-        for (File file : new File(FSUtil.aliasesDir() + File.separator + FSUtil.DirNames.CHANNELS).listFiles()) {
+        File[] files = new File(FSUtil.aliasesDir() + File.separator + FSUtil.DirNames.CHANNELS).listFiles();
+        if (files == null) {
+            return;
+        }
+        for (File file : files) {
             if (file.isDirectory()) {
                 try {
                     LoadLoadedAliases(file.getName(), set);
@@ -178,8 +194,12 @@ public class FSCommandLoader {
 
     private static ArrayList<LoadedCommand> getCommands(String path) {
         // Get commands from files
-        ArrayList<LoadedCommand> loadedCommands = new ArrayList<LoadedCommand>();
-        for (File command : new File(path).listFiles()) {
+        ArrayList<LoadedCommand> loadedCommands = new ArrayList<>();
+        File[] files = new File(path).listFiles();
+        if (files == null) {
+            return new ArrayList<>();
+        }
+        for (File command : files) {
             if (command.isFile()) {
                 LoadedCommand loadedCommand = JsonHandler.readValue(command.getPath(), LoadedCommand.class);
                 try {
@@ -196,8 +216,12 @@ public class FSCommandLoader {
 
     private static ArrayList<LoadedAlias> getAliases(String path) {
         // Get aliases from files
-        ArrayList<LoadedAlias> loadedAliases = new ArrayList<LoadedAlias>();
-        for (File alias : new File(path).listFiles()) {
+        ArrayList<LoadedAlias> loadedAliases = new ArrayList<>();
+        File[] files = new File(path).listFiles();
+        if (files == null) {
+            return new ArrayList<>();
+        }
+        for (File alias : files) {
             if (alias.isFile()) {
                 LoadedAlias loadedAlias = JsonHandler.readValue(alias.getPath(), LoadedAlias.class);
                 try {
@@ -234,8 +258,8 @@ public class FSCommandLoader {
             return true;
         }
         // Make sure overwrites
-        if (dest.exists()) {
-            dest.delete();
+        if (dest.exists() && !dest.delete()) {
+            App.logger.error("Failed to delete file '" + dest.getPath() + "' when trying to replace it with file '" + source.getPath() + "'");
         }
         return source.renameTo(dest);
     }

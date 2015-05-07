@@ -1,4 +1,4 @@
 package com.github.otbproject.otbproject.commands.loader;
 
-public class InvalidCommandException extends Exception {
+class InvalidCommandException extends Exception {
 }

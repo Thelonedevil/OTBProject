@@ -8,12 +8,8 @@ import net.lingala.zip4j.model.FileHeader;
 
 import java.io.*;
 import java.net.URISyntaxException;
-import java.nio.file.*;
 import java.util.List;
 
-/**
- * Created by Justin on 13/03/2015.
- */
 public class UnPacker {
 
     public static void unPack(String dir, String destDir){

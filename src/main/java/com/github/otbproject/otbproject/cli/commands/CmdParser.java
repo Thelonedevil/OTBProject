@@ -15,9 +15,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
 
-/**
- * Created by Justin on 25/03/2015.
- */
 public class CmdParser {
 
     public static final String STOP = "stop";
@@ -26,8 +23,8 @@ public class CmdParser {
     public static final String LEAVECHANNEL = "leave";
     public static final String RELOAD = "reload";
     public static final String EXEC = "exec";
-    HashMap<String, Runnable> mapOfThings = new HashMap<>();
-    ArrayList<String> args = new ArrayList<>();
+    final HashMap<String, Runnable> mapOfThings = new HashMap<>();
+    final ArrayList<String> args = new ArrayList<>();
     String name = "RETURN CHARACTER";//Honestly useless assignment, but something has to be here, why not this?
 
     public CmdParser() {
@@ -135,7 +132,6 @@ public class CmdParser {
         } catch (NullPointerException npe) {
             App.logger.catching(npe);
         }
-        return;
     }
 
 

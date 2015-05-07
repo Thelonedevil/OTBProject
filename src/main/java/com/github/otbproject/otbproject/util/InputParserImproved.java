@@ -3,19 +3,15 @@ package com.github.otbproject.otbproject.util;
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.irc.IRCBot;
 import org.pircbotx.InputParser;
-import org.pircbotx.PircBotX;
 import org.pircbotx.Utils;
-import org.pircbotx.cap.CapHandler;
 import org.pircbotx.exception.IrcException;
 import org.pircbotx.hooks.events.ServerPingEvent;
 import org.pircbotx.hooks.events.UnknownEvent;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
-/**
- * Created by Justin on 29/03/2015.
- */
 public class InputParserImproved extends InputParser {
 
     public InputParserImproved(IRCBot bot) {
@@ -43,7 +39,7 @@ public class InputParserImproved extends InputParser {
         // Check for server pings.
         if (command.equals("PING")) {
             // Respond to the ping and return immediately.
-            configuration.getListenerManager().dispatchEvent(new ServerPingEvent<PircBotX>(bot, parsedLine.get(0)));
+            configuration.getListenerManager().dispatchEvent(new ServerPingEvent<>(bot, parsedLine.get(0)));
             return;
         } else if (command.startsWith("ERROR")) {
             //Server is shutting us down
@@ -69,7 +65,7 @@ public class InputParserImproved extends InputParser {
             } else {
                 int code = Utils.tryParseInt(command, -1);
                 if (code != -1) {
-                    if (!((IRCBot) bot).isLoggedIn())
+                    if (((IRCBot) bot).notLoggedIn())
                         processConnect(line, command, target, parsedLine);
                     processServerResponse(code, line, parsedLine);
                     // Return from the method.
@@ -83,13 +79,11 @@ public class InputParserImproved extends InputParser {
             }
         else {
             // We don't know what this line means.
-            configuration.getListenerManager().dispatchEvent(new UnknownEvent<PircBotX>(bot, line));
+            configuration.getListenerManager().dispatchEvent(new UnknownEvent<>(bot, line));
 
-            if (!((IRCBot) bot).isLoggedIn())
+            if (((IRCBot) bot).notLoggedIn())
                 //Pass to CapHandlers, could be important
-                for (CapHandler curCapHandler : configuration.getCapHandlers())
-                    if (curCapHandler.handleUnknown(bot, line))
-                        capHandlersFinished.add(curCapHandler);
+                capHandlersFinished.addAll(configuration.getCapHandlers().stream().filter(curCapHandler -> curCapHandler.handleUnknown(bot, line)).collect(Collectors.toList()));
             // Return from the method;
             return;
         }
@@ -97,7 +91,7 @@ public class InputParserImproved extends InputParser {
         if (sourceNick.startsWith(":"))
             sourceNick = sourceNick.substring(1);
 
-        if (!((IRCBot) bot).isLoggedIn())
+        if (((IRCBot) bot).notLoggedIn())
             processConnect(line, command, target, parsedLine);
         processCommand(target, sourceNick, sourceLogin, sourceHostname, command, line, parsedLine);
     }

@@ -5,9 +5,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-/**
- * Created by Justin on 20/04/2015.
- */
 public class Scheduler {
 
     private final ScheduledExecutorService scheduledExecutorService;

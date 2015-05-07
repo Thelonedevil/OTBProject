@@ -9,9 +9,6 @@ import java.util.concurrent.TimeUnit;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-/**
- * Created by Justin on 13/03/2015.
- */
 public class OutputRawImproved extends OutputRaw {
     public OutputRawImproved(PircBotX bot) {
         super(bot);
@@ -47,8 +44,6 @@ public class OutputRawImproved extends OutputRaw {
      */
     public void rawLine(String line) {
         checkNotNull(line, "Line cannot be null");
-        if (line == null)
-            throw new NullPointerException("Cannot send null messages to server");
         if (!bot.isConnected())
             throw new RuntimeException("Not connected to server");
         writeLock.lock();

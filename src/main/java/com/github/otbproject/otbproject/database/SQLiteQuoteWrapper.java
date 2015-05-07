@@ -11,7 +11,7 @@ import java.util.HashMap;
 
 public class SQLiteQuoteWrapper extends DatabaseWrapper {
 
-    protected SQLiteQuoteWrapper(String path, HashMap<String, TableFields> tables) throws SQLException, ClassNotFoundException {
+    private SQLiteQuoteWrapper(String path, HashMap<String, TableFields> tables) throws SQLException, ClassNotFoundException {
         super(path, tables);
     }
 

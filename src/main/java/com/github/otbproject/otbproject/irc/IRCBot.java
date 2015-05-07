@@ -22,11 +22,8 @@ import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
-/**
- * Created by justin on 05/02/2015.
- */
 public class IRCBot extends PircBotX implements IBot{
-    private HashMap<String, Channel> channels = new HashMap<>();
+    private final HashMap<String, Channel> channels = new HashMap<>();
     private final DatabaseWrapper botDB = APIDatabase.getBotDatabase();
     private final OutputRaw newOutputRaw;
     // Should take slightly more than 30 seconds to refill 99 tokens adding 1
@@ -196,7 +193,7 @@ public class IRCBot extends PircBotX implements IBot{
     }
 
 
-    public boolean isLoggedIn(){
-        return loggedIn;
+    public boolean notLoggedIn(){
+        return !loggedIn;
     }
 }
