@@ -18,8 +18,8 @@ public class DatabaseWrapper {
      *
      * @param path   The path to the database file, should already exist.
      * @param tables A HashMap of Table name to a HashSet of the field names.
-     * @throws SQLException
-     * @throws ClassNotFoundException
+     * @throws SQLException if a SQLException occurs in the construction of the object
+     * @throws ClassNotFoundException if the SQLite JDBC class is not available at runtime
      */
     protected DatabaseWrapper(String path, HashMap<String, TableFields> tables) throws SQLException, ClassNotFoundException {
         lock.lock();
