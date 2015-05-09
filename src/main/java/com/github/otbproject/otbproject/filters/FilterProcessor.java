@@ -4,6 +4,7 @@ import com.github.otbproject.otbproject.fs.FSUtil;
 import com.github.otbproject.otbproject.scripts.ScriptProcessor;
 
 import java.io.File;
+import java.util.regex.Pattern;
 
 public class FilterProcessor {
     public static final String METHOD_NAME = "checkMessage";
@@ -16,9 +17,9 @@ public class FilterProcessor {
 
         switch (filter.getType()) {
             case PLAINTEXT:
-                return message.contains(filter.getData());
+                return Pattern.compile(Pattern.quote(filter.getData()), Pattern.CASE_INSENSITIVE).matcher(message).matches();
             case REGEX:
-                return message.matches(filter.getData());
+                return Pattern.compile(filter.getData(), Pattern.CASE_INSENSITIVE).matcher(message).matches();
             case SCRIPT:
                 // TODO possibly tweak method name and parameter(s) passed in
                 return PROCESSOR.process(filter.getData(), (FSUtil.filtersDir() + File.separator + filter.getData()), METHOD_NAME, message);
