@@ -69,9 +69,6 @@ public class App {
         CommandLine cmd;
         try {
             cmd = ArgParser.parse(args);
-            if (cmd.hasOption(ArgParser.Opts.UNPACK) && cmd.hasOption(ArgParser.Opts.NO_UNPACK)) {
-                throw new ParseException("Cannot have mutually exclusive options '--" + ArgParser.Opts.UNPACK + "' and '--" + ArgParser.Opts.NO_UNPACK + "'");
-            }
         } catch (ParseException e) {
             System.out.println(e.getMessage());
             ArgParser.printHelp();
