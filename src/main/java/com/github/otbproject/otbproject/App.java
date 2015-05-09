@@ -66,44 +66,7 @@ public class App {
 
 
     private static void doMain(String[] args) throws NoSuchFieldException, IllegalAccessException {
-        CommandLine cmd;
-        try {
-            cmd = ArgParser.parse(args);
-            if (cmd.hasOption(ArgParser.Opts.UNPACK) && cmd.hasOption(ArgParser.Opts.NO_UNPACK)) {
-                throw new ParseException("Cannot have mutually exclusive options '--" + ArgParser.Opts.UNPACK + "' and '--" + ArgParser.Opts.NO_UNPACK + "'");
-            }
-        } catch (ParseException e) {
-            System.out.println(e.getMessage());
-            ArgParser.printHelp();
-            return;
-        }
-
-        if (cmd.hasOption(ArgParser.Opts.HELP)) {
-            ArgParser.printHelp();
-            return;
-        }
-
-        if (cmd.hasOption(ArgParser.Opts.VERSION)) {
-            System.out.println("OTBProject version " + VERSION);
-            return;
-        }
-
-        if (cmd.hasOption(ArgParser.Opts.BASE_DIR)) {
-            String path = cmd.getOptionValue(ArgParser.Opts.BASE_DIR);
-            if (new File(path).isDirectory()) {
-                if (path.endsWith(File.separator)) {
-                    path = path.substring(0, path.length() - 1);
-                }
-                FSUtil.setBaseDirPath(path);
-            } else {
-                System.out.println("Error setting base directory.");
-                System.out.println("The path:\t" + path);
-                System.out.println("does not exist or is not a directory.");
-                System.out.println();
-                ArgParser.printHelp();
-                return;
-            }
-        }
+        CommandLine cmd = initialArgParse(args);
 
         System.setProperty("OTBCONF", FSUtil.logsDir());
         org.apache.logging.log4j.core.Logger coreLogger
@@ -119,12 +82,15 @@ public class App {
             coreLogger.removeAppender(config.getAppender("Console-debug"));
         }
 
+        // Log version
+        logger.info("OTBProject version " + VERSION);
+
         // Ensure directory tree is setup
         try {
             Setup.setup();
         } catch (IOException e) {
-            App.logger.error("Unable to setup main directory tree at:\t" + FSUtil.getBaseDir());
-            App.logger.catching(e);
+            logger.error("Unable to setup main directory tree at:\t" + FSUtil.getBaseDir());
+            logger.catching(e);
             System.exit(1);
         }
 
@@ -134,19 +100,20 @@ public class App {
                 throw new IOException("Failed to create version file");
             }
         } catch (IOException e) {
-            App.logger.catching(e);
+            logger.catching(e);
         }
         String version = "";
         try {
             BufferedReader fileReader = new BufferedReader(new FileReader(versionFile));
             version = fileReader.readLine();
         } catch (IOException e) {
-            App.logger.catching(e);
+            logger.catching(e);
         }
         if (cmd.hasOption(ArgParser.Opts.UNPACK) || (!VERSION.contains("SNAPSHOT") && !VERSION.equalsIgnoreCase(version) && !cmd.hasOption(ArgParser.Opts.NO_UNPACK))) {
             if (!VERSION.equalsIgnoreCase(version)) {
                 VersionCompatHelper.fixCompatIssues(version);
             }
+            // TODO unpack based on a list or something
             UnPacker.unPack("preloads/json/commands/", FSUtil.commandsDir() + File.separator + "all-channels" + File.separator + "to-load");
             UnPacker.unPack("preloads/json/aliases/", FSUtil.aliasesDir() + File.separator + "all-channels" + File.separator + "to-load");
             UnPacker.unPack("preloads/json/bot-channel/commands/", FSUtil.commandsDir() + File.separator + "bot-channel" + File.separator + "to-load");
@@ -156,7 +123,7 @@ public class App {
             PrintStream ps = new PrintStream(versionFile);
             ps.println(VERSION);
         } catch (IOException e) {
-            App.logger.catching(e);
+            logger.catching(e);
         }
 
         // TODO remove in later release
@@ -197,6 +164,46 @@ public class App {
         scanner.close();
     }
 
+    private static CommandLine initialArgParse(String[] args) {
+        CommandLine cmd = null;
+        try {
+            cmd = ArgParser.parse(args);
+        } catch (ParseException e) {
+            System.out.println(e.getMessage());
+            ArgParser.printHelp();
+            System.exit(1);
+        }
+
+        if (cmd.hasOption(ArgParser.Opts.HELP)) {
+            ArgParser.printHelp();
+            System.exit(0);
+        }
+
+        if (cmd.hasOption(ArgParser.Opts.VERSION)) {
+            System.out.println("OTBProject version " + VERSION);
+            System.exit(0);
+        }
+
+        if (cmd.hasOption(ArgParser.Opts.BASE_DIR)) {
+            String path = cmd.getOptionValue(ArgParser.Opts.BASE_DIR);
+            if (new File(path).isDirectory()) {
+                if (path.endsWith(File.separator)) {
+                    path = path.substring(0, path.length() - 1);
+                }
+                FSUtil.setBaseDirPath(path);
+            } else {
+                System.out.println("Error setting base directory.");
+                System.out.println("The path:\t" + path);
+                System.out.println("does not exist or is not a directory.");
+                System.out.println();
+                ArgParser.printHelp();
+                System.exit(2);
+            }
+        }
+
+        return cmd;
+    }
+
     public static void startup(CommandLine cmd) {
         // Load commands and aliases
         FSCommandLoader.LoadCommands();
@@ -220,7 +227,7 @@ public class App {
             } else if (serviceName.equals(ServiceName.BEAM.toString())) {
                 APIConfig.getGeneralConfig().setServiceName(ServiceName.BEAM);
             } else {
-                App.logger.error("Invalid service name: " + serviceName);
+                logger.error("Invalid service name: " + serviceName);
                 ArgParser.printHelp();
                 System.exit(1);
             }
