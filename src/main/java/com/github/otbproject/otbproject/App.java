@@ -82,12 +82,15 @@ public class App {
             coreLogger.removeAppender(config.getAppender("Console-debug"));
         }
 
+        // Log version
+        logger.info("OTBProject version " + VERSION);
+
         // Ensure directory tree is setup
         try {
             Setup.setup();
         } catch (IOException e) {
-            App.logger.error("Unable to setup main directory tree at:\t" + FSUtil.getBaseDir());
-            App.logger.catching(e);
+            logger.error("Unable to setup main directory tree at:\t" + FSUtil.getBaseDir());
+            logger.catching(e);
             System.exit(1);
         }
 
@@ -97,14 +100,14 @@ public class App {
                 throw new IOException("Failed to create version file");
             }
         } catch (IOException e) {
-            App.logger.catching(e);
+            logger.catching(e);
         }
         String version = "";
         try {
             BufferedReader fileReader = new BufferedReader(new FileReader(versionFile));
             version = fileReader.readLine();
         } catch (IOException e) {
-            App.logger.catching(e);
+            logger.catching(e);
         }
         if (cmd.hasOption(ArgParser.Opts.UNPACK) || (!VERSION.contains("SNAPSHOT") && !VERSION.equalsIgnoreCase(version) && !cmd.hasOption(ArgParser.Opts.NO_UNPACK))) {
             if (!VERSION.equalsIgnoreCase(version)) {
@@ -120,7 +123,7 @@ public class App {
             PrintStream ps = new PrintStream(versionFile);
             ps.println(VERSION);
         } catch (IOException e) {
-            App.logger.catching(e);
+            logger.catching(e);
         }
 
         // TODO remove in later release
@@ -224,7 +227,7 @@ public class App {
             } else if (serviceName.equals(ServiceName.BEAM.toString())) {
                 APIConfig.getGeneralConfig().setServiceName(ServiceName.BEAM);
             } else {
-                App.logger.error("Invalid service name: " + serviceName);
+                logger.error("Invalid service name: " + serviceName);
                 ArgParser.printHelp();
                 System.exit(1);
             }
