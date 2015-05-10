@@ -73,6 +73,7 @@ public class DatabaseWrapperTest {
     }
     @Test
     public void stringDataShouldBeInsertedIntoAndRemovedFromDatabase() {
+        assertFalse(db.exists(tableName, testData.get(fieldName), fieldName));
         assertTrue(db.insertRecord(tableName, testData));
         assertTrue(db.exists(tableName, testData.get(fieldName), fieldName));
         assertTrue(db.removeRecord(tableName, testData.get(fieldName), fieldName));
@@ -80,6 +81,7 @@ public class DatabaseWrapperTest {
 
     @Test
     public void integerDataShouldBeInsertedIntoAndRemovedFromDatabase(){
+        assertFalse(db.exists(tableName, testDataInt.get(fieldName2), fieldName2));
         assertTrue(db.insertRecord(tableName, testDataInt));
         assertTrue(db.exists(tableName, testDataInt.get(fieldName2), fieldName2));
         assertTrue(db.removeRecord(tableName, testDataInt.get(fieldName2), fieldName2));
@@ -96,6 +98,7 @@ public class DatabaseWrapperTest {
 
     @Test
     public void newDataShouldReplaceOldDataInDatabase(){
+        assertFalse(db.exists(tableName, testData.get(fieldName), fieldName));
         assertTrue(db.insertRecord(tableName, testData));
         assertTrue(db.exists(tableName, testData.get(fieldName), fieldName));
         assertTrue(db.updateRecord(tableName, testData.get(fieldName), fieldName, testDataNew));
