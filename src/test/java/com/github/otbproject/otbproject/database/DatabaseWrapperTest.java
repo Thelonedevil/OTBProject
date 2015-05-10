@@ -77,6 +77,7 @@ public class DatabaseWrapperTest {
         assertTrue(db.insertRecord(tableName, testData));
         assertTrue(db.exists(tableName, testData.get(fieldName), fieldName));
         assertTrue(db.removeRecord(tableName, testData.get(fieldName), fieldName));
+        assertFalse(db.exists(tableName, testData.get(fieldName), fieldName));
     }
 
     @Test
@@ -85,6 +86,7 @@ public class DatabaseWrapperTest {
         assertTrue(db.insertRecord(tableName, testDataInt));
         assertTrue(db.exists(tableName, testDataInt.get(fieldName2), fieldName2));
         assertTrue(db.removeRecord(tableName, testDataInt.get(fieldName2), fieldName2));
+        assertFalse(db.exists(tableName, testDataInt.get(fieldName2), fieldName2));
     }
 
     @Test
