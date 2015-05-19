@@ -44,7 +44,7 @@ public class CmdParser {
         Scanner scanner = new Scanner(aLine);
         scanner.useDelimiter(" ");
         if (scanner.hasNext()) {
-            App.logger.info(aLine);
+            App.logger.debug("Processing input line: " + aLine);
             name = scanner.next().toLowerCase();
             while (scanner.hasNext()) {
                 args.add(scanner.next());
