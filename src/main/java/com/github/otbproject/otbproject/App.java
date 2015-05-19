@@ -23,6 +23,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
 
+import javax.swing.*;
 import java.awt.*;
 import java.io.*;
 import java.lang.management.ManagementFactory;
@@ -151,6 +152,11 @@ public class App {
         APIBot.getBotThread().start();
 
         if (!GraphicsEnvironment.isHeadless()) {
+            try {
+                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            } catch (Exception e) {
+                App.logger.catching(e);
+            }
             new Window();
         }
 
