@@ -34,7 +34,8 @@ public class CommandProcessor {
             return message;
         } else {
             usedAliases.add(aliasName);
-        }         LoadedAlias loadedAlias = Alias.get(db, aliasName);
+        }
+        LoadedAlias loadedAlias = Alias.get(db, aliasName);
         if ((loadedAlias != null) && loadedAlias.isEnabled()) {
             if (splitMsg.length == 1) {
                 return checkAlias(db, loadedAlias.getCommand(), usedAliases);
