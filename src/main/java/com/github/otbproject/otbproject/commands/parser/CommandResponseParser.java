@@ -198,27 +198,22 @@ public class CommandResponseParser {
     }
 
     private static String modify(String toModify, String modifier) {
-        if (modifier.equals(ModifierTypes.LOWER)) {
-            return toModify.toLowerCase();
+        switch (modifier) {
+            case ModifierTypes.LOWER:
+                return toModify.toLowerCase();
+            case ModifierTypes.UPPER:
+                return toModify.toUpperCase();
+            case ModifierTypes.FIRST_CAP:
+                return ResponseParserUtil.firstCap(toModify, true);
+            case ModifierTypes.WORD_CAP:
+                return ResponseParserUtil.wordCap(toModify, true);
+            case ModifierTypes.FIRST_CAP_SOFT:
+                return ResponseParserUtil.firstCap(toModify, false);
+            case ModifierTypes.WORD_CAP_SOFT:
+                return ResponseParserUtil.wordCap(toModify, false);
+            default:
+                return toModify;
         }
-        if (modifier.equals(ModifierTypes.UPPER)) {
-            return toModify.toUpperCase();
-        }
-        if (modifier.equals(ModifierTypes.FIRST_CAP)) {
-            return ResponseParserUtil.firstCap(toModify, true);
-        }
-        if (modifier.equals(ModifierTypes.WORD_CAP)) {
-            return ResponseParserUtil.wordCap(toModify, true);
-        }
-        if (modifier.equals(ModifierTypes.FIRST_CAP_SOFT)) {
-            return ResponseParserUtil.firstCap(toModify, false);
-        }
-        if (modifier.equals(ModifierTypes.WORD_CAP_SOFT)) {
-            return ResponseParserUtil.wordCap(toModify, false);
-        }
-
-        // Else return unmodified word
-        return toModify;
     }
 
     private static String getModifier(String word) {
