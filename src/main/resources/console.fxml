@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.github.otbproject.otbproject.gui.GuiController">
+  <columnConstraints>
+      <ColumnConstraints hgrow="SOMETIMES" maxWidth="0.0" minWidth="0.0" prefWidth="0.0" />
+      <ColumnConstraints hgrow="SOMETIMES" maxWidth="20.0" minWidth="10.0" prefWidth="20.0" />
+    <ColumnConstraints hgrow="SOMETIMES" maxWidth="750.0" minWidth="10.0" prefWidth="750.0" />
+      <ColumnConstraints hgrow="SOMETIMES" maxWidth="20.0" minWidth="10.0" prefWidth="20.0" />
+    <ColumnConstraints hgrow="SOMETIMES" maxWidth="388.0" minWidth="10.0" prefWidth="388.0" />
+      <ColumnConstraints hgrow="SOMETIMES" maxWidth="20.0" minWidth="0.0" prefWidth="0.0" />
+  </columnConstraints>
+  <rowConstraints>
+      <RowConstraints maxHeight="20.0" minHeight="10.0" prefHeight="20.0" vgrow="SOMETIMES" />
+    <RowConstraints maxHeight="436.0" minHeight="10.0" prefHeight="434.0" vgrow="SOMETIMES" />
+      <RowConstraints maxHeight="10.0" minHeight="10.0" prefHeight="10.0" vgrow="SOMETIMES" />
+    <RowConstraints maxHeight="145.0" minHeight="10.0" prefHeight="26.0" vgrow="SOMETIMES" />
+      <RowConstraints maxHeight="20.0" minHeight="10.0" prefHeight="20.0" vgrow="SOMETIMES" />
+  </rowConstraints>
+   <children>
+      <TextArea fx:id="logOutput" editable="false" GridPane.columnIndex="2" GridPane.rowIndex="1" GridPane.rowSpan="3" />
+      <TextField fx:id="commandsInput" GridPane.columnIndex="4" GridPane.rowIndex="3"  onKeyPressed="#command" />
+      <TextArea fx:id="commandsOutput" editable="false" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="4" GridPane.rowIndex="1" />
+   </children>
+</GridPane>

@@ -10,6 +10,7 @@ import com.github.otbproject.otbproject.commands.loader.FSCommandLoader;
 import com.github.otbproject.otbproject.config.*;
 import com.github.otbproject.otbproject.fs.FSUtil;
 import com.github.otbproject.otbproject.fs.Setup;
+import com.github.otbproject.otbproject.gui.GuiApplication;
 import com.github.otbproject.otbproject.gui.Window;
 import com.github.otbproject.otbproject.irc.IRCBot;
 import com.github.otbproject.otbproject.util.InputParserImproved;
@@ -158,6 +159,7 @@ public class App {
                 App.logger.catching(e);
             }
             new Window();
+            GuiApplication.start(args);
         }
 
         Scanner scanner = new Scanner(System.in);
