@@ -25,6 +25,7 @@ public class CmdParser {
     public static final String EXEC = "exec";
     final HashMap<String, Runnable> mapOfThings = new HashMap<>();
     final ArrayList<String> args = new ArrayList<>();
+    private String responseStr = "";
     String name = "RETURN CHARACTER";//Honestly useless assignment, but something has to be here, why not this?
 
     public CmdParser() {
@@ -37,13 +38,13 @@ public class CmdParser {
         mapOfThings.put(EXEC, this::exec);
     }
 
-    public void processLine(String aLine) {
+    public String processLine(String aLine) {
         //use a second Scanner to parse the content of each line
         aLine = aLine.trim();
         Scanner scanner = new Scanner(aLine);
         scanner.useDelimiter(" ");
         if (scanner.hasNext()) {
-            App.logger.info(aLine);
+            App.logger.debug("Processing input line: " + aLine);
             name = scanner.next().toLowerCase();
             while (scanner.hasNext()) {
                 args.add(scanner.next());
@@ -53,9 +54,13 @@ public class CmdParser {
             } else {
                 printHelpNoCommand();
             }
+            if (!responseStr.isEmpty()) {
+                App.logger.debug(responseStr);
+            }
         } else {
-            App.logger.info("Empty or invalid line. Unable to process.");
+            App.logger.warn("Empty or invalid line. Unable to process.");
         }
+        return responseStr;
     }
 
 
@@ -110,14 +115,12 @@ public class CmdParser {
 
     void exec() {
         if (args.size() < 2) {
-            String commandStr = "Not enough args for exec";
-            App.logger.info(commandStr);
+            responseStr = "Not enough args for 'exec'";
             return;
         }
         String channelName = args.get(0).toLowerCase();
         if (!APIChannel.in(channelName)) {
-            String commandStr = "Not in channel: " + channelName;
-            App.logger.info(commandStr);
+            responseStr = "Not in channel: " + channelName;
             return;
         }
         UserLevel ul = UserLevel.INTERNAL;
@@ -136,7 +139,7 @@ public class CmdParser {
 
 
     void printHelpNoCommand() {
-        App.logger.info("That command is invalid. \'" + name + "\' does not exist as a CLI command.");
+        responseStr = "That command is invalid. \'" + name + "\' does not exist as a CLI command.";
     }
 
     void printHelp() {
