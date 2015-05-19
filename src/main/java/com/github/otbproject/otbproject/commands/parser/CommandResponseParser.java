@@ -141,12 +141,13 @@ public class CommandResponseParser {
         else if (isTerm(term, "foreach")) {
             String prepend = getEmbeddedString(term, 1);
             String append = getEmbeddedString(term, 2);
-            String result = "";
+            StringBuilder result = new StringBuilder();
+            String modifier = getModifier(term);
 
             for (String arg : args) {
-                result = result + prepend + doModifier(arg, term) + append;
+                result.append(prepend).append(modify(arg, modifier)).append(append);
             }
-            return result;
+            return result.toString();
         }
         // [[equal{{compare1}}{{compare2}}{{if_same}}{{if_diff}}]]
         else if (isTerm(term, "equal")) {
@@ -193,8 +194,10 @@ public class CommandResponseParser {
     }
 
     private static String doModifier(String toModify, String term) {
-        String modifier = getModifier(term);
+        return modify(toModify, getModifier(term));
+    }
 
+    private static String modify(String toModify, String modifier) {
         if (modifier.equals(ModifierTypes.LOWER)) {
             return toModify.toLowerCase();
         }
