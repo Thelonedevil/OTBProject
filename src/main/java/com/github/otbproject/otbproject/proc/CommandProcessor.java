@@ -34,15 +34,12 @@ public class CommandProcessor {
             return message;
         } else {
             usedAliases.add(aliasName);
-        }
-        if (Alias.exists(db, aliasName)) {
-            LoadedAlias loadedAlias = Alias.get(db, aliasName);
-            if ((loadedAlias != null) && loadedAlias.isEnabled()) {
-                if (splitMsg.length == 1) {
-                    return checkAlias(db, loadedAlias.getCommand(), usedAliases);
-                }
-                return checkAlias(db, (loadedAlias.getCommand() + " " + splitMsg[1]), usedAliases);
+        }         LoadedAlias loadedAlias = Alias.get(db, aliasName);
+        if ((loadedAlias != null) && loadedAlias.isEnabled()) {
+            if (splitMsg.length == 1) {
+                return checkAlias(db, loadedAlias.getCommand(), usedAliases);
             }
+            return checkAlias(db, (loadedAlias.getCommand() + " " + splitMsg[1]), usedAliases);
         }
         // Return message if not an alias
         return message;
@@ -72,21 +69,19 @@ public class CommandProcessor {
             }
         }
 
-        if (Command.exists(db, cmdName)) {
+        LoadedCommand command = Command.get(db, cmdName);
+        if ((command != null) && command.isEnabled() && userLevel.getValue() >= command.getExecUserLevel().getValue() && args.length >= command.getMinArgs()) {
             App.logger.debug("Processing command: " + cmdName);
-            LoadedCommand loadedCommand = Command.get(db, cmdName);
-            if ((loadedCommand != null) && loadedCommand.isEnabled() && userLevel.getValue() >= loadedCommand.getExecUserLevel().getValue() && args.length >= loadedCommand.getMinArgs()) {
-                String scriptPath = loadedCommand.getScript();
-                // Return script path
-                if ((scriptPath != null) && !scriptPath.equals("null")) {
-                    return new ProcessedCommand(scriptPath, cmdName, true, args);
-                }
-                // Else non-script command
-                // Check if command is debug
-                else if (!loadedCommand.isDebug() || debug) {
-                    String response = CommandResponseParser.parse(user, channel, (loadedCommand.getCount() + 1), args, loadedCommand.getResponse());
-                    return new ProcessedCommand(response, cmdName, false, args);
-                }
+            String scriptPath = command.getScript();
+            // Return script path
+            if ((scriptPath != null) && !scriptPath.equals("null")) {
+                return new ProcessedCommand(scriptPath, cmdName, true, args);
+            }
+            // Else non-script command
+            // Check if command is debug
+            else if (!command.isDebug() || debug) {
+                String response = CommandResponseParser.parse(user, channel, (command.getCount() + 1), args, command.getResponse());
+                return new ProcessedCommand(response, cmdName, false, args);
             }
         }
         return new ProcessedCommand("", "", false, args);
