@@ -66,13 +66,17 @@ public class CmdParser {
 
     void stop() {
         App.logger.info("Stopping the process");
-        APIBot.getBot().shutdown();
+        if (APIBot.getBot() != null && APIBot.getBot().isConnected()) {
+            APIBot.getBot().shutdown();
+        }
         App.logger.info("Process Stopped, Goodbye");
         System.exit(0);
     }
 
     void restart() {
-        APIBot.getBot().shutdown();
+        if (APIBot.getBot() != null && APIBot.getBot().isConnected()) {
+            APIBot.getBot().shutdown();
+        }
         FSCommandLoader.LoadCommands();
         FSCommandLoader.LoadAliases();
         try {

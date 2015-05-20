@@ -11,7 +11,6 @@ public class GuiController {
 
     @FXML
     public TextArea logOutput;
-
     @FXML
     public TextArea commandsOutput;
     @FXML
@@ -21,9 +20,13 @@ public class GuiController {
     public void command(KeyEvent event) {
         if (event.getCode() == KeyCode.ENTER) {
             String input = commandsInput.getText();
-            commandsOutput.appendText(input + "\n" + ">  ");
+            commandsOutput.appendText(input + "\n");
             commandsInput.setText("");
-            new CmdParser().processLine(input);
+            commandsInput.setEditable(false);
+            String output = new CmdParser().processLine(input);
+            commandsOutput.appendText(output + "\n" + ">  ");
+            commandsInput.setEditable(true);
+
         }
     }
 }
