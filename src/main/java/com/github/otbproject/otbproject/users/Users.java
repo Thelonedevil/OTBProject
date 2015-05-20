@@ -2,12 +2,12 @@ package com.github.otbproject.otbproject.users;
 
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
+import com.github.otbproject.otbproject.util.CustomCollectors;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.stream.Collectors;
 
 public class Users {
 
@@ -33,14 +33,12 @@ public class Users {
     }
 
     public static ArrayList<String> getUsers(DatabaseWrapper db) {
-        ArrayList<Object> objectArrayList =  db.getRecordsList(UserFields.TABLE_NAME, UserFields.NICK);
-        if (objectArrayList == null) {
+        ArrayList<Object> list =  db.getRecordsList(UserFields.TABLE_NAME, UserFields.NICK);
+        if (list == null) {
             return null;
         }
-        ArrayList<String> usersList = new ArrayList<>();
         try {
-            usersList.addAll(objectArrayList.stream().map(key -> (String) key).collect(Collectors.toList()));
-            return usersList;
+            return list.stream().map(key -> (String) key).collect(CustomCollectors.toArrayList());
         } catch (ClassCastException e) {
             App.logger.catching(e);
             return null;
