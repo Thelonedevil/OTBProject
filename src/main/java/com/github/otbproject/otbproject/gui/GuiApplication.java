@@ -14,14 +14,13 @@ import java.io.File;
 public class GuiApplication extends Application {
 
 
-    private GuiController controller;
+    private static GuiController controller;
     private Tailer tailer;
 
     /**
      * The main entry point for all JavaFX applications.
      * The start method is called after the init method has returned,
      * and after the system is ready for the application to begin running.
-     *
      * <p>
      * NOTE: This method is called on the JavaFX Application Thread.
      * </p>
@@ -39,21 +38,24 @@ public class GuiApplication extends Application {
         primaryStage.setScene(new Scene(start, 1200, 500));
         primaryStage.show();
         controller = loader.<GuiController>getController();
-        File logFile = new File(FSUtil.logsDir() + File.separator + "app.log");
+        controller.cliOutput.appendText(">  ");
+        controller.commandsInput.setEditable(false);
+        File logFile = new File(FSUtil.logsDir() + File.separator + "console.log");
         tailer = Tailer.create(logFile, new CustomTailer(), 250);
-        controller.logOutput.setWrapText(true);
-        controller.commandsOutput.appendText(">  ");
-        controller.commandsOutput.setWrapText(true);
     }
 
-    public static void start(String[] args){
+    public static void start(String[] args) {
         launch(args);
+    }
+
+    public static void setInputActive() {
+        controller.commandsInput.setEditable(true);
     }
 
     class CustomTailer extends TailerListenerAdapter {
         @Override
         public void handle(String line) {
-            controller.logOutput.appendText(line + "\n");
+            GuiUtils.runSafe(() -> controller.logOutput.appendText(line + "\n"));
         }
     }
 }
