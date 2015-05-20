@@ -2,6 +2,7 @@ package com.github.otbproject.otbproject.util;
 
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.api.APIChannel;
+import com.github.otbproject.otbproject.messages.internal.InternalMessageSender;
 import com.github.otbproject.otbproject.messages.receive.PackagedMessage;
 import com.github.otbproject.otbproject.messages.send.MessageOut;
 import com.github.otbproject.otbproject.messages.send.MessagePriority;
@@ -15,7 +16,11 @@ public class ScriptHelper {
     }
 
     public static void sendMessage(String channel, String message, MessagePriority priority) {
-        MessageOut messageOut = new MessageOut(message, priority);
-        APIChannel.get(channel).sendQueue.add(messageOut);
+        if (channel.startsWith(InternalMessageSender.DESTINATION_PREFIX)) {
+            InternalMessageSender.send(channel.replace(InternalMessageSender.DESTINATION_PREFIX, ""), message);
+        } else {
+            MessageOut messageOut = new MessageOut(message, priority);
+            APIChannel.get(channel).sendQueue.add(messageOut);
+        }
     }
 }

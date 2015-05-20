@@ -108,7 +108,7 @@ public class ChannelMessageReceiver implements Runnable {
         else {
             MessageOut messageOut = new MessageOut(message, priority);
             if (internal) {
-                new InternalMessageSender(destinationChannelName.replace(InternalMessageSender.DESTINATION_PREFIX, ""), messageOut.getMessage()).sendMessage();
+                InternalMessageSender.send(destinationChannelName.replace(InternalMessageSender.DESTINATION_PREFIX, ""), messageOut.getMessage());
             }
             // If queue rejects message because it's too full, return
             else if (!APIChannel.in(destinationChannelName) || !destinationChannel.sendQueue.add(messageOut)) {
