@@ -159,7 +159,9 @@ public class App {
                 App.logger.catching(e);
             }
             new Window();
-            GuiApplication.start(args);
+            new Thread(() -> {
+                GuiApplication.start(args);
+            }).start();
         }
 
         Scanner scanner = new Scanner(System.in);
