@@ -2,12 +2,12 @@ package com.github.otbproject.otbproject.quotes;
 
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.database.SQLiteQuoteWrapper;
+import com.github.otbproject.otbproject.util.CustomCollectors;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.stream.Collectors;
 
 public class Quotes {
     public static Quote get(SQLiteQuoteWrapper db, Integer id) {
@@ -60,14 +60,12 @@ public class Quotes {
     }
 
     public static ArrayList<Integer> getQuoteIds(SQLiteQuoteWrapper db) {
-        ArrayList<Object> objectArrayList =  db.getNonRemovedRecordsList(QuoteFields.TABLE_NAME, QuoteFields.ID);
-        if (objectArrayList == null) {
+        ArrayList<Object> list =  db.getNonRemovedRecordsList(QuoteFields.TABLE_NAME, QuoteFields.ID);
+        if (list == null) {
             return null;
         }
-        ArrayList<Integer> idsList = new ArrayList<>();
         try {
-            idsList.addAll(objectArrayList.stream().map(key -> Integer.valueOf((String) key)).collect(Collectors.toList()));
-            return idsList;
+            return list.stream().map(key -> Integer.valueOf((String) key)).collect(CustomCollectors.toArrayList());
         } catch (ClassCastException e) {
             App.logger.catching(e);
             return null;

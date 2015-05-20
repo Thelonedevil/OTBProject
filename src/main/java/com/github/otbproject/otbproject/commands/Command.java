@@ -5,12 +5,12 @@ import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.commands.loader.LoadedCommand;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.users.UserLevel;
+import com.github.otbproject.otbproject.util.CustomCollectors;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.stream.Collectors;
 
 public class Command {
 
@@ -46,14 +46,12 @@ public class Command {
     }
 
     public static ArrayList<String> getCommands(DatabaseWrapper db) {
-        ArrayList<Object> objectArrayList =  db.getRecordsList(CommandFields.TABLE_NAME, CommandFields.NAME);
-        if (objectArrayList == null) {
+        ArrayList<Object> list =  db.getRecordsList(CommandFields.TABLE_NAME, CommandFields.NAME);
+        if (list == null) {
             return null;
         }
-        ArrayList<String> commandsList = new ArrayList<>();
         try {
-            commandsList.addAll(objectArrayList.stream().map(key -> (String) key).collect(Collectors.toList()));
-            return commandsList;
+            return list.stream().map(key -> (String) key).collect(CustomCollectors.toArrayList());
         } catch (ClassCastException e) {
             App.logger.catching(e);
             return null;
