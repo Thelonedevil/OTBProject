@@ -39,7 +39,7 @@ public class GuiController {
                     Thread.currentThread().setName("CLI Command Processor");
                     String output = CmdParser.processLine(input);
                     GuiUtils.runSafe(() -> {
-                        cliOutput.appendText(output + "\n" + ">  ");
+                        cliOutput.appendText((output.isEmpty() ? "" : (output + "\n")) + ">  ");
                         commandsInput.setEditable(true);
                         commandsInput.setPromptText("Enter Command Here...");
                     });
