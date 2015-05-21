@@ -1,6 +1,5 @@
 package com.github.otbproject.otbproject.channels;
 
-import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.api.APIDatabase;
 import com.github.otbproject.otbproject.commands.scheduler.Scheduler;
 import com.github.otbproject.otbproject.config.ChannelConfig;
@@ -41,28 +40,25 @@ public class Channel {
 
     private final ReadWriteLock lock = new ReentrantReadWriteLock();
 
-    public Channel(String name, ChannelConfig config) {
+    public Channel(String name, ChannelConfig config) throws ChannelInitException {
         this.name = name;
         this.config = config;
         this.inChannel = false;
+
+        mainDb = APIDatabase.getChannelMainDatabase(name);
+        if (mainDb == null) {
+            throw new ChannelInitException(name, "Unable to get main database");
+        }
+        quoteDb = APIDatabase.getChannelQuoteDatabase(name);
+        if (quoteDb == null) {
+            throw new ChannelInitException(name, "Unable to get quote database");
+        }
     }
 
     public boolean join() {
         lock.writeLock().lock();
         try {
             if (inChannel) {
-                return false;
-            }
-
-            mainDb = APIDatabase.getChannelMainDatabase(name);
-            if (mainDb == null) {
-                App.logger.error("Unable to get main database for channel: " + name);
-                return false;
-            }
-
-            quoteDb = APIDatabase.getChannelQuoteDatabase(name);
-            if (quoteDb == null) {
-                App.logger.error("Unable to get quote database for channel: " + name);
                 return false;
             }
 
@@ -103,8 +99,6 @@ public class Channel {
             commandCooldownSet.clear();
             userCooldownSet.clear();
             subscriberStorage.clear();
-
-            mainDb = null;
 
             return true;
         } finally {

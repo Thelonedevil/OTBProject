@@ -2,6 +2,7 @@ package com.github.otbproject.otbproject.api;
 
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.channels.Channel;
+import com.github.otbproject.otbproject.channels.ChannelInitException;
 import com.github.otbproject.otbproject.commands.parser.ResponseParserUtil;
 import com.github.otbproject.otbproject.config.BotConfig;
 import com.github.otbproject.otbproject.config.BotConfigHelper;
@@ -80,7 +81,12 @@ public class APIChannel {
         Channel channel;
         if (!APIBot.getBot().getChannels().containsKey(channelName)) {
             ChannelConfig channelConfig = APIConfig.readChannelConfig(channelName);
-            channel = new Channel(channelName, channelConfig);
+            try {
+                channel = new Channel(channelName, channelConfig);
+            } catch (ChannelInitException e) {
+                App.logger.catching(e);
+                return false;
+            }
             APIBot.getBot().getChannels().put(channelName, channel);
         } else {
             channel = get(channelName);
