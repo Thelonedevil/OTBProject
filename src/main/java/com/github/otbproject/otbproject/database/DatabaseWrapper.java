@@ -4,6 +4,7 @@ import com.github.otbproject.otbproject.App;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -253,7 +254,7 @@ public class DatabaseWrapper {
         String sql = "INSERT INTO " + table + " (";
         sql += map.keySet().stream().collect(Collectors.joining(", "));
         sql += ") VALUES (";
-        sql += map.keySet().stream().map(key -> "?").collect(Collectors.joining(", "));
+        sql += Collections.nCopies(map.keySet().size(), "?").stream().collect(Collectors.joining(", "));
         sql += ")";
         boolean bool = false;
         lock.lock();
