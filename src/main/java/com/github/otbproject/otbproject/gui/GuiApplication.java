@@ -85,7 +85,11 @@ public class GuiApplication extends Application {
     }
 
     public static void setInputActive() {
-        controller.commandsInput.setEditable(true);
+        GuiUtils.runSafe(() -> controller.commandsInput.setEditable(true));
+    }
+
+    public static void addInfo(String text) {
+        GuiUtils.runSafe(() -> controller.commandsOutput.appendText(text + "\n"));
     }
 
     class CustomTailer extends TailerListenerAdapter {
