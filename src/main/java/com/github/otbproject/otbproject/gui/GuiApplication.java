@@ -47,20 +47,20 @@ public class GuiApplication extends Application {
         primaryStage.setTitle("OTBProject");
         primaryStage.getIcons().add(new Image("http://otbproject.github.io/images/logo.png"));
         primaryStage.setOnCloseRequest(t -> {
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Confirm Close Without Stopping Bot");
-            alert.setHeaderText("WARNING: THIS DOES NOT STOP THE BOT.");
-            alert.setContentText("Closing this window may make it difficult to stop the bot.\nPress \"Cancel\" to keep the window open.");
-            ButtonType buttonTypeOk = new ButtonType("Close", ButtonBar.ButtonData.FINISH);
-            ButtonType buttonTypeStop = new ButtonType("Stop Bot", ButtonBar.ButtonData.FINISH);
-            ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonBar.ButtonData.FINISH);
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Confirm Close");
+            alert.setHeaderText("WARNING: \"Close Window\" DOES NOT STOP THE BOT.");
+            alert.setContentText("Closing this window without exiting may make it difficult to stop the bot.\nPress \"Cancel\" to keep the window open.");
+            ButtonType buttonTypeCloseNoExit = new ButtonType("Close Window", ButtonBar.ButtonData.LEFT);
+            ButtonType buttonTypeExit = new ButtonType("Exit", ButtonBar.ButtonData.FINISH);
+            ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonBar.ButtonData.RIGHT);
 
-            alert.getButtonTypes().setAll(buttonTypeOk, buttonTypeStop, buttonTypeCancel);
-            alert = GuiUtils.setDefaultButton(alert, buttonTypeStop);
+            alert.getButtonTypes().setAll(buttonTypeCloseNoExit, buttonTypeExit, buttonTypeCancel);
+            alert = GuiUtils.setDefaultButton(alert, buttonTypeExit);
             Optional<ButtonType> result = alert.showAndWait();
-            if (result.get() == buttonTypeOk) {
+            if (result.get() == buttonTypeCloseNoExit) {
                 primaryStage.hide();
-            } else if (result.get() == buttonTypeStop) {
+            } else if (result.get() == buttonTypeExit) {
                 App.logger.info("Stopping the process");
                 if (APIBot.getBot() != null && APIBot.getBot().isConnected()) {
                     APIBot.getBot().shutdown();
