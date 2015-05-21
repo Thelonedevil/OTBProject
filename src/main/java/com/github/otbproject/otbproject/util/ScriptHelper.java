@@ -20,7 +20,7 @@ public class ScriptHelper {
             InternalMessageSender.send(channel.replace(InternalMessageSender.DESTINATION_PREFIX, ""), message);
         } else {
             MessageOut messageOut = new MessageOut(message, priority);
-            APIChannel.get(channel).sendQueue.add(messageOut);
+            APIChannel.get(channel).sendMessage(messageOut);
         }
     }
 }
