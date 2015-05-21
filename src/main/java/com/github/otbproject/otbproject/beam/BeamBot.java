@@ -117,9 +117,7 @@ public class BeamBot implements IBot {
     @Override
     public void startBot() {
         APIChannel.join(getUserName(), false);
-        for (String channelName : APIConfig.getBotConfig().currentChannels) {
-            APIChannel.join(channelName, false);
-        }
+        APIConfig.getBotConfig().currentChannels.forEach(channel -> APIChannel.join(channel, false));
         while(!beamChannels.isEmpty()){
             try {
                 Thread.sleep(200);

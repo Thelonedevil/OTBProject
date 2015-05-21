@@ -144,9 +144,7 @@ public class CommandResponseParser {
             StringBuilder result = new StringBuilder();
             String modifier = getModifier(term);
 
-            for (String arg : args) {
-                result.append(prepend).append(modify(arg, modifier)).append(append);
-            }
+            Arrays.stream(args).forEach(arg -> result.append(prepend).append(modify(arg, modifier)).append(append));
             return result.toString();
         }
         // [[equal{{compare1}}{{compare2}}{{if_same}}{{if_diff}}]]
