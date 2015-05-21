@@ -165,7 +165,6 @@ public class App {
         APIBot.setBotThread(new Thread(APIBot.getBotRunnable()));
         APIBot.getBotThread().start();
         if (!GraphicsEnvironment.isHeadless()) {
-            new Window();
             GuiApplication.setInputActive();
         }
 
@@ -174,7 +173,7 @@ public class App {
         while (scanner.hasNext()) {
             String in = scanner.next();
             if (!in.equals(""))
-                new CmdParser().processLine(in);
+                CmdParser.processLine(in);
         }
         scanner.close();
     }

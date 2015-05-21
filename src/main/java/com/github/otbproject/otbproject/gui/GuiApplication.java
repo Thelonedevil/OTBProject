@@ -10,6 +10,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import org.apache.commons.io.input.Tailer;
 import org.apache.commons.io.input.TailerListenerAdapter;
@@ -43,6 +44,8 @@ public class GuiApplication extends Application {
         Parent start = loader.load();
         primaryStage.setScene(new Scene(start, 1200, 500));
         primaryStage.setResizable(false);
+        primaryStage.setTitle("OTBProject");
+        primaryStage.getIcons().add(new Image("http://otbproject.github.io/images/logo.png"));
         primaryStage.setOnCloseRequest(t -> {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Confirm Close Without Stopping Bot");
@@ -72,6 +75,7 @@ public class GuiApplication extends Application {
         controller = loader.<GuiController>getController();
         controller.cliOutput.appendText(">  ");
         controller.commandsInput.setEditable(false);
+        controller.commandsOutput.appendText("Type \"stop\" to stop the bot. \nThe PID of the bot is probably " + App.PID + ", if you are using an Oracle JVM, but it may be different, especially if you are using a different JVM. Be careful stopping the bot using this PID. \n");
         File logFile = new File(FSUtil.logsDir() + File.separator + "console.log");
         tailer = Tailer.create(logFile, new CustomTailer(), 250);
     }

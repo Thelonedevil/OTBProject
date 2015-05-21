@@ -46,7 +46,7 @@
             </font>
         </TextArea>
         <Label text="Log" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-        <Label text="Command responses" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+        <Label text="Info" GridPane.columnIndex="3" GridPane.rowIndex="1" />
         <Label text="CLI" GridPane.columnIndex="3" GridPane.rowIndex="3" />
     </children>
 </GridPane>

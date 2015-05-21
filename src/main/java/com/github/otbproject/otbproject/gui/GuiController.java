@@ -36,7 +36,8 @@ public class GuiController {
                 commandsInput.setEditable(false);
                 commandsInput.setPromptText("Command Executing... Please Wait...");
                 new Thread(() -> {
-                    String output = new CmdParser().processLine(input);
+                    Thread.currentThread().setName("CLI Command Processor");
+                    String output = CmdParser.processLine(input);
                     GuiUtils.runSafe(() -> {
                         cliOutput.appendText(output + "\n" + ">  ");
                         commandsInput.setEditable(true);
