@@ -17,8 +17,8 @@ import com.github.otbproject.otbproject.util.BlockingHashSet;
 
 import java.util.HashMap;
 import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class Channel {
     private final MessageSendQueue sendQueue = new MessageSendQueue(this);
@@ -39,7 +39,7 @@ public class Channel {
     private final HashMap<String,ScheduledFuture> hourlyResetSchedules = new HashMap<>();
     private boolean inChannel;
 
-    private final Lock lock = new ReentrantLock();
+    private final ReadWriteLock lock = new ReentrantReadWriteLock();
 
     public Channel(String name, ChannelConfig config) {
         this.name = name;
@@ -48,7 +48,7 @@ public class Channel {
     }
 
     public boolean join() {
-        lock.lock();
+        lock.writeLock().lock();
         try {
             if (inChannel) {
                 return false;
@@ -78,12 +78,12 @@ public class Channel {
 
             return true;
         } finally {
-            lock.unlock();
+            lock.writeLock().unlock();
         }
     }
 
     public boolean leave() {
-        lock.lock();
+        lock.writeLock().lock();
         try {
             if (!inChannel) {
                 return false;
@@ -108,25 +108,25 @@ public class Channel {
 
             return true;
         } finally {
-            lock.unlock();
+            lock.writeLock().unlock();
         }
     }
 
     public boolean sendMessage(MessageOut messageOut) {
-        lock.lock();
+        lock.readLock().lock();
         try {
             return inChannel && sendQueue.add(messageOut);
         } finally {
-            lock.unlock();
+            lock.readLock().unlock();
         }
     }
 
     public boolean receiveMessage(PackagedMessage packagedMessage) {
-        lock.lock();
+        lock.readLock().lock();
         try {
             return inChannel && receiveQueue.add(packagedMessage);
         } finally {
-            lock.unlock();
+            lock.readLock().unlock();
         }
     }
 
@@ -135,11 +135,11 @@ public class Channel {
     }
 
     public boolean isInChannel() {
-        lock.lock();
+        lock.readLock().lock();
         try {
             return inChannel;
         } finally {
-            lock.unlock();
+            lock.readLock().unlock();
         }
     }
 
