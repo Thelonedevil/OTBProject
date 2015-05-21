@@ -22,8 +22,8 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class Channel {
     private final MessageSendQueue sendQueue = new MessageSendQueue(this);
     private final MessageReceiveQueue receiveQueue = new MessageReceiveQueue();
-    public final CooldownSet commandCooldownSet = new CooldownSet();
-    public final CooldownSet userCooldownSet = new CooldownSet();
+    private final CooldownSet commandCooldownSet = new CooldownSet();
+    private final CooldownSet userCooldownSet = new CooldownSet();
     public final BlockingHashSet subscriberStorage = new BlockingHashSet();
     private final String name;
     private final ChannelConfig config;
@@ -132,6 +132,42 @@ public class Channel {
         lock.readLock().lock();
         try {
             return inChannel;
+        } finally {
+            lock.readLock().unlock();
+        }
+    }
+
+    public boolean isUserCooldown(String user) {
+        lock.readLock().lock();
+        try {
+            return userCooldownSet.contains(user);
+        } finally {
+            lock.readLock().unlock();
+        }
+    }
+
+    public boolean addUserCooldown(String user, int time) {
+        lock.readLock().lock();
+        try {
+            return userCooldownSet.add(user, time);
+        } finally {
+            lock.readLock().unlock();
+        }
+    }
+
+    public boolean isCommandCooldown(String user) {
+        lock.readLock().lock();
+        try {
+            return commandCooldownSet.contains(user);
+        } finally {
+            lock.readLock().unlock();
+        }
+    }
+
+    public boolean addCommandCooldown(String user, int time) {
+        lock.readLock().lock();
+        try {
+            return commandCooldownSet.add(user, time);
         } finally {
             lock.readLock().unlock();
         }

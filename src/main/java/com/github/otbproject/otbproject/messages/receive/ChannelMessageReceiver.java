@@ -65,7 +65,7 @@ public class ChannelMessageReceiver implements Runnable {
                 }
 
                 // Pre-check if user is on cooldown (skip if internal)
-                if (!internal && destChannel.userCooldownSet.contains(user)) {
+                if (!internal && destChannel.isUserCooldown(user)) {
                     continue;
                 }
 
@@ -81,7 +81,7 @@ public class ChannelMessageReceiver implements Runnable {
                 // Check if bot is enabled
                 if (channel.getConfig().isEnabled() || GeneralConfigHelper.isPermanentlyEnabled(APIConfig.getGeneralConfig(), processedMsg.getCommandName())) {
                     // Check if empty message, and then if command is on cooldown (skip cooldown check if internal)
-                    if ((processedMsg.isScript() || !processedMsg.getResponse().isEmpty()) && (internal || !destChannel.commandCooldownSet.contains(processedMsg.getCommandName()))) {
+                    if ((processedMsg.isScript() || !processedMsg.getResponse().isEmpty()) && (internal || !destChannel.isCommandCooldown(processedMsg.getCommandName()))) {
                         doResponse(db, processedMsg, channelName, destChannelName, destChannel, user, ul, packagedMessage.getMessagePriority(), internal);
                     }
                 }
@@ -127,12 +127,12 @@ public class ChannelMessageReceiver implements Runnable {
         // Handles command cooldowns
         int commandCooldown = channel.getConfig().getCommandCooldown();
         if (commandCooldown > 0) {
-            destinationChannel.commandCooldownSet.add(command, commandCooldown);
+            destinationChannel.addCommandCooldown(command, commandCooldown);
         }
         // Handles user cooldowns
         int userCooldown = ChannelConfigHelper.getCooldown(channel.getConfig(), ul);
         if (userCooldown > 0) {
-            destinationChannel.userCooldownSet.add(user, userCooldown);
+            destinationChannel.addUserCooldown(user, userCooldown);
         }
     }
 }
