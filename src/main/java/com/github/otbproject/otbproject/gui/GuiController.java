@@ -44,7 +44,9 @@ public class GuiController {
                         commandsInput.setPromptText("Enter Command Here...");
                     });
                 }).start();
-                history.add(input);
+                if (history.isEmpty() || !history.get(history.size() - 1).equals(input)) {
+                    history.add(input);
+                }
                 while (history.size() > 1000) {
                     history.remove(0);
                 }
