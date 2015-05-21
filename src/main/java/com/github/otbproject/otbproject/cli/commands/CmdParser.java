@@ -135,7 +135,7 @@ public class CmdParser {
         }
         PackagedMessage packagedMessage = new PackagedMessage(command, InternalMessageSender.DESTINATION_PREFIX + InternalMessageSender.CLI, channelName, InternalMessageSender.DESTINATION_PREFIX + InternalMessageSender.CLI, ul, MessagePriority.DEFAULT);
         try {
-            APIChannel.get(channelName).receiveQueue.add(packagedMessage);
+            APIChannel.get(channelName).receiveMessage(packagedMessage);
         } catch (NullPointerException npe) {
             App.logger.catching(npe);
         }

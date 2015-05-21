@@ -1,6 +1,5 @@
 package com.github.otbproject.otbproject.channels;
 
-import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.api.APIDatabase;
 import com.github.otbproject.otbproject.commands.scheduler.Scheduler;
 import com.github.otbproject.otbproject.config.ChannelConfig;
@@ -8,19 +7,23 @@ import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.database.SQLiteQuoteWrapper;
 import com.github.otbproject.otbproject.messages.receive.ChannelMessageReceiver;
 import com.github.otbproject.otbproject.messages.receive.MessageReceiveQueue;
+import com.github.otbproject.otbproject.messages.receive.PackagedMessage;
 import com.github.otbproject.otbproject.messages.send.ChannelMessageSender;
+import com.github.otbproject.otbproject.messages.send.MessageOut;
 import com.github.otbproject.otbproject.messages.send.MessageSendQueue;
 import com.github.otbproject.otbproject.proc.CooldownSet;
 import com.github.otbproject.otbproject.util.BlockingHashSet;
 
 import java.util.HashMap;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class Channel {
-    public final MessageSendQueue sendQueue = new MessageSendQueue(this);
-    public final MessageReceiveQueue receiveQueue = new MessageReceiveQueue();
-    public final CooldownSet commandCooldownSet = new CooldownSet();
-    public final CooldownSet userCooldownSet = new CooldownSet();
+    private final MessageSendQueue sendQueue = new MessageSendQueue(this);
+    private final MessageReceiveQueue receiveQueue = new MessageReceiveQueue();
+    private final CooldownSet commandCooldownSet = new CooldownSet();
+    private final CooldownSet userCooldownSet = new CooldownSet();
     public final BlockingHashSet subscriberStorage = new BlockingHashSet();
     private final String name;
     private final ChannelConfig config;
@@ -35,60 +38,90 @@ public class Channel {
     private final HashMap<String,ScheduledFuture> hourlyResetSchedules = new HashMap<>();
     private boolean inChannel;
 
-    public Channel(String name, ChannelConfig config) {
+    private final ReadWriteLock lock = new ReentrantReadWriteLock();
+
+    public Channel(String name, ChannelConfig config) throws ChannelInitException {
         this.name = name;
         this.config = config;
         this.inChannel = false;
+
+        mainDb = APIDatabase.getChannelMainDatabase(name);
+        if (mainDb == null) {
+            throw new ChannelInitException(name, "Unable to get main database");
+        }
+        quoteDb = APIDatabase.getChannelQuoteDatabase(name);
+        if (quoteDb == null) {
+            throw new ChannelInitException(name, "Unable to get quote database");
+        }
     }
 
     public boolean join() {
-        mainDb = APIDatabase.getChannelMainDatabase(name);
-        if (mainDb == null) {
-            App.logger.error("Unable to get main database for channel: " + name);
-            return false;
+        lock.writeLock().lock();
+        try {
+            if (inChannel) {
+                return false;
+            }
+
+            messageSender = new ChannelMessageSender(this, sendQueue);
+            messageSenderThread = new Thread(messageSender);
+            messageSenderThread.start();
+
+            messageReceiver = new ChannelMessageReceiver(this, receiveQueue);
+            messageReceiverThread = new Thread(messageReceiver);
+            messageReceiverThread.start();
+
+            inChannel = true;
+
+            return true;
+        } finally {
+            lock.writeLock().unlock();
         }
-
-        quoteDb = APIDatabase.getChannelQuoteDatabase(name);
-        if (quoteDb == null) {
-            App.logger.error("Unable to get quote database for channel: " + name);
-            return false;
-        }
-
-        // Just in case a message got added after queue was emptied in a leave() call due to bad thread timing
-        sendQueue.clear();
-        receiveQueue.clear();
-
-        messageSender = new ChannelMessageSender(this, sendQueue);
-        messageSenderThread = new Thread(messageSender);
-        messageSenderThread.start();
-
-        messageReceiver = new ChannelMessageReceiver(this, receiveQueue);
-        messageReceiverThread = new Thread(messageReceiver);
-        messageReceiverThread.start();
-
-        inChannel = true;
-
-        return true;
     }
 
-    public void leave() {
-        inChannel = false;
+    public boolean leave() {
+        lock.writeLock().lock();
+        try {
+            if (!inChannel) {
+                return false;
+            }
+            inChannel = false;
 
-        messageSenderThread.interrupt();
-        messageSenderThread = null;
-        messageSender = null;
-        sendQueue.clear();
+            messageSenderThread.interrupt();
+            messageSenderThread = null;
+            messageSender = null;
+            sendQueue.clear();
 
-        messageReceiverThread.interrupt();
-        messageReceiverThread = null;
-        messageReceiver = null;
-        receiveQueue.clear();
+            messageReceiverThread.interrupt();
+            messageReceiverThread = null;
+            messageReceiver = null;
+            receiveQueue.clear();
 
-        commandCooldownSet.clear();
-        userCooldownSet.clear();
-        subscriberStorage.clear();
+            commandCooldownSet.clear();
+            userCooldownSet.clear();
+            subscriberStorage.clear();
 
-        mainDb = null;
+            return true;
+        } finally {
+            lock.writeLock().unlock();
+        }
+    }
+
+    public boolean sendMessage(MessageOut messageOut) {
+        lock.readLock().lock();
+        try {
+            return inChannel && sendQueue.add(messageOut);
+        } finally {
+            lock.readLock().unlock();
+        }
+    }
+
+    public boolean receiveMessage(PackagedMessage packagedMessage) {
+        lock.readLock().lock();
+        try {
+            return inChannel && receiveQueue.add(packagedMessage);
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     public String getName() {
@@ -96,7 +129,48 @@ public class Channel {
     }
 
     public boolean isInChannel() {
-        return inChannel;
+        lock.readLock().lock();
+        try {
+            return inChannel;
+        } finally {
+            lock.readLock().unlock();
+        }
+    }
+
+    public boolean isUserCooldown(String user) {
+        lock.readLock().lock();
+        try {
+            return userCooldownSet.contains(user);
+        } finally {
+            lock.readLock().unlock();
+        }
+    }
+
+    public boolean addUserCooldown(String user, int time) {
+        lock.readLock().lock();
+        try {
+            return inChannel && userCooldownSet.add(user, time);
+        } finally {
+            lock.readLock().unlock();
+        }
+    }
+
+    public boolean isCommandCooldown(String user) {
+        lock.readLock().lock();
+        try {
+            return commandCooldownSet.contains(user);
+        } finally {
+            lock.readLock().unlock();
+        }
+    }
+
+    public boolean addCommandCooldown(String user, int time) {
+        lock.readLock().lock();
+        try {
+            return inChannel && commandCooldownSet.add(user, time);
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     public DatabaseWrapper getMainDatabaseWrapper() {

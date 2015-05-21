@@ -20,7 +20,7 @@ public class ScheduledCommand implements Runnable {
     @Override
     public void run() {
         try {
-            APIChannel.get(channel).receiveQueue.add(packagedMessage);
+            APIChannel.get(channel).receiveMessage(packagedMessage);
         } catch (NullPointerException npe) {
             App.logger.catching(npe);
         }
