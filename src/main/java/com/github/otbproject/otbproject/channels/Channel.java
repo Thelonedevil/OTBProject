@@ -149,7 +149,7 @@ public class Channel {
     public boolean addUserCooldown(String user, int time) {
         lock.readLock().lock();
         try {
-            return userCooldownSet.add(user, time);
+            return inChannel && userCooldownSet.add(user, time);
         } finally {
             lock.readLock().unlock();
         }
@@ -167,7 +167,7 @@ public class Channel {
     public boolean addCommandCooldown(String user, int time) {
         lock.readLock().lock();
         try {
-            return commandCooldownSet.add(user, time);
+            return inChannel && commandCooldownSet.add(user, time);
         } finally {
             lock.readLock().unlock();
         }
