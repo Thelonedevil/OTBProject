@@ -1,6 +1,7 @@
 package com.github.otbproject.otbproject.commands.parser;
 
-import java.util.ArrayList;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class ResponseParserUtil {
     public static String firstCap(String string, boolean forceLower) {
@@ -18,12 +19,6 @@ public class ResponseParserUtil {
     }
 
     public static String wordCap(String string, boolean forceLower) {
-        String[] strArray = string.split(" ");
-        ArrayList<String> newStrArray = new ArrayList<>();
-
-        for (String word : strArray) {
-            newStrArray.add(firstCap(word, forceLower));
-        }
-        return String.join(" ", newStrArray);
+        return Stream.of(string.split(" ")).map(word -> firstCap(word, forceLower)).collect(Collectors.joining(" "));
     }
 }

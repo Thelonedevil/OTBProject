@@ -4,9 +4,11 @@ import com.github.otbproject.otbproject.App;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.stream.Collectors;
 
 public class DatabaseWrapper {
     final Connection connection;
@@ -76,14 +78,8 @@ public class DatabaseWrapper {
     private boolean createTable(String name, HashMap<String, String> table, String primaryKey) {
         PreparedStatement preparedStatement = null;
         String sql = "CREATE TABLE IF NOT EXISTS " + name + " (";
-        for (String key : table.keySet()) {
-            if (key.equals(primaryKey)) {
-                sql = sql + key + " " + table.get(key) + " PRIMARY KEY, ";
-            } else {
-                sql = sql + key + " " + table.get(key) + ", ";
-            }
-        }
-        sql = sql.substring(0, sql.length() - 2) + ")";
+        sql += table.keySet().stream().map(key -> (key + " " + table.get(key) + (key.equals(primaryKey) ? " PRIMARY KEY" : ""))).collect(Collectors.joining(", "));
+        sql += ")";
         boolean bool = true;
         try {
             connection.setAutoCommit(false);
@@ -206,10 +202,7 @@ public class DatabaseWrapper {
     public boolean updateRecord(String table, Object identifier, String fieldName, HashMap<String, Object> map) {
         PreparedStatement preparedStatement = null;
         String sql = "UPDATE " + table + " SET ";
-        for (String key : map.keySet()) {
-            sql += key + "=?, ";
-        }
-        sql = sql.substring(0, sql.length() - 2);
+        sql += map.keySet().stream().map(key -> (key + "=?")).collect(Collectors.joining(", "));
         sql += " WHERE " + fieldName + "= ?";
         boolean bool = false;
         lock.lock();
@@ -259,13 +252,10 @@ public class DatabaseWrapper {
     public boolean insertRecord(String table, HashMap<String, Object> map) {
         PreparedStatement preparedStatement = null;
         String sql = "INSERT INTO " + table + " (";
-        String sqlValues = " VALUES (";
-        for (String key : map.keySet()) {
-            sql += key + ", ";
-            sqlValues += "?, ";
-        }
-        sql = sql.substring(0, sql.length() - 2) + ")";
-        sql += sqlValues.substring(0, sqlValues.length() - 2) + ")";
+        sql += map.keySet().stream().collect(Collectors.joining(", "));
+        sql += ") VALUES (";
+        sql += Collections.nCopies(map.keySet().size(), "?").stream().collect(Collectors.joining(", "));
+        sql += ")";
         boolean bool = false;
         lock.lock();
         try {
