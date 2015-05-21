@@ -17,7 +17,7 @@ public class ScriptHelper {
 
     public static void sendMessage(String channel, String message, MessagePriority priority) {
         if (channel.startsWith(InternalMessageSender.DESTINATION_PREFIX)) {
-            InternalMessageSender.send(channel.replace(InternalMessageSender.DESTINATION_PREFIX, ""), message);
+            InternalMessageSender.send(channel.replace(InternalMessageSender.DESTINATION_PREFIX, ""), message, "CmdExec");
         } else {
             MessageOut messageOut = new MessageOut(message, priority);
             APIChannel.get(channel).sendMessage(messageOut);
