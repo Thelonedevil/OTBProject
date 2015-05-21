@@ -53,7 +53,7 @@ public class GuiApplication extends Application {
             alert.setContentText("Closing this window without exiting may make it difficult to stop the bot.\nPress \"Cancel\" to keep the window open.");
             ButtonType buttonTypeCloseNoExit = new ButtonType("Close Window", ButtonBar.ButtonData.LEFT);
             ButtonType buttonTypeExit = new ButtonType("Exit", ButtonBar.ButtonData.FINISH);
-            ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonBar.ButtonData.RIGHT);
+            ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonBar.ButtonData.FINISH);
 
             alert.getButtonTypes().setAll(buttonTypeCloseNoExit, buttonTypeExit, buttonTypeCancel);
             alert = GuiUtils.setDefaultButton(alert, buttonTypeExit);
