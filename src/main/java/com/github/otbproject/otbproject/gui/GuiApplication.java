@@ -53,7 +53,7 @@ public class GuiApplication extends Application {
             alert.setContentText("Closing this window may make it difficult to stop the bot.\nPress \"Cancel\" to keep the window open.");
             ButtonType buttonTypeOk = new ButtonType("Close", ButtonBar.ButtonData.FINISH);
             ButtonType buttonTypeStop = new ButtonType("Stop Bot", ButtonBar.ButtonData.FINISH);
-            ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+            ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonBar.ButtonData.FINISH);
 
             alert.getButtonTypes().setAll(buttonTypeOk, buttonTypeStop, buttonTypeCancel);
             alert = GuiUtils.setDefaultButton(alert, buttonTypeStop);
@@ -68,7 +68,7 @@ public class GuiApplication extends Application {
                 App.logger.info("Process Stopped, Goodbye");
                 System.exit(0);
             } else {
-                alert.close();
+                t.consume();
             }
         });
         primaryStage.show();
