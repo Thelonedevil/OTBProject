@@ -8,6 +8,7 @@ import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.database.SQLiteQuoteWrapper;
 import com.github.otbproject.otbproject.messages.receive.ChannelMessageReceiver;
 import com.github.otbproject.otbproject.messages.receive.MessageReceiveQueue;
+import com.github.otbproject.otbproject.messages.receive.PackagedMessage;
 import com.github.otbproject.otbproject.messages.send.ChannelMessageSender;
 import com.github.otbproject.otbproject.messages.send.MessageOut;
 import com.github.otbproject.otbproject.messages.send.MessageSendQueue;
@@ -21,7 +22,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class Channel {
     private final MessageSendQueue sendQueue = new MessageSendQueue(this);
-    public final MessageReceiveQueue receiveQueue = new MessageReceiveQueue();
+    private final MessageReceiveQueue receiveQueue = new MessageReceiveQueue();
     public final CooldownSet commandCooldownSet = new CooldownSet();
     public final CooldownSet userCooldownSet = new CooldownSet();
     public final BlockingHashSet subscriberStorage = new BlockingHashSet();
@@ -118,7 +119,15 @@ public class Channel {
         } finally {
             lock.unlock();
         }
+    }
 
+    public boolean receiveMessage(PackagedMessage packagedMessage) {
+        lock.lock();
+        try {
+            return inChannel && receiveQueue.add(packagedMessage);
+        } finally {
+            lock.unlock();
+        }
     }
 
     public String getName() {

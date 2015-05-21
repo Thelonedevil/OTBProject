@@ -12,7 +12,7 @@ public class ScriptHelper {
     public static void runCommand(String message, String user, String channel, String destinationChannel, MessagePriority priority) {
         App.logger.debug("Processing message as command: " + message);
         PackagedMessage packagedMessage = new PackagedMessage(message, user, channel, destinationChannel, UserLevel.INTERNAL, priority);
-        APIChannel.get(channel).receiveQueue.add(packagedMessage);
+        APIChannel.get(channel).receiveMessage(packagedMessage);
     }
 
     public static void sendMessage(String channel, String message, MessagePriority priority) {

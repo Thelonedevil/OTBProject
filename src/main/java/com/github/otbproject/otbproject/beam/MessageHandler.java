@@ -59,7 +59,7 @@ public class MessageHandler implements EventHandler<IncomingMessageEvent> {
         PackagedMessage packagedMessage = new PackagedMessage(getMessage(data),data.user_name.toLowerCase(), channelName, ULUtil.getUserLevel(APIChannel.get(channelName).getMainDatabaseWrapper(), channelName ,data.user_name.toLowerCase()), MessagePriority.DEFAULT);
         Channel channel = APIChannel.get(channelName);
         if(channel != null){
-            channel.receiveQueue.add(packagedMessage);
+            channel.receiveMessage(packagedMessage);
         }else{
             App.logger.error("Channel: " + channelName + " appears not to exist");
         }
