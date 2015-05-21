@@ -30,7 +30,7 @@
                 <Font name="Monospaced Regular" size="14.0" />
             </font>
         </TextArea>
-        <TextField fx:id="commandsInput" onKeyPressed="#command" prefHeight="30.0" promptText="Enter Command Here" GridPane.columnIndex="3" GridPane.rowIndex="6">
+        <TextField fx:id="commandsInput" onKeyPressed="#command" prefHeight="30.0" promptText="Enter Command Here..." GridPane.columnIndex="3" GridPane.rowIndex="6">
             <font>
                 <Font name="Monospaced Regular" size="14.0" />
             </font>

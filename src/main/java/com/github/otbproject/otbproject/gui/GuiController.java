@@ -34,11 +34,13 @@ public class GuiController {
                 cliOutput.appendText(input + "\n");
                 commandsInput.clear();
                 commandsInput.setEditable(false);
+                commandsInput.setPromptText("Command Executing... Please Wait...");
                 new Thread(() -> {
                     String output = new CmdParser().processLine(input);
                     GuiUtils.runSafe(() -> {
                         cliOutput.appendText(output + "\n" + ">  ");
                         commandsInput.setEditable(true);
+                        commandsInput.setPromptText("Enter Command Here...");
                     });
                 }).start();
                 history.add(input);

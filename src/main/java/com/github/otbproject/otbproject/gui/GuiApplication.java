@@ -1,15 +1,21 @@
 package com.github.otbproject.otbproject.gui;
 
+import com.github.otbproject.otbproject.App;
+import com.github.otbproject.otbproject.api.APIBot;
 import com.github.otbproject.otbproject.fs.FSUtil;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
 import org.apache.commons.io.input.Tailer;
 import org.apache.commons.io.input.TailerListenerAdapter;
 
 import java.io.File;
+import java.util.Optional;
 
 public class GuiApplication extends Application {
 
@@ -36,6 +42,32 @@ public class GuiApplication extends Application {
         FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("console.fxml"));
         Parent start = loader.load();
         primaryStage.setScene(new Scene(start, 1200, 500));
+        primaryStage.setResizable(false);
+        primaryStage.setOnCloseRequest(t -> {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Confirm Close Without Stopping Bot");
+            alert.setHeaderText("WARNING: THIS DOES NOT STOP THE BOT.");
+            alert.setContentText("Closing this window may make it difficult to stop the bot.\nPress \"Cancel\" to keep the window open.");
+            ButtonType buttonTypeOk = new ButtonType("Close", ButtonBar.ButtonData.FINISH);
+            ButtonType buttonTypeStop = new ButtonType("Stop Bot", ButtonBar.ButtonData.FINISH);
+            ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+
+            alert.getButtonTypes().setAll(buttonTypeOk, buttonTypeStop, buttonTypeCancel);
+            alert = GuiUtils.setDefaultButton(alert, buttonTypeStop);
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.get() == buttonTypeOk) {
+                primaryStage.hide();
+            } else if (result.get() == buttonTypeStop) {
+                App.logger.info("Stopping the process");
+                if (APIBot.getBot() != null && APIBot.getBot().isConnected()) {
+                    APIBot.getBot().shutdown();
+                }
+                App.logger.info("Process Stopped, Goodbye");
+                System.exit(0);
+            } else {
+                alert.close();
+            }
+        });
         primaryStage.show();
         controller = loader.<GuiController>getController();
         controller.cliOutput.appendText(">  ");
