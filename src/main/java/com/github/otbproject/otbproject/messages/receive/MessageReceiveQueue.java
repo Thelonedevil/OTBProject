@@ -9,8 +9,8 @@ public class MessageReceiveQueue {
         return queue.take();
     }
 
-    public void add(PackagedMessage message) {
-        queue.add(message);
+    public boolean add(PackagedMessage message) {
+        return queue.add(message);
     }
 
     public void clear() {
