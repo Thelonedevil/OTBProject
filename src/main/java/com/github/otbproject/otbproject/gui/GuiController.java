@@ -1,5 +1,6 @@
 package com.github.otbproject.otbproject.gui;
 
+import com.github.otbproject.otbproject.api.APIBot;
 import com.github.otbproject.otbproject.cli.commands.CmdParser;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextArea;
@@ -74,9 +75,30 @@ public class GuiController {
                     break;
                 }
                 historyPointer++;
-                GuiUtils.runSafe(() -> {
-                    commandsInput.setText(history.get(historyPointer));
-                });
+                GuiUtils.runSafe(() -> commandsInput.setText(history.get(historyPointer)));
+                break;
+            case TAB:
+                input = commandsInput.getText();
+                if (input.isEmpty()) {
+                    return;
+                }
+                String[] parts = input.split(" ");
+                if (parts.length == 1) {
+                    CmdParser.getCommands().forEach(s -> commandsInput.setText(s.startsWith(parts[0]) ? s + " " : commandsInput.getText()));
+                }
+                if (parts.length > 1 && CmdParser.getCommands().contains(parts[0])) {
+                    switch (parts[0]) {
+                        case CmdParser.LEAVECHANNEL:
+                        case CmdParser.RELOAD:
+                        case CmdParser.EXEC:
+                            APIBot.getBot().getChannels().keySet().forEach(s -> commandsInput.setText(s.startsWith(parts[1]) ? parts[0] + " " + s + " " : commandsInput.getText()));
+                            break;
+                        case CmdParser.HELP:
+                            CmdParser.getCommands().forEach(s -> commandsInput.setText(s.startsWith(parts[1]) ? parts[0] + " " + s + " " : commandsInput.getText()));
+                            break;
+                    }
+                }
+                commandsInput.positionCaret(commandsInput.getText().length());
                 break;
         }
     }

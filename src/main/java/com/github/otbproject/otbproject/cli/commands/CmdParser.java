@@ -9,6 +9,7 @@ import com.github.otbproject.otbproject.messages.internal.InternalMessageSender;
 import com.github.otbproject.otbproject.messages.receive.PackagedMessage;
 import com.github.otbproject.otbproject.messages.send.MessagePriority;
 import com.github.otbproject.otbproject.users.UserLevel;
+import com.google.common.collect.ImmutableSet;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -23,6 +24,7 @@ public class CmdParser {
     public static final String LEAVECHANNEL = "leave";
     public static final String RELOAD = "reload";
     public static final String EXEC = "exec";
+    public static final String HELP = "help";
     private static final HashMap<String, Runnable> mapOfThings = new HashMap<>();
     private static final ArrayList<String> args = new ArrayList<>();
     private static String responseStr = "";
@@ -36,6 +38,11 @@ public class CmdParser {
         mapOfThings.put(LEAVECHANNEL, CmdParser::leaveChannel);
         mapOfThings.put(RELOAD, CmdParser::reload);
         mapOfThings.put(EXEC, CmdParser::exec);
+        mapOfThings.put(HELP, CmdParser::help);
+    }
+
+    public static ImmutableSet<String> getCommands() {
+        return ImmutableSet.copyOf(mapOfThings.keySet());
     }
 
     public static String processLine(String aLine) {
@@ -68,7 +75,6 @@ public class CmdParser {
             scanner.close();
             responseStr = "";
             args.clear();
-
         }
     }
 
@@ -93,7 +99,10 @@ public class CmdParser {
             APIBot.getBotThread().start();
         } catch (IllegalThreadStateException e) {
             App.logger.catching(e);
+            responseStr = "Restart Failed";
+            return;
         }
+        responseStr = "Restart Complete";
     }
 
     static void joinChannel() {
@@ -156,11 +165,57 @@ public class CmdParser {
         PackagedMessage packagedMessage = new PackagedMessage(command, InternalMessageSender.DESTINATION_PREFIX + InternalMessageSender.CLI, channelName, InternalMessageSender.DESTINATION_PREFIX + InternalMessageSender.CLI, ul, MessagePriority.DEFAULT);
         try {
             APIChannel.get(channelName).receiveMessage(packagedMessage);
+            responseStr = "Command output above.";
         } catch (NullPointerException npe) {
             App.logger.catching(npe);
         }
     }
 
+    public static void help() {
+        if (args.isEmpty()) {
+            responseStr += "join <channel>" + "\n";
+            responseStr += "leave <channel>" + "\n";
+            responseStr += "exec <channel> <command>" + "\n";
+            responseStr += "stop" + "\n";
+            responseStr += "reload [channel]" + "\n";
+            responseStr += "restart" + "\n";
+            responseStr += "help [cli command]";
+        } else {
+            switch (args.get(0)) {
+                case JOINCHANNEL:
+                    responseStr = "join <channel>" + "\n";
+                    responseStr += "Will make the bot join the channel denoted by <channel>";
+                    break;
+                case LEAVECHANNEL:
+                    responseStr = "leave <channel>" + "\n";
+                    responseStr += "Will make the bot leave the channel denoted by <channel>";
+                    break;
+                case EXEC:
+                    responseStr = "exec <channel> <command>" + "\n";
+                    responseStr += "Will run the command denoted by <command> in the channel denoted by <channel>";
+                    break;
+                case STOP:
+                    responseStr = "stop" + "\n";
+                    responseStr += "Will stop the bot and exit.";
+                    break;
+                case RELOAD:
+                    responseStr = "reload [channel]" + "\n";
+                    responseStr += "Will reload all commands from the json files. Either for [channel], or if not specified, all channels.";
+                    break;
+                case RESTART:
+                    responseStr = "restart" + "\n";
+                    responseStr += "will restart the bot";
+                    break;
+                case HELP:
+                    responseStr = "help [cli command]" + "\n";
+                    responseStr += "Will print the help message for the cli command denoted by [cli command], or if not specified will list all teh cli commands";
+                    break;
+                default:
+                    printHelpNoCommand();
+                    break;
+            }
+        }
+    }
 
     static void printHelpNoCommand() {
         responseStr = "That command is invalid. \'" + name + "\' does not exist as a CLI command.";
