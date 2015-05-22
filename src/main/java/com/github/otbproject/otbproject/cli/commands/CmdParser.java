@@ -29,6 +29,7 @@ public class CmdParser {
     private static final ArrayList<String> args = new ArrayList<>();
     private static String responseStr = "";
     private static String name = "RETURN CHARACTER";//Honestly useless assignment, but something has to be here, why not this?
+    private static String source = "";
 
     static {
         //Java 8 magic
@@ -43,6 +44,10 @@ public class CmdParser {
 
     public static ImmutableSet<String> getCommands() {
         return ImmutableSet.copyOf(mapOfThings.keySet());
+    }
+
+    public static void from(String source) {
+        CmdParser.source = source;
     }
 
     public static String processLine(String aLine) {
@@ -75,6 +80,7 @@ public class CmdParser {
             scanner.close();
             responseStr = "";
             args.clear();
+            source = "";
         }
     }
 
@@ -162,7 +168,8 @@ public class CmdParser {
             command += " ";
             command += args.get(i);
         }
-        PackagedMessage packagedMessage = new PackagedMessage(command, InternalMessageSender.DESTINATION_PREFIX + InternalMessageSender.CLI, channelName, InternalMessageSender.DESTINATION_PREFIX + InternalMessageSender.CLI, ul, MessagePriority.DEFAULT);
+        String destinationChannel = InternalMessageSender.DESTINATION_PREFIX + source;
+        PackagedMessage packagedMessage = new PackagedMessage(command, destinationChannel, channelName, destinationChannel, ul, MessagePriority.DEFAULT);
         try {
             APIChannel.get(channelName).receiveMessage(packagedMessage);
             responseStr = "Command output above.";

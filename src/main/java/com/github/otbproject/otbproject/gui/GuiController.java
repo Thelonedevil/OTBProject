@@ -2,6 +2,7 @@ package com.github.otbproject.otbproject.gui;
 
 import com.github.otbproject.otbproject.api.APIBot;
 import com.github.otbproject.otbproject.cli.commands.CmdParser;
+import com.github.otbproject.otbproject.messages.internal.InternalMessageSender;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -38,6 +39,7 @@ public class GuiController {
                 commandsInput.setPromptText("Command Executing... Please Wait...");
                 new Thread(() -> {
                     Thread.currentThread().setName("CLI Command Processor");
+                    CmdParser.from(InternalMessageSender.CLI);
                     String output = CmdParser.processLine(input);
                     GuiUtils.runSafe(() -> {
                         cliOutput.appendText((output.isEmpty() ? "" : (output + "\n")) + ">  ");
