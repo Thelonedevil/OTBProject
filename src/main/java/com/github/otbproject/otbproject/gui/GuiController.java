@@ -86,7 +86,7 @@ public class GuiController {
                 if (parts.length == 1) {
                     CmdParser.getCommands().forEach(s -> commandsInput.setText(s.startsWith(parts[0]) ? s + " " : commandsInput.getText()));
                 }
-                if (parts.length > 1 && CmdParser.getCommands().contains(parts[0])) {
+                if (parts.length == 2 && CmdParser.getCommands().contains(parts[0])) {
                     switch (parts[0]) {
                         case CmdParser.LEAVECHANNEL:
                         case CmdParser.RELOAD:
