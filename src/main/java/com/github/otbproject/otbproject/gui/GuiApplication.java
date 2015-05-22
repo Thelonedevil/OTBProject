@@ -60,6 +60,7 @@ public class GuiApplication extends Application {
             Optional<ButtonType> result = alert.showAndWait();
             if (result.get() == buttonTypeCloseNoExit) {
                 primaryStage.hide();
+                tailer.stop();
             } else if (result.get() == buttonTypeExit) {
                 App.logger.info("Stopping the process");
                 if (APIBot.getBot() != null && APIBot.getBot().isConnected()) {
