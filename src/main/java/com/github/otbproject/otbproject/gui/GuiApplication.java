@@ -49,7 +49,7 @@ public class GuiApplication extends Application {
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setTitle("Confirm Close");
             alert.setHeaderText("WARNING: \"Close Window\" DOES NOT STOP THE BOT.");
-            alert.setContentText("Closing this window without exiting may make it difficult to stop the bot.\nPress \"Cancel\" to keep the window open.");
+            alert.setContentText("Closing this window without exiting may make it difficult to stop the bot.\nPress \"Exit\" to stop the bot and exit.\nPress \"Cancel\" to keep the window open.");
             ButtonType buttonTypeCloseNoExit = new ButtonType("Close Window", ButtonBar.ButtonData.LEFT);
             ButtonType buttonTypeExit = new ButtonType("Exit", ButtonBar.ButtonData.FINISH);
             ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonBar.ButtonData.FINISH);
