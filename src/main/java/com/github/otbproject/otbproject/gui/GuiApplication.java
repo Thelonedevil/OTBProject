@@ -16,7 +16,6 @@ import org.apache.commons.io.input.Tailer;
 import org.apache.commons.io.input.TailerListenerAdapter;
 
 import java.io.File;
-import java.util.Optional;
 
 public class GuiApplication extends Application {
 
@@ -56,21 +55,23 @@ public class GuiApplication extends Application {
             ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonBar.ButtonData.FINISH);
 
             alert.getButtonTypes().setAll(buttonTypeCloseNoExit, buttonTypeExit, buttonTypeCancel);
-            alert = GuiUtils.setDefaultButton(alert, buttonTypeExit);
-            Optional<ButtonType> result = alert.showAndWait();
-            if (result.get() == buttonTypeCloseNoExit) {
-                primaryStage.hide();
-                tailer.stop();
-            } else if (result.get() == buttonTypeExit) {
-                App.logger.info("Stopping the process");
-                if (APIBot.getBot() != null && APIBot.getBot().isConnected()) {
-                    APIBot.getBot().shutdown();
+            GuiUtils.setDefaultButton(alert, buttonTypeExit);
+            alert.showAndWait().ifPresent(buttonType -> {
+                if (buttonType == buttonTypeCloseNoExit) {
+                    primaryStage.hide();
+                    tailer.stop();
+                } else if (buttonType == buttonTypeExit) {
+                    App.logger.info("Stopping the process");
+                    if (APIBot.getBot() != null && APIBot.getBot().isConnected()) {
+                        APIBot.getBot().shutdown();
+                    }
+                    App.logger.info("Process Stopped, Goodbye");
+                    System.exit(0);
+                } else {
+                    t.consume();
                 }
-                App.logger.info("Process Stopped, Goodbye");
-                System.exit(0);
-            } else {
-                t.consume();
-            }
+            });
+
         });
         primaryStage.show();
         controller = loader.<GuiController>getController();
