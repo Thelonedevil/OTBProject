@@ -18,9 +18,8 @@ public class GuiUtils {
         }
     }
 
-    public static Alert setDefaultButton(Alert alert, ButtonType defBtn) {
+    public static void setDefaultButton(Alert alert, ButtonType defBtn) {
         DialogPane pane = alert.getDialogPane();
         alert.getButtonTypes().forEach(t -> ((Button) pane.lookupButton(t)).setDefaultButton(t == defBtn));
-        return alert;
     }
 }

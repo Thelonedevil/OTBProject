@@ -39,13 +39,18 @@ public class GuiController {
                     Thread.currentThread().setName("CLI Command Processor");
                     String output = CmdParser.processLine(input);
                     GuiUtils.runSafe(() -> {
-                        cliOutput.appendText(output + "\n" + ">  ");
+                        cliOutput.appendText((output.isEmpty() ? "" : (output + "\n")) + ">  ");
                         commandsInput.setEditable(true);
                         commandsInput.setPromptText("Enter Command Here...");
                     });
                 }).start();
-                history.add(input);
-                historyPointer++;
+                if (history.isEmpty() || !history.get(history.size() - 1).equals(input)) {
+                    history.add(input);
+                }
+                while (history.size() > 1000) {
+                    history.remove(0);
+                }
+                historyPointer = history.size();
                 break;
             case UP:
                 if (historyPointer == 0) {
@@ -54,17 +59,23 @@ public class GuiController {
                 --historyPointer;
                 GuiUtils.runSafe(() -> {
                     commandsInput.setText(history.get(historyPointer));
-                    commandsInput.selectAll();
+                    commandsInput.positionCaret(commandsInput.getText().length());
                 });
+                event.consume();
                 break;
             case DOWN:
-                if (historyPointer == history.size() - 1) {
+                if (historyPointer == history.size()) {
+                    break;
+                } else if (historyPointer == history.size() - 1) {
+                    GuiUtils.runSafe(() -> {
+                        commandsInput.setText("");
+                    });
+                    historyPointer = history.size();
                     break;
                 }
                 historyPointer++;
                 GuiUtils.runSafe(() -> {
                     commandsInput.setText(history.get(historyPointer));
-                    commandsInput.selectAll();
                 });
                 break;
         }
