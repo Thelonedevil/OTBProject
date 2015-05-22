@@ -11,6 +11,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 import javafx.scene.image.Image;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import org.apache.commons.io.input.Tailer;
 import org.apache.commons.io.input.TailerListenerAdapter;
@@ -39,6 +40,7 @@ public class GuiApplication extends Application {
      */
     @Override
     public void start(Stage primaryStage) throws Exception {
+        Font.loadFont(getClass().getClassLoader().getResourceAsStream("UbuntuMono-R.ttf"),14);
         FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("console.fxml"));
         Parent start = loader.load();
         primaryStage.setScene(new Scene(start, 1200, 500));
@@ -53,7 +55,6 @@ public class GuiApplication extends Application {
             ButtonType buttonTypeCloseNoExit = new ButtonType("Close Window", ButtonBar.ButtonData.LEFT);
             ButtonType buttonTypeExit = new ButtonType("Exit", ButtonBar.ButtonData.FINISH);
             ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonBar.ButtonData.FINISH);
-
             alert.getButtonTypes().setAll(buttonTypeCloseNoExit, buttonTypeExit, buttonTypeCancel);
             GuiUtils.setDefaultButton(alert, buttonTypeExit);
             alert.showAndWait().ifPresent(buttonType -> {
@@ -73,13 +74,13 @@ public class GuiApplication extends Application {
             });
 
         });
-        primaryStage.show();
         controller = loader.<GuiController>getController();
         controller.cliOutput.appendText(">  ");
         controller.commandsInput.setEditable(false);
         controller.commandsOutput.appendText("Type \"stop\" to stop the bot. \nThe PID of the bot is probably " + App.PID + ", if you are using an Oracle JVM, but it may be different, especially if you are using a different JVM. Be careful stopping the bot using this PID. \n");
         File logFile = new File(FSUtil.logsDir() + File.separator + "console.log");
         tailer = Tailer.create(logFile, new CustomTailer(), 250);
+        primaryStage.show();
     }
 
     public static void start(String[] args) {

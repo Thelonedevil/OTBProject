@@ -27,22 +27,22 @@
     <children>
         <TextArea fx:id="logOutput" editable="false" focusTraversable="false" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="2" GridPane.rowSpan="5">
             <font>
-                <Font name="Monospaced Regular" size="14.0" />
+                <Font name="UbuntuMono Regular" size="14.0" />
             </font>
         </TextArea>
         <TextField fx:id="commandsInput" onKeyPressed="#command" prefHeight="30.0" promptText="Enter Command Here..." GridPane.columnIndex="3" GridPane.rowIndex="6">
             <font>
-                <Font name="Monospaced Regular" size="14.0" />
+                <Font name="UbuntuMono Regular" size="14.0" />
             </font>
         </TextField>
         <TextArea fx:id="commandsOutput" editable="false" focusTraversable="false" prefHeight="200.0" prefWidth="200.0" wrapText="true" GridPane.columnIndex="3" GridPane.rowIndex="2">
             <font>
-                <Font name="Monospaced Regular" size="14.0" />
+                <Font name="UbuntuMono Regular" size="14.0" />
             </font>
         </TextArea>
         <TextArea fx:id="cliOutput" editable="false" focusTraversable="false" prefHeight="200.0" prefWidth="200.0" wrapText="true" GridPane.columnIndex="3" GridPane.rowIndex="4">
             <font>
-                <Font name="Monospaced Regular" size="14.0" />
+                <Font name="UbuntuMono Regular" size="14.0" />
             </font>
         </TextArea>
         <Label text="Log" GridPane.columnIndex="1" GridPane.rowIndex="1" />

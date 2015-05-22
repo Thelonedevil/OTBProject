@@ -36,4 +36,8 @@
     -fx-padding: 0.416667em 0.583em 0.416667em 0.583em; /* 5 7 5 7 */
 }
 
+.dialog-pane * {
+    -fx-font-family: UbuntuMono;
+}
+
 
