@@ -7,12 +7,11 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonBar;
-import javafx.scene.control.ButtonType;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import org.apache.commons.io.input.Tailer;
 import org.apache.commons.io.input.TailerListenerAdapter;
 
@@ -40,7 +39,8 @@ public class GuiApplication extends Application {
      */
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Font.loadFont(getClass().getClassLoader().getResourceAsStream("UbuntuMono-R.ttf"),14);
+        Font.loadFont(getClass().getClassLoader().getResourceAsStream("UbuntuMono-R.ttf"),12);
+        Font.loadFont(getClass().getClassLoader().getResourceAsStream("Ubuntu-R.ttf"),12);
         FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("console.fxml"));
         Parent start = loader.load();
         primaryStage.setScene(new Scene(start, 1200, 500));
@@ -52,11 +52,14 @@ public class GuiApplication extends Application {
             alert.setTitle("Confirm Close");
             alert.setHeaderText("WARNING: \"Close Window\" DOES NOT STOP THE BOT.");
             alert.setContentText("Closing this window without exiting may make it difficult to stop the bot.\nPress \"Exit\" to stop the bot and exit.\nPress \"Cancel\" to keep the window open.");
+            DialogPane dialogPane = alert.getDialogPane();
+            dialogPane.getStylesheets().add(getClass().getClassLoader().getResource("style.css").toExternalForm());
             ButtonType buttonTypeCloseNoExit = new ButtonType("Close Window", ButtonBar.ButtonData.LEFT);
             ButtonType buttonTypeExit = new ButtonType("Exit", ButtonBar.ButtonData.FINISH);
             ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonBar.ButtonData.FINISH);
             alert.getButtonTypes().setAll(buttonTypeCloseNoExit, buttonTypeExit, buttonTypeCancel);
             GuiUtils.setDefaultButton(alert, buttonTypeExit);
+            alert.initStyle(StageStyle.UNDECORATED);
             alert.showAndWait().ifPresent(buttonType -> {
                 if (buttonType == buttonTypeCloseNoExit) {
                     primaryStage.hide();

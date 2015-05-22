@@ -31,7 +31,7 @@ public class GuiController {
             case ENTER:
                 String input = commandsInput.getText();
                 if (input.isEmpty()) {
-                    return;
+                    break;
                 }
                 cliOutput.appendText(input + "\n");
                 commandsInput.clear();
@@ -60,47 +60,47 @@ public class GuiController {
                     break;
                 }
                 --historyPointer;
-                GuiUtils.runSafe(() -> {
-                    commandsInput.setText(history.get(historyPointer));
-                    commandsInput.positionCaret(commandsInput.getText().length());
-                });
+                commandsInput.setText(history.get(historyPointer));
+                commandsInput.positionCaret(commandsInput.getText().length());
                 event.consume();
                 break;
             case DOWN:
                 if (historyPointer == history.size()) {
                     break;
                 } else if (historyPointer == history.size() - 1) {
-                    GuiUtils.runSafe(() -> {
-                        commandsInput.setText("");
-                    });
+                    commandsInput.clear();
                     historyPointer = history.size();
                     break;
                 }
                 historyPointer++;
-                GuiUtils.runSafe(() -> commandsInput.setText(history.get(historyPointer)));
+                commandsInput.setText(history.get(historyPointer));
                 break;
             case TAB:
                 input = commandsInput.getText();
                 if (input.isEmpty()) {
-                    return;
+                    break;
                 }
                 String[] parts = input.split(" ");
                 if (parts.length == 1) {
-                    CmdParser.getCommands().forEach(s -> commandsInput.setText(s.startsWith(parts[0]) ? s + " " : commandsInput.getText()));
+                    CmdParser.getCommands().forEach(s -> commandsInput.setText(s.startsWith(parts[0]) ? (s + " ") : commandsInput.getText()));
                 }
                 if (parts.length == 2 && CmdParser.getCommands().contains(parts[0])) {
                     switch (parts[0]) {
                         case CmdParser.LEAVECHANNEL:
                         case CmdParser.RELOAD:
                         case CmdParser.EXEC:
-                            APIBot.getBot().getChannels().keySet().forEach(s -> commandsInput.setText(s.startsWith(parts[1]) ? parts[0] + " " + s + " " : commandsInput.getText()));
+                            APIBot.getBot().getChannels().keySet().forEach(s -> commandsInput.setText(s.startsWith(parts[1]) ? (parts[0] + " " + s + " ") : commandsInput.getText()));
                             break;
                         case CmdParser.HELP:
-                            CmdParser.getCommands().forEach(s -> commandsInput.setText(s.startsWith(parts[1]) ? parts[0] + " " + s + " " : commandsInput.getText()));
+                            CmdParser.getCommands().forEach(s -> commandsInput.setText(s.startsWith(parts[1]) ? (parts[0] + " " + s + " ") : commandsInput.getText()));
                             break;
                     }
                 }
                 commandsInput.positionCaret(commandsInput.getText().length());
+                break;
+            case ESCAPE:
+                commandsInput.clear();
+                historyPointer = history.size();
                 break;
         }
     }
