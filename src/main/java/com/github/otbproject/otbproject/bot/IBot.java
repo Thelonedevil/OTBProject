@@ -16,7 +16,9 @@ public interface IBot {
 
     boolean isChannel(String channelName);
 
-    void shutdown();
+    default void shutdown() {
+        getChannels().values().forEach(Channel::leave);
+    }
 
     String getUserName();
 
