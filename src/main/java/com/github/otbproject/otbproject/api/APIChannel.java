@@ -100,6 +100,7 @@ public class APIChannel {
             BotConfigHelper.addToCurrentChannels(botConfig, channelName);
             APIConfig.writeBotConfig();
         }
+        APISchedule.loadFromDatabase(channelName);
         App.logger.info("Successfully joined channel: "+channelName);
         return true;
     }

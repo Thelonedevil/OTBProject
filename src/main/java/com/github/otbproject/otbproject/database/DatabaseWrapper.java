@@ -251,7 +251,7 @@ public class DatabaseWrapper {
      */
     public boolean insertRecord(String table, HashMap<String, Object> map) {
         PreparedStatement preparedStatement = null;
-        String sql = "INSERT INTO " + table + " (";
+        String sql = "INSERT OR IGNORE INTO " + table + " (";
         sql += map.keySet().stream().collect(Collectors.joining(", "));
         sql += ") VALUES (";
         sql += Collections.nCopies(map.keySet().size(), "?").stream().collect(Collectors.joining(", "));
@@ -379,6 +379,8 @@ public class DatabaseWrapper {
             statement.setString(index, (String) identifier);
         } else if (identifier instanceof Integer) {
             statement.setInt(index, (Integer) identifier);
+        } else if (identifier instanceof Long) {
+            statement.setLong(index, (Long) identifier);
         } else {
             throw new SQLException("Invalid value to set in prepared statement: " + identifier.toString());
         }
