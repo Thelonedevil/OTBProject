@@ -109,4 +109,10 @@ public class APISchedule {
         }
 
     }
+
+    public static void removeFromDatabase(String channel, String command){
+        DatabaseWrapper db = APIChannel.get(channel).getMainDatabaseWrapper();
+        db.removeRecord(SchedulerFields.TABLE_NAME,command, SchedulerFields.COMMAND);
+    }
+
 }
