@@ -73,6 +73,7 @@ public class BeamBot implements IBot {
             beamChannels.get(key).beamChatConnectable.close();
         }
         beamChannels.clear();
+        IBot.super.shutdown();
     }
 
     @Override
