@@ -110,7 +110,7 @@ public class CmdParser {
     }
 
     static void printHelpNoCommand(String term) {
-        responseStr = term + ": command not found.";
+        responseStr = term + ": command not found";
     }
 
     private static void initClear() {
