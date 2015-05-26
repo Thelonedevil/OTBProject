@@ -275,7 +275,8 @@ public class CmdParser {
                 .withLongHelp("Will print the help message for the cli command denoted by <cli command>, or if not specified will list all the cli commands")
                 .withAction(() -> {
                     if (args.isEmpty()) {
-                        responseStr = map.values().stream().map(CliCommand::getShortHelp).sorted().collect(Collectors.joining("\n"));
+                        responseStr = map.keySet().stream().filter(key -> !key.equals(HELP)).map(key -> map.get(key).getShortHelp()).sorted().collect(Collectors.joining("\n"));
+                        responseStr += "\n" + map.get(HELP).getShortHelp();
                     } else {
                         if (map.keySet().contains(args.get(0))) {
                             responseStr = map.get(args.get(0)).getFullHelp();
