@@ -86,9 +86,12 @@ public class GuiController {
                 }
                 if (parts.length == 2 && CmdParser.getCommands().contains(parts[0])) {
                     switch (parts[0]) {
+                        case CmdParser.CLEAR:
+                            CmdParser.ClearTargets.targets.forEach(s -> commandsInput.setText(s.startsWith(parts[1]) ? (parts[0] + " " + s + " ") : commandsInput.getText()));
+                            break;
+                        case CmdParser.EXEC:
                         case CmdParser.LEAVECHANNEL:
                         case CmdParser.RELOAD:
-                        case CmdParser.EXEC:
                             APIBot.getBot().getChannels().keySet().forEach(s -> commandsInput.setText(s.startsWith(parts[1]) ? (parts[0] + " " + s + " ") : commandsInput.getText()));
                             break;
                         case CmdParser.HELP:

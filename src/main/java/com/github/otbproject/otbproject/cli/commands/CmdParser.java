@@ -5,6 +5,7 @@ import com.github.otbproject.otbproject.api.APIBot;
 import com.github.otbproject.otbproject.api.APIChannel;
 import com.github.otbproject.otbproject.commands.loader.FSCommandLoader;
 import com.github.otbproject.otbproject.commands.loader.LoadingSet;
+import com.github.otbproject.otbproject.gui.GuiApplication;
 import com.github.otbproject.otbproject.messages.internal.InternalMessageSender;
 import com.github.otbproject.otbproject.messages.receive.PackagedMessage;
 import com.github.otbproject.otbproject.messages.send.MessagePriority;
@@ -14,16 +15,19 @@ import com.google.common.collect.ImmutableSet;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 public class CmdParser {
 
-    public static final String STOP = "stop";
-    public static final String RESTART = "restart";
+    public static final String CLEAR = "clear";
+    public static final String EXEC = "exec";
     public static final String JOINCHANNEL = "join";
     public static final String LEAVECHANNEL = "leave";
     public static final String RELOAD = "reload";
-    public static final String EXEC = "exec";
+    public static final String RESTART = "restart";
+    public static final String STOP = "stop";
     public static final String HELP = "help";
     private static final HashMap<String, Runnable> mapOfThings = new HashMap<>();
     private static final ArrayList<String> args = new ArrayList<>();
@@ -31,14 +35,32 @@ public class CmdParser {
     private static String name = "RETURN CHARACTER";//Honestly useless assignment, but something has to be here, why not this?
     private static String source = "";
 
+    public static class ClearTargets {
+        public static final String CLI = "cli";
+        public static final String HISTORY = "history";
+        public static final String INFO = "info";
+        public static final String LOG = "log";
+        public static final String WINDOWS = "windows";
+        public static HashSet<String> targets = new HashSet<>();
+
+        static {
+            targets.add(CLI);
+            targets.add(HISTORY);
+            targets.add(INFO);
+            targets.add(LOG);
+            targets.add(WINDOWS);
+        }
+    }
+
     static {
         //Java 8 magic
-        mapOfThings.put(STOP, CmdParser::stop);
-        mapOfThings.put(RESTART, CmdParser::restart);
+        mapOfThings.put(CLEAR, CmdParser::clear);
+        mapOfThings.put(EXEC, CmdParser::exec);
         mapOfThings.put(JOINCHANNEL, CmdParser::joinChannel);
         mapOfThings.put(LEAVECHANNEL, CmdParser::leaveChannel);
         mapOfThings.put(RELOAD, CmdParser::reload);
-        mapOfThings.put(EXEC, CmdParser::exec);
+        mapOfThings.put(RESTART, CmdParser::restart);
+        mapOfThings.put(STOP, CmdParser::stop);
         mapOfThings.put(HELP, CmdParser::help);
     }
 
@@ -178,17 +200,57 @@ public class CmdParser {
         }
     }
 
+    static void clear() {
+        if (args.isEmpty()) {
+            responseStr = "Not enough args for '" + CLEAR + "'";
+            return;
+        }
+
+        switch (args.get(0)) {
+            case ClearTargets.CLI:
+                GuiApplication.clearCliOutput();
+                break;
+            case ClearTargets.LOG:
+                GuiApplication.clearLog();
+                break;
+            case ClearTargets.INFO:
+                GuiApplication.clearInfo();
+                break;
+            case ClearTargets.WINDOWS:
+                GuiApplication.clearCliOutput();
+                GuiApplication.clearLog();
+                GuiApplication.clearInfo();
+                break;
+            case ClearTargets.HISTORY:
+                // TODO make this safe
+                GuiApplication.clearHistory();
+                break;
+            default:
+                responseStr = "Invalid target to clear: " + args.get(0) + "\nValid targets are: " + ClearTargets.targets.stream().sorted().collect(Collectors.joining(", "));
+        }
+    }
+
     public static void help() {
         if (args.isEmpty()) {
+            responseStr += "clear <target>\n";
+            responseStr += "exec <channel> <command>" + "\n";
             responseStr += "join <channel>" + "\n";
             responseStr += "leave <channel>" + "\n";
-            responseStr += "exec <channel> <command>" + "\n";
-            responseStr += "stop" + "\n";
-            responseStr += "reload [channel]" + "\n";
+            responseStr += "reload <channel>" + "\n";
             responseStr += "restart" + "\n";
-            responseStr += "help [cli command]";
+            responseStr += "stop" + "\n";
+            responseStr += "help <cli command>";
         } else {
             switch (args.get(0)) {
+                case CLEAR:
+                    responseStr = "clear <target>\n";
+                    responseStr += "Clears the specified window(s) or the CLI command history\n";
+                    responseStr += "Valid targets are: " + ClearTargets.targets.stream().sorted().collect(Collectors.joining(", "));
+                    break;
+                case EXEC:
+                    responseStr = "exec <channel> <command>" + "\n";
+                    responseStr += "Will run the command denoted by <command> in the channel denoted by <channel>";
+                    break;
                 case JOINCHANNEL:
                     responseStr = "join <channel>" + "\n";
                     responseStr += "Will make the bot join the channel denoted by <channel>";
@@ -197,14 +259,6 @@ public class CmdParser {
                     responseStr = "leave <channel>" + "\n";
                     responseStr += "Will make the bot leave the channel denoted by <channel>";
                     break;
-                case EXEC:
-                    responseStr = "exec <channel> <command>" + "\n";
-                    responseStr += "Will run the command denoted by <command> in the channel denoted by <channel>";
-                    break;
-                case STOP:
-                    responseStr = "stop" + "\n";
-                    responseStr += "Will stop the bot and exit.";
-                    break;
                 case RELOAD:
                     responseStr = "reload [channel]" + "\n";
                     responseStr += "Will reload all commands from the json files. Either for [channel], or if not specified, all channels.";
@@ -212,6 +266,10 @@ public class CmdParser {
                 case RESTART:
                     responseStr = "restart" + "\n";
                     responseStr += "will restart the bot";
+                    break;
+                case STOP:
+                    responseStr = "stop" + "\n";
+                    responseStr += "Will stop the bot and exit.";
                     break;
                 case HELP:
                     responseStr = "help [cli command]" + "\n";
