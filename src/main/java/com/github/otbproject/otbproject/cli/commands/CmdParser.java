@@ -110,7 +110,7 @@ public class CmdParser {
     }
 
     static void printHelpNoCommand(String term) {
-        responseStr = "That command is invalid. \'" + term + "\' does not exist as a CLI command.";
+        responseStr = term + ": command not found.";
     }
 
     private static void initClear() {
