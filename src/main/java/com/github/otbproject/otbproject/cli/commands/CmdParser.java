@@ -12,6 +12,7 @@ import com.github.otbproject.otbproject.messages.send.MessagePriority;
 import com.github.otbproject.otbproject.users.UserLevel;
 import com.google.common.collect.ImmutableSet;
 
+import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -55,7 +56,9 @@ public class CmdParser {
 
     static {
         // Add CLI commands
-        initClear();
+        if (!GraphicsEnvironment.isHeadless()) {
+            initClear();
+        }
         initExec();
         initJoinChannel();
         initLeaveChannel();
@@ -137,7 +140,6 @@ public class CmdParser {
                             GuiApplication.clearInfo();
                             break;
                         case ClearTargets.HISTORY:
-                            // TODO make this safe
                             GuiApplication.clearHistory();
                             break;
                         default:

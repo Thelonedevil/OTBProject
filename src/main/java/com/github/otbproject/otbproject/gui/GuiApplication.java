@@ -110,10 +110,11 @@ public class GuiApplication extends Application {
         GuiUtils.runSafe(controller.cliOutput::clear);
     }
 
-    // TODO make safe
     public static void clearHistory() {
-        controller.history.clear();
-        controller.historyPointer = 0;
+        GuiUtils.runSafe(() -> {
+            controller.history.clear();
+            controller.historyPointer = 0;
+        });
     }
 
     class CustomTailer extends TailerListenerAdapter {
