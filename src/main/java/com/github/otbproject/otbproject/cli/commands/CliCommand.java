@@ -1,5 +1,7 @@
 package com.github.otbproject.otbproject.cli.commands;
 
+import com.github.otbproject.otbproject.App;
+
 public class CliCommand implements Runnable {
     private String shortHelp;
     private String longHelp;
@@ -40,7 +42,7 @@ public class CliCommand implements Runnable {
         private void init() {
             shortHelp = "No short help message provided";
             longHelp = "No long help message provided";
-            runnable = () -> {};
+            runnable = () -> App.logger.warn("Missing runnable for cli command");
         }
 
         public Builder withShortHelp(String shortHelp) {
