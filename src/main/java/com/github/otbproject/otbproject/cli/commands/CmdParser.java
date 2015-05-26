@@ -34,7 +34,6 @@ public class CmdParser {
     private static final CliCommand.Builder commandBuilder = new CliCommand.Builder();
     private static final ArrayList<String> args = new ArrayList<>();
     private static String responseStr = "";
-    private static String name = "RETURN CHARACTER";//Honestly useless assignment, but something has to be here, why not this?
     private static String source = "";
 
     public static class ClearTargets {
@@ -86,14 +85,14 @@ public class CmdParser {
         try {
             if (scanner.hasNext()) {
                 App.logger.debug("Processing input line: " + aLine);
-                name = scanner.next().toLowerCase();
+                String name = scanner.next().toLowerCase();
                 while (scanner.hasNext()) {
                     args.add(scanner.next());
                 }
                 if (map.containsKey(name)) {
                     map.get(name).run();
                 } else {
-                    printHelpNoCommand();
+                    printHelpNoCommand(name);
                 }
                 if (!responseStr.isEmpty()) {
                     App.logger.debug(responseStr);
@@ -110,8 +109,8 @@ public class CmdParser {
         }
     }
 
-    static void printHelpNoCommand() {
-        responseStr = "That command is invalid. \'" + name + "\' does not exist as a CLI command.";
+    static void printHelpNoCommand(String term) {
+        responseStr = "That command is invalid. \'" + term + "\' does not exist as a CLI command.";
     }
 
     private static void initClear() {
@@ -280,10 +279,11 @@ public class CmdParser {
                         responseStr = map.keySet().stream().filter(key -> !key.equals(HELP)).map(key -> map.get(key).getShortHelp()).sorted().collect(Collectors.joining("\n"));
                         responseStr += "\n" + map.get(HELP).getShortHelp();
                     } else {
-                        if (map.keySet().contains(args.get(0))) {
-                            responseStr = map.get(args.get(0)).getFullHelp();
+                        String arg = args.get(0);
+                        if (map.keySet().contains(arg)) {
+                            responseStr = map.get(arg).getFullHelp();
                         } else {
-                            printHelpNoCommand();
+                            printHelpNoCommand(arg);
                         }
                     }
                 });
