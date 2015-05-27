@@ -1,16 +1,18 @@
 package com.github.otbproject.otbproject.filters;
 
 import com.github.otbproject.otbproject.fs.FSUtil;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import java.io.File;
 import java.util.regex.Pattern;
 
 public class Filter {
-    private String group;
-    private FilterType type;
-    private Pattern pattern;
-    private String data;
-    private boolean enabled;
+    private final String group;
+    private final FilterType type;
+    private final Pattern pattern;
+    private final String data;
+    private final boolean enabled;
 
     public Filter(String group, FilterType type, Pattern pattern, String data, boolean enabled) {
         this.group = group;
@@ -40,6 +42,32 @@ public class Filter {
             default:
                 return false;
         }
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof Filter)) {
+            return false;
+        }
+        if (obj == this) {
+            return true;
+        }
+
+        Filter rhs = (Filter) obj;
+        return new EqualsBuilder()
+                .append(type, rhs.type)
+                .append(data, rhs.data)
+                .append(pattern, rhs.pattern)
+                .isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder()
+                .append(type)
+                .append(data)
+                .append(pattern)
+                .toHashCode();
     }
 
     public BasicFilter toBasicFilter() {
