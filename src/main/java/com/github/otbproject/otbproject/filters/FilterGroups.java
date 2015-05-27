@@ -8,6 +8,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class FilterGroups {
     public static FilterGroup get(DatabaseWrapper db, String data) {
@@ -45,6 +48,11 @@ public class FilterGroups {
             }
         }
         return filterGroups;
+    }
+
+    // The Map is implemented as a HashMap, but it returns a generic Map
+    public static Map<String, FilterGroup> getFilterGroupsMap(DatabaseWrapper db) {
+        return getFilterGroups(db).stream().collect(Collectors.toMap(FilterGroup::getName, filterGroup -> filterGroup));
     }
 
     private static FilterGroup getFilterGroupFromResultSet(ResultSet rs) throws SQLException {
