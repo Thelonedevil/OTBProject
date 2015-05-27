@@ -21,8 +21,8 @@ public class DatabaseHelper {
         tables.put(AliasFields.TABLE_NAME, AliasFields.getTableFields());
         tables.put(UserFields.TABLE_NAME, UserFields.getTableFields());
         tables.put(SchedulerFields.TABLE_NAME, SchedulerFields.getTableFields());
-        tables.put(FilterFields.TABLE_NAME, FilterFields.getTableFields());
-        tables.put(FilterGroupFields.TABLE_NAME, FilterGroupFields.getTableFields());
+        //tables.put(FilterFields.TABLE_NAME, FilterFields.getTableFields());
+        //tables.put(FilterGroupFields.TABLE_NAME, FilterGroupFields.getTableFields());
         return tables;
     }
 
