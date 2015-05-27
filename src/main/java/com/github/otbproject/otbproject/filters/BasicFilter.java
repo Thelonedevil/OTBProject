@@ -4,6 +4,7 @@ public class BasicFilter {
     private String data;
     private FilterType type;
     private String group;
+    private Boolean enabled;
 
     public String getData() {
         return data;
@@ -27,5 +28,13 @@ public class BasicFilter {
 
     public void setGroup(String group) {
         this.group = group;
+    }
+
+    public Boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
     }
 }
