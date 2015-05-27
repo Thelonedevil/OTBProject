@@ -5,6 +5,9 @@ import com.github.otbproject.otbproject.commands.scheduler.Scheduler;
 import com.github.otbproject.otbproject.config.ChannelConfig;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.database.SQLiteQuoteWrapper;
+import com.github.otbproject.otbproject.filters.FilterGroups;
+import com.github.otbproject.otbproject.filters.FilterManager;
+import com.github.otbproject.otbproject.filters.Filters;
 import com.github.otbproject.otbproject.messages.receive.ChannelMessageReceiver;
 import com.github.otbproject.otbproject.messages.receive.MessageReceiveQueue;
 import com.github.otbproject.otbproject.messages.receive.PackagedMessage;
@@ -27,8 +30,8 @@ public class Channel {
     public final BlockingHashSet subscriberStorage = new BlockingHashSet();
     private final String name;
     private final ChannelConfig config;
-    private DatabaseWrapper mainDb;
-    private SQLiteQuoteWrapper quoteDb;
+    private final DatabaseWrapper mainDb;
+    private final SQLiteQuoteWrapper quoteDb;
     private ChannelMessageSender messageSender;
     private Thread messageSenderThread;
     private ChannelMessageReceiver messageReceiver;
@@ -36,6 +39,7 @@ public class Channel {
     private final Scheduler scheduler = new Scheduler();
     private final HashMap<String,ScheduledFuture> scheduledCommands = new HashMap<>();
     private final HashMap<String,ScheduledFuture> hourlyResetSchedules = new HashMap<>();
+    public final FilterManager filterManager;
     private boolean inChannel;
 
     private final ReadWriteLock lock = new ReentrantReadWriteLock();
@@ -53,6 +57,8 @@ public class Channel {
         if (quoteDb == null) {
             throw new ChannelInitException(name, "Unable to get quote database");
         }
+
+        filterManager = new FilterManager(Filters.getAllFilters(mainDb), FilterGroups.getFilterGroupsMap(mainDb));
     }
 
     public boolean join() {
