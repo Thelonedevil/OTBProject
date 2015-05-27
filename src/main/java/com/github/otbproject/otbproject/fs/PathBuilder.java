@@ -23,12 +23,12 @@ public class PathBuilder {
         load = null;
     }
 
-    public PathBuilder ofBase(Base base) {
+    public PathBuilder base(Base base) {
         this.base = base;
         return this;
     }
 
-    public PathBuilder ofChannels(Chan chan) {
+    public PathBuilder channels(Chan chan) {
         this.channelDir = chan;
         return this;
     }
@@ -38,7 +38,7 @@ public class PathBuilder {
         return this;
     }
 
-    public PathBuilder ofLoad(Load load) {
+    public PathBuilder load(Load load) {
         this.load = load;
         return this;
     }
@@ -55,13 +55,13 @@ public class PathBuilder {
             case ALIAS:
                 path.append(FSUtil.aliasesDir());
                 break;
-            case COMMAND:
+            case CMD:
                 path.append(FSUtil.commandsDir());
                 break;
             case FILTER:
                 path.append(FSUtil.filtersDir());
                 break;
-            case FILTER_GROUP:
+            case FILTER_GRP:
                 path.append(FSUtil.filterGroupsDir());
                 break;
         }

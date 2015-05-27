@@ -4,6 +4,8 @@ import com.github.otbproject.otbproject.database.DatabaseHelper;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.database.SQLiteQuoteWrapper;
 import com.github.otbproject.otbproject.fs.FSUtil;
+import com.github.otbproject.otbproject.fs.groups.Base;
+import com.github.otbproject.otbproject.fs.groups.Chan;
 
 import java.io.File;
 
