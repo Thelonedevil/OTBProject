@@ -8,7 +8,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Set;
+import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public class Filters {
@@ -49,13 +50,13 @@ public class Filters {
         return filters;
     }
 
-    public static Set<Filter> getAllFilters(DatabaseWrapper db) {
-        return getBasicFilters(db).stream().map(Filter::fromBasicFilter).collect(Collectors.toSet());
+    public static ConcurrentHashMap.KeySetView<Filter, Boolean> getAllFilters(DatabaseWrapper db) {
+        return getBasicFilters(db).stream().map(Filter::fromBasicFilter).collect(CustomCollectors.toConcurrentSet());
     }
 
     // TODO possibly remove
-    public static ArrayList<String> getFilterDataOfType(DatabaseWrapper db, FilterType type) {
-        return getBasicFilters(db).stream().filter(basicFilter -> (basicFilter.getType() == type)).map(BasicFilter::getData).collect(CustomCollectors.toArrayList());
+    public static List<String> getFilterDataOfType(DatabaseWrapper db, FilterType type) {
+        return getBasicFilters(db).stream().filter(basicFilter -> (basicFilter.getType() == type)).map(BasicFilter::getData).collect(Collectors.toList());
     }
 
     private static BasicFilter getFilterFromResultSet(ResultSet rs) throws SQLException {
