@@ -4,6 +4,7 @@ import com.github.otbproject.otbproject.database.DataTypes;
 import com.github.otbproject.otbproject.database.TableFields;
 
 import java.util.HashMap;
+import java.util.HashSet;
 
 public class FilterFields {
     public static final String DATA = "data";
@@ -12,7 +13,12 @@ public class FilterFields {
     public static final String ENABLED = "enabled";
 
     public static final String TABLE_NAME = "tblFilters";
-    public static final String PRIMARY_KEY = DATA;
+    public static final HashSet<String> PRIMARY_KEYS = new HashSet<>();//DATA;
+
+    static {
+        PRIMARY_KEYS.add(DATA);
+        PRIMARY_KEYS.add(TYPE);
+    }
 
     public static TableFields getTableFields() {
         HashMap<String, String> map = new HashMap<>();
@@ -20,6 +26,6 @@ public class FilterFields {
         map.put(TYPE, DataTypes.STRING);
         map.put(GROUP, DataTypes.STRING);
         map.put(ENABLED, DataTypes.STRING);
-        return new TableFields(map, PRIMARY_KEY);
+        return new TableFields(map, PRIMARY_KEYS);
     }
 }
