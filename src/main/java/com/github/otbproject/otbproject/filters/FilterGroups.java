@@ -8,9 +8,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.ConcurrentMap;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class FilterGroups {
@@ -61,6 +59,7 @@ public class FilterGroups {
         group.setName(rs.getString(FilterGroupFields.NAME));
         group.setUserLevel(UserLevel.valueOf(rs.getString(FilterGroupFields.USER_LEVEL)));
         group.setResponseCommand(rs.getString(FilterGroupFields.RESPONSE_COMMAND));
+        group.setEnabled(Boolean.valueOf(rs.getString(FilterGroupFields.ENABLED)));
         return group;
     }
 
@@ -86,6 +85,7 @@ public class FilterGroups {
         map.put(FilterGroupFields.NAME, group.getName());
         map.put(FilterGroupFields.USER_LEVEL, group.getUserLevel().name());
         map.put(FilterGroupFields.RESPONSE_COMMAND, group.getResponseCommand());
+        map.put(FilterGroupFields.ENABLED, group.isEnabled().toString());
 
         if (exists(db, group.getName())) {
             return update(db, map);
