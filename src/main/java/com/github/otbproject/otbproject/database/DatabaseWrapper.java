@@ -78,8 +78,8 @@ public class DatabaseWrapper {
      */
     private boolean createTable(String name, HashMap<String, String> table, HashSet<String> primaryKeys) {
         PreparedStatement preparedStatement = null;
-        String sql = "CREATE TABLE IF NOT EXISTS " + name + " (";
-        sql += table.keySet().stream().map(key -> (key + " " + table.get(key))).collect(Collectors.joining(", "));
+        String sql = "CREATE TABLE IF NOT EXISTS " + name + " ("
+                + table.keySet().stream().map(key -> (key + " " + table.get(key))).collect(Collectors.joining(", "));
         if (!primaryKeys.isEmpty()) {
             sql += ", PRIMARY KEY (" + primaryKeys.stream().collect(Collectors.joining(", ")) + ")";
         }
@@ -91,6 +91,7 @@ public class DatabaseWrapper {
             preparedStatement.executeUpdate();
             connection.commit();
         } catch (SQLException e) {
+            App.logger.error("SQL: " + sql);
             App.logger.catching(e);
             bool = false;
         } finally {
@@ -153,6 +154,7 @@ public class DatabaseWrapper {
             rs = connection.createStatement().executeQuery(sql);
             connection.commit();
         } catch (SQLException e) {
+            App.logger.error("SQL: " + sql);
             App.logger.catching(e);
         } finally {
             try {
@@ -229,6 +231,7 @@ public class DatabaseWrapper {
             }
             connection.commit();
         } catch (SQLException e) {
+            App.logger.error("SQL: " + sql);
             App.logger.catching(e);
             bool = false;
         } finally {
@@ -276,6 +279,7 @@ public class DatabaseWrapper {
             }
             connection.commit();
         } catch (SQLException e) {
+            App.logger.error("SQL: " + sql);
             App.logger.catching(e);
             bool = false;
         } finally {
@@ -316,6 +320,7 @@ public class DatabaseWrapper {
             }
             connection.commit();
         } catch (SQLException e) {
+            App.logger.error("SQL: " + sql);
             App.logger.catching(e);
             bool = false;
         } finally {
@@ -345,6 +350,7 @@ public class DatabaseWrapper {
         try {
             return connection.createStatement().executeQuery(sql);
         } catch (SQLException e) {
+            App.logger.error("SQL: " + sql);
             App.logger.catching(e);
             return null;
         } finally {
@@ -361,16 +367,18 @@ public class DatabaseWrapper {
      * @return an <code>ArrayList&lt;String&gt;</code> that contains all entries in the table specified for the field key or <code>null</code> if an <code>SQLException</code> is thrown.
      */
     public ArrayList<Object> getRecordsList(String table, String key) {
+        String sql = "";
         lock.lock();
         try {
             ArrayList<Object> set = new ArrayList<>();
-            String sql = "SELECT " + key + " FROM " + table;
+            sql = "SELECT " + key + " FROM " + table;
             ResultSet resultSet = connection.createStatement().executeQuery(sql);
             while (resultSet.next()) {
                 set.add(resultSet.getString(key));
             }
             return set;
         } catch (SQLException e) {
+            App.logger.error("SQL: " + sql);
             App.logger.catching(e);
             return null;
         } finally {

@@ -9,15 +9,15 @@ import java.util.HashSet;
 public class FilterFields {
     public static final String DATA = "data";
     public static final String TYPE = "type";
-    public static final String GROUP = "group";
+    public static final String GROUP = "filterGroup";
     public static final String ENABLED = "enabled";
 
     public static final String TABLE_NAME = "tblFilters";
-    public static final HashSet<String> PRIMARY_KEYS = new HashSet<>();//DATA;
+    public static final HashSet<String> PRIMARY_KEYS = new HashSet<>();
 
     static {
         PRIMARY_KEYS.add(DATA);
-        PRIMARY_KEYS.add(TYPE);
+        //PRIMARY_KEYS.add(TYPE);
     }
 
     public static TableFields getTableFields() {
