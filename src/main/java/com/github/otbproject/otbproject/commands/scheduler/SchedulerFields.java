@@ -4,6 +4,7 @@ import com.github.otbproject.otbproject.database.DataTypes;
 import com.github.otbproject.otbproject.database.TableFields;
 
 import java.util.HashMap;
+import java.util.HashSet;
 
 public class SchedulerFields {
     public static final String COMMAND = "command";
@@ -13,7 +14,11 @@ public class SchedulerFields {
     public static final String RESET = "reset";
 
     public static final String TABLE_NAME = "tblSchedule";
-    public static final String PRIMARY_KEY = COMMAND;
+    public static final HashSet<String> PRIMARY_KEYS = new HashSet<>();//COMMAND;
+
+    static {
+        PRIMARY_KEYS.add(COMMAND);
+    }
 
     public static TableFields getTableFields() {
         HashMap<String, String> fields = new HashMap<>();
@@ -22,6 +27,6 @@ public class SchedulerFields {
         fields.put(OFFSET,DataTypes.INTEGER);
         fields.put(PERIOD,DataTypes.INTEGER);
         fields.put(RESET,DataTypes.STRING);
-        return new TableFields(fields, PRIMARY_KEY);
+        return new TableFields(fields, PRIMARY_KEYS);
     }
 }

@@ -8,6 +8,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class Users {
 
@@ -32,13 +34,13 @@ public class Users {
         return null;
     }
 
-    public static ArrayList<String> getUsers(DatabaseWrapper db) {
+    public static List<String> getUsers(DatabaseWrapper db) {
         ArrayList<Object> list =  db.getRecordsList(UserFields.TABLE_NAME, UserFields.NICK);
         if (list == null) {
             return null;
         }
         try {
-            return list.stream().map(key -> (String) key).collect(CustomCollectors.toArrayList());
+            return list.stream().map(key -> (String) key).collect(Collectors.toList());
         } catch (ClassCastException e) {
             App.logger.catching(e);
             return null;

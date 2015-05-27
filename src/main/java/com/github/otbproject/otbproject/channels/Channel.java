@@ -5,6 +5,9 @@ import com.github.otbproject.otbproject.commands.scheduler.Scheduler;
 import com.github.otbproject.otbproject.config.ChannelConfig;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.database.SQLiteQuoteWrapper;
+import com.github.otbproject.otbproject.filters.FilterGroups;
+import com.github.otbproject.otbproject.filters.FilterManager;
+import com.github.otbproject.otbproject.filters.Filters;
 import com.github.otbproject.otbproject.messages.receive.ChannelMessageReceiver;
 import com.github.otbproject.otbproject.messages.receive.MessageReceiveQueue;
 import com.github.otbproject.otbproject.messages.receive.PackagedMessage;
@@ -12,9 +15,11 @@ import com.github.otbproject.otbproject.messages.send.ChannelMessageSender;
 import com.github.otbproject.otbproject.messages.send.MessageOut;
 import com.github.otbproject.otbproject.messages.send.MessageSendQueue;
 import com.github.otbproject.otbproject.proc.CooldownSet;
-import com.github.otbproject.otbproject.util.BlockingHashSet;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -24,11 +29,11 @@ public class Channel {
     private final MessageReceiveQueue receiveQueue = new MessageReceiveQueue();
     private final CooldownSet commandCooldownSet = new CooldownSet();
     private final CooldownSet userCooldownSet = new CooldownSet();
-    public final BlockingHashSet subscriberStorage = new BlockingHashSet();
+    public final Set<String> subscriberStorage = Collections.newSetFromMap(new ConcurrentHashMap<>());
     private final String name;
     private final ChannelConfig config;
-    private DatabaseWrapper mainDb;
-    private SQLiteQuoteWrapper quoteDb;
+    private final DatabaseWrapper mainDb;
+    private final SQLiteQuoteWrapper quoteDb;
     private ChannelMessageSender messageSender;
     private Thread messageSenderThread;
     private ChannelMessageReceiver messageReceiver;
@@ -36,6 +41,7 @@ public class Channel {
     private final Scheduler scheduler = new Scheduler();
     private final HashMap<String,ScheduledFuture> scheduledCommands = new HashMap<>();
     private final HashMap<String,ScheduledFuture> hourlyResetSchedules = new HashMap<>();
+    public final FilterManager filterManager;
     private boolean inChannel;
 
     private final ReadWriteLock lock = new ReentrantReadWriteLock();
@@ -53,6 +59,8 @@ public class Channel {
         if (quoteDb == null) {
             throw new ChannelInitException(name, "Unable to get quote database");
         }
+
+        filterManager = new FilterManager(Filters.getAllFilters(mainDb), FilterGroups.getFilterGroupsMap(mainDb));
     }
 
     public boolean join() {

@@ -8,6 +8,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class Quotes {
     public static Quote get(SQLiteQuoteWrapper db, Integer id) {
@@ -59,13 +61,13 @@ public class Quotes {
         }
     }
 
-    public static ArrayList<Integer> getQuoteIds(SQLiteQuoteWrapper db) {
+    public static List<Integer> getQuoteIds(SQLiteQuoteWrapper db) {
         ArrayList<Object> list =  db.getNonRemovedRecordsList(QuoteFields.TABLE_NAME, QuoteFields.ID);
         if (list == null) {
             return null;
         }
         try {
-            return list.stream().map(key -> Integer.valueOf((String) key)).collect(CustomCollectors.toArrayList());
+            return list.stream().map(key -> Integer.valueOf((String) key)).collect(Collectors.toList());
         } catch (ClassCastException e) {
             App.logger.catching(e);
             return null;
