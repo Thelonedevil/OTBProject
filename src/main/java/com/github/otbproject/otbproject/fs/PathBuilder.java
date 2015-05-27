@@ -1,8 +1,6 @@
 package com.github.otbproject.otbproject.fs;
 
-import com.github.otbproject.otbproject.fs.groups.Base;
-import com.github.otbproject.otbproject.fs.groups.Chan;
-import com.github.otbproject.otbproject.fs.groups.Load;
+import com.github.otbproject.otbproject.fs.groups.*;
 
 import java.io.File;
 
