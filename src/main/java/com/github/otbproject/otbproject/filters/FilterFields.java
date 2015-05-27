@@ -17,7 +17,7 @@ public class FilterFields {
 
     static {
         PRIMARY_KEYS.add(DATA);
-        //PRIMARY_KEYS.add(TYPE);
+        PRIMARY_KEYS.add(TYPE);
     }
 
     public static TableFields getTableFields() {
