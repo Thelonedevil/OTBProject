@@ -8,6 +8,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class Filters {
     public static BasicFilter get(DatabaseWrapper db, String data) {
@@ -47,8 +49,8 @@ public class Filters {
         return filters;
     }
 
-    public static ArrayList<Filter> getAllFilters(DatabaseWrapper db) {
-        return getBasicFilters(db).stream().map(Filter::fromBasicFilter).collect(CustomCollectors.toArrayList());
+    public static Set<Filter> getAllFilters(DatabaseWrapper db) {
+        return getBasicFilters(db).stream().map(Filter::fromBasicFilter).collect(Collectors.toSet());
     }
 
     // TODO possibly remove
