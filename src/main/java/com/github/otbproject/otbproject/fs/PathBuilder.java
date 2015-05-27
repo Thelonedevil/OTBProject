@@ -91,4 +91,8 @@ public class PathBuilder {
         init();
         return path.toString();
     }
+
+    public File asFile() {
+        return new File(this.create());
+    }
 }
