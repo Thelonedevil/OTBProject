@@ -7,9 +7,6 @@ import org.pircbotx.exception.IrcException;
 
 import java.io.IOException;
 
-/**
-* Created by Justin on 05/04/2015.
-*/
 public class BotRunnable implements Runnable {
     @Override
     public void run() {
