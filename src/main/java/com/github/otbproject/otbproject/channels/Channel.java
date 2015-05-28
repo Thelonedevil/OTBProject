@@ -78,6 +78,8 @@ public class Channel {
             messageReceiverThread = new Thread(messageReceiver);
             messageReceiverThread.start();
 
+            scheduler.start();
+
             inChannel = true;
 
             return true;
@@ -103,6 +105,8 @@ public class Channel {
             messageReceiverThread = null;
             messageReceiver = null;
             receiveQueue.clear();
+
+            scheduler.stop();
 
             commandCooldownSet.clear();
             userCooldownSet.clear();
