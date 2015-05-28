@@ -109,6 +109,7 @@ public class ChannelMessageReceiver implements Runnable {
             MessageOut messageOut = new MessageOut(message, priority);
             if (internal) {
                 InternalMessageSender.send(destinationChannelName.replace(InternalMessageSender.DESTINATION_PREFIX, ""), messageOut.getMessage(), "CmdExec");
+                return;
             }
             // If queue rejects message because it's too full, return
             else if (!destinationChannel.sendMessage(messageOut)) {
