@@ -23,7 +23,7 @@ public class BeamBot implements IBot {
     private final HashMap<String, Channel> channels = new HashMap<>();
     private final DatabaseWrapper botDB = APIDatabase.getBotDatabase();
 
-    public final CooldownSet sentMessageCache = new CooldownSet();
+    public final CooldownSet<String> sentMessageCache = new CooldownSet<>();
     private static final int CACHE_TIME = 4;
 
     final BeamAPI beam = new BeamAPI();
@@ -163,7 +163,7 @@ public class BeamBot implements IBot {
         }
 
 
-        CooldownSet timeoutSet = beamChatChannel.getTimeoutSet();
+        CooldownSet<String> timeoutSet = beamChatChannel.timeoutSet;
         if (timeoutSet.contains(user)) {
             int waitTime = timeoutSet.getCooldownRemover(user).getWaitInSeconds();
             // Not perfect because it's based on the original timeout time, not the time left
@@ -189,6 +189,6 @@ public class BeamBot implements IBot {
             App.logger.error("Failed to remove timeout for user: BeamChatChannel for channel '" + channelName + "' is null.");
             return false;
         }
-        return channel.getTimeoutSet().remove(user);
+        return channel.timeoutSet.remove(user);
     }
 }

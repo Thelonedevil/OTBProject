@@ -3,14 +3,14 @@ package com.github.otbproject.otbproject.proc;
 import com.github.otbproject.otbproject.App;
 import org.apache.logging.log4j.Level;
 
-public class CooldownRemover implements Runnable {
+public class CooldownRemover<T> implements Runnable {
     private static int increment = 1;
-    private final String item;
+    private final T item;
     private final int waitInSeconds;
-    private final CooldownSet cooldownSet;
+    private final CooldownSet<T> cooldownSet;
     private Thread thread;
 
-    public CooldownRemover(String item, int waitInSeconds, CooldownSet cooldownSet) {
+    public CooldownRemover(T item, int waitInSeconds, CooldownSet<T> cooldownSet) {
         this.item = item;
         this.waitInSeconds = waitInSeconds;
         this.cooldownSet = cooldownSet;

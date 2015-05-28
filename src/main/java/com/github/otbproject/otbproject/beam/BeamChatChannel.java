@@ -19,7 +19,8 @@ public class BeamChatChannel {
     BeamChat beamChat;
     final BeamChatConnectable beamChatConnectable;
     BeamChannel channel;
-    private final CooldownSet timeoutSet = new CooldownSet();
+    public final CooldownSet<String> timeoutSet = new CooldownSet<>();
+
 
     public BeamChatChannel(String channelName){
         beamBot = ((BeamBot) APIBot.getBot());
@@ -53,9 +54,5 @@ public class BeamChatChannel {
             App.logger.info("Connected to: " + channelName);
 
         }
-    }
-
-    public CooldownSet getTimeoutSet() {
-        return timeoutSet;
     }
 }

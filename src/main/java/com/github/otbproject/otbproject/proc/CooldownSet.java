@@ -4,11 +4,11 @@ import java.util.HashMap;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-public class CooldownSet {
-    private final HashMap<String, CooldownRemover> map = new HashMap<>();
+public class CooldownSet<T> {
+    private final HashMap<T, CooldownRemover> map = new HashMap<>();
     private final ReadWriteLock lock = new ReentrantReadWriteLock();
 
-    public boolean contains(String item) {
+    public boolean contains(T item) {
         lock.readLock().lock();
         try {
             return map.containsKey(item);
@@ -17,7 +17,7 @@ public class CooldownSet {
         }
     }
 
-    public CooldownRemover getCooldownRemover(String item) {
+    public CooldownRemover getCooldownRemover(T item) {
         lock.readLock().lock();
         try {
             return map.get(item);
@@ -32,13 +32,13 @@ public class CooldownSet {
      * @param timeInSeconds time in seconds until item should be removed from the set
      * @return <tt>true</tt> if set does not already contain item
      */
-    public boolean add(String item, int timeInSeconds) {
+    public boolean add(T item, int timeInSeconds) {
         lock.writeLock().lock();
         try {
             if (map.containsKey(item)) {
                 return false;
             }
-            CooldownRemover cooldownRemover = new CooldownRemover(item, timeInSeconds, this);
+            CooldownRemover<T> cooldownRemover = new CooldownRemover<>(item, timeInSeconds, this);
             map.put(item, cooldownRemover);
             new Thread(cooldownRemover).start();
             return true;
@@ -47,7 +47,7 @@ public class CooldownSet {
         }
     }
 
-    public boolean nonInterruptingRemove(String item) {
+    public boolean nonInterruptingRemove(T item) {
         lock.writeLock().lock();
         try {
             return (map.remove(item) != null);
@@ -56,7 +56,7 @@ public class CooldownSet {
         }
     }
 
-    public boolean remove(String item) {
+    public boolean remove(T item) {
         CooldownRemover cooldownRemover = getCooldownRemover(item);
         if (cooldownRemover == null) {
             return false;
