@@ -11,7 +11,8 @@ public class FilterProcessor {
     static final String METHOD_NAME = "checkMessage";
     static final ScriptProcessor PROCESSOR = new ScriptProcessor();
 
-    public static String process(ConcurrentHashMap.KeySetView<Filter, Boolean> filters, ConcurrentMap<String, FilterGroup> filterGroups, String message, UserLevel userLevel) {
+    // Returns the FilterGroup of a Filter which matches the message, or null if no Filter matches
+    public static FilterGroup process(ConcurrentHashMap.KeySetView<Filter, Boolean> filters, ConcurrentMap<String, FilterGroup> filterGroups, String message, UserLevel userLevel) {
         if (userLevel.getValue() < UserLevel.MODERATOR.getValue()) {
             return null;
         }
@@ -26,7 +27,6 @@ public class FilterProcessor {
         if (!filterOptional.isPresent()) {
             return null;
         }
-        FilterGroup group = filterGroups.get(filterOptional.get().getGroup());
-        return  (group == null) ? "" : ((group.getResponseCommand() == null) ? "" : group.getResponseCommand());
+        return filterGroups.get(filterOptional.get().getGroup());
     }
 }
