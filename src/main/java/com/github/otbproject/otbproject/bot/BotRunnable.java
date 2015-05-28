@@ -14,7 +14,7 @@ public class BotRunnable implements Runnable {
     @Override
     public void run() {
         try {
-            Thread.currentThread().setName("Main Bot");
+            Thread.currentThread().setName("Bot");
             App.logger.info("Bot Started");
             APIBot.getBot().startBot();
             App.logger.info("Bot Stopped");
