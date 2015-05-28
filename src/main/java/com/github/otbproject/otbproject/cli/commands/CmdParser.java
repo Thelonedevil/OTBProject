@@ -62,7 +62,7 @@ public class CmdParser {
         initJoinChannel();
         initLeaveChannel();
         initReload();
-        initRestart();
+        //initRestart();
         initStop();
         initHelp();
     }
