@@ -33,21 +33,24 @@ public class MessageHandler implements EventHandler<IncomingMessageEvent> {
         BeamChatChannel beamChatChannel = bot.beamChannels.get(channelName);
         if (beamChatChannel == null) {
             App.logger.error("Failed to check timeout set: BeamChatChannel for channel '" + channelName + "' is null.");
-        } else if (beamChatChannel.timeoutSet.containsKey(data.user_name.toLowerCase())) {
-            // Check if user has user level mod or higher
-            try {
-                if (BotUtil.isModOrHigher(channelName, data.user_name.toLowerCase())) {
-                    bot.removeTimeout(channelName, data.user_name.toLowerCase());
-                } else {
-                    // Delete message
-                    beamChatChannel.beamChatConnectable.delete(event.data);
-                    App.logger.info("Deleted message in channel <" + channelName + "> from user: " + event.data.user_name);
-                    return;
+        } else {
+            if (beamChatChannel.timeoutSet.containsKey(data.user_name.toLowerCase())) {
+                // Check if user has user level mod or higher
+                try {
+                    if (BotUtil.isModOrHigher(channelName, data.user_name.toLowerCase())) {
+                        bot.removeTimeout(channelName, data.user_name.toLowerCase());
+                    } else {
+                        // Delete message
+                        beamChatChannel.beamChatConnectable.delete(event.data);
+                        App.logger.info("Deleted message in channel <" + channelName + "> from user: " + event.data.user_name);
+                        return;
+                    }
+                } catch (ChannelNotFoundException e) {
+                    App.logger.error("Channel '" + channelName + "' did not exist in which to check if user was mod before deleting message");
+                    App.logger.catching(e);
                 }
-            } catch (ChannelNotFoundException e) {
-                App.logger.error("Channel '" + channelName + "' did not exist in which to check if user was mod before deleting message");
-                App.logger.catching(e);
             }
+            beamChatChannel.cacheMessage(data);
         }
 
         // Check if message is from bot and sent by bot

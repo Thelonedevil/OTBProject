@@ -103,8 +103,8 @@ public class BeamBot implements IBot {
         try {
             BeamChatUser[] users = beam.http.get(path,BeamChatUser[].class , new HashMap<>()).get();
             for (BeamChatUser beamChatUser : users) {
-                if(beamChatUser.getUser_name().equalsIgnoreCase(user)){
-                    return Arrays.asList(beamChatUser.getUser_roles()).contains("Mod");
+                if(beamChatUser.getUserName().equalsIgnoreCase(user)){
+                    return Arrays.asList(beamChatUser.getUserRoles()).contains("Mod");
                 }
             }
         } catch (InterruptedException | ExecutionException e) {
@@ -188,6 +188,7 @@ public class BeamBot implements IBot {
             }
         }
         timeoutSet.put(user, Boolean.TRUE, timeInSeconds, TimeUnit.SECONDS);
+        //beamChatChannel.deleteCachedMessages(user); TODO uncomment when major responsiveness issue is fixed
         App.logger.info("Timed out '" + user + "' in channel '" + channelName + "' for " + timeInSeconds + " seconds");
         return true;
     }
