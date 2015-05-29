@@ -32,8 +32,8 @@ public class BeamChatChannel {
 
     private static final int CACHE_EXPIRATION_MIN = 5;
     private static final int CACHE_MAX_SIZE = 200;
-    public final ConcurrentHashMap<String, Set<String>> cacheLookup = new ConcurrentHashMap<>();
-    public final Cache<String, IncomingMessageData> messageCache;
+    private final ConcurrentHashMap<String, Set<String>> cacheLookup = new ConcurrentHashMap<>();
+    private final Cache<String, IncomingMessageData> messageCache;
 
 
     public BeamChatChannel(String channelName){
