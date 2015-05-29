@@ -30,7 +30,8 @@ public class BeamChatChannel {
     BeamChannel channel;
     public final CooldownSet<String> timeoutSet = new CooldownSet<>();
 
-    public static final int CACHE_EXPIRATION_MIN = 5;
+    private static final int CACHE_EXPIRATION_MIN = 5;
+    private static final int CACHE_MAX_SIZE = 200;
     public final ConcurrentHashMap<String, Set<String>> cacheLookup = new ConcurrentHashMap<>();
     public final Cache<String, IncomingMessageData> messageCache;
 
@@ -39,6 +40,7 @@ public class BeamChatChannel {
         // Initialize cache
         messageCache = CacheBuilder.newBuilder()
                 .expireAfterWrite(CACHE_EXPIRATION_MIN, TimeUnit.MINUTES)
+                .maximumSize(CACHE_MAX_SIZE)
                 .removalListener(new RemovalListener<String, IncomingMessageData>() {
                     @Override
                     public void onRemoval(RemovalNotification<String, IncomingMessageData> notification) {
