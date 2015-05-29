@@ -14,21 +14,22 @@ import com.github.otbproject.otbproject.messages.receive.PackagedMessage;
 import com.github.otbproject.otbproject.messages.send.ChannelMessageSender;
 import com.github.otbproject.otbproject.messages.send.MessageOut;
 import com.github.otbproject.otbproject.messages.send.MessageSendQueue;
-import com.github.otbproject.otbproject.proc.CooldownSet;
+import net.jodah.expiringmap.ExpiringMap;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class Channel {
     private final MessageSendQueue sendQueue = new MessageSendQueue(this);
     private final MessageReceiveQueue receiveQueue = new MessageReceiveQueue();
-    private final CooldownSet<String> commandCooldownSet = new CooldownSet<>();
-    private final CooldownSet<String> userCooldownSet = new CooldownSet<>();
+    private final ExpiringMap<String, Boolean> commandCooldownSet;
+    private final ExpiringMap<String, Boolean> userCooldownSet;
     public final Set<String> subscriberStorage = Collections.newSetFromMap(new ConcurrentHashMap<>());
     private final String name;
     private final ChannelConfig config;
@@ -59,6 +60,16 @@ public class Channel {
         if (quoteDb == null) {
             throw new ChannelInitException(name, "Unable to get quote database");
         }
+
+        commandCooldownSet = ExpiringMap.builder()
+                .variableExpiration()
+                .expirationPolicy(ExpiringMap.ExpirationPolicy.CREATED)
+                .build();
+        userCooldownSet = ExpiringMap.builder()
+                .variableExpiration()
+                .expirationPolicy(ExpiringMap.ExpirationPolicy.CREATED)
+                .build();
+
 
         filterManager = new FilterManager(Filters.getAllFilters(mainDb), FilterGroups.getFilterGroupsMap(mainDb));
     }
@@ -152,7 +163,7 @@ public class Channel {
     public boolean isUserCooldown(String user) {
         lock.readLock().lock();
         try {
-            return userCooldownSet.contains(user);
+            return userCooldownSet.containsKey(user);
         } finally {
             lock.readLock().unlock();
         }
@@ -161,7 +172,7 @@ public class Channel {
     public boolean addUserCooldown(String user, int time) {
         lock.readLock().lock();
         try {
-            return inChannel && userCooldownSet.add(user, time);
+            return inChannel && userCooldownSet.put(user, Boolean.TRUE, time, TimeUnit.SECONDS);
         } finally {
             lock.readLock().unlock();
         }
@@ -170,7 +181,7 @@ public class Channel {
     public boolean isCommandCooldown(String user) {
         lock.readLock().lock();
         try {
-            return commandCooldownSet.contains(user);
+            return commandCooldownSet.containsKey(user);
         } finally {
             lock.readLock().unlock();
         }
@@ -179,7 +190,7 @@ public class Channel {
     public boolean addCommandCooldown(String user, int time) {
         lock.readLock().lock();
         try {
-            return inChannel && commandCooldownSet.add(user, time);
+            return inChannel && commandCooldownSet.put(user, Boolean.TRUE, time, TimeUnit.SECONDS);
         } finally {
             lock.readLock().unlock();
         }
