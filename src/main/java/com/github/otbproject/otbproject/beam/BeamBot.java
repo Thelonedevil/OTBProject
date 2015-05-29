@@ -195,6 +195,7 @@ public class BeamBot implements IBot {
             App.logger.error("Failed to remove timeout for user: BeamChatChannel for channel '" + channelName + "' is null.");
             return false;
         }
-        return channel.timeoutSet.remove(user);
+        channel.timeoutSet.remove(user);
+        return true;
     }
 }

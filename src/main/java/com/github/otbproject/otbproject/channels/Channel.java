@@ -172,7 +172,11 @@ public class Channel {
     public boolean addUserCooldown(String user, int time) {
         lock.readLock().lock();
         try {
-            return inChannel && userCooldownSet.put(user, Boolean.TRUE, time, TimeUnit.SECONDS);
+            if (inChannel) {
+                userCooldownSet.put(user, Boolean.TRUE, time, TimeUnit.SECONDS);
+                return true;
+            }
+            return false;
         } finally {
             lock.readLock().unlock();
         }
@@ -190,7 +194,11 @@ public class Channel {
     public boolean addCommandCooldown(String user, int time) {
         lock.readLock().lock();
         try {
-            return inChannel && commandCooldownSet.put(user, Boolean.TRUE, time, TimeUnit.SECONDS);
+            if (inChannel) {
+                commandCooldownSet.put(user, Boolean.TRUE, time, TimeUnit.SECONDS);
+                return true;
+            }
+            return false;
         } finally {
             lock.readLock().unlock();
         }
