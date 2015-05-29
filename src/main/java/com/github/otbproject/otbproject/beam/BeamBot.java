@@ -143,6 +143,10 @@ public class BeamBot implements IBot {
 
     @Override
     public boolean timeout(String channelName, String user, int timeInSeconds) {
+        if (timeInSeconds <= 0) {
+            App.logger.warn("Must time out user for positive amount of time");
+            return false;
+        }
         user = user.toLowerCase(); // Just in case
 
         // Check if user has user level mod or higher
@@ -176,6 +180,7 @@ public class BeamBot implements IBot {
             }
         }
         boolean success = timeoutSet.add(user, timeInSeconds);
+        beamChatChannel.deleteCachedMessages(user);
         if (success) {
             App.logger.info("Timed out '" + user + "' in channel '" + channelName + "' for " + timeInSeconds + " seconds");
         }

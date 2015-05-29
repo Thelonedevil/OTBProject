@@ -117,7 +117,7 @@ public class BeamChatChannel {
         if (data == null) {
             return;
         }
-        addToCacheLookup(data.user_name, data.id);
+        addToCacheLookup(data.user_name.toLowerCase(), data.id);
         messageCache.put(data.id, data);
     }
 
@@ -126,11 +126,25 @@ public class BeamChatChannel {
         cacheLookup.clear();
     }
 
-    public void invalidateAll(String user) {
+    public void invalidateAllForUser(String user) {
         Set<String> set = cacheLookup.get(user);
         if (set == null) {
             return;
         }
         set.forEach(messageCache::invalidate);
+    }
+
+    public void deleteCachedMessages(String user) {
+        Set<String> set = cacheLookup.get(user);
+        if (set == null) {
+            return;
+        }
+        set.forEach(id -> {
+            IncomingMessageData data = messageCache.asMap().get(id);
+            if (data != null) {
+                beamChatConnectable.delete(data);
+                messageCache.invalidate(id);
+            }
+        });
     }
 }
