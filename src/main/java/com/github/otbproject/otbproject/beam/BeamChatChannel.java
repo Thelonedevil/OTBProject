@@ -123,4 +123,12 @@ public class BeamChatChannel {
         messageCache.invalidateAll();
         cacheLookup.clear();
     }
+
+    public void invalidateAll(String user) {
+        Set<String> set = cacheLookup.get(user);
+        if (set == null) {
+            return;
+        }
+        set.forEach(messageCache::invalidate);
+    }
 }
