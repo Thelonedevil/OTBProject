@@ -33,7 +33,7 @@ public class MessageHandler implements EventHandler<IncomingMessageEvent> {
         BeamChatChannel beamChatChannel = bot.beamChannels.get(channelName);
         if (beamChatChannel == null) {
             App.logger.error("Failed to check timeout set: BeamChatChannel for channel '" + channelName + "' is null.");
-        } else if (beamChatChannel.timeoutSet.contains(data.user_name.toLowerCase())) {
+        } else if (beamChatChannel.timeoutSet.containsKey(data.user_name.toLowerCase())) {
             // Check if user has user level mod or higher
             try {
                 if (BotUtil.isModOrHigher(channelName, data.user_name.toLowerCase())) {

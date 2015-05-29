@@ -10,6 +10,7 @@ import com.github.otbproject.otbproject.channels.Channel;
 import com.github.otbproject.otbproject.channels.ChannelNotFoundException;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.proc.CooldownSet;
+import net.jodah.expiringmap.ExpiringMap;
 import pro.beam.api.BeamAPI;
 import pro.beam.api.resource.BeamUser;
 import pro.beam.api.resource.chat.methods.ChatSendMethod;
@@ -18,6 +19,7 @@ import pro.beam.api.services.impl.UsersService;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 public class BeamBot implements IBot {
     private final HashMap<String, Channel> channels = new HashMap<>();
@@ -143,6 +145,11 @@ public class BeamBot implements IBot {
 
     @Override
     public boolean timeout(String channelName, String user, int timeInSeconds) {
+        if (timeInSeconds <= 0) {
+            App.logger.warn("Cannot time out user for non-positive amount of time");
+            return false;
+        }
+
         user = user.toLowerCase(); // Just in case
 
         // Check if user has user level mod or higher
@@ -163,23 +170,22 @@ public class BeamBot implements IBot {
         }
 
 
-        CooldownSet<String> timeoutSet = beamChatChannel.timeoutSet;
-        if (timeoutSet.contains(user)) {
-            int waitTime = timeoutSet.getCooldownRemover(user).getWaitInSeconds();
+        ExpiringMap<String, Boolean> timeoutSet = beamChatChannel.timeoutSet;
+        if (timeoutSet.containsKey(user)) {
+            long waitTime = timeoutSet.getExpectedExpiration(user) / 1000;
             // Not perfect because it's based on the original timeout time, not the time left
             //  but there's no way to get the time left
             if (waitTime > timeInSeconds) {
                 App.logger.info("Did not timeout user '" + user + "' because they were already timed out for longer than that.");
                 return false;
             } else {
-                timeoutSet.remove(user);
+                timeoutSet.setExpiration(timeInSeconds, TimeUnit.SECONDS);
+                return true;
             }
         }
-        boolean success = timeoutSet.add(user, timeInSeconds);
-        if (success) {
-            App.logger.info("Timed out '" + user + "' in channel '" + channelName + "' for " + timeInSeconds + " seconds");
-        }
-        return success;
+        timeoutSet.put(user, Boolean.TRUE, timeInSeconds, TimeUnit.SECONDS);
+        App.logger.info("Timed out '" + user + "' in channel '" + channelName + "' for " + timeInSeconds + " seconds");
+        return true;
     }
 
     @Override

@@ -2,7 +2,7 @@ package com.github.otbproject.otbproject.beam;
 
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.api.APIBot;
-import com.github.otbproject.otbproject.proc.CooldownSet;
+import net.jodah.expiringmap.ExpiringMap;
 import pro.beam.api.resource.BeamUser;
 import pro.beam.api.resource.channel.BeamChannel;
 import pro.beam.api.resource.chat.BeamChat;
@@ -19,10 +19,15 @@ public class BeamChatChannel {
     BeamChat beamChat;
     final BeamChatConnectable beamChatConnectable;
     BeamChannel channel;
-    public final CooldownSet<String> timeoutSet = new CooldownSet<>();
+    public final ExpiringMap<String, Boolean> timeoutSet;
 
 
     public BeamChatChannel(String channelName){
+        timeoutSet = ExpiringMap.builder()
+                .variableExpiration()
+                .expirationPolicy(ExpiringMap.ExpirationPolicy.CREATED)
+                .build();
+
         beamBot = ((BeamBot) APIBot.getBot());
         try {
             channel = beamBot.beamUser.channel;
