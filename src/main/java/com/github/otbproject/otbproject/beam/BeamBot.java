@@ -180,7 +180,7 @@ public class BeamBot implements IBot {
             }
         }
         boolean success = timeoutSet.add(user, timeInSeconds);
-        beamChatChannel.deleteCachedMessages(user);
+        //beamChatChannel.deleteCachedMessages(user); TODO uncomment when major responsiveness issue is fixed
         if (success) {
             App.logger.info("Timed out '" + user + "' in channel '" + channelName + "' for " + timeInSeconds + " seconds");
         }
