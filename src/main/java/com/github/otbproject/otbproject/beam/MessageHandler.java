@@ -51,7 +51,7 @@ public class MessageHandler implements EventHandler<IncomingMessageEvent> {
         }
 
         // Check if message is from bot and sent by bot
-        if (event.data.user_name.equalsIgnoreCase(APIBot.getBot().getUserName()) && (bot.sentMessageCache.contains(event.data.getMessage()))) {
+        if (event.data.user_name.equalsIgnoreCase(APIBot.getBot().getUserName()) && (bot.sentMessageCache.containsKey(event.data.getMessage()))) {
             App.logger.debug("Ignoring message sent by bot");
             return;
         }

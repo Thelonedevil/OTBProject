@@ -9,7 +9,6 @@ import com.github.otbproject.otbproject.bot.IBot;
 import com.github.otbproject.otbproject.channels.Channel;
 import com.github.otbproject.otbproject.channels.ChannelNotFoundException;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
-import com.github.otbproject.otbproject.proc.CooldownSet;
 import net.jodah.expiringmap.ExpiringMap;
 import pro.beam.api.BeamAPI;
 import pro.beam.api.resource.BeamUser;
@@ -25,7 +24,7 @@ public class BeamBot implements IBot {
     private final HashMap<String, Channel> channels = new HashMap<>();
     private final DatabaseWrapper botDB = APIDatabase.getBotDatabase();
 
-    public final CooldownSet<String> sentMessageCache = new CooldownSet<>();
+    public final ExpiringMap<String, Boolean> sentMessageCache;
     private static final int CACHE_TIME = 4;
 
     final BeamAPI beam = new BeamAPI();
@@ -33,6 +32,11 @@ public class BeamBot implements IBot {
     final HashMap<String,BeamChatChannel> beamChannels = new HashMap<>();
 
     public BeamBot() {
+        sentMessageCache = ExpiringMap.builder()
+                .expiration(CACHE_TIME, TimeUnit.SECONDS)
+                .expirationPolicy(ExpiringMap.ExpirationPolicy.CREATED)
+                .build();
+
         try {
             beamUser = beam.use(UsersService.class).login(APIConfig.getAccount().getName(), APIConfig.getAccount().getPasskey()).get();
         } catch (InterruptedException | ExecutionException e) {
@@ -113,7 +117,7 @@ public class BeamBot implements IBot {
     @Override
     public void sendMessage(String channel, String message) {
         beamChannels.get(channel).beamChatConnectable.send(ChatSendMethod.of(message));
-        sentMessageCache.add(message, CACHE_TIME);
+        sentMessageCache.put(message, Boolean.TRUE);
         App.logger.info("Sent: <" + channel + "> " + message);
     }
 
