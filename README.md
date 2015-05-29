@@ -1,6 +1,8 @@
 OTBProject
 ====================
 
+[![Join the chat at https://gitter.im/OTBProject/OTBProject](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/OTBProject/OTBProject?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 An open source chat bot for <a href="http://www.twitch.tv" target="_blank">Twitch</a> and <a href="https://beam.pro" target="_blank">Beam</a>.
 
 The project website is <a href="http://otbproject.github.io" target="_blank">otbproject.github.io</a>.
