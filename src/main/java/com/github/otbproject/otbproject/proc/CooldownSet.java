@@ -4,23 +4,23 @@ import java.util.HashMap;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-public class CooldownSet {
-    private final HashMap<String, CooldownRemover> map = new HashMap<>();
+public class CooldownSet<T> {
+    private final HashMap<T, CooldownRemover<T>> map = new HashMap<>();
     private final ReadWriteLock lock = new ReentrantReadWriteLock();
 
-    public boolean contains(String item) {
+    public boolean contains(T t) {
         lock.readLock().lock();
         try {
-            return map.containsKey(item);
+            return map.containsKey(t);
         } finally {
             lock.readLock().unlock();
         }
     }
 
-    public CooldownRemover getCooldownRemover(String item) {
+    public CooldownRemover<T> getCooldownRemover(T t) {
         lock.readLock().lock();
         try {
-            return map.get(item);
+            return map.get(t);
         } finally {
             lock.readLock().unlock();
         }
@@ -28,18 +28,18 @@ public class CooldownSet {
 
     /**
      *
-     * @param item item to add to the set
-     * @param timeInSeconds time in seconds until item should be removed from the set
-     * @return <tt>true</tt> if set does not already contain item
+     * @param t element to add to the set
+     * @param timeInSeconds time in seconds until t should be removed from the set
+     * @return <tt>true</tt> if set does not already contain t
      */
-    public boolean add(String item, int timeInSeconds) {
+    public boolean add(T t, int timeInSeconds) {
         lock.writeLock().lock();
         try {
-            if (map.containsKey(item)) {
+            if (map.containsKey(t)) {
                 return false;
             }
-            CooldownRemover cooldownRemover = new CooldownRemover(item, timeInSeconds, this);
-            map.put(item, cooldownRemover);
+            CooldownRemover<T> cooldownRemover = new CooldownRemover<>(t, timeInSeconds, this);
+            map.put(t, cooldownRemover);
             new Thread(cooldownRemover).start();
             return true;
         } finally {
@@ -47,22 +47,22 @@ public class CooldownSet {
         }
     }
 
-    public boolean nonInterruptingRemove(String item) {
+    public boolean nonInterruptingRemove(T t) {
         lock.writeLock().lock();
         try {
-            return (map.remove(item) != null);
+            return (map.remove(t) != null);
         } finally {
             lock.writeLock().unlock();
         }
     }
 
-    public boolean remove(String item) {
-        CooldownRemover cooldownRemover = getCooldownRemover(item);
+    public boolean remove(T t) {
+        CooldownRemover cooldownRemover = getCooldownRemover(t);
         if (cooldownRemover == null) {
             return false;
         }
 
-        // Interrupting the cooldown remover automatically removes the item from the set
+        // Interrupting the cooldown remover automatically removes the t from the set
         cooldownRemover.interrupt();
         return true;
     }

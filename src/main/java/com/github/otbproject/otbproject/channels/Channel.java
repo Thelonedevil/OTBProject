@@ -27,8 +27,8 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class Channel {
     private final MessageSendQueue sendQueue = new MessageSendQueue(this);
     private final MessageReceiveQueue receiveQueue = new MessageReceiveQueue();
-    private final CooldownSet commandCooldownSet = new CooldownSet();
-    private final CooldownSet userCooldownSet = new CooldownSet();
+    private final CooldownSet<String> commandCooldownSet = new CooldownSet<>();
+    private final CooldownSet<String> userCooldownSet = new CooldownSet<>();
     public final Set<String> subscriberStorage = Collections.newSetFromMap(new ConcurrentHashMap<>());
     private final String name;
     private final ChannelConfig config;

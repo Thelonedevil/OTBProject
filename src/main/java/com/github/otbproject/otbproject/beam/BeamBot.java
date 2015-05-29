@@ -23,7 +23,7 @@ public class BeamBot implements IBot {
     private final HashMap<String, Channel> channels = new HashMap<>();
     private final DatabaseWrapper botDB = APIDatabase.getBotDatabase();
 
-    public final CooldownSet sentMessageCache = new CooldownSet();
+    public final CooldownSet<String> sentMessageCache = new CooldownSet<>();
     private static final int CACHE_TIME = 4;
 
     final BeamAPI beam = new BeamAPI();
@@ -97,8 +97,8 @@ public class BeamBot implements IBot {
         try {
             BeamChatUser[] users = beam.http.get(path,BeamChatUser[].class , new HashMap<>()).get();
             for (BeamChatUser beamChatUser : users) {
-                if(beamChatUser.getUser_name().equalsIgnoreCase(user)){
-                    return Arrays.asList(beamChatUser.getUser_roles()).contains("Mod");
+                if(beamChatUser.getUserName().equalsIgnoreCase(user)){
+                    return Arrays.asList(beamChatUser.getUserRoles()).contains("Mod");
                 }
             }
         } catch (InterruptedException | ExecutionException e) {
@@ -143,6 +143,10 @@ public class BeamBot implements IBot {
 
     @Override
     public boolean timeout(String channelName, String user, int timeInSeconds) {
+        if (timeInSeconds <= 0) {
+            App.logger.warn("Must time out user for positive amount of time");
+            return false;
+        }
         user = user.toLowerCase(); // Just in case
 
         // Check if user has user level mod or higher
@@ -163,7 +167,7 @@ public class BeamBot implements IBot {
         }
 
 
-        CooldownSet timeoutSet = beamChatChannel.getTimeoutSet();
+        CooldownSet<String> timeoutSet = beamChatChannel.timeoutSet;
         if (timeoutSet.contains(user)) {
             int waitTime = timeoutSet.getCooldownRemover(user).getWaitInSeconds();
             // Not perfect because it's based on the original timeout time, not the time left
@@ -176,6 +180,7 @@ public class BeamBot implements IBot {
             }
         }
         boolean success = timeoutSet.add(user, timeInSeconds);
+        //beamChatChannel.deleteCachedMessages(user); TODO uncomment when major responsiveness issue is fixed
         if (success) {
             App.logger.info("Timed out '" + user + "' in channel '" + channelName + "' for " + timeInSeconds + " seconds");
         }
@@ -189,6 +194,6 @@ public class BeamBot implements IBot {
             App.logger.error("Failed to remove timeout for user: BeamChatChannel for channel '" + channelName + "' is null.");
             return false;
         }
-        return channel.getTimeoutSet().remove(user);
+        return channel.timeoutSet.remove(user);
     }
 }

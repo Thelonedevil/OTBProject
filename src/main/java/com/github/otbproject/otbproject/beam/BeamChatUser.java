@@ -2,31 +2,31 @@ package com.github.otbproject.otbproject.beam;
 
 public class BeamChatUser {
 
-    private int user_id;
-    private String user_name;
-    private String[] user_roles;
+    private int userId;
+    private String userName;
+    private String[] userRoles;
 
-    public int getUser_id() {
-        return user_id;
+    public int getUserId() {
+        return userId;
     }
 
-    public void setUser_id(int user_id) {
-        this.user_id = user_id;
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 
-    public String getUser_name() {
-        return user_name;
+    public String getUserName() {
+        return userName;
     }
 
-    public void setUser_name(String user_name) {
-        this.user_name = user_name;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
-    public String[] getUser_roles() {
-        return user_roles;
+    public String[] getUserRoles() {
+        return userRoles;
     }
 
-    public void setUser_roles(String[] user_roles) {
-        this.user_roles = user_roles;
+    public void setUserRoles(String[] userRoles) {
+        this.userRoles = userRoles;
     }
 }
