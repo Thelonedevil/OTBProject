@@ -28,6 +28,7 @@ public class MessageHandler implements EventHandler<IncomingMessageEvent> {
 
     @Override
     public void onEvent(IncomingMessageEvent event) {
+        Thread.currentThread().setName(channelName);
         IncomingMessageData data = event.data;
         App.logger.info("<"+ channelName +"> "+ data.user_name + ": " + getMessage(data));
         beamChatChannel.userRoles.put(data.user_name.toLowerCase(), Collections.unmodifiableList(data.user_roles));

@@ -7,6 +7,8 @@ import com.github.otbproject.otbproject.commands.scheduler.ScheduledCommand;
 import com.github.otbproject.otbproject.commands.scheduler.SchedulerFields;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -27,6 +29,10 @@ public class APISchedule {
 
     public static void scheduleCommandInHours(String channel, String command, long delay, long period) {
         scheduleCommand(channel, command, delay, period, false, TimeUnit.HOURS);
+    }
+
+    public static boolean isScheduled(String channel, String command){
+        return APIChannel.get(channel).getScheduledCommands().containsKey(command);
     }
 
     public static void unScheduleCommand(String channel, String command) {
@@ -89,4 +95,34 @@ public class APISchedule {
         map.put(SchedulerFields.RESET, Boolean.toString(hourReset));
         return db.insertRecord(SchedulerFields.TABLE_NAME, map);
     }
+
+    public static void loadFromDatabase(String channel) {
+        DatabaseWrapper db = APIChannel.get(channel).getMainDatabaseWrapper();
+        ResultSet rs = db.tableDump(SchedulerFields.TABLE_NAME);
+        try {
+            while (rs.next()) {
+                String command = rs.getString(SchedulerFields.COMMAND);
+                long delay = rs.getLong(SchedulerFields.OFFSET);
+                long period = rs.getLong(SchedulerFields.PERIOD);
+                boolean hourReset = Boolean.parseBoolean(rs.getString(SchedulerFields.RESET));
+                TimeUnit timeUnit =  TimeUnit.valueOf(rs.getString(SchedulerFields.TYPE));
+                scheduleCommand(channel,command,delay,period,hourReset,timeUnit);
+            }
+        } catch (SQLException e) {
+            App.logger.catching(e);
+        }finally {
+            try {
+                rs.close();
+            } catch (SQLException e) {
+                App.logger.catching(e);
+            }
+        }
+
+    }
+
+    public static void removeFromDatabase(String channel, String command){
+        DatabaseWrapper db = APIChannel.get(channel).getMainDatabaseWrapper();
+        db.removeRecord(SchedulerFields.TABLE_NAME,command, SchedulerFields.COMMAND);
+    }
+
 }
