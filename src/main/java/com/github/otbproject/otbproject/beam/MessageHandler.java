@@ -15,6 +15,8 @@ import pro.beam.api.resource.chat.events.EventHandler;
 import pro.beam.api.resource.chat.events.IncomingMessageEvent;
 import pro.beam.api.resource.chat.events.data.IncomingMessageData;
 
+import java.util.Collections;
+
 public class MessageHandler implements EventHandler<IncomingMessageEvent> {
 
     private final String channelName;
@@ -28,6 +30,7 @@ public class MessageHandler implements EventHandler<IncomingMessageEvent> {
     public void onEvent(IncomingMessageEvent event) {
         IncomingMessageData data = event.data;
         App.logger.info("<"+ channelName +"> "+ data.user_name + ": " + getMessage(data));
+        beamChatChannel.userRoles.put(data.user_name.toLowerCase(), Collections.unmodifiableList(data.user_roles));
 
         BeamBot bot = (BeamBot) APIBot.getBot();
 
