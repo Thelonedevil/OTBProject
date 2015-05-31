@@ -81,21 +81,33 @@ public class PreloadLoader {
                 case ALIAS:
                     LoadedAlias alias = (strategy == LoadStrategy.UPDATE) ?
                             PreloadComparator.generateAliasHybrid(db, (LoadedAlias) tNew, (LoadedAlias) tOld) : (LoadedAlias) tNew;
+                    if (alias == null) {
+                        break;
+                    }
                     Alias.addAliasFromLoadedAlias(db, alias);
                     break;
                 case CMD:
                     LoadedCommand command = (strategy == LoadStrategy.UPDATE) ?
                             PreloadComparator.generateCommandHybrid(db, (LoadedCommand) tNew, (LoadedCommand) tOld) : (LoadedCommand) tNew;
+                    if (command == null) {
+                        break;
+                    }
                     Command.addCommandFromLoadedCommand(db, command);
                     break;
                 case FILTER:
                     BasicFilter filter = (strategy == LoadStrategy.UPDATE) ?
                             PreloadComparator.generateFilterHybrid(db, (BasicFilter) tNew, (BasicFilter) tOld) : (BasicFilter) tNew;
+                    if (filter == null) {
+                        break;
+                    }
                     Filters.addFilterFromObj(db, filter);
                     break;
                 case FILTER_GRP:
                     FilterGroup group = (strategy == LoadStrategy.UPDATE) ?
                             PreloadComparator.generateFilterGroupHybrid(db, (FilterGroup) tNew, (FilterGroup) tOld) : (FilterGroup) tNew;
+                    if (group == null) {
+                        break;
+                    }
                     FilterGroups.addFilterGroupFromObj(db, group);
                     break;
                 default:
