@@ -18,8 +18,10 @@ import pro.beam.api.resource.chat.events.data.IncomingMessageData;
 public class MessageHandler implements EventHandler<IncomingMessageEvent> {
 
     private final String channelName;
-    public MessageHandler(String channel){
+    private final BeamChatChannel beamChatChannel;
+    public MessageHandler(String channel, BeamChatChannel beamChatChannel){
         this.channelName = channel;
+        this.beamChatChannel = beamChatChannel;
     }
 
     @Override
@@ -30,28 +32,24 @@ public class MessageHandler implements EventHandler<IncomingMessageEvent> {
         BeamBot bot = (BeamBot) APIBot.getBot();
 
         // Check if user is in timeout set
-        BeamChatChannel beamChatChannel = bot.beamChannels.get(channelName);
-        if (beamChatChannel == null) {
-            App.logger.error("Failed to check timeout set: BeamChatChannel for channel '" + channelName + "' is null.");
-        } else {
-            if (beamChatChannel.timeoutSet.contains(data.user_name.toLowerCase())) {
-                // Check if user has user level mod or higher
-                try {
-                    if (BotUtil.isModOrHigher(channelName, data.user_name.toLowerCase())) {
-                        bot.removeTimeout(channelName, data.user_name.toLowerCase());
-                    } else {
-                        // Delete message
-                        beamChatChannel.beamChatConnectable.delete(data);
-                        App.logger.info("Deleted message in channel <" + channelName + "> from user: " + data.user_name);
-                        return;
-                    }
-                } catch (ChannelNotFoundException e) {
-                    App.logger.error("Channel '" + channelName + "' did not exist in which to check if user was mod before deleting message");
-                    App.logger.catching(e);
+        //BeamChatChannel beamChatChannel = bot.beamChannels.get(channelName);
+        if (beamChatChannel.timeoutSet.contains(data.user_name.toLowerCase())) {
+            // Check if user has user level mod or higher
+            try {
+                if (BotUtil.isModOrHigher(channelName, data.user_name.toLowerCase())) {
+                    bot.removeTimeout(channelName, data.user_name.toLowerCase());
+                } else {
+                    // Delete message
+                    beamChatChannel.beamChatConnectable.delete(data);
+                    App.logger.info("Deleted message in channel <" + channelName + "> from user: " + data.user_name);
+                    return;
                 }
+            } catch (ChannelNotFoundException e) {
+                App.logger.error("Channel '" + channelName + "' did not exist in which to check if user was mod before deleting message");
+                App.logger.catching(e);
             }
-            beamChatChannel.cacheMessage(data);
         }
+        beamChatChannel.cacheMessage(data);
 
         // Check if message is from bot and sent by bot
         if (data.user_name.equalsIgnoreCase(APIBot.getBot().getUserName()) && (bot.sentMessageCache.contains(data.getMessage()))) {

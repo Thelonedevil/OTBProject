@@ -35,7 +35,7 @@ public class ULUtil {
         if ((ul == UserLevel.REGULAR) || ul == UserLevel.IGNORED) {
             return ul;
         }
-        if (APIChannel.get(channel).subscriberStorage.remove(user)) {
+        if (APIBot.getBot().isUserSubscriber(channel, user)) {
             return UserLevel.SUBSCRIBER;
         }
 
