@@ -7,6 +7,7 @@ import com.github.otbproject.otbproject.api.APIDatabase;
 import com.github.otbproject.otbproject.bot.BotUtil;
 import com.github.otbproject.otbproject.bot.IBot;
 import com.github.otbproject.otbproject.channels.Channel;
+import com.github.otbproject.otbproject.channels.ChannelInitException;
 import com.github.otbproject.otbproject.channels.ChannelNotFoundException;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.proc.CooldownSet;
@@ -15,15 +16,15 @@ import pro.beam.api.resource.BeamUser;
 import pro.beam.api.resource.chat.methods.ChatSendMethod;
 import pro.beam.api.services.impl.UsersService;
 
-import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 public class BeamBot implements IBot {
     private final HashMap<String, Channel> channels = new HashMap<>();
     private final DatabaseWrapper botDB = APIDatabase.getBotDatabase();
 
-    public final CooldownSet sentMessageCache = new CooldownSet();
+    public final CooldownSet<String> sentMessageCache = new CooldownSet<>();
     private static final int CACHE_TIME = 4;
 
     final BeamAPI beam = new BeamAPI();
@@ -93,19 +94,19 @@ public class BeamBot implements IBot {
             return false;
         }
 
-        String path = BeamAPI.BASE_PATH.resolve("chats/"+beamChatChannel.channel.id+"/users").toString();
-        try {
-            BeamChatUser[] users = beam.http.get(path,BeamChatUser[].class , new HashMap<>()).get();
-            for (BeamChatUser beamChatUser : users) {
-                if(beamChatUser.getUser_name().equalsIgnoreCase(user)){
-                    return Arrays.asList(beamChatUser.getUser_roles()).contains("Mod");
-                }
-            }
-        } catch (InterruptedException | ExecutionException e) {
-            App.logger.catching(e);
+        List<BeamUser.Role> list = beamChatChannel.userRoles.get(user);
+        return (list != null) && list.contains(BeamUser.Role.MOD);
+    }
+
+    @Override
+    public boolean isUserSubscriber(String channel, String user) {
+        BeamChatChannel beamChatChannel = beamChannels.get(channel);
+        if (beamChatChannel == null) {
             return false;
         }
-        return false;
+
+        List<BeamUser.Role> list = beamChatChannel.userRoles.get(user);
+        return (list != null) && list.contains(BeamUser.Role.SUBSCRIBER);
     }
 
     @Override
@@ -129,7 +130,11 @@ public class BeamBot implements IBot {
 
     @Override
     public boolean join(String channelName) {
-        beamChannels.put(channelName, new BeamChatChannel(channelName));
+        try {
+            beamChannels.put(channelName, BeamChatChannel.create(channelName));
+        } catch (ChannelInitException ignored) {
+            return false;
+        }
         return beamChannels.containsKey(channelName);
     }
 
@@ -143,6 +148,10 @@ public class BeamBot implements IBot {
 
     @Override
     public boolean timeout(String channelName, String user, int timeInSeconds) {
+        if (timeInSeconds <= 0) {
+            App.logger.warn("Must time out user for positive amount of time");
+            return false;
+        }
         user = user.toLowerCase(); // Just in case
 
         // Check if user has user level mod or higher
@@ -163,7 +172,7 @@ public class BeamBot implements IBot {
         }
 
 
-        CooldownSet timeoutSet = beamChatChannel.getTimeoutSet();
+        CooldownSet<String> timeoutSet = beamChatChannel.timeoutSet;
         if (timeoutSet.contains(user)) {
             int waitTime = timeoutSet.getCooldownRemover(user).getWaitInSeconds();
             // Not perfect because it's based on the original timeout time, not the time left
@@ -176,6 +185,7 @@ public class BeamBot implements IBot {
             }
         }
         boolean success = timeoutSet.add(user, timeInSeconds);
+        //beamChatChannel.deleteCachedMessages(user); TODO uncomment when major responsiveness issue is fixed
         if (success) {
             App.logger.info("Timed out '" + user + "' in channel '" + channelName + "' for " + timeInSeconds + " seconds");
         }
@@ -189,6 +199,6 @@ public class BeamBot implements IBot {
             App.logger.error("Failed to remove timeout for user: BeamChatChannel for channel '" + channelName + "' is null.");
             return false;
         }
-        return channel.getTimeoutSet().remove(user);
+        return channel.timeoutSet.remove(user);
     }
 }

@@ -10,8 +10,8 @@ import com.github.otbproject.otbproject.commands.loader.FSCommandLoader;
 import com.github.otbproject.otbproject.config.*;
 import com.github.otbproject.otbproject.fs.FSUtil;
 import com.github.otbproject.otbproject.fs.Setup;
+import com.github.otbproject.otbproject.fs.groups.*;
 import com.github.otbproject.otbproject.gui.GuiApplication;
-import com.github.otbproject.otbproject.gui.Window;
 import com.github.otbproject.otbproject.irc.IRCBot;
 import com.github.otbproject.otbproject.util.InputParserImproved;
 import com.github.otbproject.otbproject.util.LibsLoader;
@@ -129,9 +129,9 @@ public class App {
                 VersionCompatHelper.fixCompatIssues(version);
             }
             // TODO unpack based on a list or something
-            UnPacker.unPack("preloads/json/commands/", FSUtil.commandsDir() + File.separator + "all-channels" + File.separator + "to-load");
-            UnPacker.unPack("preloads/json/aliases/", FSUtil.aliasesDir() + File.separator + "all-channels" + File.separator + "to-load");
-            UnPacker.unPack("preloads/json/bot-channel/commands/", FSUtil.commandsDir() + File.separator + "bot-channel" + File.separator + "to-load");
+            UnPacker.unPack("preloads/json/commands/", FSUtil.builder.base(Base.CMD).channels(Chan.ALL).load(Load.TO).create());
+            UnPacker.unPack("preloads/json/aliases/", FSUtil.builder.base(Base.ALIAS).channels(Chan.ALL).load(Load.TO).create());
+            UnPacker.unPack("preloads/json/bot-channel/commands/", FSUtil.builder.base(Base.CMD).channels(Chan.BOT).load(Load.TO).create());
             UnPacker.unPack("preloads/groovy/scripts/", FSUtil.scriptDir());
         }
         try {

@@ -6,6 +6,8 @@ public class FilterGroup {
     private String name;
     private String responseCommand;
     private UserLevel userLevel;
+    private FilterAction action;
+    private Boolean enabled;
 
     public String getName() {
         return name;
@@ -29,5 +31,21 @@ public class FilterGroup {
 
     public void setUserLevel(UserLevel userLevel) {
         this.userLevel = userLevel;
+    }
+
+    public FilterAction getAction() {
+        return action;
+    }
+
+    public void setAction(FilterAction action) {
+        this.action = action;
+    }
+
+    public Boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
     }
 }

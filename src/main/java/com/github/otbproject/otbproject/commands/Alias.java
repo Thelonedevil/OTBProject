@@ -4,12 +4,13 @@ import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.commands.loader.LoadedAlias;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.users.UserLevel;
-import com.github.otbproject.otbproject.util.CustomCollectors;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class Alias {
 
@@ -36,13 +37,13 @@ public class Alias {
         return null;
     }
 
-    public static ArrayList<String> getAliases(DatabaseWrapper db) {
+    public static List<String> getAliases(DatabaseWrapper db) {
         ArrayList<Object> list =  db.getRecordsList(AliasFields.TABLE_NAME, AliasFields.NAME);
         if (list == null) {
             return null;
         }
         try {
-            return list.stream().map(key -> (String) key).collect(CustomCollectors.toArrayList());
+            return list.stream().map(key -> (String) key).collect(Collectors.toList());
         } catch (ClassCastException e) {
             App.logger.catching(e);
             return null;

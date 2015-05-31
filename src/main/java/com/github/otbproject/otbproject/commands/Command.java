@@ -11,6 +11,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class Command {
 
@@ -45,13 +47,13 @@ public class Command {
         return null;
     }
 
-    public static ArrayList<String> getCommands(DatabaseWrapper db) {
+    public static List<String> getCommands(DatabaseWrapper db) {
         ArrayList<Object> list =  db.getRecordsList(CommandFields.TABLE_NAME, CommandFields.NAME);
         if (list == null) {
             return null;
         }
         try {
-            return list.stream().map(key -> (String) key).collect(CustomCollectors.toArrayList());
+            return list.stream().map(key -> (String) key).collect(Collectors.toList());
         } catch (ClassCastException e) {
             App.logger.catching(e);
             return null;

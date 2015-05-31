@@ -98,6 +98,25 @@ public class GuiApplication extends Application {
         GuiUtils.runSafe(() -> controller.commandsOutput.appendText(text + "\n"));
     }
 
+    public static void clearLog() {
+        GuiUtils.runSafe(controller.logOutput::clear);
+    }
+
+    public static void clearInfo() {
+        GuiUtils.runSafe(controller.commandsOutput::clear);
+    }
+
+    public static void clearCliOutput() {
+        GuiUtils.runSafe(controller.cliOutput::clear);
+    }
+
+    public static void clearHistory() {
+        GuiUtils.runSafe(() -> {
+            controller.history.clear();
+            controller.historyPointer = 0;
+        });
+    }
+
     class CustomTailer extends TailerListenerAdapter {
         @Override
         public void handle(String line) {

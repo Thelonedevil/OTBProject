@@ -15,11 +15,15 @@ import pro.beam.api.resource.chat.events.EventHandler;
 import pro.beam.api.resource.chat.events.IncomingMessageEvent;
 import pro.beam.api.resource.chat.events.data.IncomingMessageData;
 
+import java.util.Collections;
+
 public class MessageHandler implements EventHandler<IncomingMessageEvent> {
 
     private final String channelName;
-    public MessageHandler(String channel){
+    private final BeamChatChannel beamChatChannel;
+    public MessageHandler(String channel, BeamChatChannel beamChatChannel){
         this.channelName = channel;
+        this.beamChatChannel = beamChatChannel;
     }
 
     @Override
@@ -27,22 +31,21 @@ public class MessageHandler implements EventHandler<IncomingMessageEvent> {
         Thread.currentThread().setName(channelName);
         IncomingMessageData data = event.data;
         App.logger.info("<"+ channelName +"> "+ data.user_name + ": " + getMessage(data));
+        beamChatChannel.userRoles.put(data.user_name.toLowerCase(), Collections.unmodifiableList(data.user_roles));
 
         BeamBot bot = (BeamBot) APIBot.getBot();
 
         // Check if user is in timeout set
-        BeamChatChannel beamChatChannel = bot.beamChannels.get(channelName);
-        if (beamChatChannel == null) {
-            App.logger.error("Failed to check timeout set: BeamChatChannel for channel '" + channelName + "' is null.");
-        } else if (beamChatChannel.getTimeoutSet().contains(data.user_name.toLowerCase())) {
+        //BeamChatChannel beamChatChannel = bot.beamChannels.get(channelName);
+        if (beamChatChannel.timeoutSet.contains(data.user_name.toLowerCase())) {
             // Check if user has user level mod or higher
             try {
                 if (BotUtil.isModOrHigher(channelName, data.user_name.toLowerCase())) {
                     bot.removeTimeout(channelName, data.user_name.toLowerCase());
                 } else {
                     // Delete message
-                    beamChatChannel.beamChatConnectable.delete(event.data);
-                    App.logger.info("Deleted message in channel <" + channelName + "> from user: " + event.data.user_name);
+                    beamChatChannel.beamChatConnectable.delete(data);
+                    App.logger.info("Deleted message in channel <" + channelName + "> from user: " + data.user_name);
                     return;
                 }
             } catch (ChannelNotFoundException e) {
@@ -50,9 +53,10 @@ public class MessageHandler implements EventHandler<IncomingMessageEvent> {
                 App.logger.catching(e);
             }
         }
+        beamChatChannel.cacheMessage(data);
 
         // Check if message is from bot and sent by bot
-        if (event.data.user_name.equalsIgnoreCase(APIBot.getBot().getUserName()) && (bot.sentMessageCache.contains(event.data.getMessage()))) {
+        if (data.user_name.equalsIgnoreCase(APIBot.getBot().getUserName()) && (bot.sentMessageCache.contains(data.getMessage()))) {
             App.logger.debug("Ignoring message sent by bot");
             return;
         }

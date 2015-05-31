@@ -2,7 +2,6 @@ package com.github.otbproject.otbproject.database;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.LoggerContext;
-import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -11,6 +10,7 @@ import java.io.File;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.HashSet;
 
 import static org.junit.Assert.*;
 
@@ -44,7 +44,9 @@ public class DatabaseWrapperTest {
 
         fields.put(fieldName, DataTypes.STRING);
         fields.put(fieldName2, DataTypes.INTEGER);
-        testFields = new TableFields(fields, fieldName);
+        HashSet<String> primaryKeys = new HashSet<>();
+        primaryKeys.add(fieldName);
+        testFields = new TableFields(fields, primaryKeys);
         tables.put(tableName, testFields);
         db = DatabaseWrapper.createDatabase(path, tables);
         testData.put(fieldName, "Test Data");
