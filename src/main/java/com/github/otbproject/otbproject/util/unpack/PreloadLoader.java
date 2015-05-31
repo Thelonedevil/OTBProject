@@ -4,8 +4,7 @@ import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.api.APIDatabase;
 import com.github.otbproject.otbproject.commands.Alias;
 import com.github.otbproject.otbproject.commands.Command;
-import com.github.otbproject.otbproject.commands.loader.LoadedAlias;
-import com.github.otbproject.otbproject.commands.loader.LoadedCommand;
+import com.github.otbproject.otbproject.commands.loader.*;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.filters.BasicFilter;
 import com.github.otbproject.otbproject.filters.FilterGroup;
@@ -137,23 +136,49 @@ public class PreloadLoader {
                     String name = file.getName();
                     String pathNew = FSUtil.builder.base(base).channels(chan).forChannel(channelName).load(Load.TO).create() + File.separator + name;
                     String pathOld = FSUtil.builder.base(base).channels(chan).forChannel(channelName).load(Load.ED).create() + File.separator + name;
-                    return loadFromFile(pathNew, pathOld, tClass, strategy);
+                    String pathFail = FSUtil.builder.base(base).channels(chan).forChannel(channelName).load(Load.FAIL).create() + File.separator + name;
+                    return loadFromFile(pathNew, pathOld, pathFail, tClass, base, strategy);
                 })
                 .collect(Collectors.toList());
     }
 
-    private static <T> PreloadPair<T> loadFromFile(String pathNew, String pathOld, Class<T> tClass, LoadStrategy strategy) {
-        T tNew = JsonHandler.readValue(pathNew, tClass);
+    private static <T> PreloadPair<T> loadFromFile(String pathNew, String pathOld, String pathFail, Class<T> tClass, Base base, LoadStrategy strategy) {
+        T tNew = validateObject(JsonHandler.readValue(pathNew, tClass), tClass, base);
         T tOld;
         switch (strategy) {
             case UPDATE:
-                tOld = JsonHandler.readValue(pathOld, tClass);
+                tOld = validateObject(JsonHandler.readValue(pathOld, tClass), tClass, base);
                 break;
             default:
                 tOld = null;
         }
-        doMove(pathNew, pathOld);
+        if (tNew == null) {
+            doMove(pathNew, pathFail);
+        } else {
+            doMove(pathNew, pathOld);
+        }
         return new PreloadPair<>(tNew, tOld);
+    }
+
+    private static <T> T validateObject(T object, Class<T> tClass, Base base) {
+        try {
+            switch (base) {
+                case ALIAS:
+                    return tClass.cast(CommandValidator.validateAlias((LoadedAlias) object));
+                case CMD:
+                    return tClass.cast(CommandValidator.validateCommand((LoadedCommand) object));
+                case FILTER:
+                    // TODO validate
+                    return object;
+                case FILTER_GRP:
+                    // TODO validate
+                    return object;
+                default:
+                    return null;
+            }
+        } catch (ClassCastException | InvalidAliasException | InvalidCommandException e) {
+            return null;
+        }
     }
 
     private static Class getClassFromBase(Base base) {
