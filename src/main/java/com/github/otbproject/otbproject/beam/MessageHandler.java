@@ -41,8 +41,8 @@ public class MessageHandler implements EventHandler<IncomingMessageEvent> {
                         bot.removeTimeout(channelName, data.user_name.toLowerCase());
                     } else {
                         // Delete message
-                        beamChatChannel.beamChatConnectable.delete(event.data);
-                        App.logger.info("Deleted message in channel <" + channelName + "> from user: " + event.data.user_name);
+                        beamChatChannel.beamChatConnectable.delete(data);
+                        App.logger.info("Deleted message in channel <" + channelName + "> from user: " + data.user_name);
                         return;
                     }
                 } catch (ChannelNotFoundException e) {
@@ -54,7 +54,7 @@ public class MessageHandler implements EventHandler<IncomingMessageEvent> {
         }
 
         // Check if message is from bot and sent by bot
-        if (event.data.user_name.equalsIgnoreCase(APIBot.getBot().getUserName()) && (bot.sentMessageCache.contains(event.data.getMessage()))) {
+        if (data.user_name.equalsIgnoreCase(APIBot.getBot().getUserName()) && (bot.sentMessageCache.contains(data.getMessage()))) {
             App.logger.debug("Ignoring message sent by bot");
             return;
         }
