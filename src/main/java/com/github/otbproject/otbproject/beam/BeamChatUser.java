@@ -1,10 +1,14 @@
 package com.github.otbproject.otbproject.beam;
 
+import pro.beam.api.resource.BeamUser;
+
+import java.util.List;
+
 public class BeamChatUser {
 
     private int userId;
     private String userName;
-    private String[] userRoles;
+    private List<BeamUser.Role> userRoles;
 
     public int getUserId() {
         return userId;
@@ -22,11 +26,11 @@ public class BeamChatUser {
         this.userName = userName;
     }
 
-    public String[] getUserRoles() {
+    public List<BeamUser.Role> getUserRoles() {
         return userRoles;
     }
 
-    public void setUserRoles(String[] userRoles) {
+    public void setUserRoles(List<BeamUser.Role> userRoles) {
         this.userRoles = userRoles;
     }
 }

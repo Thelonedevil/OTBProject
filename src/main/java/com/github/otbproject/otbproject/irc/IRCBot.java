@@ -1,6 +1,7 @@
 package com.github.otbproject.otbproject.irc;
 
 import com.github.otbproject.otbproject.App;
+import com.github.otbproject.otbproject.api.APIChannel;
 import com.github.otbproject.otbproject.bot.BotUtil;
 import com.github.otbproject.otbproject.bot.IBot;
 import com.github.otbproject.otbproject.api.APIConfig;
@@ -141,6 +142,12 @@ public class IRCBot extends PircBotX implements IBot{
     @Override
     public boolean isUserMod(String channel, String user) {
         return getUserChannelDao().getChannel(getIrcChannelName(channel)).isOp(getUserChannelDao().getUser(user));
+    }
+
+    @Override
+    public boolean isUserSubscriber(String channelName, String user) {
+        Channel channel = APIChannel.get(channelName);
+        return (channel != null) && channel.subscriberStorage.remove(user);
     }
 
     @Override
