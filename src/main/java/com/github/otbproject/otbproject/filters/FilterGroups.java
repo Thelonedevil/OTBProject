@@ -79,7 +79,7 @@ public class FilterGroups {
         return db.removeRecord(FilterGroupFields.TABLE_NAME, data, FilterGroupFields.NAME);
     }
 
-    public static boolean addFilterFromObj(DatabaseWrapper db, FilterGroup group) {
+    public static boolean addFilterGroupFromObj(DatabaseWrapper db, FilterGroup group) {
         HashMap<String, Object> map = new HashMap<>();
 
         map.put(FilterGroupFields.NAME, group.getName());
