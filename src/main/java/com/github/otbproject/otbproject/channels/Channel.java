@@ -41,7 +41,7 @@ public class Channel {
     private final Scheduler scheduler = new Scheduler();
     private final HashMap<String,ScheduledFuture> scheduledCommands = new HashMap<>();
     private final HashMap<String,ScheduledFuture> hourlyResetSchedules = new HashMap<>();
-    public final FilterManager filterManager;
+    //public final FilterManager filterManager;
     private boolean inChannel;
 
     private final ReadWriteLock lock = new ReentrantReadWriteLock();
@@ -60,7 +60,7 @@ public class Channel {
             throw new ChannelInitException(name, "Unable to get quote database");
         }
 
-        filterManager = new FilterManager(Filters.getAllFilters(mainDb), FilterGroups.getFilterGroupsMap(mainDb));
+        //filterManager = new FilterManager(Filters.getAllFilters(mainDb), FilterGroups.getFilterGroupsMap(mainDb));
     }
 
     public boolean join() {
