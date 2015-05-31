@@ -31,6 +31,10 @@ public class APISchedule {
         scheduleCommand(channel, command, delay, period, false, TimeUnit.HOURS);
     }
 
+    public static boolean isScheduled(String channel, String command){
+        return APIChannel.get(channel).getScheduledCommands().containsKey(command);
+    }
+
     public static void unScheduleCommand(String channel, String command) {
         APIChannel.get(channel).getScheduledCommands().get(command).cancel(false);
         if (APIChannel.get(channel).getHourlyResetSchedules().containsKey(command))
@@ -106,6 +110,12 @@ public class APISchedule {
             }
         } catch (SQLException e) {
             App.logger.catching(e);
+        }finally {
+            try {
+                rs.close();
+            } catch (SQLException e) {
+                App.logger.catching(e);
+            }
         }
 
     }
