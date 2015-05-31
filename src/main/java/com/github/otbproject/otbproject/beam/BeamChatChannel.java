@@ -46,7 +46,7 @@ public class BeamChatChannel {
                     public void onRemoval(RemovalNotification<String, IncomingMessageData> notification) {
                         IncomingMessageData data = notification.getValue();
                         if (data != null) {
-                            removeFromCacheLookup(notification.getValue().user_name, notification.getKey());
+                            removeFromCacheLookup(notification.getValue().user_name.toLowerCase(), notification.getKey());
                         }
                     }
                 })
