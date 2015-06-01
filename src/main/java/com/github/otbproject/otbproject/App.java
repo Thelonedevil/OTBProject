@@ -6,7 +6,6 @@ import com.github.otbproject.otbproject.beam.BeamBot;
 import com.github.otbproject.otbproject.bot.BotRunnable;
 import com.github.otbproject.otbproject.cli.ArgParser;
 import com.github.otbproject.otbproject.cli.commands.CmdParser;
-import com.github.otbproject.otbproject.commands.loader.FSCommandLoader;
 import com.github.otbproject.otbproject.config.*;
 import com.github.otbproject.otbproject.fs.FSUtil;
 import com.github.otbproject.otbproject.fs.Setup;
@@ -18,6 +17,8 @@ import com.github.otbproject.otbproject.util.LibsLoader;
 import com.github.otbproject.otbproject.util.UnPacker;
 import com.github.otbproject.otbproject.util.VersionClass;
 import com.github.otbproject.otbproject.util.compat.VersionCompatHelper;
+import com.github.otbproject.otbproject.util.unpack.LoadStrategy;
+import com.github.otbproject.otbproject.util.unpack.PreloadLoader;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.ParseException;
 import org.apache.logging.log4j.LogManager;
@@ -33,6 +34,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Scanner;
+import java.util.stream.Stream;
 
 public class App {
     public static final String PID = ManagementFactory.getRuntimeMXBean().getName().split("@")[0];
@@ -87,6 +89,9 @@ public class App {
         }
         File logFile = new File(FSUtil.logsDir() + File.separator + "console.log");
         logFile.delete();
+
+        //PreloadLoader.test();
+
         // Log version
         logger.info("OTBProject version " + VERSION);
         if (!GraphicsEnvironment.isHeadless()) {
@@ -133,6 +138,7 @@ public class App {
             UnPacker.unPack("preloads/json/aliases/", FSUtil.builder.base(Base.ALIAS).channels(Chan.ALL).load(Load.TO).create());
             UnPacker.unPack("preloads/json/bot-channel/commands/", FSUtil.builder.base(Base.CMD).channels(Chan.BOT).load(Load.TO).create());
             UnPacker.unPack("preloads/groovy/scripts/", FSUtil.scriptDir());
+            loadPreloads(LoadStrategy.UPDATE);
         }
         try {
             PrintStream ps = new PrintStream(versionFile);
@@ -218,12 +224,27 @@ public class App {
         return cmd;
     }
 
+    private static void loadPreloads(LoadStrategy strategy) {
+        PreloadLoader.loadDirectory(Base.CMD, Chan.ALL, null, strategy);
+        PreloadLoader.loadDirectory(Base.ALIAS, Chan.ALL, null, strategy);
+        PreloadLoader.loadDirectory(Base.CMD, Chan.BOT, null, strategy);
+        PreloadLoader.loadDirectory(Base.ALIAS, Chan.BOT, null, strategy);
+
+        File[] files = new File(FSUtil.dataDir() + File.separator + FSUtil.DirNames.CHANNELS).listFiles();
+        if (files == null) {
+            App.logger.error("Unable to get list of channels");
+            return;
+        }
+        Stream.of(files).filter(File::isDirectory)
+                .forEach(file -> {
+                    PreloadLoader.loadDirectory(Base.CMD, Chan.SPECIFIC, file.getName(), strategy);
+                    PreloadLoader.loadDirectory(Base.ALIAS, Chan.SPECIFIC, file.getName(), strategy);
+                });
+    }
+
     public static void startup(CommandLine cmd) {
         // Load commands and aliases
-        FSCommandLoader.LoadCommands();
-        FSCommandLoader.LoadAliases();
-        FSCommandLoader.LoadBotCommands();
-        FSCommandLoader.LoadBotAliases();
+        loadPreloads(LoadStrategy.OVERWRITE);
 
         loadConfigs(cmd);
 

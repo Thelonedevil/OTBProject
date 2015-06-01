@@ -16,7 +16,6 @@ import com.github.otbproject.otbproject.util.JsonHandler;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class PreloadLoader {
@@ -158,18 +157,18 @@ public class PreloadLoader {
                         pathNew = FSUtil.builder.base(base).channels(chan).forChannel(channelName).load(Load.TO).create() + File.separator + name;
                     }
                     String pathFail = FSUtil.builder.base(base).channels(chan).forChannel(channelName).load(Load.FAIL).create() + File.separator + name;
-                    list.add(loadFromFile(pathNew, pathOld, pathFail, tClass, base, strategy));
+                    list.add(loadFromFile(pathNew, pathOld, pathFail, tClass, strategy));
                 });
                 //.collect(Collectors.toList());
         return list;
     }
 
-    private static <T> PreloadPair<T> loadFromFile(String pathNew, String pathOld, String pathFail, Class<T> tClass, Base base, LoadStrategy strategy) {
+    private static <T> PreloadPair<T> loadFromFile(String pathNew, String pathOld, String pathFail, Class<T> tClass, LoadStrategy strategy) {
         App.logger.info("Attempting to load from file: " + pathNew);
-        T tNew = validateObject(JsonHandler.readValue(pathNew, tClass), tClass, base, true);
+        T tNew = JsonHandler.readValue(pathNew, tClass);
         T tOld;
         if (strategy == LoadStrategy.UPDATE) {
-            tOld = validateObject(JsonHandler.readValue(pathOld, tClass), tClass, base, false);
+            tOld = JsonHandler.readValue(pathOld, tClass);
         } else {
             tOld = null;
         }
