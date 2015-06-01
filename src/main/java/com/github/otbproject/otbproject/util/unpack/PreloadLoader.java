@@ -183,31 +183,6 @@ public class PreloadLoader {
         return new PreloadPair<>(tNew, tOld);
     }
 
-    private static <T> T validateObject(T object, Class<T> tClass, Base base, boolean printValidationError) {
-        try {
-            switch (base) {
-                case ALIAS:
-                    return tClass.cast(CommandValidator.validateAlias((LoadedAlias) object));
-                case CMD:
-                    return tClass.cast(CommandValidator.validateCommand((LoadedCommand) object));
-                case FILTER:
-                    return tClass.cast(FilterValidator.validateFilter((BasicFilter) object));
-                case FILTER_GRP:
-                    return tClass.cast(FilterValidator.validateFilterGroup((FilterGroup) object));
-                default:
-                    return null;
-            }
-        } catch (ClassCastException e) {
-            App.logger.catching(e);
-            return null;
-        } catch (InvalidAliasException | InvalidCommandException | InvalidFilterException | InvalidFilterGroupException e) {
-            if (printValidationError) {
-                App.logger.error(e.getMessage());
-            }
-            return null;
-        }
-    }
-
     private static Class getClassFromBase(Base base) {
         switch (base) {
             case ALIAS:
