@@ -48,26 +48,32 @@ public class PreloadLoader {
             return;
         }
 
+        App.logger.info("Loading objects of type '" + base.toString() + "' for all channels");
         Stream.of(files).filter(File::isDirectory)
                 .forEach(file -> loadForChannel(list, file.getName(), base, strategy));
+        App.logger.info("Finished loading objects of type '" + base.toString() + "' for all channels");
     }
 
     private static void loadForChannel(List<PreloadPair> list, String channel, Base base, LoadStrategy strategy) {
+        App.logger.info("Loading objects of type '" + base.toString() + "' for channel: " + channel);
         DatabaseWrapper db = APIDatabase.getChannelMainDatabase(channel);
         if (db == null) {
             App.logger.error("Unable to get database for channel: " + channel);
             return;
         }
         loadFromList(list, db, base, strategy);
+        App.logger.info("Finished loading objects of type '" + base.toString() + "' for channel: " + channel);
     }
 
     private static void loadForBotChannel(List<PreloadPair> list, Base base, LoadStrategy strategy) {
+        App.logger.info("Loading objects of type '" + base.toString() + "' for bot channel");
         DatabaseWrapper db = APIDatabase.getBotDatabase();
         if (db == null) {
             App.logger.error("Unable to get bot database");
             return;
         }
         loadFromList(list, db, base, strategy);
+        App.logger.info("Finished loading objects of type '" + base.toString() + "' for bot channel");
     }
 
     private static void loadFromList(List<PreloadPair> list, DatabaseWrapper db, Base base, LoadStrategy strategy) {
@@ -143,6 +149,7 @@ public class PreloadLoader {
     }
 
     private static <T> PreloadPair<T> loadFromFile(String pathNew, String pathOld, String pathFail, Class<T> tClass, Base base, LoadStrategy strategy) {
+        App.logger.info("Attempting to load from file: " + pathNew);
         T tNew = validateObject(JsonHandler.readValue(pathNew, tClass), tClass, base);
         T tOld;
         switch (strategy) {
@@ -154,8 +161,10 @@ public class PreloadLoader {
         }
         if (tNew == null) {
             doMove(pathNew, pathFail);
+            App.logger.warn("Failed to load file: " + pathNew);
         } else {
             doMove(pathNew, pathOld);
+            App.logger.info("Successfully loaded file: " + pathNew);
         }
         return new PreloadPair<>(tNew, tOld);
     }
@@ -176,7 +185,11 @@ public class PreloadLoader {
                 default:
                     return null;
             }
-        } catch (ClassCastException | InvalidAliasException | InvalidCommandException e) {
+        } catch (ClassCastException e) {
+            App.logger.catching(e);
+            return null;
+        } catch (InvalidAliasException | InvalidCommandException e) {
+            App.logger.error(e.getMessage());
             return null;
         }
     }
