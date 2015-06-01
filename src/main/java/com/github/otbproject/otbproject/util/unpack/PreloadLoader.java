@@ -28,7 +28,7 @@ public class PreloadLoader {
 
         switch (chan) {
             case ALL:
-                loadForAllChannels(list, base, strategy);
+                loadForAllChannels(list, channelName, base, strategy);
                 break;
             case SPECIFIC:
                 loadForChannel(list, channelName, base, strategy);
@@ -39,7 +39,12 @@ public class PreloadLoader {
         }
     }
 
-    private static void loadForAllChannels(List<PreloadPair> list, Base base, LoadStrategy strategy) {
+    private static void loadForAllChannels(List<PreloadPair> list, String channelName, Base base, LoadStrategy strategy) {
+        if (channelName != null) {
+            loadForChannel(list, channelName, base, strategy);
+            return;
+        }
+
         File[] files = new File(FSUtil.dataDir() + File.separator + FSUtil.DirNames.CHANNELS).listFiles();
         if (files == null) {
             App.logger.error("Unable to get list of channels");
