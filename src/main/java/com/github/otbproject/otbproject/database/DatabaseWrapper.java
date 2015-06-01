@@ -3,10 +3,7 @@ package com.github.otbproject.otbproject.database;
 import com.github.otbproject.otbproject.App;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
@@ -109,6 +106,37 @@ public class DatabaseWrapper {
         return bool;
     }
 
+    public ResultSet getRecord(String table, HashMap<String, Object> map) {
+        PreparedStatement preparedStatement;
+        String sql = "SELECT * FROM " + table + " WHERE ";
+        List<Map.Entry<String, Object>> entryList = new ArrayList<>(map.entrySet());
+        sql += entryList.stream().map(entry -> (entry.getKey() + "= ?")).collect(Collectors.joining(", "));
+        ResultSet rs = null;
+        lock.lock();
+        try {
+            connection.setAutoCommit(false);
+            preparedStatement = connection.prepareStatement(sql);
+            int index = 1;
+            for (Map.Entry entry : entryList) {
+                setValue(preparedStatement, index, entry.getValue());
+                index++;
+            }
+            rs = preparedStatement.executeQuery();
+            connection.commit();
+        } catch (SQLException e) {
+            App.logger.catching(e);
+        } finally {
+            try {
+                connection.setAutoCommit(true);
+            } catch (SQLException e) {
+                App.logger.catching(e);
+            }
+            lock.unlock();
+        }
+        return rs;
+    }
+
+    // TODO rewrite to use only one function
     /**
      * Retrieves a <code>ResultSet</code> that contains all records that match the filter.
      * The Filter is defined as a field name and field value pair. <br>
@@ -180,6 +208,7 @@ public class DatabaseWrapper {
         lock.lock();
         try {
             ResultSet rs = getRecord(table, identifier, fieldName);
+            // TODO fix
             while (rs.next()) {
                 if (identifier instanceof String && rs.getString(fieldName).equalsIgnoreCase((String) identifier)) {
                     bool = true;
@@ -208,7 +237,8 @@ public class DatabaseWrapper {
     public boolean updateRecord(String table, Object identifier, String fieldName, HashMap<String, Object> map) {
         PreparedStatement preparedStatement = null;
         String sql = "UPDATE " + table + " SET ";
-        sql += map.keySet().stream().map(key -> (key + "=?")).collect(Collectors.joining(", "));
+        List<Map.Entry<String, Object>> entryList = new ArrayList<>(map.entrySet()); // Guarantee ordering
+        sql += entryList.stream().map(entry -> (entry.getKey() + "=?")).collect(Collectors.joining(", "));
         sql += " WHERE " + fieldName + "= ?";
         boolean bool = false;
         lock.lock();
@@ -216,8 +246,8 @@ public class DatabaseWrapper {
             connection.setAutoCommit(false);
             preparedStatement = connection.prepareStatement(sql);
             int index = 1;
-            for (String key : map.keySet()) {
-                setValue(preparedStatement, index, map.get(key));
+            for (Map.Entry entry : entryList) {
+                setValue(preparedStatement, index, entry.getValue());
                 index++;
             }
             if (identifier instanceof String) {
@@ -259,7 +289,8 @@ public class DatabaseWrapper {
     public boolean insertRecord(String table, HashMap<String, Object> map) {
         PreparedStatement preparedStatement = null;
         String sql = "INSERT OR IGNORE INTO " + table + " (";
-        sql += map.keySet().stream().collect(Collectors.joining(", "));
+        List<Map.Entry<String, Object>> entryList = new ArrayList<>(map.entrySet()); // Guarantee ordering
+        sql += entryList.stream().map(Map.Entry::getKey).collect(Collectors.joining(", "));
         sql += ") VALUES (";
         sql += Collections.nCopies(map.keySet().size(), "?").stream().collect(Collectors.joining(", "));
         sql += ")";
@@ -269,8 +300,8 @@ public class DatabaseWrapper {
             connection.setAutoCommit(false);
             preparedStatement = connection.prepareStatement(sql);
             int index = 1;
-            for (String key : map.keySet()) {
-                setValue(preparedStatement, index, map.get(key));
+            for (Map.Entry entry : entryList) {
+                setValue(preparedStatement, index, entry.getValue());
                 index++;
             }
             int i = preparedStatement.executeUpdate();

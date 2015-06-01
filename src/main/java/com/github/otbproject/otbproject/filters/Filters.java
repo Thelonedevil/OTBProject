@@ -13,9 +13,14 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public class Filters {
-    public static BasicFilter get(DatabaseWrapper db, String data) {
+    // TODO fix to take 2 params
+    public static BasicFilter get(DatabaseWrapper db, String data, FilterType type) {
+        HashMap<String, Object> map = new HashMap<>();
+        map.put(FilterFields.DATA, data);
+        map.put(FilterFields.TYPE, type.name());
+        // TODO fix
         if (db.exists(FilterFields.TABLE_NAME, data, FilterFields.DATA)) {
-            ResultSet rs = db.getRecord(FilterFields.TABLE_NAME, data, FilterFields.DATA);
+            ResultSet rs = db.getRecord(FilterFields.TABLE_NAME, map);
             try {
                 return getFilterFromResultSet(rs);
             } catch (SQLException e) {
