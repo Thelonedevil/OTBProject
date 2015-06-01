@@ -72,8 +72,8 @@ public class Filters {
         return db.updateRecord(FilterFields.TABLE_NAME, map.get(FilterFields.DATA), FilterFields.DATA, map);
     }
 
-    public static boolean exists(DatabaseWrapper db, String commandName) {
-        return db.exists(FilterFields.TABLE_NAME, commandName, FilterFields.DATA);
+    public static boolean exists(DatabaseWrapper db, String data) {
+        return db.exists(FilterFields.TABLE_NAME, data, FilterFields.DATA);
     }
 
     public static boolean add(DatabaseWrapper db, HashMap<String, Object> map) {

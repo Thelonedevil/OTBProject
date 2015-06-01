@@ -7,10 +7,11 @@ import com.github.otbproject.otbproject.commands.loader.LoadedCommand;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.filters.BasicFilter;
 import com.github.otbproject.otbproject.filters.FilterGroup;
+import com.github.otbproject.otbproject.filters.FilterGroups;
 
 class PreloadComparator {
     static LoadedAlias generateAliasHybrid(DatabaseWrapper db, LoadedAlias newAlias, LoadedAlias oldAlias) {
-        if ((oldAlias == null) || !oldAlias.getName().equals(newAlias.getName())) {
+        if ((oldAlias == null) || (newAlias == null) || !oldAlias.getName().equals(newAlias.getName())) {
             return newAlias;
         }
 
@@ -34,7 +35,7 @@ class PreloadComparator {
     }
 
     static LoadedCommand generateCommandHybrid(DatabaseWrapper db, LoadedCommand newCommand, LoadedCommand oldCommand) {
-        if ((oldCommand == null) || !oldCommand.getName().equals(newCommand.getName())) {
+        if ((oldCommand == null) || (newCommand == null) || !oldCommand.getName().equals(newCommand.getName())) {
             return newCommand;
         }
 
@@ -79,14 +80,36 @@ class PreloadComparator {
     }
 
     static BasicFilter generateFilterHybrid(DatabaseWrapper db, BasicFilter newFilter, BasicFilter oldFilter) {
-        if ((oldFilter == null) || !(oldFilter.getData().equals(newFilter.getData()) && oldFilter.getType().equals(newFilter.getType()))) {
+        if ((oldFilter == null) || (newFilter == null)
+                || !(oldFilter.getData().equals(newFilter.getData()) && oldFilter.getType().equals(newFilter.getType()))) {
             return newFilter;
         }
     }
 
     static FilterGroup generateFilterGroupHybrid(DatabaseWrapper db, FilterGroup newGroup, FilterGroup oldGroup) {
-        if ((oldGroup == null) || !oldGroup.getName().equals(newGroup.getName())) {
+        if ((oldGroup == null) || (newGroup == null) || !oldGroup.getName().equals(newGroup.getName())) {
             return newGroup;
         }
+
+        FilterGroup dbGroup = FilterGroups.get(db, newGroup.getName());
+        if (dbGroup == null) {
+            return newGroup;
+        }
+
+        // Check all filter group fields
+        if (!oldGroup.getResponseCommand().equals(dbGroup.getResponseCommand())) {
+            newGroup.setResponseCommand(dbGroup.getResponseCommand());
+        }
+        if (!oldGroup.getUserLevel().equals(dbGroup.getUserLevel())) {
+            newGroup.setUserLevel(dbGroup.getUserLevel());
+        }
+        if (!oldGroup.getAction().equals(dbGroup.getAction())) {
+            newGroup.setAction(dbGroup.getAction());
+        }
+        if (!oldGroup.isEnabled().equals(dbGroup.isEnabled())) {
+            newGroup.setEnabled(dbGroup.isEnabled());
+        }
+
+        return newGroup;
     }
 }

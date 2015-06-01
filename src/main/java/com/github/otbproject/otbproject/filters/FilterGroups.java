@@ -12,9 +12,9 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
 
 public class FilterGroups {
-    public static FilterGroup get(DatabaseWrapper db, String data) {
-        if (db.exists(FilterGroupFields.TABLE_NAME, data, FilterGroupFields.NAME)) {
-            ResultSet rs = db.getRecord(FilterGroupFields.TABLE_NAME, data, FilterGroupFields.NAME);
+    public static FilterGroup get(DatabaseWrapper db, String groupName) {
+        if (db.exists(FilterGroupFields.TABLE_NAME, groupName, FilterGroupFields.NAME)) {
+            ResultSet rs = db.getRecord(FilterGroupFields.TABLE_NAME, groupName, FilterGroupFields.NAME);
             try {
                 return getFilterGroupFromResultSet(rs);
             } catch (SQLException e) {
@@ -67,16 +67,16 @@ public class FilterGroups {
         return db.updateRecord(FilterGroupFields.TABLE_NAME, map.get(FilterGroupFields.NAME), FilterGroupFields.NAME, map);
     }
 
-    public static boolean exists(DatabaseWrapper db, String commandName) {
-        return db.exists(FilterGroupFields.TABLE_NAME, commandName, FilterGroupFields.NAME);
+    public static boolean exists(DatabaseWrapper db, String groupName) {
+        return db.exists(FilterGroupFields.TABLE_NAME, groupName, FilterGroupFields.NAME);
     }
 
     public static boolean add(DatabaseWrapper db, HashMap<String, Object> map) {
         return db.insertRecord(FilterGroupFields.TABLE_NAME, map);
     }
 
-    public static boolean remove(DatabaseWrapper db, String data) {
-        return db.removeRecord(FilterGroupFields.TABLE_NAME, data, FilterGroupFields.NAME);
+    public static boolean remove(DatabaseWrapper db, String groupName) {
+        return db.removeRecord(FilterGroupFields.TABLE_NAME, groupName, FilterGroupFields.NAME);
     }
 
     public static boolean addFilterGroupFromObj(DatabaseWrapper db, FilterGroup group) {
