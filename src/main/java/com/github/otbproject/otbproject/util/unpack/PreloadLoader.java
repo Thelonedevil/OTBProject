@@ -226,13 +226,4 @@ public class PreloadLoader {
         }
         return source.renameTo(dest);
     }
-
-    public static void test() {
-        File dir = FSUtil.builder.base(Base.CMD).channels(Chan.ALL).load(Load.ED).asFile();
-        File[] files = dir.listFiles();
-        if (files != null) {
-            Stream.of(files).forEach(file -> App.logger.info(file.getName()));
-        }
-        System.exit(0);
-    }
 }
