@@ -2,19 +2,22 @@ package com.github.otbproject.otbproject.commands.loader;
 
 import com.github.otbproject.otbproject.users.UserLevel;
 
-public class LoadedCommand {
-    private String name;
-    private String response;
-    private UserLevel execUserLevel;
-    private int minArgs;
-    private int count;
+import javax.validation.constraints.NotNull;
 
-    public ModifyingUserLevels modifyingUserLevels;
+public class LoadedCommand {
+    @NotNull
+    private String name;
+    private String response = "example response";
+    private UserLevel execUserLevel = UserLevel.DEFAULT;
+    private int minArgs = 0;
+    private int count = 0;
+
+    public ModifyingUserLevels modifyingUserLevels = new ModifyingUserLevels();
 
     public class ModifyingUserLevels {
-        private UserLevel nameModifyingUL;
-        private UserLevel responseModifyingUL;
-        private UserLevel userLevelModifyingUL;
+        private UserLevel nameModifyingUL = UserLevel.DEFAULT;
+        private UserLevel responseModifyingUL = UserLevel.DEFAULT;
+        private UserLevel userLevelModifyingUL = UserLevel.DEFAULT;
 
         public UserLevel getNameModifyingUL() {
             return nameModifyingUL;
@@ -42,8 +45,8 @@ public class LoadedCommand {
     }
 
     private String script;
-    private Boolean enabled;
-    private boolean debug;
+    private Boolean enabled = true;
+    private boolean debug = false;
 
     public String getName() {
         return name;
