@@ -6,10 +6,7 @@ import com.github.otbproject.otbproject.commands.Alias;
 import com.github.otbproject.otbproject.commands.Command;
 import com.github.otbproject.otbproject.commands.loader.*;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
-import com.github.otbproject.otbproject.filters.BasicFilter;
-import com.github.otbproject.otbproject.filters.FilterGroup;
-import com.github.otbproject.otbproject.filters.FilterGroups;
-import com.github.otbproject.otbproject.filters.Filters;
+import com.github.otbproject.otbproject.filters.*;
 import com.github.otbproject.otbproject.fs.FSUtil;
 import com.github.otbproject.otbproject.fs.groups.Base;
 import com.github.otbproject.otbproject.fs.groups.Chan;
@@ -177,18 +174,16 @@ public class PreloadLoader {
                 case CMD:
                     return tClass.cast(CommandValidator.validateCommand((LoadedCommand) object));
                 case FILTER:
-                    // TODO validate
-                    return object;
+                    return tClass.cast(FilterValidator.validateFilter((BasicFilter) object));
                 case FILTER_GRP:
-                    // TODO validate
-                    return object;
+                    return tClass.cast(FilterValidator.validateFilterGroup((FilterGroup) object));
                 default:
                     return null;
             }
         } catch (ClassCastException e) {
             App.logger.catching(e);
             return null;
-        } catch (InvalidAliasException | InvalidCommandException e) {
+        } catch (InvalidAliasException | InvalidCommandException | InvalidFilterException | InvalidFilterGroupException e) {
             App.logger.error(e.getMessage());
             return null;
         }

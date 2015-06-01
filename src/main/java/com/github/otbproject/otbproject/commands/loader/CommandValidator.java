@@ -3,10 +3,10 @@ package com.github.otbproject.otbproject.commands.loader;
 public class CommandValidator {
     public static LoadedCommand validateCommand(LoadedCommand command) throws InvalidCommandException {
         if ((command == null) || (command.getName() == null) || (command.getResponse() == null)) {
-            throw new InvalidCommandException();
+            throw new InvalidCommandException("Object or required field is null");
         }
         if (command.getName().contains(" ")) {
-            throw new InvalidCommandException();
+            throw new InvalidCommandException("Space not allowed in name");
         }
 
         LoadedCommand validatedCommand = LoadedCommandHelper.getCopy(command);
@@ -43,10 +43,10 @@ public class CommandValidator {
 
     public static LoadedAlias validateAlias(LoadedAlias alias) throws InvalidAliasException {
         if ((alias == null) || (alias.getName() == null) || (alias.getCommand() == null)) {
-            throw new InvalidAliasException();
+            throw new InvalidAliasException("Object or required field is null");
         }
         if (alias.getName().contains(" ")) {
-            throw new InvalidAliasException();
+            throw new InvalidAliasException("Space not allowed in name");
         }
 
         LoadedAlias validatedAlias = LoadedCommandHelper.getCopy(alias);
