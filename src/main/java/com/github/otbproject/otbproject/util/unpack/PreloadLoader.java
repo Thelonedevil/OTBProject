@@ -127,7 +127,13 @@ public class PreloadLoader {
     }
 
     private static List<PreloadPair> loadDirectoryContents(Base base, Chan chan, String channelName, LoadStrategy strategy) {
-        File dir = FSUtil.builder.base(base).channels(chan).forChannel(channelName).load(Load.TO).asFile();
+        File dir;
+        if (strategy == LoadStrategy.FROM_LOADED) {
+            dir = FSUtil.builder.base(base).channels(chan).forChannel(channelName).load(Load.ED).asFile();
+        } else {
+            dir = FSUtil.builder.base(base).channels(chan).forChannel(channelName).load(Load.TO).asFile();
+        }
+
         File[] files = dir.listFiles();
         if (files == null) {
             App.logger.error("Unable to get list of files for directory: " + dir.toString());
