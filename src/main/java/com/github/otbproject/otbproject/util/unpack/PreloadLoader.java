@@ -14,6 +14,7 @@ import com.github.otbproject.otbproject.fs.groups.Load;
 import com.github.otbproject.otbproject.util.JsonHandler;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -134,28 +135,34 @@ public class PreloadLoader {
             return null;
         }
 
-        return Stream.of(files)
-                .map(file -> {
+        List<PreloadPair> list = new ArrayList<>();
+        Stream.of(files)
+                .forEach(file -> {
                     String name = file.getName();
-                    String pathNew = FSUtil.builder.base(base).channels(chan).forChannel(channelName).load(Load.TO).create() + File.separator + name;
                     String pathOld = FSUtil.builder.base(base).channels(chan).forChannel(channelName).load(Load.ED).create() + File.separator + name;
+                    String pathNew;
+                    if (strategy == LoadStrategy.FROM_LOADED) {
+                        pathNew = pathOld;
+                    } else {
+                        pathNew = FSUtil.builder.base(base).channels(chan).forChannel(channelName).load(Load.TO).create() + File.separator + name;
+                    }
                     String pathFail = FSUtil.builder.base(base).channels(chan).forChannel(channelName).load(Load.FAIL).create() + File.separator + name;
-                    return loadFromFile(pathNew, pathOld, pathFail, tClass, base, strategy);
-                })
-                .collect(Collectors.toList());
+                    list.add(loadFromFile(pathNew, pathOld, pathFail, tClass, base, strategy));
+                });
+                //.collect(Collectors.toList());
+        return list;
     }
 
     private static <T> PreloadPair<T> loadFromFile(String pathNew, String pathOld, String pathFail, Class<T> tClass, Base base, LoadStrategy strategy) {
         App.logger.info("Attempting to load from file: " + pathNew);
-        T tNew = validateObject(JsonHandler.readValue(pathNew, tClass), tClass, base);
+        T tNew = validateObject(JsonHandler.readValue(pathNew, tClass), tClass, base, true);
         T tOld;
-        switch (strategy) {
-            case UPDATE:
-                tOld = validateObject(JsonHandler.readValue(pathOld, tClass), tClass, base);
-                break;
-            default:
-                tOld = null;
+        if (strategy == LoadStrategy.UPDATE) {
+            tOld = validateObject(JsonHandler.readValue(pathOld, tClass), tClass, base, false);
+        } else {
+            tOld = null;
         }
+
         if (tNew == null) {
             doMove(pathNew, pathFail);
             App.logger.warn("Failed to load file: " + pathNew);
@@ -166,7 +173,7 @@ public class PreloadLoader {
         return new PreloadPair<>(tNew, tOld);
     }
 
-    private static <T> T validateObject(T object, Class<T> tClass, Base base) {
+    private static <T> T validateObject(T object, Class<T> tClass, Base base, boolean printValidationError) {
         try {
             switch (base) {
                 case ALIAS:
@@ -184,7 +191,9 @@ public class PreloadLoader {
             App.logger.catching(e);
             return null;
         } catch (InvalidAliasException | InvalidCommandException | InvalidFilterException | InvalidFilterGroupException e) {
-            App.logger.error(e.getMessage());
+            if (printValidationError) {
+                App.logger.error(e.getMessage());
+            }
             return null;
         }
     }
@@ -205,7 +214,7 @@ public class PreloadLoader {
     }
 
     private static void doMove(String sourcePath, String destPath) {
-        if (!move(new File(sourcePath), new File(destPath))) {
+        if (!move(new File(sourcePath), new File(destPath)) && !sourcePath.equals(destPath)) {
             App.logger.error("Failed to move file '" + sourcePath + "' to file '" + destPath + "'");
         }
     }
