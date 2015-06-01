@@ -8,6 +8,7 @@ import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.filters.BasicFilter;
 import com.github.otbproject.otbproject.filters.FilterGroup;
 import com.github.otbproject.otbproject.filters.FilterGroups;
+import com.github.otbproject.otbproject.filters.Filters;
 
 class PreloadComparator {
     static LoadedAlias generateAliasHybrid(DatabaseWrapper db, LoadedAlias newAlias, LoadedAlias oldAlias) {
@@ -84,6 +85,21 @@ class PreloadComparator {
                 || !(oldFilter.getData().equals(newFilter.getData()) && oldFilter.getType().equals(newFilter.getType()))) {
             return newFilter;
         }
+
+        BasicFilter dbFilter = Filters.get(db, newFilter.getData(), newFilter.getType());
+        if (dbFilter == null) {
+            return newFilter;
+        }
+
+        // Check all filter fields
+        if (!oldFilter.getGroup().equals(dbFilter.getGroup())) {
+            newFilter.setGroup(dbFilter.getGroup());
+        }
+        if (!oldFilter.isEnabled().equals(dbFilter.isEnabled())) {
+            newFilter.setEnabled(dbFilter.isEnabled());
+        }
+
+        return newFilter;
     }
 
     static FilterGroup generateFilterGroupHybrid(DatabaseWrapper db, FilterGroup newGroup, FilterGroup oldGroup) {
