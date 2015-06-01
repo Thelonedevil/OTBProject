@@ -106,10 +106,9 @@ public class DatabaseWrapper {
         return bool;
     }
 
-    public ResultSet getRecord(String table, HashMap<String, Object> map) {
+    public ResultSet getRecord(String table, List<Map.Entry<String, Object>> entryList) {
         PreparedStatement preparedStatement;
         String sql = "SELECT * FROM " + table + " WHERE ";
-        List<Map.Entry<String, Object>> entryList = new ArrayList<>(map.entrySet());
         sql += entryList.stream().map(entry -> (entry.getKey() + "= ?")).collect(Collectors.joining(", "));
         ResultSet rs = null;
         lock.lock();
@@ -136,7 +135,6 @@ public class DatabaseWrapper {
         return rs;
     }
 
-    // TODO rewrite to use only one function
     /**
      * Retrieves a <code>ResultSet</code> that contains all records that match the filter.
      * The Filter is defined as a field name and field value pair. <br>
@@ -150,27 +148,9 @@ public class DatabaseWrapper {
      * @see java.sql.ResultSet
      */
     public ResultSet getRecord(String table, Object identifier, String fieldName) {
-        PreparedStatement preparedStatement;
-        String sql = "SELECT * FROM " + table + " WHERE " + fieldName + "= ?";
-        ResultSet rs = null;
-        lock.lock();
-        try {
-            connection.setAutoCommit(false);
-            preparedStatement = connection.prepareStatement(sql);
-            setValue(preparedStatement, 1, identifier);
-            rs = preparedStatement.executeQuery();
-            connection.commit();
-        } catch (SQLException e) {
-            App.logger.catching(e);
-        } finally {
-            try {
-                connection.setAutoCommit(true);
-            } catch (SQLException e) {
-                App.logger.catching(e);
-            }
-            lock.unlock();
-        }
-        return rs;
+        List<Map.Entry<String, Object>> list = new ArrayList<>();
+        list.add(new AbstractMap.SimpleEntry<>(fieldName, identifier));
+        return getRecord(table, list);
     }
 
     public ResultSet getRandomRecord(String table) {
@@ -195,6 +175,39 @@ public class DatabaseWrapper {
         return rs;
     }
 
+    public boolean exists(String table, List<Map.Entry<String, Object>> entryList) {
+        PreparedStatement preparedStatement;
+        String sql = "SELECT COUNT() FROM " + table + " WHERE ";
+        sql += entryList.stream().map(entry -> (entry.getKey() + "= ?")).collect(Collectors.joining(", "));
+        ResultSet rs;
+        lock.lock();
+        try {
+            connection.setAutoCommit(false);
+            preparedStatement = connection.prepareStatement(sql);
+            int index = 1;
+            for (Map.Entry entry : entryList) {
+                setValue(preparedStatement, index, entry.getValue());
+                index++;
+            }
+            rs = preparedStatement.executeQuery();
+            connection.commit();
+            if (rs.getInt(1) > 0) {
+                return true;
+            }
+        } catch (SQLException e) {
+            App.logger.catching(e);
+            return false;
+        } finally {
+            try {
+                connection.setAutoCommit(true);
+            } catch (SQLException e) {
+                App.logger.catching(e);
+            }
+            lock.unlock();
+        }
+        return false;
+    }
+
     /**
      * Checks to see if a record with a Field Name, to Field Value pair exists in the table.
      *
@@ -204,25 +217,9 @@ public class DatabaseWrapper {
      * @return True if the identifier exists in the field in the table.
      */
     public boolean exists(String table, Object identifier, String fieldName) {
-        boolean bool = false;
-        lock.lock();
-        try {
-            ResultSet rs = getRecord(table, identifier, fieldName);
-            // TODO fix
-            while (rs.next()) {
-                if (identifier instanceof String && rs.getString(fieldName).equalsIgnoreCase((String) identifier)) {
-                    bool = true;
-                } else if (identifier instanceof Integer && rs.getInt(fieldName) == (Integer) identifier) {
-                    bool = true;
-                }
-            }
-        } catch (SQLException e) {
-            App.logger.catching(e);
-            bool = false;
-        } finally {
-            lock.unlock();
-        }
-        return bool;
+        List<Map.Entry<String, Object>> list = new ArrayList<>();
+        list.add(new AbstractMap.SimpleEntry<>(fieldName, identifier));
+        return exists(table, list);
     }
 
     /**
@@ -328,6 +325,39 @@ public class DatabaseWrapper {
         return bool;
     }
 
+    public boolean removeRecord(String table, List<Map.Entry<String, Object>> entryList) {
+        PreparedStatement preparedStatement = null;
+        String sql = "DELETE FROM " + table + " WHERE ";
+        sql += entryList.stream().map(entry -> (entry.getKey() + "=?")).collect(Collectors.joining(", "));
+        lock.lock();
+        try {
+            connection.setAutoCommit(false);
+            preparedStatement = connection.prepareStatement(sql);
+            int index = 1;
+            for (Map.Entry entry : entryList) {
+                setValue(preparedStatement, index, entry.getValue());
+                index++;
+            }
+            int i = preparedStatement.executeUpdate();
+            connection.commit();
+            return (i > 0);
+        } catch (SQLException e) {
+            App.logger.error("SQL: " + sql);
+            App.logger.catching(e);
+        } finally {
+            try {
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+                connection.setAutoCommit(true);
+            } catch (SQLException e) {
+                App.logger.catching(e);
+            }
+            lock.unlock();
+        }
+        return false;
+    }
+
     /**
      * Removes a record from the Database.
      *
@@ -337,36 +367,9 @@ public class DatabaseWrapper {
      * @return True if one or more records are removed.
      */
     public boolean removeRecord(String table, Object identifier, String fieldName) {
-        PreparedStatement preparedStatement = null;
-        String sql = "DELETE FROM " + table + " WHERE " + fieldName + "=?";
-        boolean bool = false;
-        lock.lock();
-        try {
-            connection.setAutoCommit(false);
-            preparedStatement = connection.prepareStatement(sql);
-            setValue(preparedStatement, 1, identifier);
-            int i = preparedStatement.executeUpdate();
-            if (i > 0) {
-                bool = true;
-            }
-            connection.commit();
-        } catch (SQLException e) {
-            App.logger.error("SQL: " + sql);
-            App.logger.catching(e);
-            bool = false;
-        } finally {
-            try {
-                if (preparedStatement != null) {
-                    preparedStatement.close();
-                }
-                connection.setAutoCommit(true);
-            } catch (SQLException e) {
-                App.logger.catching(e);
-                bool = false;
-            }
-            lock.unlock();
-        }
-        return bool;
+        List<Map.Entry<String, Object>> list = new ArrayList<>();
+        list.add(new AbstractMap.SimpleEntry<>(fieldName, identifier));
+        return removeRecord(table, list);
     }
 
     /**
