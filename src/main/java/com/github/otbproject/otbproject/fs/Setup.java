@@ -4,12 +4,11 @@ import com.github.otbproject.otbproject.config.DefaultConfigGenerator;
 import com.github.otbproject.otbproject.fs.groups.Base;
 import com.github.otbproject.otbproject.fs.groups.Chan;
 import com.github.otbproject.otbproject.util.JsonHandler;
-import com.github.otbproject.otbproject.util.unpack.LoadStrategy;
-import com.github.otbproject.otbproject.util.unpack.PreloadLoader;
+import com.github.otbproject.otbproject.util.preload.LoadStrategy;
+import com.github.otbproject.otbproject.util.preload.PreloadLoader;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.stream.Stream;
 
 public class Setup {
     public static void setup() throws IOException {
