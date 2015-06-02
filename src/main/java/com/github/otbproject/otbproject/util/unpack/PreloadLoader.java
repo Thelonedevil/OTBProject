@@ -46,36 +46,36 @@ public class PreloadLoader {
 
         File[] files = new File(FSUtil.dataDir() + File.separator + FSUtil.DirNames.CHANNELS).listFiles();
         if (files == null) {
-            App.logger.error("Unable to get list of channels");
+            App.logger.error("Failed to load objects of type '" + base.toString() + "' for all channels - unable to get list of channels");
             return;
         }
 
-        App.logger.info("Loading objects of type '" + base.toString() + "' for all channels");
+        App.logger.debug("Loading objects of type '" + base.toString() + "' for all channels");
         Stream.of(files).filter(File::isDirectory)
                 .forEach(file -> loadForChannel(list, file.getName(), base, strategy));
-        App.logger.info("Finished loading objects of type '" + base.toString() + "' for all channels");
+        App.logger.debug("Finished loading objects of type '" + base.toString() + "' for all channels");
     }
 
     private static void loadForChannel(List<PreloadPair> list, String channel, Base base, LoadStrategy strategy) {
-        App.logger.info("Loading objects of type '" + base.toString() + "' for channel: " + channel);
+        App.logger.debug("Loading objects of type '" + base.toString() + "' for channel: " + channel);
         DatabaseWrapper db = APIDatabase.getChannelMainDatabase(channel);
         if (db == null) {
-            App.logger.error("Unable to get database for channel: " + channel);
+            App.logger.error("Failed to load objects of type '" + base.toString() + "' for channel '" + channel + "' - unable to get database");
             return;
         }
         loadFromList(list, db, base, strategy);
-        App.logger.info("Finished loading objects of type '" + base.toString() + "' for channel: " + channel);
+        App.logger.debug("Finished loading objects of type '" + base.toString() + "' for channel: " + channel);
     }
 
     private static void loadForBotChannel(List<PreloadPair> list, Base base, LoadStrategy strategy) {
-        App.logger.info("Loading objects of type '" + base.toString() + "' for bot channel");
+        App.logger.debug("Loading objects of type '" + base.toString() + "' for bot channel");
         DatabaseWrapper db = APIDatabase.getBotDatabase();
         if (db == null) {
-            App.logger.error("Unable to get bot database");
+            App.logger.error("Failed to load objects of type '" + base.toString() + "' for bot channel - unable to get bot database");
             return;
         }
         loadFromList(list, db, base, strategy);
-        App.logger.info("Finished loading objects of type '" + base.toString() + "' for bot channel");
+        App.logger.debug("Finished loading objects of type '" + base.toString() + "' for bot channel");
     }
 
     private static void loadFromList(List<PreloadPair> list, DatabaseWrapper db, Base base, LoadStrategy strategy) {
