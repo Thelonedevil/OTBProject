@@ -34,7 +34,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Scanner;
-import java.util.stream.Stream;
 
 public class App {
     public static final String PID = ManagementFactory.getRuntimeMXBean().getName().split("@")[0];
@@ -89,8 +88,6 @@ public class App {
         }
         File logFile = new File(FSUtil.logsDir() + File.separator + "console.log");
         logFile.delete();
-
-        //PreloadLoader.test();
 
         // Log version
         logger.info("OTBProject version " + VERSION);
