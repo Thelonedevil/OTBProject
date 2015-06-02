@@ -154,7 +154,7 @@ public class PreloadLoader {
 
         final Class tClass = getClassFromBase(base);
         if (tClass == null) {
-            App.logger.warn("Unable to determine class to unpack as for base: " + base.toString());
+            App.logger.warn("Unable to determine class to load as for base: " + base.toString());
             return null;
         }
 

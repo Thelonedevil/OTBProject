@@ -25,7 +25,8 @@ public class JsonHandler {
                 return null;
             }
             return t;
-        } catch (FileNotFoundException ignored) {
+        } catch (FileNotFoundException e) {
+            App.logger.warn("File not found to parse as JSON: " + path);
         } catch (IOException e) {
             App.logger.catching(e);
         }
