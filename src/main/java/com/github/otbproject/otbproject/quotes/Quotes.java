@@ -45,6 +45,9 @@ public class Quotes {
 
     private static Quote getQuoteFromResultSet(ResultSet rs) {
         try {
+            if (rs.isAfterLast()) {
+                return null;
+            }
             Quote quote = new Quote();
             quote.setId(rs.getInt(QuoteFields.ID));
             quote.setText(rs.getString(QuoteFields.TEXT));
