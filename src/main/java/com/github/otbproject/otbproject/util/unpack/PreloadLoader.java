@@ -19,6 +19,16 @@ import java.util.List;
 import java.util.stream.Stream;
 
 public class PreloadLoader {
+    public static void loadDirectoryForEachChannel(Base base, LoadStrategy strategy) {
+        File[] files = new File(FSUtil.dataDir() + File.separator + FSUtil.DirNames.CHANNELS).listFiles();
+        if (files == null) {
+            App.logger.error("Failed to load objects of type '" + base.toString() + "' for all channels - unable to get list of channels");
+            return;
+        }
+        Stream.of(files).filter(File::isDirectory)
+                .forEach(file -> loadDirectory(base, Chan.SPECIFIC, file.getName(), strategy));
+    }
+
     public static void loadDirectory(Base base, Chan chan, String channelName, LoadStrategy strategy) {
         List<PreloadPair> list = loadDirectoryContents(base, chan, channelName, strategy);
         if (list == null) {
@@ -126,6 +136,9 @@ public class PreloadLoader {
     }
 
     private static List<PreloadPair> loadDirectoryContents(Base base, Chan chan, String channelName, LoadStrategy strategy) {
+        if ((chan == Chan.SPECIFIC) && (channelName == null)) {
+            return null;
+        }
         File dir;
         if (strategy == LoadStrategy.FROM_LOADED) {
             dir = FSUtil.builder.base(base).channels(chan).forChannel(channelName).load(Load.ED).asFile();

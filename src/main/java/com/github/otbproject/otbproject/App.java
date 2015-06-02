@@ -230,16 +230,8 @@ public class App {
         PreloadLoader.loadDirectory(Base.CMD, Chan.BOT, null, strategy);
         PreloadLoader.loadDirectory(Base.ALIAS, Chan.BOT, null, strategy);
 
-        File[] files = new File(FSUtil.dataDir() + File.separator + FSUtil.DirNames.CHANNELS).listFiles();
-        if (files == null) {
-            App.logger.error("Unable to get list of channels");
-            return;
-        }
-        Stream.of(files).filter(File::isDirectory)
-                .forEach(file -> {
-                    PreloadLoader.loadDirectory(Base.CMD, Chan.SPECIFIC, file.getName(), strategy);
-                    PreloadLoader.loadDirectory(Base.ALIAS, Chan.SPECIFIC, file.getName(), strategy);
-                });
+        PreloadLoader.loadDirectoryForEachChannel(Base.CMD, strategy);
+        PreloadLoader.loadDirectoryForEachChannel(Base.ALIAS, strategy);
     }
 
     public static void startup(CommandLine cmd) {
