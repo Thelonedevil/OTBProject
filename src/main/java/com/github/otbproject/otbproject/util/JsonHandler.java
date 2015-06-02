@@ -2,7 +2,6 @@ package com.github.otbproject.otbproject.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.otbproject.otbproject.App;
-import org.apache.logging.log4j.Level;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
@@ -26,8 +25,7 @@ public class JsonHandler {
                 return null;
             }
             return t;
-        } catch (FileNotFoundException e) {
-            App.logger.catching(Level.DEBUG, e);
+        } catch (FileNotFoundException ignored) {
         } catch (IOException e) {
             App.logger.catching(e);
         }
