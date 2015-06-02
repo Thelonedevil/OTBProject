@@ -176,7 +176,7 @@ public class DatabaseWrapper {
     }
 
     public boolean exists(String table, List<Map.Entry<String, Object>> entryList) {
-        PreparedStatement preparedStatement;
+        PreparedStatement preparedStatement = null;
         String sql = "SELECT COUNT() FROM " + table + " WHERE ";
         sql += entryList.stream().map(entry -> (entry.getKey() + "= ?")).collect(Collectors.joining(", "));
         ResultSet rs;
@@ -191,14 +191,14 @@ public class DatabaseWrapper {
             }
             rs = preparedStatement.executeQuery();
             connection.commit();
-            if (rs.getInt(1) > 0) {
-                return true;
-            }
+            return  (rs.getInt(1) > 0);
         } catch (SQLException e) {
             App.logger.catching(e);
-            return false;
         } finally {
             try {
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
                 connection.setAutoCommit(true);
             } catch (SQLException e) {
                 App.logger.catching(e);
@@ -237,7 +237,6 @@ public class DatabaseWrapper {
         List<Map.Entry<String, Object>> entryList = new ArrayList<>(map.entrySet()); // Guarantee ordering
         sql += entryList.stream().map(entry -> (entry.getKey() + "=?")).collect(Collectors.joining(", "));
         sql += " WHERE " + fieldName + "= ?";
-        boolean bool = false;
         lock.lock();
         try {
             connection.setAutoCommit(false);
@@ -253,14 +252,11 @@ public class DatabaseWrapper {
                 preparedStatement.setInt(index, (Integer) identifier);
             }
             int i = preparedStatement.executeUpdate();
-            if (i > 0) {
-                bool = true;
-            }
             connection.commit();
+            return  (i > 0);
         } catch (SQLException e) {
             App.logger.error("SQL: " + sql);
             App.logger.catching(e);
-            bool = false;
         } finally {
             try {
                 if (preparedStatement != null) {
@@ -269,11 +265,10 @@ public class DatabaseWrapper {
                 connection.setAutoCommit(true);
             } catch (SQLException e) {
                 App.logger.catching(e);
-                bool = false;
             }
             lock.unlock();
         }
-        return bool;
+        return false;
     }
 
     /**
@@ -291,7 +286,6 @@ public class DatabaseWrapper {
         sql += ") VALUES (";
         sql += Collections.nCopies(map.keySet().size(), "?").stream().collect(Collectors.joining(", "));
         sql += ")";
-        boolean bool = false;
         lock.lock();
         try {
             connection.setAutoCommit(false);
@@ -302,14 +296,11 @@ public class DatabaseWrapper {
                 index++;
             }
             int i = preparedStatement.executeUpdate();
-            if (i > 0) {
-                bool = true;
-            }
             connection.commit();
+            return  (i > 0);
         } catch (SQLException e) {
             App.logger.error("SQL: " + sql);
             App.logger.catching(e);
-            bool = false;
         } finally {
             try {
                 if (preparedStatement != null) {
@@ -318,11 +309,10 @@ public class DatabaseWrapper {
                 connection.setAutoCommit(true);
             } catch (SQLException e) {
                 App.logger.catching(e);
-                bool = false;
             }
             lock.unlock();
         }
-        return bool;
+        return false;
     }
 
     public boolean removeRecord(String table, List<Map.Entry<String, Object>> entryList) {
