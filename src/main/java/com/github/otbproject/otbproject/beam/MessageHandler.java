@@ -32,7 +32,7 @@ public class MessageHandler implements EventHandler<IncomingMessageEvent> {
     @Override
     public void onEvent(IncomingMessageEvent event) {
         EXECUTOR_SERVICE.execute(() -> {
-            Thread.currentThread().setName(channelName);
+            Thread.currentThread().setName(channelName + "-processor-%d");
             IncomingMessageData data = event.data;
             App.logger.info("<"+ channelName +"> "+ data.user_name + ": " + getMessage(data));
             beamChatChannel.userRoles.put(data.user_name.toLowerCase(), Collections.unmodifiableList(data.user_roles));
