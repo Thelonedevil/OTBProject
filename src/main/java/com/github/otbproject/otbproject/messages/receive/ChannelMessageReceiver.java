@@ -32,64 +32,68 @@ public class ChannelMessageReceiver implements Runnable {
         try {
             Thread.currentThread().setName(channel.getName() + " Message Receiver");
             PackagedMessage packagedMessage;
-            boolean internal;
-            String channelName = channel.getName();
 
             while (true) {
                 packagedMessage = queue.take();
-                String user = packagedMessage.getUser();
-
-                String destChannelName = packagedMessage.getDestinationChannel();
-                Channel destChannel = null;
-                if (packagedMessage.getDestinationChannel().startsWith(InternalMessageSender.DESTINATION_PREFIX)) {
-                    internal = true;
-                } else {
-                    internal = false;
-                    destChannel = APIChannel.get(packagedMessage.getDestinationChannel());
-                    if (destChannel == null || !APIChannel.in(destChannelName)) {
-                        App.logger.warn("Attempted to process message to be sent in channel in which bot is not listening: " + destChannelName);
-                        continue;
-                    }
-                }
-
-                // Process commands for bot channel
-                if (inBotChannel) {
-                    DatabaseWrapper db = APIBot.getBot().getBotDB();
-                    UserLevel ul = packagedMessage.getUserLevel();
-                    ProcessedMessage processedMsg = MessageProcessor.process(db, packagedMessage.getMessage(), channelName, user, ul, APIConfig.getBotConfig().isBotChannelDebug());
-                    if (processedMsg.isScript() || !processedMsg.getResponse().isEmpty()) {
-                        doResponse(db, processedMsg, channelName, destChannelName, destChannel, user, ul, packagedMessage.getMessagePriority(), internal);
-                        // Don't process response as regular channel if done as bot channel
-                        continue;
-                    }
-                }
-
-                // Pre-check if user is on cooldown (skip if internal)
-                if (!internal && destChannel.isUserCooldown(user)) {
-                    continue;
-                }
-
-                // Process commands not as bot channel
-                DatabaseWrapper db = channel.getMainDatabaseWrapper();
-                UserLevel ul = packagedMessage.getUserLevel();
-                boolean debug = channel.getConfig().isDebug();
-                if (inBotChannel) {
-                    debug = (debug || APIConfig.getBotConfig().isBotChannelDebug());
-                }
-                ProcessedMessage processedMsg = MessageProcessor.process(db, packagedMessage.getMessage(), channelName, user, ul, debug);
-
-                // Check if bot is enabled
-                if (channel.getConfig().isEnabled() || GeneralConfigHelper.isPermanentlyEnabled(APIConfig.getGeneralConfig(), processedMsg.getCommandName())) {
-                    // Check if empty message, and then if command is on cooldown (skip cooldown check if internal)
-                    if ((processedMsg.isScript() || !processedMsg.getResponse().isEmpty()) && (internal || !destChannel.isCommandCooldown(processedMsg.getCommandName()))) {
-                        doResponse(db, processedMsg, channelName, destChannelName, destChannel, user, ul, packagedMessage.getMessagePriority(), internal);
-                    }
-                }
+                processMessage(packagedMessage);
             }
         } catch (InterruptedException e) {
             App.logger.info("Stopped message receiver for " + channel.getName());
         } catch (Exception e) {
             App.logger.catching(e);
+        }
+    }
+
+    public void processMessage(PackagedMessage packagedMessage) {
+        boolean internal;
+        String channelName = channel.getName();
+        String user = packagedMessage.getUser();
+
+        String destChannelName = packagedMessage.getDestinationChannel();
+        Channel destChannel = null;
+        if (packagedMessage.getDestinationChannel().startsWith(InternalMessageSender.DESTINATION_PREFIX)) {
+            internal = true;
+        } else {
+            internal = false;
+            destChannel = APIChannel.get(packagedMessage.getDestinationChannel());
+            if (destChannel == null || !APIChannel.in(destChannelName)) {
+                App.logger.warn("Attempted to process message to be sent in channel in which bot is not listening: " + destChannelName);
+                return;
+            }
+        }
+
+        // Process commands for bot channel
+        if (inBotChannel) {
+            DatabaseWrapper db = APIBot.getBot().getBotDB();
+            UserLevel ul = packagedMessage.getUserLevel();
+            ProcessedMessage processedMsg = MessageProcessor.process(db, packagedMessage.getMessage(), channelName, user, ul, APIConfig.getBotConfig().isBotChannelDebug());
+            if (processedMsg.isScript() || !processedMsg.getResponse().isEmpty()) {
+                doResponse(db, processedMsg, channelName, destChannelName, destChannel, user, ul, packagedMessage.getMessagePriority(), internal);
+                // Don't process response as regular channel if done as bot channel
+                return;
+            }
+        }
+
+        // Pre-check if user is on cooldown (skip if internal)
+        if (!internal && destChannel.isUserCooldown(user)) {
+            return;
+        }
+
+        // Process commands not as bot channel
+        DatabaseWrapper db = channel.getMainDatabaseWrapper();
+        UserLevel ul = packagedMessage.getUserLevel();
+        boolean debug = channel.getConfig().isDebug();
+        if (inBotChannel) {
+            debug = (debug || APIConfig.getBotConfig().isBotChannelDebug());
+        }
+        ProcessedMessage processedMsg = MessageProcessor.process(db, packagedMessage.getMessage(), channelName, user, ul, debug);
+
+        // Check if bot is enabled
+        if (channel.getConfig().isEnabled() || GeneralConfigHelper.isPermanentlyEnabled(APIConfig.getGeneralConfig(), processedMsg.getCommandName())) {
+            // Check if empty message, and then if command is on cooldown (skip cooldown check if internal)
+            if ((processedMsg.isScript() || !processedMsg.getResponse().isEmpty()) && (internal || !destChannel.isCommandCooldown(processedMsg.getCommandName()))) {
+                doResponse(db, processedMsg, channelName, destChannelName, destChannel, user, ul, packagedMessage.getMessagePriority(), internal);
+            }
         }
     }
 
