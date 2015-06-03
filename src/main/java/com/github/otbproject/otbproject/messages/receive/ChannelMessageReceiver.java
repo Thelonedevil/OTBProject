@@ -17,36 +17,24 @@ import com.github.otbproject.otbproject.proc.ProcessedMessage;
 import com.github.otbproject.otbproject.proc.CommandScriptProcessor;
 import com.github.otbproject.otbproject.users.UserLevel;
 
-public class ChannelMessageReceiver implements Runnable {
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
+// TODO possibly refactor to ChannelMessageProcessor
+public class ChannelMessageReceiver {
     private final Channel channel;
-    private final MessageReceiveQueue queue;
+    private final String channelName;
     private final boolean inBotChannel;
+    private final Lock lock = new ReentrantLock();
 
-    public ChannelMessageReceiver(Channel channel, MessageReceiveQueue queue) {
+    public ChannelMessageReceiver(Channel channel) {
         this.channel = channel;
-        this.queue = queue;
+        channelName = channel.getName();
         inBotChannel = this.channel.getName().equals(APIBot.getBot().getUserName());
-    }
-
-    public void run() {
-        try {
-            Thread.currentThread().setName(channel.getName() + " Message Receiver");
-            PackagedMessage packagedMessage;
-
-            while (true) {
-                packagedMessage = queue.take();
-                processMessage(packagedMessage);
-            }
-        } catch (InterruptedException e) {
-            App.logger.info("Stopped message receiver for " + channel.getName());
-        } catch (Exception e) {
-            App.logger.catching(e);
-        }
     }
 
     public void processMessage(PackagedMessage packagedMessage) {
         boolean internal;
-        String channelName = channel.getName();
         String user = packagedMessage.getUser();
 
         String destChannelName = packagedMessage.getDestinationChannel();
@@ -68,7 +56,7 @@ public class ChannelMessageReceiver implements Runnable {
             UserLevel ul = packagedMessage.getUserLevel();
             ProcessedMessage processedMsg = MessageProcessor.process(db, packagedMessage.getMessage(), channelName, user, ul, APIConfig.getBotConfig().isBotChannelDebug());
             if (processedMsg.isScript() || !processedMsg.getResponse().isEmpty()) {
-                doResponse(db, processedMsg, channelName, destChannelName, destChannel, user, ul, packagedMessage.getMessagePriority(), internal);
+                doResponse(db, processedMsg, channelName, destChannel, user, ul, packagedMessage.getMessagePriority(), internal);
                 // Don't process response as regular channel if done as bot channel
                 return;
             }
@@ -92,18 +80,20 @@ public class ChannelMessageReceiver implements Runnable {
         if (channel.getConfig().isEnabled() || GeneralConfigHelper.isPermanentlyEnabled(APIConfig.getGeneralConfig(), processedMsg.getCommandName())) {
             // Check if empty message, and then if command is on cooldown (skip cooldown check if internal)
             if ((processedMsg.isScript() || !processedMsg.getResponse().isEmpty()) && (internal || !destChannel.isCommandCooldown(processedMsg.getCommandName()))) {
-                doResponse(db, processedMsg, channelName, destChannelName, destChannel, user, ul, packagedMessage.getMessagePriority(), internal);
+                doResponse(db, processedMsg, channelName, destChannel, user, ul, packagedMessage.getMessagePriority(), internal);
             }
         }
     }
 
-    private void doResponse(DatabaseWrapper db, ProcessedMessage processedMsg, String channelName, String destinationChannelName, Channel destinationChannel, String user, UserLevel ul, MessagePriority priority, boolean internal) {
+    // TODO make thread-safe
+    private void doResponse(DatabaseWrapper db, ProcessedMessage processedMsg, String channelName, Channel destChanel, String user, UserLevel ul, MessagePriority priority, boolean internal) {
         String message = processedMsg.getResponse();
         String command = processedMsg.getCommandName();
+        String destChanelName = destChanel.getName();
 
         // Do script (processedMsg.getResponse is the script path)
         if (processedMsg.isScript()) {
-            boolean success = CommandScriptProcessor.process(message, db, command, processedMsg.getArgs(), channelName, destinationChannelName, user, ul);
+            boolean success = CommandScriptProcessor.process(message, db, command, processedMsg.getArgs(), channelName, destChanelName, user, ul);
             if (!success) {
                 return;
             }
@@ -112,11 +102,11 @@ public class ChannelMessageReceiver implements Runnable {
         else {
             MessageOut messageOut = new MessageOut(message, priority);
             if (internal) {
-                InternalMessageSender.send(destinationChannelName.replace(InternalMessageSender.DESTINATION_PREFIX, ""), messageOut.getMessage(), "CmdExec");
+                InternalMessageSender.send(destChanelName.replace(InternalMessageSender.DESTINATION_PREFIX, ""), messageOut.getMessage(), "CmdExec");
                 return;
             }
             // If queue rejects message because it's too full, return
-            else if (!destinationChannel.sendMessage(messageOut)) {
+            else if (!destChanel.sendMessage(messageOut)) {
                 return;
             }
         }
@@ -125,19 +115,19 @@ public class ChannelMessageReceiver implements Runnable {
         Command.incrementCount(db, command);
 
         // Skip cooldowns if bot channel or internal
-        if (inBotChannel || (destinationChannelName.equals(APIBot.getBot().getUserName())) || internal) {
+        if (inBotChannel || (destChanelName.equals(APIBot.getBot().getUserName())) || internal) {
             return;
         }
 
         // Handles command cooldowns
         int commandCooldown = channel.getConfig().getCommandCooldown();
         if (commandCooldown > 0) {
-            destinationChannel.addCommandCooldown(command, commandCooldown);
+            destChanel.addCommandCooldown(command, commandCooldown);
         }
         // Handles user cooldowns
         int userCooldown = ChannelConfigHelper.getCooldown(channel.getConfig(), ul);
         if (userCooldown > 0) {
-            destinationChannel.addUserCooldown(user, userCooldown);
+            destChanel.addUserCooldown(user, userCooldown);
         }
     }
 }
