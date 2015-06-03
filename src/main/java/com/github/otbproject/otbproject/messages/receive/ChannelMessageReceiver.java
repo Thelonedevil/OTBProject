@@ -55,7 +55,7 @@ public class ChannelMessageReceiver {
             DatabaseWrapper db = APIBot.getBot().getBotDB();
             UserLevel ul = packagedMessage.getUserLevel();
             ProcessedMessage processedMsg = MessageProcessor.process(db, packagedMessage.getMessage(), channelName, user, ul, APIConfig.getBotConfig().isBotChannelDebug());
-            if (processedMsg.isScript() || !processedMsg.getResponse().isEmpty()) {
+            if (processedMsg.isScript || !processedMsg.response.isEmpty()) {
                 doResponse(db, processedMsg, channelName, destChannel, user, ul, packagedMessage.getMessagePriority(), internal);
                 // Don't process response as regular channel if done as bot channel
                 return;
@@ -77,9 +77,9 @@ public class ChannelMessageReceiver {
         ProcessedMessage processedMsg = MessageProcessor.process(db, packagedMessage.getMessage(), channelName, user, ul, debug);
 
         // Check if bot is enabled
-        if (channel.getConfig().isEnabled() || GeneralConfigHelper.isPermanentlyEnabled(APIConfig.getGeneralConfig(), processedMsg.getCommandName())) {
+        if (channel.getConfig().isEnabled() || GeneralConfigHelper.isPermanentlyEnabled(APIConfig.getGeneralConfig(), processedMsg.commandName)) {
             // Check if empty message, and then if command is on cooldown (skip cooldown check if internal)
-            if ((processedMsg.isScript() || !processedMsg.getResponse().isEmpty()) && (internal || !destChannel.isCommandCooldown(processedMsg.getCommandName()))) {
+            if ((processedMsg.isScript || !processedMsg.response.isEmpty()) && (internal || !destChannel.isCommandCooldown(processedMsg.commandName))) {
                 doResponse(db, processedMsg, channelName, destChannel, user, ul, packagedMessage.getMessagePriority(), internal);
             }
         }
@@ -87,13 +87,13 @@ public class ChannelMessageReceiver {
 
     // TODO make thread-safe
     private void doResponse(DatabaseWrapper db, ProcessedMessage processedMsg, String channelName, Channel destChanel, String user, UserLevel ul, MessagePriority priority, boolean internal) {
-        String message = processedMsg.getResponse();
-        String command = processedMsg.getCommandName();
+        String message = processedMsg.response;
+        String command = processedMsg.commandName;
         String destChanelName = destChanel.getName();
 
-        // Do script (processedMsg.getResponse is the script path)
-        if (processedMsg.isScript()) {
-            boolean success = CommandScriptProcessor.process(message, db, command, processedMsg.getArgs(), channelName, destChanelName, user, ul);
+        // Do script (processedMsg.response is the script path)
+        if (processedMsg.isScript) {
+            boolean success = CommandScriptProcessor.process(message, db, command, processedMsg.args, channelName, destChanelName, user, ul);
             if (!success) {
                 return;
             }
