@@ -5,13 +5,48 @@ import com.github.otbproject.otbproject.api.APIBot;
 import com.github.otbproject.otbproject.api.APIConfig;
 import com.github.otbproject.otbproject.channels.Channel;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+
+// This class is not in general thread-safe. Thread safety should be enforced by the
+// class using this one
 public class ChannelMessageSender implements Runnable {
+    private static final ExecutorService EXECUTOR_SERVICE = Executors.newCachedThreadPool();
+
     private final Channel channel;
     private final MessageSendQueue queue;
+    private Future<?> future;
+    boolean active = false;
 
-    public ChannelMessageSender(Channel channel, MessageSendQueue queue) {
+    public ChannelMessageSender(Channel channel) {
         this.channel = channel;
-        this.queue = queue;
+        this.queue = new MessageSendQueue(channel);
+    }
+
+    public boolean start() {
+        if (active) {
+            return false;
+        }
+        active = true;
+        future = EXECUTOR_SERVICE.submit(this);
+        return true;
+    }
+
+    public boolean stop() {
+        if (!active) {
+            return false;
+        }
+        active = false;
+        future.cancel(true);
+        queue.clear();
+        return true;
+    }
+
+    // Queues message even if sender is not active.
+    // Queue itself is thread-safe, however
+    public boolean send(MessageOut messageOut) {
+        return queue.add(messageOut);
     }
 
     public void run() {
