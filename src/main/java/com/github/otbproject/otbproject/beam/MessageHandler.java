@@ -46,7 +46,7 @@ public class MessageHandler implements EventHandler<IncomingMessageEvent> {
             BeamBot bot = (BeamBot) APIBot.getBot();
 
             // Check if user is in timeout set
-            if (beamChatChannel.timeoutSet.contains(data.user_name.toLowerCase())) {
+            if (beamChatChannel.timeoutSet.containsKey(data.user_name.toLowerCase())) {
                 // Check if user has user level mod or higher
                 try {
                     if (BotUtil.isModOrHigher(channelName, data.user_name.toLowerCase())) {
@@ -65,7 +65,7 @@ public class MessageHandler implements EventHandler<IncomingMessageEvent> {
             beamChatChannel.cacheMessage(data);
 
             // Check if message is from bot and sent by bot
-            if (data.user_name.equalsIgnoreCase(APIBot.getBot().getUserName()) && (bot.sentMessageCache.contains(data.getMessage()))) {
+            if (data.user_name.equalsIgnoreCase(APIBot.getBot().getUserName()) && (bot.sentMessageCache.containsKey(data.getMessage()))) {
                 App.logger.debug("Ignoring message sent by bot");
                 return;
             }
@@ -74,7 +74,7 @@ public class MessageHandler implements EventHandler<IncomingMessageEvent> {
             Channel channel = APIChannel.get(channelName);
             if(channel != null){
                 channel.receiveMessage(packagedMessage);
-            }else{
+            } else {
                 App.logger.error("Channel: " + channelName + " appears not to exist");
             }
         });

@@ -3,11 +3,11 @@ package com.github.otbproject.otbproject.beam;
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.api.APIBot;
 import com.github.otbproject.otbproject.channels.ChannelInitException;
-import com.github.otbproject.otbproject.proc.CooldownSet;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.RemovalListener;
 import com.google.common.cache.RemovalNotification;
+import net.jodah.expiringmap.ExpiringMap;
 import pro.beam.api.BeamAPI;
 import pro.beam.api.resource.BeamUser;
 import pro.beam.api.resource.channel.BeamChannel;
@@ -34,7 +34,7 @@ public class BeamChatChannel {
     BeamChat beamChat;
     final BeamChatConnectable beamChatConnectable;
     BeamChannel channel;
-    public final CooldownSet<String> timeoutSet = new CooldownSet<>();
+    public final ExpiringMap<String, Boolean> timeoutSet;
 
     public final ConcurrentHashMap<String, List<BeamUser.Role>> userRoles = new ConcurrentHashMap<>();
     private static final int USER_LIST_TIMEOUT = 4;
@@ -47,6 +47,11 @@ public class BeamChatChannel {
 
 
     private BeamChatChannel(String channelName) throws ChannelInitException {
+        timeoutSet = ExpiringMap.builder()
+                .variableExpiration()
+                .expirationPolicy(ExpiringMap.ExpirationPolicy.CREATED)
+                .build();
+
         // Initialize cache
         messageCache = CacheBuilder.newBuilder()
                 .expireAfterWrite(CACHE_EXPIRATION_MIN, TimeUnit.MINUTES)
