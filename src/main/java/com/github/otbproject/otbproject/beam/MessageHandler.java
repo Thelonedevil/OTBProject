@@ -11,6 +11,7 @@ import com.github.otbproject.otbproject.messages.send.MessagePriority;
 import com.github.otbproject.otbproject.util.ULUtil;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Iterators;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import pro.beam.api.resource.chat.events.EventHandler;
 import pro.beam.api.resource.chat.events.IncomingMessageEvent;
 import pro.beam.api.resource.chat.events.data.IncomingMessageData;
@@ -20,7 +21,13 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class MessageHandler implements EventHandler<IncomingMessageEvent> {
-    private static final ExecutorService EXECUTOR_SERVICE = Executors.newCachedThreadPool();
+    private static final ExecutorService EXECUTOR_SERVICE;
+
+    static {
+        EXECUTOR_SERVICE = Executors.newCachedThreadPool(
+                new ThreadFactoryBuilder().setNameFormat("channel-processor-%d").build()
+        );
+    }
 
     private final String channelName;
     private final BeamChatChannel beamChatChannel;
@@ -32,7 +39,7 @@ public class MessageHandler implements EventHandler<IncomingMessageEvent> {
     @Override
     public void onEvent(IncomingMessageEvent event) {
         EXECUTOR_SERVICE.execute(() -> {
-            Thread.currentThread().setName(channelName + "-processor-%d");
+            //Thread.currentThread().setName(channelName + "-processor-%d");
             IncomingMessageData data = event.data;
             App.logger.info("<"+ channelName +"> "+ data.user_name + ": " + getMessage(data));
             beamChatChannel.userRoles.put(data.user_name.toLowerCase(), Collections.unmodifiableList(data.user_roles));
