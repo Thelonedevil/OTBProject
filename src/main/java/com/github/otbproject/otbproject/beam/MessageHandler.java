@@ -25,7 +25,7 @@ public class MessageHandler implements EventHandler<IncomingMessageEvent> {
 
     static {
         EXECUTOR_SERVICE = Executors.newCachedThreadPool(
-                new ThreadFactoryBuilder().setNameFormat("channel-processor-%d").build()
+                new ThreadFactoryBuilder().setNameFormat("Beam-in-%d").build()
         );
     }
 
@@ -39,7 +39,6 @@ public class MessageHandler implements EventHandler<IncomingMessageEvent> {
     @Override
     public void onEvent(IncomingMessageEvent event) {
         EXECUTOR_SERVICE.execute(() -> {
-            //Thread.currentThread().setName(channelName + "-processor-%d");
             IncomingMessageData data = event.data;
             App.logger.info("<"+ channelName +"> "+ data.user_name + ": " + getMessage(data));
             beamChatChannel.userRoles.put(data.user_name.toLowerCase(), Collections.unmodifiableList(data.user_roles));
@@ -47,7 +46,6 @@ public class MessageHandler implements EventHandler<IncomingMessageEvent> {
             BeamBot bot = (BeamBot) APIBot.getBot();
 
             // Check if user is in timeout set
-            //BeamChatChannel beamChatChannel = bot.beamChannels.get(channelName);
             if (beamChatChannel.timeoutSet.contains(data.user_name.toLowerCase())) {
                 // Check if user has user level mod or higher
                 try {
