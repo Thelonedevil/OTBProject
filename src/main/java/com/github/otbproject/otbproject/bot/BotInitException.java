@@ -8,4 +8,8 @@ public class BotInitException extends Exception {
     public BotInitException(String message) {
         super(message);
     }
+
+    public BotInitException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

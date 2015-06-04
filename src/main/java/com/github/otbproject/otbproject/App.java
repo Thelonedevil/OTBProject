@@ -3,6 +3,7 @@ package com.github.otbproject.otbproject;
 import com.github.otbproject.otbproject.api.APIBot;
 import com.github.otbproject.otbproject.api.APIConfig;
 import com.github.otbproject.otbproject.beam.BeamBot;
+import com.github.otbproject.otbproject.bot.BotInitException;
 import com.github.otbproject.otbproject.bot.BotRunnable;
 import com.github.otbproject.otbproject.cli.ArgParser;
 import com.github.otbproject.otbproject.cli.commands.CmdParser;
@@ -161,12 +162,20 @@ public class App {
                 input.set(APIBot.getBot(), new InputParserImproved((IRCBot) APIBot.getBot()));
                 break;
             case BEAM:
-                APIBot.setBot(new BeamBot());
+                try {
+                    APIBot.setBot(new BeamBot());
+                } catch (BotInitException e) {
+                    logger.catching(e);
+                }
                 break;
         }
-        APIBot.setBotRunnable(new BotRunnable());
-        APIBot.setBotThread(new Thread(APIBot.getBotRunnable()));
-        APIBot.getBotThread().start();
+        if (APIBot.getBot() == null) {
+            App.logger.error("Failed to start bot");
+        } else {
+            APIBot.setBotRunnable(new BotRunnable());
+            APIBot.setBotThread(new Thread(APIBot.getBotRunnable()));
+            APIBot.getBotThread().start();
+        }
         if (!GraphicsEnvironment.isHeadless()) {
             GuiApplication.setInputActive();
         }
