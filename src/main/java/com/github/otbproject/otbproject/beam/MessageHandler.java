@@ -11,29 +11,41 @@ import com.github.otbproject.otbproject.messages.send.MessagePriority;
 import com.github.otbproject.otbproject.util.ULUtil;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Iterators;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import pro.beam.api.resource.chat.events.EventHandler;
 import pro.beam.api.resource.chat.events.IncomingMessageEvent;
 import pro.beam.api.resource.chat.events.data.IncomingMessageData;
 
+import java.util.Collections;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 public class MessageHandler implements EventHandler<IncomingMessageEvent> {
+    private static final ExecutorService EXECUTOR_SERVICE;
+
+    static {
+        EXECUTOR_SERVICE = Executors.newCachedThreadPool(
+                new ThreadFactoryBuilder().setNameFormat("Beam-in-%d").build()
+        );
+    }
 
     private final String channelName;
-    public MessageHandler(String channel){
+    private final BeamChatChannel beamChatChannel;
+    public MessageHandler(String channel, BeamChatChannel beamChatChannel){
         this.channelName = channel;
+        this.beamChatChannel = beamChatChannel;
     }
 
     @Override
     public void onEvent(IncomingMessageEvent event) {
-        IncomingMessageData data = event.data;
-        App.logger.info("<"+ channelName +"> "+ data.user_name + ": " + getMessage(data));
+        EXECUTOR_SERVICE.execute(() -> {
+            IncomingMessageData data = event.data;
+            App.logger.info("<"+ channelName +"> "+ data.user_name + ": " + getMessage(data));
+            beamChatChannel.userRoles.put(data.user_name.toLowerCase(), Collections.unmodifiableList(data.user_roles));
 
-        BeamBot bot = (BeamBot) APIBot.getBot();
+            BeamBot bot = (BeamBot) APIBot.getBot();
 
-        // Check if user is in timeout set
-        BeamChatChannel beamChatChannel = bot.beamChannels.get(channelName);
-        if (beamChatChannel == null) {
-            App.logger.error("Failed to check timeout set: BeamChatChannel for channel '" + channelName + "' is null.");
-        } else {
+            // Check if user is in timeout set
             if (beamChatChannel.timeoutSet.containsKey(data.user_name.toLowerCase())) {
                 // Check if user has user level mod or higher
                 try {
@@ -41,8 +53,8 @@ public class MessageHandler implements EventHandler<IncomingMessageEvent> {
                         bot.removeTimeout(channelName, data.user_name.toLowerCase());
                     } else {
                         // Delete message
-                        beamChatChannel.beamChatConnectable.delete(event.data);
-                        App.logger.info("Deleted message in channel <" + channelName + "> from user: " + event.data.user_name);
+                        beamChatChannel.beamChatConnectable.delete(data);
+                        App.logger.info("Deleted message in channel <" + channelName + "> from user: " + data.user_name);
                         return;
                     }
                 } catch (ChannelNotFoundException e) {
@@ -51,21 +63,21 @@ public class MessageHandler implements EventHandler<IncomingMessageEvent> {
                 }
             }
             beamChatChannel.cacheMessage(data);
-        }
 
-        // Check if message is from bot and sent by bot
-        if (event.data.user_name.equalsIgnoreCase(APIBot.getBot().getUserName()) && (bot.sentMessageCache.containsKey(event.data.getMessage()))) {
-            App.logger.debug("Ignoring message sent by bot");
-            return;
-        }
+            // Check if message is from bot and sent by bot
+            if (data.user_name.equalsIgnoreCase(APIBot.getBot().getUserName()) && (bot.sentMessageCache.containsKey(data.getMessage()))) {
+                App.logger.debug("Ignoring message sent by bot");
+                return;
+            }
 
-        PackagedMessage packagedMessage = new PackagedMessage(getMessage(data),data.user_name.toLowerCase(), channelName, ULUtil.getUserLevel(APIChannel.get(channelName).getMainDatabaseWrapper(), channelName ,data.user_name.toLowerCase()), MessagePriority.DEFAULT);
-        Channel channel = APIChannel.get(channelName);
-        if(channel != null){
-            channel.receiveMessage(packagedMessage);
-        }else{
-            App.logger.error("Channel: " + channelName + " appears not to exist");
-        }
+            PackagedMessage packagedMessage = new PackagedMessage(getMessage(data),data.user_name.toLowerCase(), channelName, ULUtil.getUserLevel(APIChannel.get(channelName).getMainDatabaseWrapper(), channelName ,data.user_name.toLowerCase()), MessagePriority.DEFAULT);
+            Channel channel = APIChannel.get(channelName);
+            if(channel != null){
+                channel.receiveMessage(packagedMessage);
+            } else {
+                App.logger.error("Channel: " + channelName + " appears not to exist");
+            }
+        });
     }
 
     // Modified version of Beam's default method to join message parts

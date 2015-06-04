@@ -3,17 +3,18 @@ package com.github.otbproject.otbproject.cli.commands;
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.api.APIBot;
 import com.github.otbproject.otbproject.api.APIChannel;
-import com.github.otbproject.otbproject.commands.loader.FSCommandLoader;
-import com.github.otbproject.otbproject.commands.loader.LoadingSet;
+import com.github.otbproject.otbproject.fs.groups.Base;
+import com.github.otbproject.otbproject.fs.groups.Chan;
 import com.github.otbproject.otbproject.gui.GuiApplication;
 import com.github.otbproject.otbproject.messages.internal.InternalMessageSender;
 import com.github.otbproject.otbproject.messages.receive.PackagedMessage;
 import com.github.otbproject.otbproject.messages.send.MessagePriority;
 import com.github.otbproject.otbproject.users.UserLevel;
+import com.github.otbproject.otbproject.util.preload.LoadStrategy;
+import com.github.otbproject.otbproject.util.preload.PreloadLoader;
 import com.google.common.collect.ImmutableSet;
 
 import java.awt.*;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -75,6 +76,7 @@ public class CmdParser {
         CmdParser.source = source;
     }
 
+    // TODO make thread-safe
     public static String processLine(String aLine) {
         //use a second Scanner to parse the content of each line
 
@@ -214,21 +216,15 @@ public class CmdParser {
                 .withLongHelp("Will reload all commands from the json files. Either for <channel>, or if not specified, all channels.")
                 .withAction(() -> {
                     if (args.size() > 0) {
-                        try {
-                            FSCommandLoader.LoadLoadedCommands(args.get(0).toLowerCase(), LoadingSet.BOTH);
-                        } catch (IOException e) {
-                            App.logger.catching(e);
-                            responseStr += "Reload of Commands for " + args.get(0).toLowerCase() + " failed. \n " + e.getLocalizedMessage() + "\n";
-                        }
-                        try {
-                            FSCommandLoader.LoadLoadedAliases(args.get(0).toLowerCase(), LoadingSet.BOTH);
-                        } catch (IOException e) {
-                            App.logger.catching(e);
-                            responseStr += "Reload of Aliases for " + args.get(0).toLowerCase() + " failed. \n " + e.getLocalizedMessage() + "\n";
-                        }
+                        PreloadLoader.loadDirectory(Base.CMD, Chan.SPECIFIC, args.get(0).toLowerCase(), LoadStrategy.FROM_LOADED);
+                        PreloadLoader.loadDirectory(Base.CMD, Chan.ALL, args.get(0).toLowerCase(), LoadStrategy.FROM_LOADED);
+                        PreloadLoader.loadDirectory(Base.ALIAS, Chan.SPECIFIC, args.get(0).toLowerCase(), LoadStrategy.FROM_LOADED);
+                        PreloadLoader.loadDirectory(Base.ALIAS, Chan.ALL, args.get(0).toLowerCase(), LoadStrategy.FROM_LOADED);
                     } else {
-                        FSCommandLoader.LoadLoadedCommands(LoadingSet.BOTH);
-                        FSCommandLoader.LoadLoadedAliases(LoadingSet.BOTH);
+                        PreloadLoader.loadDirectory(Base.CMD, Chan.ALL, null, LoadStrategy.FROM_LOADED);
+                        PreloadLoader.loadDirectory(Base.ALIAS, Chan.ALL, null, LoadStrategy.FROM_LOADED);
+                        PreloadLoader.loadDirectoryForEachChannel(Base.CMD, LoadStrategy.FROM_LOADED);
+                        PreloadLoader.loadDirectoryForEachChannel(Base.ALIAS, LoadStrategy.FROM_LOADED);
                     }
                     responseStr += "Reload Complete";
                 });
@@ -242,8 +238,8 @@ public class CmdParser {
                     if (APIBot.getBot() != null && APIBot.getBot().isConnected()) {
                         APIBot.getBot().shutdown();
                     }
-                    FSCommandLoader.LoadCommands();
-                    FSCommandLoader.LoadAliases();
+/*                    FSCommandLoader.LoadCommands();
+                    FSCommandLoader.LoadAliases();*/
                     try {
                         APIBot.setBotThread(new Thread(APIBot.getBotRunnable()));
                         APIBot.getBotThread().start();

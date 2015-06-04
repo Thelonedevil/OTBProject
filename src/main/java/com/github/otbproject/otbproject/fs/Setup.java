@@ -1,9 +1,11 @@
 package com.github.otbproject.otbproject.fs;
 
-import com.github.otbproject.otbproject.commands.loader.FSCommandLoader;
-import com.github.otbproject.otbproject.commands.loader.LoadingSet;
 import com.github.otbproject.otbproject.config.DefaultConfigGenerator;
+import com.github.otbproject.otbproject.fs.groups.Base;
+import com.github.otbproject.otbproject.fs.groups.Chan;
 import com.github.otbproject.otbproject.util.JsonHandler;
+import com.github.otbproject.otbproject.util.preload.LoadStrategy;
+import com.github.otbproject.otbproject.util.preload.PreloadLoader;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,8 +32,9 @@ public class Setup {
             if (!mainDB.createNewFile()) {
                 throw new IOException("Unable to create database file: " + mainDBPath);
             }
-            FSCommandLoader.LoadLoadedBotCommands();
-            FSCommandLoader.LoadLoadedBotAliases();
+            //Stream.of(Base.values()).forEach(base -> PreloadLoader.loadDirectory(base, Chan.BOT, null, LoadStrategy.FROM_LOADED));
+            PreloadLoader.loadDirectory(Base.CMD, Chan.BOT, null, LoadStrategy.FROM_LOADED);
+            PreloadLoader.loadDirectory(Base.ALIAS, Chan.BOT, null, LoadStrategy.FROM_LOADED);
         }
 
         // Defaults Directory
@@ -74,8 +77,14 @@ public class Setup {
             if (!mainDB.createNewFile()) {
                 throw new IOException("Unable to create database file: " + mainDBPath);
             } else {
-                FSCommandLoader.LoadLoadedCommands(channel, LoadingSet.BOTH);
-                FSCommandLoader.LoadLoadedAliases(channel, LoadingSet.BOTH);
+/*                Stream.of(Base.values()).forEach(base -> {
+                    PreloadLoader.loadDirectory(base, Chan.ALL, channel, LoadStrategy.FROM_LOADED);
+                    PreloadLoader.loadDirectory(base, Chan.SPECIFIC, channel, LoadStrategy.FROM_LOADED);
+                });*/
+                PreloadLoader.loadDirectory(Base.CMD, Chan.ALL, channel, LoadStrategy.FROM_LOADED);
+                PreloadLoader.loadDirectory(Base.CMD, Chan.SPECIFIC, channel, LoadStrategy.FROM_LOADED);
+                PreloadLoader.loadDirectory(Base.ALIAS, Chan.ALL, channel, LoadStrategy.FROM_LOADED);
+                PreloadLoader.loadDirectory(Base.ALIAS, Chan.SPECIFIC, channel, LoadStrategy.FROM_LOADED);
             }
         }
         // Create quotes database

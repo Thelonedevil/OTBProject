@@ -4,6 +4,7 @@ import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.users.UserLevel;
 
 public class MessageProcessor {
+    // Assumed to be thread-safe
     public static ProcessedMessage process(DatabaseWrapper db, String message, String channel, String user, UserLevel userLevel, boolean debug) {
         if (!TimeoutProcessor.doTimeouts(db, message, channel, user, userLevel)) {
             // Check for aliases and commands, and get appropriate parsed response

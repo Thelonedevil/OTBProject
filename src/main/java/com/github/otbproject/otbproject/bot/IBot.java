@@ -26,6 +26,8 @@ public interface IBot {
 
     boolean isUserMod(String channel, String user);
 
+    boolean isUserSubscriber(String channel, String user);
+
     void sendMessage(String channel, String message);
 
     void startBot() throws IOException, IrcException;

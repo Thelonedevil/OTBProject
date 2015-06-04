@@ -2,12 +2,15 @@ package com.github.otbproject.otbproject.filters;
 
 import com.github.otbproject.otbproject.users.UserLevel;
 
+import javax.validation.constraints.NotNull;
+
 public class FilterGroup {
+    @NotNull
     private String name;
-    private String responseCommand;
-    private UserLevel userLevel;
-    private FilterAction action;
-    private Boolean enabled;
+    private String responseCommand = "~%filter.response.default";
+    private UserLevel userLevel = UserLevel.SUBSCRIBER;
+    private FilterAction action = FilterAction.PURGE;
+    private Boolean enabled = true;
 
     public String getName() {
         return name;

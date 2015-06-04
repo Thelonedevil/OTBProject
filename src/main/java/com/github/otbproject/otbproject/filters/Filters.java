@@ -6,16 +6,17 @@ import com.github.otbproject.otbproject.util.CustomCollectors;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public class Filters {
-    public static BasicFilter get(DatabaseWrapper db, String data) {
+    public static BasicFilter get(DatabaseWrapper db, String data, FilterType type) {
+        List<Map.Entry<String, Object>> list = new ArrayList<>();
+        list.add(new AbstractMap.SimpleEntry<>(FilterFields.DATA, data));
+        list.add(new AbstractMap.SimpleEntry<>(FilterFields.TYPE, type.name()));
         if (db.exists(FilterFields.TABLE_NAME, data, FilterFields.DATA)) {
-            ResultSet rs = db.getRecord(FilterFields.TABLE_NAME, data, FilterFields.DATA);
+            ResultSet rs = db.getRecord(FilterFields.TABLE_NAME, list);
             try {
                 return getFilterFromResultSet(rs);
             } catch (SQLException e) {
@@ -54,11 +55,6 @@ public class Filters {
         return getBasicFilters(db).stream().map(Filter::fromBasicFilter).collect(CustomCollectors.toConcurrentSet());
     }
 
-    // TODO possibly remove
-    public static List<String> getFilterDataOfType(DatabaseWrapper db, FilterType type) {
-        return getBasicFilters(db).stream().filter(basicFilter -> (basicFilter.getType() == type)).map(BasicFilter::getData).collect(Collectors.toList());
-    }
-
     private static BasicFilter getFilterFromResultSet(ResultSet rs) throws SQLException {
         BasicFilter basicFilter = new BasicFilter();
         basicFilter.setData(rs.getString(FilterFields.DATA));
@@ -72,16 +68,22 @@ public class Filters {
         return db.updateRecord(FilterFields.TABLE_NAME, map.get(FilterFields.DATA), FilterFields.DATA, map);
     }
 
-    public static boolean exists(DatabaseWrapper db, String commandName) {
-        return db.exists(FilterFields.TABLE_NAME, commandName, FilterFields.DATA);
+    public static boolean exists(DatabaseWrapper db, String data, FilterType type) {
+        List<Map.Entry<String, Object>> list = new ArrayList<>();
+        list.add(new AbstractMap.SimpleEntry<>(FilterFields.DATA, data));
+        list.add(new AbstractMap.SimpleEntry<>(FilterFields.TYPE, type.name()));
+        return db.exists(FilterFields.TABLE_NAME, list);
     }
 
     public static boolean add(DatabaseWrapper db, HashMap<String, Object> map) {
         return db.insertRecord(FilterFields.TABLE_NAME, map);
     }
 
-    public static boolean remove(DatabaseWrapper db, String data) {
-        return db.removeRecord(FilterFields.TABLE_NAME, data, FilterFields.DATA);
+    public static boolean remove(DatabaseWrapper db, String data, FilterType type) {
+        List<Map.Entry<String, Object>> list = new ArrayList<>();
+        list.add(new AbstractMap.SimpleEntry<>(FilterFields.DATA, data));
+        list.add(new AbstractMap.SimpleEntry<>(FilterFields.TYPE, type.name()));
+        return db.removeRecord(FilterFields.TABLE_NAME, list);
     }
 
     public static boolean addFilterFromObj(DatabaseWrapper db, BasicFilter basicFilter) {
@@ -92,7 +94,7 @@ public class Filters {
         map.put(FilterFields.GROUP, basicFilter.getGroup());
         map.put(FilterFields.ENABLED, basicFilter.isEnabled().toString());
 
-        if (exists(db, basicFilter.getData())) {
+        if (exists(db, basicFilter.getData(), basicFilter.getType())) {
             return update(db, map);
         } else {
             return add(db, map);

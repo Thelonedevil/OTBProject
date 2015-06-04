@@ -7,6 +7,7 @@ import com.github.otbproject.otbproject.api.APIDatabase;
 import com.github.otbproject.otbproject.bot.BotUtil;
 import com.github.otbproject.otbproject.bot.IBot;
 import com.github.otbproject.otbproject.channels.Channel;
+import com.github.otbproject.otbproject.channels.ChannelInitException;
 import com.github.otbproject.otbproject.channels.ChannelNotFoundException;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import net.jodah.expiringmap.ExpiringMap;
@@ -15,8 +16,8 @@ import pro.beam.api.resource.BeamUser;
 import pro.beam.api.resource.chat.methods.ChatSendMethod;
 import pro.beam.api.services.impl.UsersService;
 
-import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
@@ -99,19 +100,19 @@ public class BeamBot implements IBot {
             return false;
         }
 
-        String path = BeamAPI.BASE_PATH.resolve("chats/"+beamChatChannel.channel.id+"/users").toString();
-        try {
-            BeamChatUser[] users = beam.http.get(path,BeamChatUser[].class , new HashMap<>()).get();
-            for (BeamChatUser beamChatUser : users) {
-                if(beamChatUser.getUserName().equalsIgnoreCase(user)){
-                    return Arrays.asList(beamChatUser.getUserRoles()).contains("Mod");
-                }
-            }
-        } catch (InterruptedException | ExecutionException e) {
-            App.logger.catching(e);
+        List<BeamUser.Role> list = beamChatChannel.userRoles.get(user);
+        return (list != null) && list.contains(BeamUser.Role.MOD);
+    }
+
+    @Override
+    public boolean isUserSubscriber(String channel, String user) {
+        BeamChatChannel beamChatChannel = beamChannels.get(channel);
+        if (beamChatChannel == null) {
             return false;
         }
-        return false;
+
+        List<BeamUser.Role> list = beamChatChannel.userRoles.get(user);
+        return (list != null) && list.contains(BeamUser.Role.SUBSCRIBER);
     }
 
     @Override
@@ -135,7 +136,11 @@ public class BeamBot implements IBot {
 
     @Override
     public boolean join(String channelName) {
-        beamChannels.put(channelName, new BeamChatChannel(channelName));
+        try {
+            beamChannels.put(channelName, BeamChatChannel.create(channelName));
+        } catch (ChannelInitException ignored) {
+            return false;
+        }
         return beamChannels.containsKey(channelName);
     }
 

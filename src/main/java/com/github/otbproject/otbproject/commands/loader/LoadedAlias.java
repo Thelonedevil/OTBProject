@@ -1,12 +1,17 @@
 package com.github.otbproject.otbproject.commands.loader;
 
 import com.github.otbproject.otbproject.users.UserLevel;
+import javax.validation.constraints.NotNull;
 
 public class LoadedAlias {
+    @NotNull
     private String name;
+
+    @NotNull
     private String command;
-    private UserLevel modifyingUserLevel;
-    private Boolean enabled;
+
+    private UserLevel modifyingUserLevel = UserLevel.DEFAULT;
+    private Boolean enabled = true;
 
     public String getName() {
         return name;

@@ -1,10 +1,14 @@
 package com.github.otbproject.otbproject.filters;
 
+import javax.validation.constraints.NotNull;
+
 public class BasicFilter {
+    @NotNull
     private String data;
+    @NotNull
     private FilterType type;
-    private String group;
-    private Boolean enabled;
+    private String group = "default";
+    private Boolean enabled = true;
 
     public String getData() {
         return data;
