@@ -189,11 +189,11 @@ public class BeamBot implements IBot {
                 return false;
             } else {
                 timeoutSet.setExpiration(timeInSeconds, TimeUnit.SECONDS);
-                return true;
             }
+        } else {
+            timeoutSet.put(user, Boolean.TRUE, timeInSeconds, TimeUnit.SECONDS);
+            //beamChatChannel.deleteCachedMessages(user); // TODO uncomment when major responsiveness issue is fixed
         }
-        timeoutSet.put(user, Boolean.TRUE, timeInSeconds, TimeUnit.SECONDS);
-        //beamChatChannel.deleteCachedMessages(user); TODO uncomment when major responsiveness issue is fixed
         App.logger.info("Timed out '" + user + "' in channel '" + channelName + "' for " + timeInSeconds + " seconds");
         return true;
     }
