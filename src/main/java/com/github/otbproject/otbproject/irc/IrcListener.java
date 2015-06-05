@@ -8,7 +8,7 @@ import com.github.otbproject.otbproject.channels.Channel;
 import com.github.otbproject.otbproject.messages.receive.PackagedMessage;
 import com.github.otbproject.otbproject.messages.send.MessagePriority;
 import com.github.otbproject.otbproject.users.UserLevel;
-import com.github.otbproject.otbproject.users.ULUtil;
+import com.github.otbproject.otbproject.users.UserLevels;
 import org.pircbotx.hooks.ListenerAdapter;
 import org.pircbotx.hooks.events.*;
 
@@ -44,7 +44,7 @@ public class IrcListener extends ListenerAdapter {
                 }
             }
         } else {
-            UserLevel userLevel = ULUtil.getUserLevel(channel.getMainDatabaseWrapper(), channelName, user);
+            UserLevel userLevel = UserLevels.getUserLevel(channel.getMainDatabaseWrapper(), channelName, user);
             channel.receiveMessage(new PackagedMessage(message, user, channelName, userLevel, MessagePriority.DEFAULT));
         }
 
