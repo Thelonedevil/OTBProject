@@ -1,6 +1,6 @@
 package com.github.otbproject.otbproject.commands.loader;
 
-public class LoadedCommandHelper {
+public class CommandHelper {
     public static Command getCopy(Command command) {
         Command copy = new Command();
 
