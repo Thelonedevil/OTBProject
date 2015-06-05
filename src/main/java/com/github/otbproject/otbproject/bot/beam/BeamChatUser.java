@@ -1,4 +1,4 @@
-package com.github.otbproject.otbproject.beam;
+package com.github.otbproject.otbproject.bot.beam;
 
 import pro.beam.api.resource.BeamUser;
 

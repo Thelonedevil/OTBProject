@@ -1,4 +1,4 @@
-package com.github.otbproject.otbproject.beam;
+package com.github.otbproject.otbproject.bot.beam;
 
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.api.APIChannel;
