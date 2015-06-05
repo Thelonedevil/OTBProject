@@ -1,7 +1,7 @@
 package com.github.otbproject.otbproject.util.preload;
 
 import com.github.otbproject.otbproject.commands.Alias;
-import com.github.otbproject.otbproject.commands.Command;
+import com.github.otbproject.otbproject.commands.Commands;
 import com.github.otbproject.otbproject.commands.loader.LoadedAlias;
 import com.github.otbproject.otbproject.commands.loader.LoadedCommand;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
@@ -40,7 +40,7 @@ class PreloadComparator {
             return newCommand;
         }
 
-        LoadedCommand dbCommand = Command.get(db, newCommand.getName());
+        LoadedCommand dbCommand = Commands.get(db, newCommand.getName());
         if (dbCommand == null) {
             return newCommand;
         }

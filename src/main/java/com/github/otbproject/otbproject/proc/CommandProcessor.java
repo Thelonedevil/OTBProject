@@ -2,7 +2,7 @@ package com.github.otbproject.otbproject.proc;
 
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.commands.Alias;
-import com.github.otbproject.otbproject.commands.Command;
+import com.github.otbproject.otbproject.commands.Commands;
 import com.github.otbproject.otbproject.commands.loader.LoadedAlias;
 import com.github.otbproject.otbproject.commands.loader.LoadedCommand;
 import com.github.otbproject.otbproject.commands.parser.CommandResponseParser;
@@ -67,7 +67,7 @@ public class CommandProcessor {
             }
         }
 
-        LoadedCommand command = Command.get(db, cmdName);
+        LoadedCommand command = Commands.get(db, cmdName);
         if ((command != null) && command.isEnabled() && userLevel.getValue() >= command.getExecUserLevel().getValue() && args.length >= command.getMinArgs()) {
             App.logger.debug("Processing command: " + cmdName);
             String scriptPath = command.getScript();

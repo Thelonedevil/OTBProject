@@ -5,7 +5,6 @@ import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.commands.loader.LoadedCommand;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.users.UserLevel;
-import com.github.otbproject.otbproject.util.CustomCollectors;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -14,7 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class Command {
+public class Commands {
 
     public static LoadedCommand get(DatabaseWrapper db, String commandName) {
         if (db.exists(CommandFields.TABLE_NAME, commandName, CommandFields.NAME)) {
@@ -109,10 +108,10 @@ public class Command {
         map.put(CommandFields.ENABLED, String.valueOf(loadedCommand.isEnabled()));
         map.put(CommandFields.DEBUG, String.valueOf(loadedCommand.isDebug()));
 
-        if (Command.exists(db, loadedCommand.getName())) {
-            return Command.update(db, map);
+        if (Commands.exists(db, loadedCommand.getName())) {
+            return Commands.update(db, map);
         } else {
-            return Command.add(db, map);
+            return Commands.add(db, map);
         }
     }
 }
