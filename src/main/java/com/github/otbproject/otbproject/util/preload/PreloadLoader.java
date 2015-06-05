@@ -104,8 +104,8 @@ public class PreloadLoader {
                     Aliases.addAliasFromLoadedAlias(db, alias);
                     break;
                 case CMD:
-                    LoadedCommand command = (strategy == LoadStrategy.UPDATE) ?
-                            PreloadComparator.generateCommandHybrid(db, (LoadedCommand) tNew, (LoadedCommand) tOld) : (LoadedCommand) tNew;
+                    Command command = (strategy == LoadStrategy.UPDATE) ?
+                            PreloadComparator.generateCommandHybrid(db, (Command) tNew, (Command) tOld) : (Command) tNew;
                     if (command == null) {
                         break;
                     }
@@ -201,7 +201,7 @@ public class PreloadLoader {
             case ALIAS:
                 return LoadedAlias.class;
             case CMD:
-                return LoadedCommand.class;
+                return Command.class;
             case FILTER:
                 return BasicFilter.class;
             case FILTER_GRP:

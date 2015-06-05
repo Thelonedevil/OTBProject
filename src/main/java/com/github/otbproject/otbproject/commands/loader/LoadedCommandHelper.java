@@ -1,8 +1,8 @@
 package com.github.otbproject.otbproject.commands.loader;
 
 public class LoadedCommandHelper {
-    public static LoadedCommand getCopy(LoadedCommand command) {
-        LoadedCommand copy = new LoadedCommand();
+    public static Command getCopy(Command command) {
+        Command copy = new Command();
 
         copy.setName(command.getName());
         copy.setResponse(command.getResponse());

@@ -4,7 +4,7 @@ import com.github.otbproject.otbproject.users.UserLevel;
 
 import javax.validation.constraints.NotNull;
 
-public class LoadedCommand {
+public class Command {
     @NotNull
     private String name;
     private String response = "example response";

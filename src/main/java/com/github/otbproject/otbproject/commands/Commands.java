@@ -2,7 +2,7 @@ package com.github.otbproject.otbproject.commands;
 
 
 import com.github.otbproject.otbproject.App;
-import com.github.otbproject.otbproject.commands.loader.LoadedCommand;
+import com.github.otbproject.otbproject.commands.loader.Command;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.users.UserLevel;
 
@@ -15,24 +15,24 @@ import java.util.stream.Collectors;
 
 public class Commands {
 
-    public static LoadedCommand get(DatabaseWrapper db, String commandName) {
+    public static Command get(DatabaseWrapper db, String commandName) {
         if (db.exists(CommandFields.TABLE_NAME, commandName, CommandFields.NAME)) {
-            LoadedCommand loadedCommand = new LoadedCommand();
+            Command command = new Command();
             ResultSet rs = db.getRecord(CommandFields.TABLE_NAME, commandName, CommandFields.NAME);
             try {
-                loadedCommand.setName(rs.getString(CommandFields.NAME));
-                loadedCommand.setResponse(rs.getString(CommandFields.RESPONSE));
-                loadedCommand.setCount(Integer.parseInt(rs.getString(CommandFields.COUNT)));
-                loadedCommand.setEnabled(Boolean.valueOf(rs.getString(CommandFields.ENABLED)));
-                loadedCommand.setDebug((Boolean.valueOf(rs.getString(CommandFields.DEBUG))));
-                loadedCommand.setExecUserLevel(UserLevel.valueOf(rs.getString(CommandFields.EXEC_USER_LEVEL)));
-                loadedCommand.setMinArgs(Integer.parseInt(rs.getString(CommandFields.MIN_ARGS)));
-                loadedCommand.setScript(rs.getString(CommandFields.SCRIPT));
-                loadedCommand.modifyingUserLevels = loadedCommand.new ModifyingUserLevels();
-                loadedCommand.modifyingUserLevels.setNameModifyingUL(UserLevel.valueOf(rs.getString(CommandFields.NAME_MODIFYING_UL)));
-                loadedCommand.modifyingUserLevels.setResponseModifyingUL(UserLevel.valueOf(rs.getString(CommandFields.RESPONSE_MODIFYING_UL)));
-                loadedCommand.modifyingUserLevels.setUserLevelModifyingUL(UserLevel.valueOf(rs.getString(CommandFields.USER_LEVEL_MODIFYING_UL)));
-                return loadedCommand;
+                command.setName(rs.getString(CommandFields.NAME));
+                command.setResponse(rs.getString(CommandFields.RESPONSE));
+                command.setCount(Integer.parseInt(rs.getString(CommandFields.COUNT)));
+                command.setEnabled(Boolean.valueOf(rs.getString(CommandFields.ENABLED)));
+                command.setDebug((Boolean.valueOf(rs.getString(CommandFields.DEBUG))));
+                command.setExecUserLevel(UserLevel.valueOf(rs.getString(CommandFields.EXEC_USER_LEVEL)));
+                command.setMinArgs(Integer.parseInt(rs.getString(CommandFields.MIN_ARGS)));
+                command.setScript(rs.getString(CommandFields.SCRIPT));
+                command.modifyingUserLevels = command.new ModifyingUserLevels();
+                command.modifyingUserLevels.setNameModifyingUL(UserLevel.valueOf(rs.getString(CommandFields.NAME_MODIFYING_UL)));
+                command.modifyingUserLevels.setResponseModifyingUL(UserLevel.valueOf(rs.getString(CommandFields.RESPONSE_MODIFYING_UL)));
+                command.modifyingUserLevels.setUserLevelModifyingUL(UserLevel.valueOf(rs.getString(CommandFields.USER_LEVEL_MODIFYING_UL)));
+                return command;
             } catch (SQLException e) {
                 App.logger.catching(e);
             } finally {
@@ -76,39 +76,39 @@ public class Commands {
     }
 
     public static void incrementCount(DatabaseWrapper db, String commandName) {
-        LoadedCommand loadedCommand = get(db, commandName);
-        if (loadedCommand == null) {
+        Command command = get(db, commandName);
+        if (command == null) {
             return;
         }
-        loadedCommand.setCount(loadedCommand.getCount() + 1);
-        addCommandFromLoadedCommand(db, loadedCommand);
+        command.setCount(command.getCount() + 1);
+        addCommandFromLoadedCommand(db, command);
     }
 
     public static void resetCount(DatabaseWrapper db, String commandName) {
-        LoadedCommand loadedCommand = get(db, commandName);
-        if (loadedCommand == null) {
+        Command command = get(db, commandName);
+        if (command == null) {
             return;
         }
-        loadedCommand.setCount(0);
-        addCommandFromLoadedCommand(db, loadedCommand);
+        command.setCount(0);
+        addCommandFromLoadedCommand(db, command);
     }
 
-    public static boolean addCommandFromLoadedCommand(DatabaseWrapper db, LoadedCommand loadedCommand) {
+    public static boolean addCommandFromLoadedCommand(DatabaseWrapper db, Command command) {
         HashMap<String, Object> map = new HashMap<>();
 
-        map.put(CommandFields.NAME, loadedCommand.getName());
-        map.put(CommandFields.RESPONSE, loadedCommand.getResponse());
-        map.put(CommandFields.EXEC_USER_LEVEL, loadedCommand.getExecUserLevel().name());
-        map.put(CommandFields.MIN_ARGS, String.valueOf(loadedCommand.getMinArgs()));
-        map.put(CommandFields.COUNT, String.valueOf(loadedCommand.getCount()));
-        map.put(CommandFields.NAME_MODIFYING_UL, loadedCommand.modifyingUserLevels.getNameModifyingUL().name());
-        map.put(CommandFields.RESPONSE_MODIFYING_UL, loadedCommand.modifyingUserLevels.getResponseModifyingUL().name());
-        map.put(CommandFields.USER_LEVEL_MODIFYING_UL, loadedCommand.modifyingUserLevels.getUserLevelModifyingUL().name());
-        map.put(CommandFields.SCRIPT, loadedCommand.getScript());
-        map.put(CommandFields.ENABLED, String.valueOf(loadedCommand.isEnabled()));
-        map.put(CommandFields.DEBUG, String.valueOf(loadedCommand.isDebug()));
+        map.put(CommandFields.NAME, command.getName());
+        map.put(CommandFields.RESPONSE, command.getResponse());
+        map.put(CommandFields.EXEC_USER_LEVEL, command.getExecUserLevel().name());
+        map.put(CommandFields.MIN_ARGS, String.valueOf(command.getMinArgs()));
+        map.put(CommandFields.COUNT, String.valueOf(command.getCount()));
+        map.put(CommandFields.NAME_MODIFYING_UL, command.modifyingUserLevels.getNameModifyingUL().name());
+        map.put(CommandFields.RESPONSE_MODIFYING_UL, command.modifyingUserLevels.getResponseModifyingUL().name());
+        map.put(CommandFields.USER_LEVEL_MODIFYING_UL, command.modifyingUserLevels.getUserLevelModifyingUL().name());
+        map.put(CommandFields.SCRIPT, command.getScript());
+        map.put(CommandFields.ENABLED, String.valueOf(command.isEnabled()));
+        map.put(CommandFields.DEBUG, String.valueOf(command.isDebug()));
 
-        if (Commands.exists(db, loadedCommand.getName())) {
+        if (Commands.exists(db, command.getName())) {
             return Commands.update(db, map);
         } else {
             return Commands.add(db, map);

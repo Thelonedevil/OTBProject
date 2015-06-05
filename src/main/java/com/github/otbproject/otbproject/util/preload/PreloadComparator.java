@@ -3,7 +3,7 @@ package com.github.otbproject.otbproject.util.preload;
 import com.github.otbproject.otbproject.commands.Aliases;
 import com.github.otbproject.otbproject.commands.Commands;
 import com.github.otbproject.otbproject.commands.loader.LoadedAlias;
-import com.github.otbproject.otbproject.commands.loader.LoadedCommand;
+import com.github.otbproject.otbproject.commands.loader.Command;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.filters.BasicFilter;
 import com.github.otbproject.otbproject.filters.FilterGroup;
@@ -35,12 +35,12 @@ class PreloadComparator {
         return newAlias;
     }
 
-    static LoadedCommand generateCommandHybrid(DatabaseWrapper db, LoadedCommand newCommand, LoadedCommand oldCommand) {
+    static Command generateCommandHybrid(DatabaseWrapper db, Command newCommand, Command oldCommand) {
         if ((oldCommand == null) || (newCommand == null) || !oldCommand.getName().equals(newCommand.getName())) {
             return newCommand;
         }
 
-        LoadedCommand dbCommand = Commands.get(db, newCommand.getName());
+        Command dbCommand = Commands.get(db, newCommand.getName());
         if (dbCommand == null) {
             return newCommand;
         }
