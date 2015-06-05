@@ -1,6 +1,6 @@
 package com.github.otbproject.otbproject.util.preload;
 
-import com.github.otbproject.otbproject.commands.Alias;
+import com.github.otbproject.otbproject.commands.Aliases;
 import com.github.otbproject.otbproject.commands.Commands;
 import com.github.otbproject.otbproject.commands.loader.LoadedAlias;
 import com.github.otbproject.otbproject.commands.loader.LoadedCommand;
@@ -16,7 +16,7 @@ class PreloadComparator {
             return newAlias;
         }
 
-        LoadedAlias dbAlias = Alias.get(db, newAlias.getName());
+        LoadedAlias dbAlias = Aliases.get(db, newAlias.getName());
         if (dbAlias == null) {
             return newAlias;
         }

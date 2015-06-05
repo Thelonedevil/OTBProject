@@ -1,7 +1,7 @@
 package com.github.otbproject.otbproject.proc;
 
 import com.github.otbproject.otbproject.App;
-import com.github.otbproject.otbproject.commands.Alias;
+import com.github.otbproject.otbproject.commands.Aliases;
 import com.github.otbproject.otbproject.commands.Commands;
 import com.github.otbproject.otbproject.commands.loader.LoadedAlias;
 import com.github.otbproject.otbproject.commands.loader.LoadedCommand;
@@ -32,7 +32,7 @@ public class CommandProcessor {
         } else {
             usedAliases.add(aliasName);
         }
-        LoadedAlias loadedAlias = Alias.get(db, aliasName);
+        LoadedAlias loadedAlias = Aliases.get(db, aliasName);
         if ((loadedAlias != null) && loadedAlias.isEnabled()) {
             if (splitMsg.length == 1) {
                 return checkAlias(db, loadedAlias.getCommand(), usedAliases);

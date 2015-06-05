@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class Alias {
+public class Aliases {
 
     public static LoadedAlias get(DatabaseWrapper db, String aliasName) {
         if (db.exists(AliasFields.TABLE_NAME, aliasName, AliasFields.NAME)) {
@@ -73,10 +73,10 @@ public class Alias {
         map.put(AliasFields.COMMAND, loadedAlias.getCommand());
         map.put(AliasFields.MODIFYING_UL, loadedAlias.getModifyingUserLevel().name());
         map.put(AliasFields.ENABLED, String.valueOf(loadedAlias.isEnabled()));
-        if (Alias.exists(db, loadedAlias.getName())) {
-            return Alias.update(db, map);
+        if (Aliases.exists(db, loadedAlias.getName())) {
+            return Aliases.update(db, map);
         } else {
-            return Alias.add(db, map);
+            return Aliases.add(db, map);
         }
     }
 }
