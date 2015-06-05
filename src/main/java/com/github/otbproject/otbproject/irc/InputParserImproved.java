@@ -1,7 +1,6 @@
-package com.github.otbproject.otbproject.util;
+package com.github.otbproject.otbproject.irc;
 
 import com.github.otbproject.otbproject.App;
-import com.github.otbproject.otbproject.irc.IRCBot;
 import org.pircbotx.InputParser;
 import org.pircbotx.Utils;
 import org.pircbotx.exception.IrcException;

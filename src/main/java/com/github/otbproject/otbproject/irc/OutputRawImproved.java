@@ -1,4 +1,4 @@
-package com.github.otbproject.otbproject.util;
+package com.github.otbproject.otbproject.irc;
 
 import com.github.otbproject.otbproject.App;
 import org.pircbotx.PircBotX;
