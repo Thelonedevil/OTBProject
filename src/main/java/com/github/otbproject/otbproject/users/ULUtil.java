@@ -1,4 +1,4 @@
-package com.github.otbproject.otbproject.util;
+package com.github.otbproject.otbproject.users;
 
 
 import com.github.otbproject.otbproject.api.APIBot;

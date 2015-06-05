@@ -8,7 +8,7 @@ import com.github.otbproject.otbproject.channels.Channel;
 import com.github.otbproject.otbproject.messages.receive.PackagedMessage;
 import com.github.otbproject.otbproject.messages.send.MessagePriority;
 import com.github.otbproject.otbproject.users.UserLevel;
-import com.github.otbproject.otbproject.util.ULUtil;
+import com.github.otbproject.otbproject.users.ULUtil;
 import org.pircbotx.hooks.ListenerAdapter;
 import org.pircbotx.hooks.events.*;
 

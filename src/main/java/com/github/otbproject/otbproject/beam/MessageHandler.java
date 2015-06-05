@@ -8,7 +8,7 @@ import com.github.otbproject.otbproject.channels.Channel;
 import com.github.otbproject.otbproject.channels.ChannelNotFoundException;
 import com.github.otbproject.otbproject.messages.receive.PackagedMessage;
 import com.github.otbproject.otbproject.messages.send.MessagePriority;
-import com.github.otbproject.otbproject.util.ULUtil;
+import com.github.otbproject.otbproject.users.ULUtil;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Iterators;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;

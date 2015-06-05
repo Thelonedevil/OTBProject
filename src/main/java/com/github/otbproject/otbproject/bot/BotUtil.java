@@ -5,7 +5,7 @@ import com.github.otbproject.otbproject.channels.Channel;
 import com.github.otbproject.otbproject.channels.ChannelNotFoundException;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.users.UserLevel;
-import com.github.otbproject.otbproject.util.ULUtil;
+import com.github.otbproject.otbproject.users.ULUtil;
 
 public class BotUtil {
     public static boolean isModOrHigher(String channelName, String user) throws ChannelNotFoundException {
