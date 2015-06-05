@@ -2,9 +2,10 @@ package com.github.otbproject.otbproject.util.preload;
 
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.api.APIDatabase;
+import com.github.otbproject.otbproject.commands.Alias;
 import com.github.otbproject.otbproject.commands.Aliases;
+import com.github.otbproject.otbproject.commands.Command;
 import com.github.otbproject.otbproject.commands.Commands;
-import com.github.otbproject.otbproject.commands.loader.*;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.filters.*;
 import com.github.otbproject.otbproject.fs.FSUtil;

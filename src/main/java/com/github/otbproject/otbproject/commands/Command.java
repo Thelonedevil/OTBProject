@@ -1,4 +1,4 @@
-package com.github.otbproject.otbproject.commands.loader;
+package com.github.otbproject.otbproject.commands;
 
 import com.github.otbproject.otbproject.users.UserLevel;
 

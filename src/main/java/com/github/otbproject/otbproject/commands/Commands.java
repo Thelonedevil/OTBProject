@@ -2,7 +2,6 @@ package com.github.otbproject.otbproject.commands;
 
 
 import com.github.otbproject.otbproject.App;
-import com.github.otbproject.otbproject.commands.loader.Command;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.users.UserLevel;
 
