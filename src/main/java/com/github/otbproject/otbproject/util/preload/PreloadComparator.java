@@ -2,7 +2,7 @@ package com.github.otbproject.otbproject.util.preload;
 
 import com.github.otbproject.otbproject.commands.Aliases;
 import com.github.otbproject.otbproject.commands.Commands;
-import com.github.otbproject.otbproject.commands.loader.LoadedAlias;
+import com.github.otbproject.otbproject.commands.loader.Alias;
 import com.github.otbproject.otbproject.commands.loader.Command;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.filters.BasicFilter;
@@ -11,12 +11,12 @@ import com.github.otbproject.otbproject.filters.FilterGroups;
 import com.github.otbproject.otbproject.filters.Filters;
 
 class PreloadComparator {
-    static LoadedAlias generateAliasHybrid(DatabaseWrapper db, LoadedAlias newAlias, LoadedAlias oldAlias) {
+    static Alias generateAliasHybrid(DatabaseWrapper db, Alias newAlias, Alias oldAlias) {
         if ((oldAlias == null) || (newAlias == null) || !oldAlias.getName().equals(newAlias.getName())) {
             return newAlias;
         }
 
-        LoadedAlias dbAlias = Aliases.get(db, newAlias.getName());
+        Alias dbAlias = Aliases.get(db, newAlias.getName());
         if (dbAlias == null) {
             return newAlias;
         }

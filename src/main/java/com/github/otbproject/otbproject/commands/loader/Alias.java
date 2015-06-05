@@ -3,7 +3,7 @@ package com.github.otbproject.otbproject.commands.loader;
 import com.github.otbproject.otbproject.users.UserLevel;
 import javax.validation.constraints.NotNull;
 
-public class LoadedAlias {
+public class Alias {
     @NotNull
     private String name;
 

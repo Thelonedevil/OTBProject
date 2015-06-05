@@ -22,8 +22,8 @@ public class CommandHelper {
         return copy;
     }
 
-    public static LoadedAlias getCopy(LoadedAlias alias) {
-        LoadedAlias copy = new LoadedAlias();
+    public static Alias getCopy(Alias alias) {
+        Alias copy = new Alias();
 
         copy.setName(alias.getName());
         copy.setCommand(alias.getCommand());

@@ -96,8 +96,8 @@ public class PreloadLoader {
         try {
             switch (base) {
                 case ALIAS:
-                    LoadedAlias alias = (strategy == LoadStrategy.UPDATE) ?
-                            PreloadComparator.generateAliasHybrid(db, (LoadedAlias) tNew, (LoadedAlias) tOld) : (LoadedAlias) tNew;
+                    Alias alias = (strategy == LoadStrategy.UPDATE) ?
+                            PreloadComparator.generateAliasHybrid(db, (Alias) tNew, (Alias) tOld) : (Alias) tNew;
                     if (alias == null) {
                         break;
                     }
@@ -199,7 +199,7 @@ public class PreloadLoader {
     private static Class getClassFromBase(Base base) {
         switch (base) {
             case ALIAS:
-                return LoadedAlias.class;
+                return Alias.class;
             case CMD:
                 return Command.class;
             case FILTER:

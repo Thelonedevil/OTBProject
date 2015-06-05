@@ -1,7 +1,7 @@
 package com.github.otbproject.otbproject.commands;
 
 import com.github.otbproject.otbproject.App;
-import com.github.otbproject.otbproject.commands.loader.LoadedAlias;
+import com.github.otbproject.otbproject.commands.loader.Alias;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.users.UserLevel;
 
@@ -14,16 +14,16 @@ import java.util.stream.Collectors;
 
 public class Aliases {
 
-    public static LoadedAlias get(DatabaseWrapper db, String aliasName) {
+    public static Alias get(DatabaseWrapper db, String aliasName) {
         if (db.exists(AliasFields.TABLE_NAME, aliasName, AliasFields.NAME)) {
-            LoadedAlias loadedAlias = new LoadedAlias();
+            Alias alias = new Alias();
             ResultSet rs = db.getRecord(AliasFields.TABLE_NAME, aliasName, AliasFields.NAME);
             try {
-                loadedAlias.setName(rs.getString(AliasFields.NAME));
-                loadedAlias.setCommand(rs.getString(AliasFields.COMMAND));
-                loadedAlias.setModifyingUserLevel(UserLevel.valueOf(rs.getString(AliasFields.MODIFYING_UL)));
-                loadedAlias.setEnabled(Boolean.valueOf(rs.getString(AliasFields.ENABLED)));
-                return loadedAlias;
+                alias.setName(rs.getString(AliasFields.NAME));
+                alias.setCommand(rs.getString(AliasFields.COMMAND));
+                alias.setModifyingUserLevel(UserLevel.valueOf(rs.getString(AliasFields.MODIFYING_UL)));
+                alias.setEnabled(Boolean.valueOf(rs.getString(AliasFields.ENABLED)));
+                return alias;
             } catch (SQLException e) {
                 App.logger.catching(e);
             } finally {
@@ -66,14 +66,14 @@ public class Aliases {
         return db.removeRecord(AliasFields.TABLE_NAME, aliasName, AliasFields.NAME);
     }
 
-    public static boolean addAliasFromLoadedAlias(DatabaseWrapper db, LoadedAlias loadedAlias) {
+    public static boolean addAliasFromLoadedAlias(DatabaseWrapper db, Alias alias) {
         HashMap<String, Object> map = new HashMap<>();
 
-        map.put(AliasFields.NAME, loadedAlias.getName());
-        map.put(AliasFields.COMMAND, loadedAlias.getCommand());
-        map.put(AliasFields.MODIFYING_UL, loadedAlias.getModifyingUserLevel().name());
-        map.put(AliasFields.ENABLED, String.valueOf(loadedAlias.isEnabled()));
-        if (Aliases.exists(db, loadedAlias.getName())) {
+        map.put(AliasFields.NAME, alias.getName());
+        map.put(AliasFields.COMMAND, alias.getCommand());
+        map.put(AliasFields.MODIFYING_UL, alias.getModifyingUserLevel().name());
+        map.put(AliasFields.ENABLED, String.valueOf(alias.isEnabled()));
+        if (Aliases.exists(db, alias.getName())) {
             return Aliases.update(db, map);
         } else {
             return Aliases.add(db, map);
