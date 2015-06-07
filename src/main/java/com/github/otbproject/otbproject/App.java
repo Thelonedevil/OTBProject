@@ -99,9 +99,7 @@ public class App {
             } catch (Exception e) {
                 App.logger.catching(e);
             }
-            new Thread(() -> {
-                GuiApplication.start(args);
-            }).start();
+            Util.getSingleThreadExecutor().execute(() -> GuiApplication.start(args));
         }
 
         // Ensure directory tree is setup
@@ -174,7 +172,7 @@ public class App {
             App.logger.error("Failed to start bot");
         } else {
             APIBot.setBotRunnable(new BotRunnable());
-            APIBot.setBotFuture(Util.getSingleThreadExecutor().submit(APIBot.getBotRunnable()));
+            APIBot.setBotFuture(Util.getSingleThreadExecutor("Bot").submit(APIBot.getBotRunnable()));
         }
         if (!GraphicsEnvironment.isHeadless()) {
             GuiApplication.setInputActive();

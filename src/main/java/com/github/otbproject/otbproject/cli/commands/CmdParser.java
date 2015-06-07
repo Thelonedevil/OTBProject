@@ -242,7 +242,7 @@ public class CmdParser {
 /*                    FSCommandLoader.LoadCommands();
                     FSCommandLoader.LoadAliases();*/
                     try {
-                        APIBot.setBotFuture(Util.getSingleThreadExecutor().submit(APIBot.getBotRunnable()));
+                        APIBot.setBotFuture(Util.getSingleThreadExecutor("Bot").submit(APIBot.getBotRunnable()));
                     } catch (IllegalThreadStateException e) {
                         App.logger.catching(e);
                         responseStr = "Restart Failed";
