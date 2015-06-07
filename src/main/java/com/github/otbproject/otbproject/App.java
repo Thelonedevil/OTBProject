@@ -12,7 +12,7 @@ import com.github.otbproject.otbproject.fs.Setup;
 import com.github.otbproject.otbproject.fs.groups.*;
 import com.github.otbproject.otbproject.gui.GuiApplication;
 import com.github.otbproject.otbproject.irc.IRCBot;
-import com.github.otbproject.otbproject.util.InputParserImproved;
+import com.github.otbproject.otbproject.irc.InputParserImproved;
 import com.github.otbproject.otbproject.util.LibsLoader;
 import com.github.otbproject.otbproject.util.UnPacker;
 import com.github.otbproject.otbproject.util.VersionClass;

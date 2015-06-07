@@ -5,7 +5,7 @@ import com.github.otbproject.otbproject.api.APIBot;
 import com.github.otbproject.otbproject.api.APIChannel;
 import com.github.otbproject.otbproject.api.APIConfig;
 import com.github.otbproject.otbproject.channels.Channel;
-import com.github.otbproject.otbproject.commands.Command;
+import com.github.otbproject.otbproject.commands.Commands;
 import com.github.otbproject.otbproject.config.ChannelConfigHelper;
 import com.github.otbproject.otbproject.config.GeneralConfigHelper;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
@@ -135,6 +135,6 @@ public class ChannelMessageProcessor {
         }
 
         // Increment count (not essential to lock)
-        Command.incrementCount(db, command);
+        Commands.incrementCount(db, command);
     }
 }

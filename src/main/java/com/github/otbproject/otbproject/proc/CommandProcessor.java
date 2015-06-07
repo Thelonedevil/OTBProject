@@ -1,10 +1,10 @@
 package com.github.otbproject.otbproject.proc;
 
 import com.github.otbproject.otbproject.App;
+import com.github.otbproject.otbproject.commands.Aliases;
+import com.github.otbproject.otbproject.commands.Commands;
 import com.github.otbproject.otbproject.commands.Alias;
 import com.github.otbproject.otbproject.commands.Command;
-import com.github.otbproject.otbproject.commands.loader.LoadedAlias;
-import com.github.otbproject.otbproject.commands.loader.LoadedCommand;
 import com.github.otbproject.otbproject.commands.parser.CommandResponseParser;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.users.UserLevel;
@@ -32,12 +32,12 @@ public class CommandProcessor {
         } else {
             usedAliases.add(aliasName);
         }
-        LoadedAlias loadedAlias = Alias.get(db, aliasName);
-        if ((loadedAlias != null) && loadedAlias.isEnabled()) {
+        Alias alias = Aliases.get(db, aliasName);
+        if ((alias != null) && alias.isEnabled()) {
             if (splitMsg.length == 1) {
-                return checkAlias(db, loadedAlias.getCommand(), usedAliases);
+                return checkAlias(db, alias.getCommand(), usedAliases);
             }
-            return checkAlias(db, (loadedAlias.getCommand() + " " + splitMsg[1]), usedAliases);
+            return checkAlias(db, (alias.getCommand() + " " + splitMsg[1]), usedAliases);
         }
         // Return message if not an alias
         return message;
@@ -67,7 +67,7 @@ public class CommandProcessor {
             }
         }
 
-        LoadedCommand command = Command.get(db, cmdName);
+        Command command = Commands.get(db, cmdName);
         if ((command != null) && command.isEnabled() && userLevel.getValue() >= command.getExecUserLevel().getValue() && args.length >= command.getMinArgs()) {
             App.logger.debug("Processing command: " + cmdName);
             String scriptPath = command.getScript();

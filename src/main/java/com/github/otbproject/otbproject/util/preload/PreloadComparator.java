@@ -1,9 +1,9 @@
 package com.github.otbproject.otbproject.util.preload;
 
+import com.github.otbproject.otbproject.commands.Aliases;
+import com.github.otbproject.otbproject.commands.Commands;
 import com.github.otbproject.otbproject.commands.Alias;
 import com.github.otbproject.otbproject.commands.Command;
-import com.github.otbproject.otbproject.commands.loader.LoadedAlias;
-import com.github.otbproject.otbproject.commands.loader.LoadedCommand;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.filters.BasicFilter;
 import com.github.otbproject.otbproject.filters.FilterGroup;
@@ -11,12 +11,12 @@ import com.github.otbproject.otbproject.filters.FilterGroups;
 import com.github.otbproject.otbproject.filters.Filters;
 
 class PreloadComparator {
-    static LoadedAlias generateAliasHybrid(DatabaseWrapper db, LoadedAlias newAlias, LoadedAlias oldAlias) {
+    static Alias generateAliasHybrid(DatabaseWrapper db, Alias newAlias, Alias oldAlias) {
         if ((oldAlias == null) || (newAlias == null) || !oldAlias.getName().equals(newAlias.getName())) {
             return newAlias;
         }
 
-        LoadedAlias dbAlias = Alias.get(db, newAlias.getName());
+        Alias dbAlias = Aliases.get(db, newAlias.getName());
         if (dbAlias == null) {
             return newAlias;
         }
@@ -35,12 +35,12 @@ class PreloadComparator {
         return newAlias;
     }
 
-    static LoadedCommand generateCommandHybrid(DatabaseWrapper db, LoadedCommand newCommand, LoadedCommand oldCommand) {
+    static Command generateCommandHybrid(DatabaseWrapper db, Command newCommand, Command oldCommand) {
         if ((oldCommand == null) || (newCommand == null) || !oldCommand.getName().equals(newCommand.getName())) {
             return newCommand;
         }
 
-        LoadedCommand dbCommand = Command.get(db, newCommand.getName());
+        Command dbCommand = Commands.get(db, newCommand.getName());
         if (dbCommand == null) {
             return newCommand;
         }
