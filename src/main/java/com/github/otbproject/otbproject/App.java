@@ -16,6 +16,7 @@ import com.github.otbproject.otbproject.bot.irc.IRCBot;
 import com.github.otbproject.otbproject.bot.irc.InputParserImproved;
 import com.github.otbproject.otbproject.util.LibsLoader;
 import com.github.otbproject.otbproject.util.UnPacker;
+import com.github.otbproject.otbproject.util.Util;
 import com.github.otbproject.otbproject.util.VersionClass;
 import com.github.otbproject.otbproject.util.compat.VersionCompatHelper;
 import com.github.otbproject.otbproject.util.preload.LoadStrategy;
@@ -173,8 +174,7 @@ public class App {
             App.logger.error("Failed to start bot");
         } else {
             APIBot.setBotRunnable(new BotRunnable());
-            APIBot.setBotThread(new Thread(APIBot.getBotRunnable()));
-            APIBot.getBotThread().start();
+            APIBot.setBotFuture(Util.getSingleThreadExecutor().submit(APIBot.getBotRunnable()));
         }
         if (!GraphicsEnvironment.isHeadless()) {
             GuiApplication.setInputActive();

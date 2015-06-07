@@ -2,9 +2,11 @@ package com.github.otbproject.otbproject.api;
 
 import com.github.otbproject.otbproject.bot.IBot;
 
+import java.util.concurrent.Future;
+
 public class APIBot {
     private static IBot bot;
-    private static Thread botThread;
+    private static Future<?> botFuture;
     private static Runnable botRunnable;
 
     public static IBot getBot() {
@@ -15,12 +17,12 @@ public class APIBot {
         APIBot.bot = bot;
     }
 
-    public static Thread getBotThread() {
-        return botThread;
+    public static Future<?> getBotFuture() {
+        return botFuture;
     }
 
-    public static void setBotThread(Thread botThread) {
-        APIBot.botThread = botThread;
+    public static void setBotFuture(Future<?> botFuture) {
+        APIBot.botFuture = botFuture;
     }
 
     public static Runnable getBotRunnable() {
