@@ -153,21 +153,21 @@ public class App {
         startup(cmd);
 
         // Connect to service
-        switch (APIConfig.getGeneralConfig().getServiceName()){
-            case TWITCH:
-                APIBot.setBot(new IRCBot());
-                Class c = APIBot.getBot().getClass().getSuperclass();
-                Field input = c.getDeclaredField("inputParser");
-                input.setAccessible(true);
-                input.set(APIBot.getBot(), new InputParserImproved((IRCBot) APIBot.getBot()));
-                break;
-            case BEAM:
-                try {
+        try {
+            switch (APIConfig.getGeneralConfig().getServiceName()){
+                case TWITCH:
+                    APIBot.setBot(new IRCBot());
+                    Class c = APIBot.getBot().getClass().getSuperclass();
+                    Field input = c.getDeclaredField("inputParser");
+                    input.setAccessible(true);
+                    input.set(APIBot.getBot(), new InputParserImproved((IRCBot) APIBot.getBot()));
+                    break;
+                case BEAM:
                     APIBot.setBot(new BeamBot());
-                } catch (BotInitException e) {
-                    logger.catching(e);
-                }
-                break;
+                    break;
+            }
+        } catch (BotInitException e) {
+            logger.catching(e);
         }
         if (APIBot.getBot() == null) {
             App.logger.error("Failed to start bot");
