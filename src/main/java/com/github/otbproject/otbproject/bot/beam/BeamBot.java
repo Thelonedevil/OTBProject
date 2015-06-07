@@ -42,7 +42,6 @@ public class BeamBot implements IBot {
         try {
             beamUser = beam.use(UsersService.class).login(APIConfig.getAccount().getName(), APIConfig.getAccount().getPasskey()).get();
         } catch (InterruptedException | ExecutionException e) {
-            App.logger.catching(e);
             throw new BotInitException("Unable to connect bot to Beam", e);
         }
     }
