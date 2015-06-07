@@ -1,4 +1,4 @@
-package com.github.otbproject.otbproject.irc;
+package com.github.otbproject.otbproject.bot.irc;
 
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.api.APIChannel;

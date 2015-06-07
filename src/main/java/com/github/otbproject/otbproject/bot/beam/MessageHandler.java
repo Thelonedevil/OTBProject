@@ -1,4 +1,4 @@
-package com.github.otbproject.otbproject.beam;
+package com.github.otbproject.otbproject.bot.beam;
 
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.api.APIBot;
@@ -8,7 +8,7 @@ import com.github.otbproject.otbproject.channels.Channel;
 import com.github.otbproject.otbproject.channels.ChannelNotFoundException;
 import com.github.otbproject.otbproject.messages.receive.PackagedMessage;
 import com.github.otbproject.otbproject.messages.send.MessagePriority;
-import com.github.otbproject.otbproject.users.ULUtil;
+import com.github.otbproject.otbproject.users.UserLevels;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Iterators;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
@@ -70,7 +70,7 @@ public class MessageHandler implements EventHandler<IncomingMessageEvent> {
                 return;
             }
 
-            PackagedMessage packagedMessage = new PackagedMessage(getMessage(data),data.user_name.toLowerCase(), channelName, ULUtil.getUserLevel(APIChannel.get(channelName).getMainDatabaseWrapper(), channelName ,data.user_name.toLowerCase()), MessagePriority.DEFAULT);
+            PackagedMessage packagedMessage = new PackagedMessage(getMessage(data),data.user_name.toLowerCase(), channelName, UserLevels.getUserLevel(APIChannel.get(channelName).getMainDatabaseWrapper(), channelName, data.user_name.toLowerCase()), MessagePriority.DEFAULT);
             Channel channel = APIChannel.get(channelName);
             if(channel != null){
                 channel.receiveMessage(packagedMessage);
