@@ -4,6 +4,7 @@ import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.api.APIChannel;
 import com.github.otbproject.otbproject.api.APIConfig;
 import com.github.otbproject.otbproject.api.APIDatabase;
+import com.github.otbproject.otbproject.bot.BotInitException;
 import com.github.otbproject.otbproject.bot.BotUtil;
 import com.github.otbproject.otbproject.bot.IBot;
 import com.github.otbproject.otbproject.channels.Channel;
@@ -32,7 +33,7 @@ public class BeamBot implements IBot {
     BeamUser beamUser;
     final HashMap<String,BeamChatChannel> beamChannels = new HashMap<>();
 
-    public BeamBot() {
+    public BeamBot() throws BotInitException {
         sentMessageCache = ExpiringMap.builder()
                 .expiration(CACHE_TIME, TimeUnit.SECONDS)
                 .expirationPolicy(ExpiringMap.ExpirationPolicy.CREATED)
@@ -41,7 +42,7 @@ public class BeamBot implements IBot {
         try {
             beamUser = beam.use(UsersService.class).login(APIConfig.getAccount().getName(), APIConfig.getAccount().getPasskey()).get();
         } catch (InterruptedException | ExecutionException e) {
-            App.logger.catching(e);
+            throw new BotInitException("Unable to connect bot to Beam", e);
         }
     }
 

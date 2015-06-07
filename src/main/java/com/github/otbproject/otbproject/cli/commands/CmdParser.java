@@ -116,7 +116,7 @@ public class CmdParser {
     }
 
     private static void initClear() {
-        commandBuilder.withShortHelp("clear <target>")
+        commandBuilder.withShortHelp("clear TARGET")
                 .withLongHelp("Clears the specified window(s) or the CLI command history\n"
                         + "Valid targets are: " + ClearTargets.targets.stream().sorted().collect(Collectors.joining(", ")))
                 .withAction(() -> {
@@ -151,8 +151,8 @@ public class CmdParser {
     }
 
     private static void initExec() {
-        commandBuilder.withShortHelp("exec <channel> <command>")
-                .withLongHelp("Will run the command denoted by <command> in the channel denoted by <channel>")
+        commandBuilder.withShortHelp("exec CHANNEL COMMAND")
+                .withLongHelp("Runs the command denoted by COMMAND in the channel denoted by CHANNEL")
                 .withAction(() -> {
                     if (args.size() < 2) {
                         responseStr = "Not enough args for '" + EXEC + "'";
@@ -182,8 +182,8 @@ public class CmdParser {
     }
 
     private static void initJoinChannel() {
-        commandBuilder.withShortHelp("join <channel>")
-                .withLongHelp("Will make the bot join the channel denoted by <channel>")
+        commandBuilder.withShortHelp("join CHANNEL")
+                .withLongHelp("Makes the bot join the channel denoted by CHANNEL")
                 .withAction(() -> {
                     if (args.size() > 0) {
                         boolean success = APIChannel.join(args.get(0).toLowerCase(), true);
@@ -197,8 +197,8 @@ public class CmdParser {
     }
 
     private static void initLeaveChannel() {
-        commandBuilder.withShortHelp("leave <channel>")
-                .withLongHelp("Will make the bot leave the channel denoted by <channel>")
+        commandBuilder.withShortHelp("leave CHANNEL")
+                .withLongHelp("Makes the bot leave the channel denoted by CHANNEL")
                 .withAction(() -> {
                     if (args.size() > 0) {
                         boolean success = APIChannel.leave(args.get(0).toLowerCase());
@@ -212,8 +212,8 @@ public class CmdParser {
     }
 
     private static void initReload() {
-        commandBuilder.withShortHelp("reload <channel>")
-                .withLongHelp("Will reload all commands from the json files. Either for <channel>, or if not specified, all channels.")
+        commandBuilder.withShortHelp("reload [CHANNEL]")
+                .withLongHelp("Resets all commands from the json files. Either for CHANNEL, or if not specified, all channels.")
                 .withAction(() -> {
                     if (args.size() > 0) {
                         PreloadLoader.loadDirectory(Base.CMD, Chan.SPECIFIC, args.get(0).toLowerCase(), LoadStrategy.FROM_LOADED);
@@ -233,7 +233,7 @@ public class CmdParser {
 
     private static void initRestart() {
         commandBuilder.withShortHelp("restart")
-                .withLongHelp("will restart the bot")
+                .withLongHelp("Restarts the bot")
                 .withAction(() -> {
                     if (APIBot.getBot() != null && APIBot.getBot().isConnected()) {
                         APIBot.getBot().shutdown();
@@ -255,7 +255,7 @@ public class CmdParser {
 
     private static void initStop() {
         commandBuilder.withShortHelp("stop")
-                .withLongHelp("Will stop the bot and exit.")
+                .withLongHelp("Stops the bot and exits.")
                 .withAction(() -> {
                     App.logger.info("Stopping the process");
                     if (APIBot.getBot() != null && APIBot.getBot().isConnected()) {
@@ -268,8 +268,8 @@ public class CmdParser {
     }
 
     private static void initHelp() {
-        commandBuilder.withShortHelp("help <cli command>")
-                .withLongHelp("Will print the help message for the cli command denoted by <cli command>, or if not specified will list all the cli commands")
+        commandBuilder.withShortHelp("help [CLI_COMMAND]")
+                .withLongHelp("Prints the help message for the cli command denoted by CLI_COMMAND, or if not specified will list all the cli commands")
                 .withAction(() -> {
                     if (args.isEmpty()) {
                         responseStr = map.keySet().stream().filter(key -> !key.equals(HELP)).map(key -> map.get(key).getShortHelp()).sorted().collect(Collectors.joining("\n"));
