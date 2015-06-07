@@ -3,8 +3,9 @@ package com.github.otbproject.otbproject.util.preload;
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.api.APIDatabase;
 import com.github.otbproject.otbproject.commands.Alias;
+import com.github.otbproject.otbproject.commands.Aliases;
 import com.github.otbproject.otbproject.commands.Command;
-import com.github.otbproject.otbproject.commands.loader.*;
+import com.github.otbproject.otbproject.commands.Commands;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.filters.*;
 import com.github.otbproject.otbproject.fs.FSUtil;
@@ -96,20 +97,20 @@ public class PreloadLoader {
         try {
             switch (base) {
                 case ALIAS:
-                    LoadedAlias alias = (strategy == LoadStrategy.UPDATE) ?
-                            PreloadComparator.generateAliasHybrid(db, (LoadedAlias) tNew, (LoadedAlias) tOld) : (LoadedAlias) tNew;
+                    Alias alias = (strategy == LoadStrategy.UPDATE) ?
+                            PreloadComparator.generateAliasHybrid(db, (Alias) tNew, (Alias) tOld) : (Alias) tNew;
                     if (alias == null) {
                         break;
                     }
-                    Alias.addAliasFromLoadedAlias(db, alias);
+                    Aliases.addAliasFromLoadedAlias(db, alias);
                     break;
                 case CMD:
-                    LoadedCommand command = (strategy == LoadStrategy.UPDATE) ?
-                            PreloadComparator.generateCommandHybrid(db, (LoadedCommand) tNew, (LoadedCommand) tOld) : (LoadedCommand) tNew;
+                    Command command = (strategy == LoadStrategy.UPDATE) ?
+                            PreloadComparator.generateCommandHybrid(db, (Command) tNew, (Command) tOld) : (Command) tNew;
                     if (command == null) {
                         break;
                     }
-                    Command.addCommandFromLoadedCommand(db, command);
+                    Commands.addCommandFromLoadedCommand(db, command);
                     break;
                 case FILTER:
                     BasicFilter filter = (strategy == LoadStrategy.UPDATE) ?
@@ -199,9 +200,9 @@ public class PreloadLoader {
     private static Class getClassFromBase(Base base) {
         switch (base) {
             case ALIAS:
-                return LoadedAlias.class;
+                return Alias.class;
             case CMD:
-                return LoadedCommand.class;
+                return Command.class;
             case FILTER:
                 return BasicFilter.class;
             case FILTER_GRP:

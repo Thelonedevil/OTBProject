@@ -1,4 +1,4 @@
-package com.github.otbproject.otbproject.util;
+package com.github.otbproject.otbproject.users;
 
 
 import com.github.otbproject.otbproject.api.APIBot;
@@ -9,7 +9,7 @@ import com.github.otbproject.otbproject.users.User;
 import com.github.otbproject.otbproject.users.UserLevel;
 import com.github.otbproject.otbproject.users.Users;
 
-public class ULUtil {
+public class UserLevels {
 
     public static UserLevel getUserLevel(DatabaseWrapper db, String channel, String user) {
         if (user.startsWith(InternalMessageSender.DESTINATION_PREFIX)) {

@@ -1,4 +1,4 @@
-package com.github.otbproject.otbproject.irc;
+package com.github.otbproject.otbproject.bot.irc;
 
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.api.APIChannel;
@@ -10,7 +10,6 @@ import com.github.otbproject.otbproject.channels.Channel;
 import com.github.otbproject.otbproject.channels.ChannelNotFoundException;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.serviceapi.ApiRequest;
-import com.github.otbproject.otbproject.util.OutputRawImproved;
 import org.isomorphism.util.TokenBucket;
 import org.isomorphism.util.TokenBuckets;
 import org.pircbotx.Configuration;
