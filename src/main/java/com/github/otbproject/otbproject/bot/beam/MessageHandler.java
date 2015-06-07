@@ -25,7 +25,13 @@ public class MessageHandler implements EventHandler<IncomingMessageEvent> {
 
     static {
         EXECUTOR_SERVICE = Executors.newCachedThreadPool(
-                new ThreadFactoryBuilder().setNameFormat("Beam-in-%d").build()
+                new ThreadFactoryBuilder()
+                        .setNameFormat("Beam-in-%d")
+                        .setUncaughtExceptionHandler((t, e) -> {
+                            App.logger.error("Thread crashed: " + t.getName());
+                            App.logger.catching(e);
+                        })
+                        .build()
         );
     }
 

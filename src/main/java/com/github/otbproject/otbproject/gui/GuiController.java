@@ -3,6 +3,7 @@ package com.github.otbproject.otbproject.gui;
 import com.github.otbproject.otbproject.api.APIBot;
 import com.github.otbproject.otbproject.cli.commands.CmdParser;
 import com.github.otbproject.otbproject.messages.internal.InternalMessageSender;
+import com.github.otbproject.otbproject.util.Util;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -10,6 +11,7 @@ import javafx.scene.input.KeyEvent;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 
 public class GuiController {
 
@@ -24,6 +26,7 @@ public class GuiController {
 
     protected final List<String> history = new ArrayList<>();
     protected int historyPointer = 0;
+    private final ExecutorService executorService = Util.getSingleThreadExecutor("CLI Command Processor");
 
     @FXML
     public void command(KeyEvent event) {
@@ -37,8 +40,7 @@ public class GuiController {
                 commandsInput.clear();
                 commandsInput.setEditable(false);
                 commandsInput.setPromptText("Command Executing... Please Wait...");
-                new Thread(() -> {
-                    Thread.currentThread().setName("CLI Command Processor");
+                executorService.execute(() -> {
                     CmdParser.from(InternalMessageSender.CLI);
                     String output = CmdParser.processLine(input);
                     GuiUtils.runSafe(() -> {
@@ -46,7 +48,7 @@ public class GuiController {
                         commandsInput.setEditable(true);
                         commandsInput.setPromptText("Enter Command Here...");
                     });
-                }).start();
+                });
                 if (history.isEmpty() || !history.get(history.size() - 1).equals(input)) {
                     history.add(input);
                 }

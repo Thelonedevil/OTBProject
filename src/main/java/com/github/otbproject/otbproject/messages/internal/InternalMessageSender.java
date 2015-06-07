@@ -14,7 +14,13 @@ public class InternalMessageSender {
 
     static {
         EXECUTOR_SERVICE = Executors.newCachedThreadPool(
-                new ThreadFactoryBuilder().setNameFormat("Internal-Message-Sender-%d").build()
+                new ThreadFactoryBuilder()
+                        .setNameFormat("Internal-Message-Sender-%d")
+                        .setUncaughtExceptionHandler((t, e) -> {
+                            App.logger.error("Thread crashed: " + t.getName());
+                            App.logger.catching(e);
+                        })
+                        .build()
         );
     }
 
