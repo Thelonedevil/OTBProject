@@ -12,7 +12,7 @@ import java.util.concurrent.Future;
 
 // This class is not in general thread-safe. Thread safety should be enforced by the
 // class using this one
-public class ChannelMessageSender implements Runnable {
+public class ChannelMessageSender {
     private static final ExecutorService EXECUTOR_SERVICE;
 
     private final Channel channel;
@@ -41,7 +41,7 @@ public class ChannelMessageSender implements Runnable {
             return false;
         }
         active = true;
-        future = EXECUTOR_SERVICE.submit(this);
+        future = EXECUTOR_SERVICE.submit(this::run);
         return true;
     }
 
@@ -61,7 +61,7 @@ public class ChannelMessageSender implements Runnable {
         return queue.add(messageOut);
     }
 
-    public void run() {
+    private void run() {
         try {
             Thread.currentThread().setName(channel.getName() + " Message Sender");
             MessageOut message;
@@ -74,8 +74,6 @@ public class ChannelMessageSender implements Runnable {
             }
         } catch (InterruptedException e) {
             App.logger.info("Stopped message sender for " + channel.getName());
-        } catch (Exception e) {
-            App.logger.catching(e);
         }
     }
 }
