@@ -9,6 +9,7 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.PriorityBlockingQueue;
 
 // This class is not in general thread-safe. Thread safety should be enforced by the
 // class using this one
@@ -16,7 +17,7 @@ public class ChannelMessageSender {
     private static final ExecutorService EXECUTOR_SERVICE;
 
     private final Channel channel;
-    private final MessageSendQueue queue;
+    private final PriorityBlockingQueue<MessageOut> queue = new PriorityBlockingQueue<>();
     private Future<?> future;
     boolean active = false;
 
@@ -33,7 +34,6 @@ public class ChannelMessageSender {
 
     public ChannelMessageSender(Channel channel) {
         this.channel = channel;
-        this.queue = new MessageSendQueue(channel);
     }
 
     public boolean start() {
@@ -57,8 +57,28 @@ public class ChannelMessageSender {
 
     // Queues message even if sender is not active.
     // Queue itself is thread-safe, however
-    public boolean send(MessageOut messageOut) {
-        return queue.add(messageOut);
+    public boolean send(MessageOut message) {
+        if (channel.getConfig().isSilenced()) {
+            return false;
+        }
+
+        MessagePriority priority = message.getPriority();
+        // Defaults to no limit
+        int limit = -1;
+
+        if (priority == MessagePriority.HIGH) {
+            limit = channel.getConfig().queueLimits.getHighPriorityLimit();
+        } else if (priority == MessagePriority.DEFAULT) {
+            limit = channel.getConfig().queueLimits.getDefaultPriorityLimit();
+        } else if (priority == MessagePriority.LOW) {
+            limit = channel.getConfig().queueLimits.getLowPriorityLimit();
+        }
+
+        if ((limit >= 0) && queue.size() > limit) {
+            return false;
+        }
+
+        return queue.add(message);
     }
 
     private void run() {
