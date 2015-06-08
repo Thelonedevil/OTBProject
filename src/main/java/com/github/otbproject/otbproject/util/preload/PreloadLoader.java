@@ -7,7 +7,10 @@ import com.github.otbproject.otbproject.commands.Aliases;
 import com.github.otbproject.otbproject.commands.Command;
 import com.github.otbproject.otbproject.commands.Commands;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
-import com.github.otbproject.otbproject.filters.*;
+import com.github.otbproject.otbproject.filters.BasicFilter;
+import com.github.otbproject.otbproject.filters.FilterGroup;
+import com.github.otbproject.otbproject.filters.FilterGroups;
+import com.github.otbproject.otbproject.filters.Filters;
 import com.github.otbproject.otbproject.fs.FSUtil;
 import com.github.otbproject.otbproject.fs.groups.Base;
 import com.github.otbproject.otbproject.fs.groups.Chan;
@@ -15,8 +18,8 @@ import com.github.otbproject.otbproject.fs.groups.Load;
 import com.github.otbproject.otbproject.util.JsonHandler;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class PreloadLoader {
@@ -159,9 +162,8 @@ public class PreloadLoader {
             return null;
         }
 
-        List<PreloadPair<?>> list = new ArrayList<>();
-        Stream.of(files)
-                .forEach(file -> {
+        return Stream.of(files)
+                .map(file -> {
                     String name = file.getName();
                     String pathOld = FSUtil.builder.base(base).channels(chan).forChannel(channelName).load(Load.ED).create() + File.separator + name;
                     String pathNew;
@@ -171,10 +173,9 @@ public class PreloadLoader {
                         pathNew = FSUtil.builder.base(base).channels(chan).forChannel(channelName).load(Load.TO).create() + File.separator + name;
                     }
                     String pathFail = FSUtil.builder.base(base).channels(chan).forChannel(channelName).load(Load.FAIL).create() + File.separator + name;
-                    list.add(loadFromFile(pathNew, pathOld, pathFail, tClass, strategy));
-                });
-                //.collect(Collectors.toList());
-        return list;
+                    return loadFromFile(pathNew, pathOld, pathFail, tClass, strategy);
+                })
+                .collect(Collectors.toList());
     }
 
     private static <T> PreloadPair<T> loadFromFile(String pathNew, String pathOld, String pathFail, Class<T> tClass, LoadStrategy strategy) {
