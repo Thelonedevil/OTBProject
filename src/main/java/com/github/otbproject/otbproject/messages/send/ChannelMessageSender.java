@@ -83,6 +83,10 @@ public class ChannelMessageSender {
         return queue.add(message);
     }
 
+    public void clearQueue() {
+        queue.clear();
+    }
+
     private void run() {
         try {
             Thread.currentThread().setName(channel.getName() + " Message Sender");

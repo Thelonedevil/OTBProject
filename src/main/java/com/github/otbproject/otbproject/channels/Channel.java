@@ -122,6 +122,15 @@ public class Channel {
         }
     }
 
+    public void clearSendQueue() {
+        lock.readLock().lock();
+        try {
+            messageSender.clearQueue();
+        } finally {
+            lock.readLock().unlock();
+        }
+    }
+
     public boolean receiveMessage(PackagedMessage packagedMessage) {
         if (inChannel) {
             messageReceiver.processMessage(packagedMessage);
