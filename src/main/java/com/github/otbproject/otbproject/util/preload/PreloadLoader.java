@@ -7,7 +7,10 @@ import com.github.otbproject.otbproject.commands.Aliases;
 import com.github.otbproject.otbproject.commands.Command;
 import com.github.otbproject.otbproject.commands.Commands;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
-import com.github.otbproject.otbproject.filters.*;
+import com.github.otbproject.otbproject.filters.BasicFilter;
+import com.github.otbproject.otbproject.filters.FilterGroup;
+import com.github.otbproject.otbproject.filters.FilterGroups;
+import com.github.otbproject.otbproject.filters.Filters;
 import com.github.otbproject.otbproject.fs.FSUtil;
 import com.github.otbproject.otbproject.fs.groups.Base;
 import com.github.otbproject.otbproject.fs.groups.Chan;
@@ -15,8 +18,8 @@ import com.github.otbproject.otbproject.fs.groups.Load;
 import com.github.otbproject.otbproject.util.JsonHandler;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class PreloadLoader {
@@ -31,7 +34,7 @@ public class PreloadLoader {
     }
 
     public static void loadDirectory(Base base, Chan chan, String channelName, LoadStrategy strategy) {
-        List<PreloadPair> list = loadDirectoryContents(base, chan, channelName, strategy);
+        List<PreloadPair<?>> list = loadDirectoryContents(base, chan, channelName, strategy);
         if (list == null) {
             return;
         }
@@ -49,7 +52,7 @@ public class PreloadLoader {
         }
     }
 
-    private static void loadForAllChannels(List<PreloadPair> list, String channelName, Base base, LoadStrategy strategy) {
+    private static void loadForAllChannels(List<PreloadPair<?>> list, String channelName, Base base, LoadStrategy strategy) {
         if (channelName != null) {
             loadForChannel(list, channelName, base, strategy);
             return;
@@ -67,7 +70,7 @@ public class PreloadLoader {
         App.logger.debug("Finished loading objects of type '" + base.toString() + "' for all channels");
     }
 
-    private static void loadForChannel(List<PreloadPair> list, String channel, Base base, LoadStrategy strategy) {
+    private static void loadForChannel(List<PreloadPair<?>> list, String channel, Base base, LoadStrategy strategy) {
         App.logger.debug("Loading objects of type '" + base.toString() + "' for channel: " + channel);
         DatabaseWrapper db = APIDatabase.getChannelMainDatabase(channel);
         if (db == null) {
@@ -78,7 +81,7 @@ public class PreloadLoader {
         App.logger.debug("Finished loading objects of type '" + base.toString() + "' for channel: " + channel);
     }
 
-    private static void loadForBotChannel(List<PreloadPair> list, Base base, LoadStrategy strategy) {
+    private static void loadForBotChannel(List<PreloadPair<?>> list, Base base, LoadStrategy strategy) {
         App.logger.debug("Loading objects of type '" + base.toString() + "' for bot channel");
         DatabaseWrapper db = APIDatabase.getBotDatabase();
         if (db == null) {
@@ -89,7 +92,7 @@ public class PreloadLoader {
         App.logger.debug("Finished loading objects of type '" + base.toString() + "' for bot channel");
     }
 
-    private static void loadFromList(List<PreloadPair> list, DatabaseWrapper db, Base base, LoadStrategy strategy) {
+    private static void loadFromList(List<PreloadPair<?>> list, DatabaseWrapper db, Base base, LoadStrategy strategy) {
         list.forEach(preloadPair -> loadObjectUsingStrategy(db, preloadPair.tNew, preloadPair.tOld, base, strategy));
     }
 
@@ -136,7 +139,7 @@ public class PreloadLoader {
         }
     }
 
-    private static List<PreloadPair> loadDirectoryContents(Base base, Chan chan, String channelName, LoadStrategy strategy) {
+    private static List<PreloadPair<?>> loadDirectoryContents(Base base, Chan chan, String channelName, LoadStrategy strategy) {
         if ((chan == Chan.SPECIFIC) && (channelName == null)) {
             return null;
         }
@@ -153,15 +156,14 @@ public class PreloadLoader {
             return null;
         }
 
-        final Class tClass = getClassFromBase(base);
+        final Class<?> tClass = getClassFromBase(base);
         if (tClass == null) {
             App.logger.warn("Unable to determine class to load as for base: " + base.toString());
             return null;
         }
 
-        List<PreloadPair> list = new ArrayList<>();
-        Stream.of(files)
-                .forEach(file -> {
+        return Stream.of(files)
+                .map(file -> {
                     String name = file.getName();
                     String pathOld = FSUtil.builder.base(base).channels(chan).forChannel(channelName).load(Load.ED).create() + File.separator + name;
                     String pathNew;
@@ -171,10 +173,9 @@ public class PreloadLoader {
                         pathNew = FSUtil.builder.base(base).channels(chan).forChannel(channelName).load(Load.TO).create() + File.separator + name;
                     }
                     String pathFail = FSUtil.builder.base(base).channels(chan).forChannel(channelName).load(Load.FAIL).create() + File.separator + name;
-                    list.add(loadFromFile(pathNew, pathOld, pathFail, tClass, strategy));
-                });
-                //.collect(Collectors.toList());
-        return list;
+                    return loadFromFile(pathNew, pathOld, pathFail, tClass, strategy);
+                })
+                .collect(Collectors.toList());
     }
 
     private static <T> PreloadPair<T> loadFromFile(String pathNew, String pathOld, String pathFail, Class<T> tClass, LoadStrategy strategy) {
@@ -197,7 +198,7 @@ public class PreloadLoader {
         return new PreloadPair<>(tNew, tOld);
     }
 
-    private static Class getClassFromBase(Base base) {
+    private static Class<?> getClassFromBase(Base base) {
         switch (base) {
             case ALIAS:
                 return Alias.class;
