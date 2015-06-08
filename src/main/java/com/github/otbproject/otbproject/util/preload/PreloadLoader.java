@@ -31,7 +31,7 @@ public class PreloadLoader {
     }
 
     public static void loadDirectory(Base base, Chan chan, String channelName, LoadStrategy strategy) {
-        List<PreloadPair> list = loadDirectoryContents(base, chan, channelName, strategy);
+        List<PreloadPair<?>> list = loadDirectoryContents(base, chan, channelName, strategy);
         if (list == null) {
             return;
         }
@@ -49,7 +49,7 @@ public class PreloadLoader {
         }
     }
 
-    private static void loadForAllChannels(List<PreloadPair> list, String channelName, Base base, LoadStrategy strategy) {
+    private static void loadForAllChannels(List<PreloadPair<?>> list, String channelName, Base base, LoadStrategy strategy) {
         if (channelName != null) {
             loadForChannel(list, channelName, base, strategy);
             return;
@@ -67,7 +67,7 @@ public class PreloadLoader {
         App.logger.debug("Finished loading objects of type '" + base.toString() + "' for all channels");
     }
 
-    private static void loadForChannel(List<PreloadPair> list, String channel, Base base, LoadStrategy strategy) {
+    private static void loadForChannel(List<PreloadPair<?>> list, String channel, Base base, LoadStrategy strategy) {
         App.logger.debug("Loading objects of type '" + base.toString() + "' for channel: " + channel);
         DatabaseWrapper db = APIDatabase.getChannelMainDatabase(channel);
         if (db == null) {
@@ -78,7 +78,7 @@ public class PreloadLoader {
         App.logger.debug("Finished loading objects of type '" + base.toString() + "' for channel: " + channel);
     }
 
-    private static void loadForBotChannel(List<PreloadPair> list, Base base, LoadStrategy strategy) {
+    private static void loadForBotChannel(List<PreloadPair<?>> list, Base base, LoadStrategy strategy) {
         App.logger.debug("Loading objects of type '" + base.toString() + "' for bot channel");
         DatabaseWrapper db = APIDatabase.getBotDatabase();
         if (db == null) {
@@ -89,7 +89,7 @@ public class PreloadLoader {
         App.logger.debug("Finished loading objects of type '" + base.toString() + "' for bot channel");
     }
 
-    private static void loadFromList(List<PreloadPair> list, DatabaseWrapper db, Base base, LoadStrategy strategy) {
+    private static void loadFromList(List<PreloadPair<?>> list, DatabaseWrapper db, Base base, LoadStrategy strategy) {
         list.forEach(preloadPair -> loadObjectUsingStrategy(db, preloadPair.tNew, preloadPair.tOld, base, strategy));
     }
 
@@ -136,7 +136,7 @@ public class PreloadLoader {
         }
     }
 
-    private static List<PreloadPair> loadDirectoryContents(Base base, Chan chan, String channelName, LoadStrategy strategy) {
+    private static List<PreloadPair<?>> loadDirectoryContents(Base base, Chan chan, String channelName, LoadStrategy strategy) {
         if ((chan == Chan.SPECIFIC) && (channelName == null)) {
             return null;
         }
@@ -159,7 +159,7 @@ public class PreloadLoader {
             return null;
         }
 
-        List<PreloadPair> list = new ArrayList<>();
+        List<PreloadPair<?>> list = new ArrayList<>();
         Stream.of(files)
                 .forEach(file -> {
                     String name = file.getName();
