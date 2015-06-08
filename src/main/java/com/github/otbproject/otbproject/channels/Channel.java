@@ -5,6 +5,7 @@ import com.github.otbproject.otbproject.commands.scheduler.Scheduler;
 import com.github.otbproject.otbproject.config.ChannelConfig;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.database.SQLiteQuoteWrapper;
+import com.github.otbproject.otbproject.filters.GroupFilterSet;
 import com.github.otbproject.otbproject.messages.receive.ChannelMessageProcessor;
 import com.github.otbproject.otbproject.messages.receive.PackagedMessage;
 import com.github.otbproject.otbproject.messages.send.ChannelMessageSender;
@@ -15,6 +16,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -33,7 +35,7 @@ public class Channel {
     private final Scheduler scheduler = new Scheduler();
     private final HashMap<String,ScheduledFuture> scheduledCommands = new HashMap<>();
     private final HashMap<String,ScheduledFuture> hourlyResetSchedules = new HashMap<>();
-    //private ConcurrentMap<String, GroupFilterSet> filterMap;
+    private ConcurrentMap<String, GroupFilterSet> filterMap;
     private boolean inChannel;
 
     private final ReadWriteLock lock = new ReentrantReadWriteLock();
@@ -208,11 +210,11 @@ public class Channel {
         return hourlyResetSchedules;
     }
 
-/*    public ConcurrentMap<String, GroupFilterSet> getFilterMap() {
+    public ConcurrentMap<String, GroupFilterSet> getFilterMap() {
         return filterMap;
     }
 
     public void setFilterMap(ConcurrentMap<String, GroupFilterSet> filterMap) {
         this.filterMap = filterMap;
-    }*/
+    }
 }
