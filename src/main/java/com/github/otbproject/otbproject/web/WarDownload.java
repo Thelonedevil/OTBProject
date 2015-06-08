@@ -30,7 +30,6 @@ public class WarDownload implements Runnable {
             fis.close();
             if(!slowEquals(fromHex(md5), fromHex(inputLine))){
                 App.logger.error("Download of War file either corrupted or some 3rd party has changed the file");
-                throw new IOException();
             }
         } catch (IOException e) {
            App.logger.catching(e);
