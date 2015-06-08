@@ -21,6 +21,8 @@ import com.github.otbproject.otbproject.util.VersionClass;
 import com.github.otbproject.otbproject.util.compat.VersionCompatHelper;
 import com.github.otbproject.otbproject.util.preload.LoadStrategy;
 import com.github.otbproject.otbproject.util.preload.PreloadLoader;
+import com.github.otbproject.otbproject.web.WarDownload;
+import com.github.otbproject.otbproject.web.WebStart;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.ParseException;
 import org.apache.logging.log4j.LogManager;
@@ -173,6 +175,20 @@ public class App {
         } else {
             APIBot.setBotRunnable(new BotRunnable());
             APIBot.setBotFuture(Util.getSingleThreadExecutor("Bot").submit(APIBot.getBotRunnable()));
+        }
+        try{
+            if(new File(WebStart.WAR_PATH).exists()){
+                WebStart.main(args);
+            }else if(!VERSION.contains("-SNAPSHOT")){
+                Thread thread = new Thread(new WarDownload());
+                thread.start();
+                thread.join();
+                WebStart.main(args);
+            }else{
+                logger.warn("You are running a dev build of OTBProject, please also grab the latest build of the web interface and place in \""+FSUtil.webDir()+File.separator+"\" as \"WebInterface-"+new VersionClass().getVersion()+".war\". Releases will automatically download this for you");
+            }
+        }catch (Exception e){
+            logger.catching(e);
         }
         if (!GraphicsEnvironment.isHeadless()) {
             GuiApplication.setInputActive();
