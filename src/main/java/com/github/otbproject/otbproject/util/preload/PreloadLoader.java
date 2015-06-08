@@ -153,7 +153,7 @@ public class PreloadLoader {
             return null;
         }
 
-        final Class tClass = getClassFromBase(base);
+        final Class<?> tClass = getClassFromBase(base);
         if (tClass == null) {
             App.logger.warn("Unable to determine class to load as for base: " + base.toString());
             return null;
@@ -197,7 +197,7 @@ public class PreloadLoader {
         return new PreloadPair<>(tNew, tOld);
     }
 
-    private static Class getClassFromBase(Base base) {
+    private static Class<?> getClassFromBase(Base base) {
         switch (base) {
             case ALIAS:
                 return Alias.class;
