@@ -14,7 +14,7 @@ public class WarDownload implements Runnable {
 
     @Override
     public void run() {
-        String war = "http://ts.tldcode.uk:8081/nexus/content/repositories/releases/com/github/bot/WebInterface/"+new VersionClass().getVersion()+"/"+"WebInterface-"+new VersionClass().getVersion()+".war";
+        String war = "http://ts.tldcode.uk:8081/nexus/content/repositories/releases/com/github/otbproject/web-interface/"+App.VERSION+"/"+"WebInterface-"+App.VERSION+".war";
         URL website = null;
         try {
             website = new URL(war);
@@ -28,7 +28,7 @@ public class WarDownload implements Runnable {
             FileInputStream fis = new FileInputStream(new File(WebStart.WAR_PATH));
             String md5 = DigestUtils.md5Hex(fis);
             fis.close();
-            if(!slowEquals(fromHex(md5),fromHex(inputLine))){
+            if(!slowEquals(fromHex(md5), fromHex(inputLine))){
                 App.logger.error("Download of War file either corrupted or some 3rd party has changed the file");
                 throw new IOException();
             }
