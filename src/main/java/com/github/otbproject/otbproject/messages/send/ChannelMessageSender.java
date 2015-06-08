@@ -74,6 +74,8 @@ public class ChannelMessageSender {
             limit = channel.getConfig().queueLimits.getLowPriorityLimit();
         }
 
+        // Yes, I am aware that this can be simplified, but it ends up being just
+        //  about unreadable
         if ((limit >= 0) && queue.size() > limit) {
             return false;
         }
