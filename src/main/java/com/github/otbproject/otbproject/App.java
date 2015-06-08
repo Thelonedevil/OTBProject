@@ -2,7 +2,8 @@ package com.github.otbproject.otbproject;
 
 import com.github.otbproject.otbproject.api.APIBot;
 import com.github.otbproject.otbproject.api.APIConfig;
-import com.github.otbproject.otbproject.beam.BeamBot;
+import com.github.otbproject.otbproject.bot.BotInitException;
+import com.github.otbproject.otbproject.bot.beam.BeamBot;
 import com.github.otbproject.otbproject.bot.BotRunnable;
 import com.github.otbproject.otbproject.cli.ArgParser;
 import com.github.otbproject.otbproject.cli.commands.CmdParser;
@@ -11,10 +12,11 @@ import com.github.otbproject.otbproject.fs.FSUtil;
 import com.github.otbproject.otbproject.fs.Setup;
 import com.github.otbproject.otbproject.fs.groups.*;
 import com.github.otbproject.otbproject.gui.GuiApplication;
-import com.github.otbproject.otbproject.irc.IRCBot;
-import com.github.otbproject.otbproject.util.InputParserImproved;
+import com.github.otbproject.otbproject.bot.irc.IRCBot;
+import com.github.otbproject.otbproject.bot.irc.InputParserImproved;
 import com.github.otbproject.otbproject.util.LibsLoader;
 import com.github.otbproject.otbproject.util.UnPacker;
+import com.github.otbproject.otbproject.util.Util;
 import com.github.otbproject.otbproject.util.VersionClass;
 import com.github.otbproject.otbproject.util.compat.VersionCompatHelper;
 import com.github.otbproject.otbproject.util.preload.LoadStrategy;
@@ -97,9 +99,7 @@ public class App {
             } catch (Exception e) {
                 App.logger.catching(e);
             }
-            new Thread(() -> {
-                GuiApplication.start(args);
-            }).start();
+            Util.getSingleThreadExecutor().execute(() -> GuiApplication.start(args));
         }
 
         // Ensure directory tree is setup
@@ -152,21 +152,28 @@ public class App {
         startup(cmd);
 
         // Connect to service
-        switch (APIConfig.getGeneralConfig().getServiceName()){
-            case TWITCH:
-                APIBot.setBot(new IRCBot());
-                Class c = APIBot.getBot().getClass().getSuperclass();
-                Field input = c.getDeclaredField("inputParser");
-                input.setAccessible(true);
-                input.set(APIBot.getBot(), new InputParserImproved((IRCBot) APIBot.getBot()));
-                break;
-            case BEAM:
-                APIBot.setBot(new BeamBot());
-                break;
+        try {
+            switch (APIConfig.getGeneralConfig().getServiceName()){
+                case TWITCH:
+                    APIBot.setBot(new IRCBot());
+                    Class c = APIBot.getBot().getClass().getSuperclass();
+                    Field input = c.getDeclaredField("inputParser");
+                    input.setAccessible(true);
+                    input.set(APIBot.getBot(), new InputParserImproved((IRCBot) APIBot.getBot()));
+                    break;
+                case BEAM:
+                    APIBot.setBot(new BeamBot());
+                    break;
+            }
+        } catch (BotInitException e) {
+            logger.catching(e);
         }
-        APIBot.setBotRunnable(new BotRunnable());
-        APIBot.setBotThread(new Thread(APIBot.getBotRunnable()));
-        APIBot.getBotThread().start();
+        if (APIBot.getBot() == null) {
+            App.logger.error("Failed to start bot");
+        } else {
+            APIBot.setBotRunnable(new BotRunnable());
+            APIBot.setBotFuture(Util.getSingleThreadExecutor("Bot").submit(APIBot.getBotRunnable()));
+        }
         if (!GraphicsEnvironment.isHeadless()) {
             GuiApplication.setInputActive();
         }

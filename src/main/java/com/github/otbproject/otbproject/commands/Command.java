@@ -1,118 +1,114 @@
 package com.github.otbproject.otbproject.commands;
 
-
-import com.github.otbproject.otbproject.App;
-import com.github.otbproject.otbproject.commands.loader.LoadedCommand;
-import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.users.UserLevel;
-import com.github.otbproject.otbproject.util.CustomCollectors;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.stream.Collectors;
+import javax.validation.constraints.NotNull;
 
 public class Command {
+    @NotNull
+    private String name;
+    private String response = "example response";
+    private UserLevel execUserLevel = UserLevel.DEFAULT;
+    private int minArgs = 0;
+    private int count = 0;
 
-    public static LoadedCommand get(DatabaseWrapper db, String commandName) {
-        if (db.exists(CommandFields.TABLE_NAME, commandName, CommandFields.NAME)) {
-            LoadedCommand loadedCommand = new LoadedCommand();
-            ResultSet rs = db.getRecord(CommandFields.TABLE_NAME, commandName, CommandFields.NAME);
-            try {
-                loadedCommand.setName(rs.getString(CommandFields.NAME));
-                loadedCommand.setResponse(rs.getString(CommandFields.RESPONSE));
-                loadedCommand.setCount(Integer.parseInt(rs.getString(CommandFields.COUNT)));
-                loadedCommand.setEnabled(Boolean.valueOf(rs.getString(CommandFields.ENABLED)));
-                loadedCommand.setDebug((Boolean.valueOf(rs.getString(CommandFields.DEBUG))));
-                loadedCommand.setExecUserLevel(UserLevel.valueOf(rs.getString(CommandFields.EXEC_USER_LEVEL)));
-                loadedCommand.setMinArgs(Integer.parseInt(rs.getString(CommandFields.MIN_ARGS)));
-                loadedCommand.setScript(rs.getString(CommandFields.SCRIPT));
-                loadedCommand.modifyingUserLevels = loadedCommand.new ModifyingUserLevels();
-                loadedCommand.modifyingUserLevels.setNameModifyingUL(UserLevel.valueOf(rs.getString(CommandFields.NAME_MODIFYING_UL)));
-                loadedCommand.modifyingUserLevels.setResponseModifyingUL(UserLevel.valueOf(rs.getString(CommandFields.RESPONSE_MODIFYING_UL)));
-                loadedCommand.modifyingUserLevels.setUserLevelModifyingUL(UserLevel.valueOf(rs.getString(CommandFields.USER_LEVEL_MODIFYING_UL)));
-                return loadedCommand;
-            } catch (SQLException e) {
-                App.logger.catching(e);
-            } finally {
-                try {
-                    rs.close();
-                } catch (SQLException e) {
-                    App.logger.catching(e);
-                }
-            }
-        }
-        return null;
-    }
+    public ModifyingUserLevels modifyingUserLevels = new ModifyingUserLevels();
 
-    public static List<String> getCommands(DatabaseWrapper db) {
-        ArrayList<Object> list =  db.getRecordsList(CommandFields.TABLE_NAME, CommandFields.NAME);
-        if (list == null) {
-            return null;
+    public class ModifyingUserLevels {
+        private UserLevel nameModifyingUL = UserLevel.DEFAULT;
+        private UserLevel responseModifyingUL = UserLevel.DEFAULT;
+        private UserLevel userLevelModifyingUL = UserLevel.DEFAULT;
+
+        public UserLevel getNameModifyingUL() {
+            return nameModifyingUL;
         }
-        try {
-            return list.stream().map(key -> (String) key).collect(Collectors.toList());
-        } catch (ClassCastException e) {
-            App.logger.catching(e);
-            return null;
+
+        public void setNameModifyingUL(UserLevel nameModifyingUL) {
+            this.nameModifyingUL = nameModifyingUL;
+        }
+
+        public UserLevel getResponseModifyingUL() {
+            return responseModifyingUL;
+        }
+
+        public void setResponseModifyingUL(UserLevel responseModifyingUL) {
+            this.responseModifyingUL = responseModifyingUL;
+        }
+
+        public UserLevel getUserLevelModifyingUL() {
+            return userLevelModifyingUL;
+        }
+
+        public void setUserLevelModifyingUL(UserLevel userLevelModifyingUL) {
+            this.userLevelModifyingUL = userLevelModifyingUL;
         }
     }
 
-    public static boolean update(DatabaseWrapper db, HashMap<String, Object> map) {
-        return db.updateRecord(CommandFields.TABLE_NAME, map.get(CommandFields.NAME), CommandFields.NAME, map);
+    private String script;
+    private Boolean enabled = true;
+    private boolean debug = false;
+
+    public String getName() {
+        return name;
     }
 
-    public static boolean exists(DatabaseWrapper db, String commandName) {
-        return db.exists(CommandFields.TABLE_NAME, commandName, CommandFields.NAME);
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public static boolean add(DatabaseWrapper db, HashMap<String, Object> map) {
-        return db.insertRecord(CommandFields.TABLE_NAME, map);
+    public String getResponse() {
+        return response;
     }
 
-    public static boolean remove(DatabaseWrapper db, String commandName) {
-        return db.removeRecord(CommandFields.TABLE_NAME, commandName, CommandFields.NAME);
+    public void setResponse(String response) {
+        this.response = response;
     }
 
-    public static void incrementCount(DatabaseWrapper db, String commandName) {
-        LoadedCommand loadedCommand = get(db, commandName);
-        if (loadedCommand == null) {
-            return;
-        }
-        loadedCommand.setCount(loadedCommand.getCount() + 1);
-        addCommandFromLoadedCommand(db, loadedCommand);
+    public UserLevel getExecUserLevel() {
+        return execUserLevel;
     }
 
-    public static void resetCount(DatabaseWrapper db, String commandName) {
-        LoadedCommand loadedCommand = get(db, commandName);
-        if (loadedCommand == null) {
-            return;
-        }
-        loadedCommand.setCount(0);
-        addCommandFromLoadedCommand(db, loadedCommand);
+    public void setExecUserLevel(UserLevel execUserLevel) {
+        this.execUserLevel = execUserLevel;
     }
 
-    public static boolean addCommandFromLoadedCommand(DatabaseWrapper db, LoadedCommand loadedCommand) {
-        HashMap<String, Object> map = new HashMap<>();
+    public int getMinArgs() {
+        return minArgs;
+    }
 
-        map.put(CommandFields.NAME, loadedCommand.getName());
-        map.put(CommandFields.RESPONSE, loadedCommand.getResponse());
-        map.put(CommandFields.EXEC_USER_LEVEL, loadedCommand.getExecUserLevel().name());
-        map.put(CommandFields.MIN_ARGS, String.valueOf(loadedCommand.getMinArgs()));
-        map.put(CommandFields.COUNT, String.valueOf(loadedCommand.getCount()));
-        map.put(CommandFields.NAME_MODIFYING_UL, loadedCommand.modifyingUserLevels.getNameModifyingUL().name());
-        map.put(CommandFields.RESPONSE_MODIFYING_UL, loadedCommand.modifyingUserLevels.getResponseModifyingUL().name());
-        map.put(CommandFields.USER_LEVEL_MODIFYING_UL, loadedCommand.modifyingUserLevels.getUserLevelModifyingUL().name());
-        map.put(CommandFields.SCRIPT, loadedCommand.getScript());
-        map.put(CommandFields.ENABLED, String.valueOf(loadedCommand.isEnabled()));
-        map.put(CommandFields.DEBUG, String.valueOf(loadedCommand.isDebug()));
+    public void setMinArgs(int minArgs) {
+        this.minArgs = minArgs;
+    }
 
-        if (Command.exists(db, loadedCommand.getName())) {
-            return Command.update(db, map);
-        } else {
-            return Command.add(db, map);
-        }
+    public int getCount() {
+        return count;
+    }
+
+    public void setCount(int count) {
+        this.count = count;
+    }
+
+    public String getScript() {
+        return script;
+    }
+
+    public void setScript(String script) {
+        this.script = script;
+    }
+
+    public Boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public boolean isDebug() {
+        return debug;
+    }
+
+    public void setDebug(boolean debug) {
+        this.debug = debug;
     }
 }
