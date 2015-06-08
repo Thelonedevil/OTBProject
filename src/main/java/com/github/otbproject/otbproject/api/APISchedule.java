@@ -16,15 +16,12 @@ import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
 public class APISchedule {
-    public static final int SECONDS_IN_MINUTE = 60;
-    public static final int SECONDS_IN_HOUR = 360;
-
     public static void scheduleCommandInSeconds(String channel, String command, long delay, long period, boolean hourReset) {
         scheduleCommand(channel, command, delay, period, hourReset, TimeUnit.SECONDS);
     }
 
     public static void scheduleCommandInMinutes(String channel, String command, long delay, long period, boolean hourReset) {
-        scheduleCommand(channel, command, (delay * SECONDS_IN_MINUTE), (period * SECONDS_IN_MINUTE), hourReset, TimeUnit.SECONDS);
+        scheduleCommand(channel, command, (TimeUnit.MINUTES.toSeconds(delay)), (TimeUnit.MINUTES.toSeconds(period)), hourReset, TimeUnit.SECONDS);
     }
 
     public static void scheduleCommandInHours(String channel, String command, long delay, long period) {
@@ -41,15 +38,15 @@ public class APISchedule {
             APIChannel.get(channel).getHourlyResetSchedules().get(command).cancel(false);
     }
 
-    public static int getSecondsSinceTheHour() {
+    public static long getSecondsSinceTheHour() {
         Date date = new Date();
         Calendar calendar = GregorianCalendar.getInstance();
         calendar.setTime(date);
-        return calendar.get(Calendar.MINUTE) * 60 + calendar.get(Calendar.SECOND);
+        return TimeUnit.MINUTES.toSeconds(calendar.get(Calendar.MINUTE)) + calendar.get(Calendar.SECOND);
     }
 
-    public static int getSecondsTillTheHour() {
-        return SECONDS_IN_HOUR - getSecondsSinceTheHour();
+    public static long getSecondsTillTheHour() {
+        return TimeUnit.HOURS.toSeconds(1) - getSecondsSinceTheHour();
     }
 
     private static boolean scheduleCommand(String channel, String command, long delay, long period, boolean hourReset, TimeUnit timeUnit) {
@@ -66,7 +63,7 @@ public class APISchedule {
             }
             // Setup reset
             Runnable reset = new ResetTask(channel, command, delay, period, timeUnit);
-            APIChannel.get(channel).getHourlyResetSchedules().put(command, APIChannel.get(channel).getScheduler().schedule(reset, getSecondsTillTheHour(), SECONDS_IN_HOUR, TimeUnit.SECONDS));
+            APIChannel.get(channel).getHourlyResetSchedules().put(command, APIChannel.get(channel).getScheduler().schedule(reset, getSecondsTillTheHour(), TimeUnit.HOURS.toSeconds(1), TimeUnit.SECONDS));
         }
         return addToDatabase(channel, command, delay, period, hourReset, timeUnit);
     }
