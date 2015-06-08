@@ -12,7 +12,7 @@ public class FilterProcessor {
     static final String METHOD_NAME = "checkMessage";
     static final ScriptProcessor PROCESSOR = new ScriptProcessor();
 
-    // Returns the FilterGroup of a Filter which matches the message, or null if no Filter matches
+    // TODO delete
     public static FilterGroup process(ConcurrentHashMap.KeySetView<Filter, Boolean> filters, ConcurrentMap<String, FilterGroup> filterGroups, String message, UserLevel userLevel) {
         if (userLevel.getValue() < UserLevel.MODERATOR.getValue()) {
             return null;
@@ -31,6 +31,7 @@ public class FilterProcessor {
         return filterGroups.get(filterOptional.get().getGroup());
     }
 
+    // Returns the FilterGroup of a Filter which matches the message, or null if no Filter matches
     public static FilterGroup process(ConcurrentMap<String, GroupFilterSet> groupFilterSets, String message, UserLevel userLevel) {
         if (userLevel.getValue() < UserLevel.MODERATOR.getValue()) {
             return null;
