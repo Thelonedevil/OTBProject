@@ -15,7 +15,7 @@ public class GroupFilterSet {
         this.group = group;
     }
 
-    public ConcurrentMap<String, GroupFilterSet> createGroupFilterSetMap(Collection<FilterGroup> filterGroups, Collection<Filter> filters) {
+    public static ConcurrentMap<String, GroupFilterSet> createGroupFilterSetMap(Collection<FilterGroup> filterGroups, Collection<Filter> filters) {
         ConcurrentMap<String, GroupFilterSet> map  = filterGroups.stream().collect(Collectors.toConcurrentMap(FilterGroup::getName, GroupFilterSet::new));
         filters.stream()
                 .forEach(filter -> {
