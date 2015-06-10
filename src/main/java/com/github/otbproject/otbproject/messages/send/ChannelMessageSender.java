@@ -19,7 +19,7 @@ public class ChannelMessageSender {
     private final Channel channel;
     private final PriorityBlockingQueue<MessageOut> queue = new PriorityBlockingQueue<>();
     private Future<?> future;
-    boolean active = false;
+    private boolean active = false;
 
     static {
         EXECUTOR_SERVICE = Executors.newCachedThreadPool(
@@ -55,9 +55,12 @@ public class ChannelMessageSender {
         return true;
     }
 
-    // Queues message even if sender is not active.
-    // Queue itself is thread-safe, however
+    // Queue itself is thread-safe, method is not
     public boolean send(MessageOut message) {
+        if (!active) {
+            return false;
+        }
+
         MessagePriority priority = message.getPriority();
         // Defaults to no limit
         int limit = -1;
