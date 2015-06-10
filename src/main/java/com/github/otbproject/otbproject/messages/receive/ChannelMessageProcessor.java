@@ -84,7 +84,6 @@ public class ChannelMessageProcessor {
         }
     }
 
-    // TODO make thread-safe
     private void doResponse(DatabaseWrapper db, ProcessedMessage processedMsg, String channelName, String destChannelName, Channel destChanel, String user, UserLevel ul, MessagePriority priority, boolean internal) {
         String message = processedMsg.response;
         String command = processedMsg.commandName;
