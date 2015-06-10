@@ -1,6 +1,7 @@
 package com.github.otbproject.otbproject.channels;
 
 import com.github.otbproject.otbproject.api.APIDatabase;
+import com.github.otbproject.otbproject.api.APISchedule;
 import com.github.otbproject.otbproject.commands.scheduler.Scheduler;
 import com.github.otbproject.otbproject.config.ChannelConfig;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
@@ -31,16 +32,16 @@ public class Channel {
     private final DatabaseWrapper mainDb;
     private final SQLiteQuoteWrapper quoteDb;
     private ChannelMessageSender messageSender;
-    private ChannelMessageProcessor messageReceiver;
+    private ChannelMessageProcessor messageProcessor;
     private final Scheduler scheduler = new Scheduler();
     private final HashMap<String,ScheduledFuture> scheduledCommands = new HashMap<>();
     private final HashMap<String,ScheduledFuture> hourlyResetSchedules = new HashMap<>();
     private ConcurrentMap<String, GroupFilterSet> filterMap;
     private boolean inChannel;
 
-    private final ReadWriteLock lock = new ReentrantReadWriteLock();
+    private final ReadWriteLock lock = new ReentrantReadWriteLock(true);
 
-    public Channel(String name, ChannelConfig config) throws ChannelInitException {
+    private Channel(String name, ChannelConfig config) throws ChannelInitException {
         this.name = name;
         this.config = config;
         this.inChannel = false;
@@ -66,6 +67,18 @@ public class Channel {
         //filterMap = GroupFilterSet.createGroupFilterSetMap(FilterGroups.getFilterGroups(mainDb), Filters.getAllFilters(mainDb));
     }
 
+    private void init() {
+        messageSender = new ChannelMessageSender(this);
+        messageProcessor = new ChannelMessageProcessor(this);
+        APISchedule.loadFromDatabase(this);
+    }
+
+    public static Channel create(String name, ChannelConfig config) throws ChannelInitException {
+        Channel channel = new Channel(name, config);
+        channel.init();
+        return channel;
+    }
+
     public boolean join() {
         lock.writeLock().lock();
         try {
@@ -73,11 +86,7 @@ public class Channel {
                 return false;
             }
 
-            messageSender = new ChannelMessageSender(this);
             messageSender.start();
-
-            messageReceiver = new ChannelMessageProcessor(this);
-
             scheduler.start();
 
             inChannel = true;
@@ -97,10 +106,6 @@ public class Channel {
             inChannel = false;
 
             messageSender.stop();
-            messageSender = null;
-
-            messageReceiver = null;
-
             scheduler.stop();
 
             commandCooldownSet.clear();
@@ -116,15 +121,41 @@ public class Channel {
     public boolean sendMessage(MessageOut messageOut) {
         lock.readLock().lock();
         try {
-            return inChannel && messageSender.send(messageOut);
+            return inChannel && !config.isSilenced() && messageSender.send(messageOut);
         } finally {
             lock.readLock().unlock();
         }
     }
 
+    public void clearSendQueue() {
+        lock.readLock().lock();
+        try {
+            messageSender.clearQueue();
+        } finally {
+            lock.readLock().unlock();
+        }
+    }
+
+    /**
+     * Not concurrent.
+     * Cannot read-lock because:
+     *  * It may execute a script and may consequently take an extended time to execute
+     *  * It may execute a script which requires a write-lock (such as one to leave
+     *      the channel), which will cause it to lock up.
+     *
+     * Checks if in the channel only initially, and then attempts to process the
+     *  message. Some calls from within messageProcessor.process() may fail if
+     *  the bot leaves the channel while it is still executing.
+     *
+     * @param packagedMessage a message to receive and process
+     * @return A boolean stating whether it is likely that the message was processed
+     *  successfully. Should not be relied upon to be accurate
+     */
     public boolean receiveMessage(PackagedMessage packagedMessage) {
         if (inChannel) {
-            messageReceiver.processMessage(packagedMessage);
+            messageProcessor.process(packagedMessage);
+        } else {
+            return false; // In case joins channel since the 'if' statement
         }
         return inChannel;
     }

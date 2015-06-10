@@ -9,16 +9,17 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.PriorityBlockingQueue;
 
 // This class is not in general thread-safe. Thread safety should be enforced by the
 // class using this one
-public class ChannelMessageSender implements Runnable {
+public class ChannelMessageSender {
     private static final ExecutorService EXECUTOR_SERVICE;
 
     private final Channel channel;
-    private final MessageSendQueue queue;
+    private final PriorityBlockingQueue<MessageOut> queue = new PriorityBlockingQueue<>();
     private Future<?> future;
-    boolean active = false;
+    private boolean active = false;
 
     static {
         EXECUTOR_SERVICE = Executors.newCachedThreadPool(
@@ -33,7 +34,6 @@ public class ChannelMessageSender implements Runnable {
 
     public ChannelMessageSender(Channel channel) {
         this.channel = channel;
-        this.queue = new MessageSendQueue(channel);
     }
 
     public boolean start() {
@@ -41,7 +41,7 @@ public class ChannelMessageSender implements Runnable {
             return false;
         }
         active = true;
-        future = EXECUTOR_SERVICE.submit(this);
+        future = EXECUTOR_SERVICE.submit(this::run);
         return true;
     }
 
@@ -55,13 +55,38 @@ public class ChannelMessageSender implements Runnable {
         return true;
     }
 
-    // Queues message even if sender is not active.
-    // Queue itself is thread-safe, however
-    public boolean send(MessageOut messageOut) {
-        return queue.add(messageOut);
+    // Queue itself is thread-safe, method is not
+    public boolean send(MessageOut message) {
+        if (!active) {
+            return false;
+        }
+
+        MessagePriority priority = message.getPriority();
+        // Defaults to no limit
+        int limit = -1;
+
+        if (priority == MessagePriority.HIGH) {
+            limit = channel.getConfig().queueLimits.getHighPriorityLimit();
+        } else if (priority == MessagePriority.DEFAULT) {
+            limit = channel.getConfig().queueLimits.getDefaultPriorityLimit();
+        } else if (priority == MessagePriority.LOW) {
+            limit = channel.getConfig().queueLimits.getLowPriorityLimit();
+        }
+
+        // Yes, I am aware that this can be simplified, but it ends up being just
+        //  about unreadable
+        if ((limit >= 0) && queue.size() > limit) {
+            return false;
+        }
+
+        return queue.add(message);
     }
 
-    public void run() {
+    public void clearQueue() {
+        queue.clear();
+    }
+
+    private void run() {
         try {
             Thread.currentThread().setName(channel.getName() + " Message Sender");
             MessageOut message;
@@ -74,8 +99,6 @@ public class ChannelMessageSender implements Runnable {
             }
         } catch (InterruptedException e) {
             App.logger.info("Stopped message sender for " + channel.getName());
-        } catch (Exception e) {
-            App.logger.catching(e);
         }
     }
 }
