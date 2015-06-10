@@ -49,32 +49,38 @@ public class APISchedule {
         return TimeUnit.HOURS.toSeconds(1) - getSecondsSinceTheHour();
     }
 
-    private static boolean scheduleCommand(String channel, String command, long delay, long period, boolean hourReset, TimeUnit timeUnit) {
-        Runnable task = new ScheduledCommand(channel, command);
-        if (!hourReset) {
-            scheduleCommand(channel, command, task, delay, period, timeUnit);
-        } else {
-            long result = getSecondsSinceTheHour() - delay;
-            if (result < 0) {
-                scheduleCommand(channel, command, task, (-1 * result), period, timeUnit);
-            } else {
-                // This gets the correct delay. Trust me
-                scheduleCommand(channel, command, task, (period - (result % period)), period, timeUnit);
-            }
-            // Setup reset
-            Runnable reset = new ResetTask(channel, command, delay, period, timeUnit);
-            APIChannel.get(channel).getHourlyResetSchedules().put(command, APIChannel.get(channel).getScheduler().schedule(reset, getSecondsTillTheHour(), TimeUnit.HOURS.toSeconds(1), TimeUnit.SECONDS));
-        }
-        return addToDatabase(channel, command, delay, period, hourReset, timeUnit);
-    }
-
-    private static boolean scheduleCommand(String channelName, String command, Runnable task, long delay, long period, TimeUnit timeUnit) {
+    private static boolean scheduleCommand(String channelName, String command, long delay, long period, boolean hourReset, TimeUnit timeUnit) {
         Channel channel = APIChannel.get(channelName);
         if (channel == null) {
             App.logger.error("Cannot schedule command for channel '" + channelName + "' - channel is null.");
             return false;
         }
-        channel.getScheduledCommands().put(command, APIChannel.get(channelName).getScheduler().schedule(task, delay, period, timeUnit));
+        doScheduleCommand(channel, command, delay, period, hourReset, timeUnit);
+        return addToDatabase(channelName, command, delay, period, hourReset, timeUnit);
+    }
+
+    // Channel should not be null
+    private static void doScheduleCommand(Channel channel, String command, long delay, long period, boolean hourReset, TimeUnit timeUnit) {
+        Runnable task = new ScheduledCommand(channel.getName(), command);
+        if (!hourReset) {
+            scheduleTask(channel, command, task, delay, period, timeUnit);
+        } else {
+            long result = getSecondsSinceTheHour() - delay;
+            if (result < 0) {
+                scheduleTask(channel, command, task, (-1 * result), period, timeUnit);
+            } else {
+                // This gets the correct delay. Trust me
+                scheduleTask(channel, command, task, (period - (result % period)), period, timeUnit);
+            }
+            // Setup reset
+            Runnable reset = new ResetTask(channel.getName(), command, delay, period, timeUnit);
+            channel.getHourlyResetSchedules().put(command, channel.getScheduler().schedule(reset, getSecondsTillTheHour(), TimeUnit.HOURS.toSeconds(1), TimeUnit.SECONDS));
+        }
+    }
+
+    // Channel should not be null
+    private static boolean scheduleTask(Channel channel, String command, Runnable task, long delay, long period, TimeUnit timeUnit) {
+        channel.getScheduledCommands().put(command, channel.getScheduler().schedule(task, delay, period, timeUnit));
         App.logger.debug("Scheduled Command: " + command + " to run every " + period + " " + timeUnit.toString());
         return true;
     }
@@ -93,8 +99,13 @@ public class APISchedule {
         return db.insertRecord(SchedulerFields.TABLE_NAME, map);
     }
 
-    public static void loadFromDatabase(String channel) {
-        DatabaseWrapper db = APIChannel.get(channel).getMainDatabaseWrapper();
+    public static void loadFromDatabase(String channelName) {
+        Channel channel = APIChannel.get(channelName);
+        if (channel == null) {
+            return;
+        }
+
+        DatabaseWrapper db = channel.getMainDatabaseWrapper();
         ResultSet rs = db.tableDump(SchedulerFields.TABLE_NAME);
         try {
             while (rs.next()) {
@@ -103,7 +114,7 @@ public class APISchedule {
                 long period = rs.getLong(SchedulerFields.PERIOD);
                 boolean hourReset = Boolean.parseBoolean(rs.getString(SchedulerFields.RESET));
                 TimeUnit timeUnit =  TimeUnit.valueOf(rs.getString(SchedulerFields.TYPE));
-                scheduleCommand(channel,command,delay,period,hourReset,timeUnit);
+                doScheduleCommand(channel, command, delay, period, hourReset, timeUnit);
             }
         } catch (SQLException e) {
             App.logger.catching(e);
