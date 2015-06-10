@@ -58,10 +58,6 @@ public class ChannelMessageSender {
     // Queues message even if sender is not active.
     // Queue itself is thread-safe, however
     public boolean send(MessageOut message) {
-        if (channel.getConfig().isSilenced()) {
-            return false;
-        }
-
         MessagePriority priority = message.getPriority();
         // Defaults to no limit
         int limit = -1;

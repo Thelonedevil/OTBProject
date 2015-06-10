@@ -116,7 +116,7 @@ public class Channel {
     public boolean sendMessage(MessageOut messageOut) {
         lock.readLock().lock();
         try {
-            return inChannel && messageSender.send(messageOut);
+            return inChannel && !config.isSilenced() && messageSender.send(messageOut);
         } finally {
             lock.readLock().unlock();
         }
