@@ -132,15 +132,10 @@ public class Channel {
     }
 
     public boolean receiveMessage(PackagedMessage packagedMessage) {
-        lock.readLock().lock();
-        try {
-            if (inChannel) {
-                messageReceiver.processMessage(packagedMessage);
-            }
-            return inChannel;
-        } finally {
-            lock.readLock().unlock();
+        if (inChannel) {
+            messageReceiver.processMessage(packagedMessage);
         }
+        return inChannel;
     }
 
     public String getName() {
