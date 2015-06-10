@@ -1,6 +1,7 @@
 package com.github.otbproject.otbproject.commands;
 
 import com.github.otbproject.otbproject.users.UserLevel;
+
 import javax.validation.constraints.NotNull;
 
 public class Alias {

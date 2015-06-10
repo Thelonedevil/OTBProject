@@ -1,19 +1,20 @@
 package com.github.otbproject.otbproject;
 
 import com.github.otbproject.otbproject.bot.Bot;
-import com.github.otbproject.otbproject.config.Configs;
 import com.github.otbproject.otbproject.bot.BotInitException;
-import com.github.otbproject.otbproject.bot.beam.BeamBot;
 import com.github.otbproject.otbproject.bot.BotRunnable;
+import com.github.otbproject.otbproject.bot.beam.BeamBot;
+import com.github.otbproject.otbproject.bot.irc.IRCBot;
+import com.github.otbproject.otbproject.bot.irc.InputParserImproved;
 import com.github.otbproject.otbproject.cli.ArgParser;
 import com.github.otbproject.otbproject.cli.commands.CmdParser;
 import com.github.otbproject.otbproject.config.*;
 import com.github.otbproject.otbproject.fs.FSUtil;
 import com.github.otbproject.otbproject.fs.Setup;
-import com.github.otbproject.otbproject.fs.groups.*;
+import com.github.otbproject.otbproject.fs.groups.Base;
+import com.github.otbproject.otbproject.fs.groups.Chan;
+import com.github.otbproject.otbproject.fs.groups.Load;
 import com.github.otbproject.otbproject.gui.GuiApplication;
-import com.github.otbproject.otbproject.bot.irc.IRCBot;
-import com.github.otbproject.otbproject.bot.irc.InputParserImproved;
 import com.github.otbproject.otbproject.util.LibsLoader;
 import com.github.otbproject.otbproject.util.UnPacker;
 import com.github.otbproject.otbproject.util.Util;

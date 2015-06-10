@@ -1,10 +1,10 @@
 package com.github.otbproject.otbproject.channels;
 
-import com.github.otbproject.otbproject.database.Databases;
-import com.github.otbproject.otbproject.commands.scheduler.Schedules;
 import com.github.otbproject.otbproject.commands.scheduler.Scheduler;
+import com.github.otbproject.otbproject.commands.scheduler.Schedules;
 import com.github.otbproject.otbproject.config.ChannelConfig;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
+import com.github.otbproject.otbproject.database.Databases;
 import com.github.otbproject.otbproject.database.SQLiteQuoteWrapper;
 import com.github.otbproject.otbproject.filters.GroupFilterSet;
 import com.github.otbproject.otbproject.messages.receive.ChannelMessageProcessor;
