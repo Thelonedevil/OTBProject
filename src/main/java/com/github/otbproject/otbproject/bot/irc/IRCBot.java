@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit;
 
 public class IRCBot extends PircBotX implements IBot{
     private final HashMap<String, Channel> channels = new HashMap<>();
-    private final DatabaseWrapper botDB = Databases.getBotDatabase();
+    private final DatabaseWrapper botDB = Databases.createBotDbWrapper();
     private final OutputRaw newOutputRaw;
     // Should take slightly more than 30 seconds to refill 99 tokens adding 1
     // token every 304 milliseconds

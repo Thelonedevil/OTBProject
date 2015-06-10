@@ -46,11 +46,11 @@ public class Channel {
         this.config = config;
         this.inChannel = false;
 
-        mainDb = Databases.getChannelMainDatabase(name);
+        mainDb = Databases.createChannelMainDbWrapper(name);
         if (mainDb == null) {
             throw new ChannelInitException(name, "Unable to get main database");
         }
-        quoteDb = Databases.getChannelQuoteDatabase(name);
+        quoteDb = Databases.createChannelQuoteDbWrapper(name);
         if (quoteDb == null) {
             throw new ChannelInitException(name, "Unable to get quote database");
         }

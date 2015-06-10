@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit;
 
 public class BeamBot implements IBot {
     private final HashMap<String, Channel> channels = new HashMap<>();
-    private final DatabaseWrapper botDB = Databases.getBotDatabase();
+    private final DatabaseWrapper botDB = Databases.createBotDbWrapper();
 
     public final ExpiringMap<String, Boolean> sentMessageCache;
     private static final int CACHE_TIME = 4;
