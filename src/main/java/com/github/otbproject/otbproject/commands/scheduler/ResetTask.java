@@ -1,7 +1,5 @@
 package com.github.otbproject.otbproject.commands.scheduler;
 
-import com.github.otbproject.otbproject.api.Schedules;
-
 import java.util.concurrent.TimeUnit;
 
 public class ResetTask implements Runnable {

@@ -1,4 +1,4 @@
-package com.github.otbproject.otbproject.api;
+package com.github.otbproject.otbproject.commands.scheduler;
 
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.channels.Channel;
