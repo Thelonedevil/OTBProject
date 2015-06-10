@@ -104,7 +104,9 @@ public class APISchedule {
         if (channel == null) {
             return;
         }
-
+        loadFromDatabase(channel);
+    }
+    public static void loadFromDatabase(Channel channel) {
         DatabaseWrapper db = channel.getMainDatabaseWrapper();
         ResultSet rs = db.tableDump(SchedulerFields.TABLE_NAME);
         try {

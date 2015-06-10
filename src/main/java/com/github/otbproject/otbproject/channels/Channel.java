@@ -1,6 +1,7 @@
 package com.github.otbproject.otbproject.channels;
 
 import com.github.otbproject.otbproject.api.APIDatabase;
+import com.github.otbproject.otbproject.api.APISchedule;
 import com.github.otbproject.otbproject.commands.scheduler.Scheduler;
 import com.github.otbproject.otbproject.config.ChannelConfig;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
@@ -69,6 +70,7 @@ public class Channel {
     private void init() {
         messageSender = new ChannelMessageSender(this);
         messageProcessor = new ChannelMessageProcessor(this);
+        APISchedule.loadFromDatabase(this);
     }
 
     public static Channel create(String name, ChannelConfig config) throws ChannelInitException {

@@ -110,7 +110,6 @@ public class APIChannel {
         } finally {
             lock.unlock();
         }
-        APISchedule.loadFromDatabase(channelName);
         App.logger.info("Successfully joined channel: "+channelName);
         return true;
     }
