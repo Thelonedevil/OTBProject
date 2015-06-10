@@ -4,7 +4,7 @@ import com.github.otbproject.otbproject.bot.IBot;
 
 import java.util.concurrent.Future;
 
-public class APIBot {
+public class Bot {
     private static IBot bot;
     private static Future<?> botFuture;
     private static Runnable botRunnable;
@@ -14,7 +14,7 @@ public class APIBot {
     }
 
     public static void setBot(IBot bot) {
-        APIBot.bot = bot;
+        Bot.bot = bot;
     }
 
     public static Future<?> getBotFuture() {
@@ -22,7 +22,7 @@ public class APIBot {
     }
 
     public static void setBotFuture(Future<?> botFuture) {
-        APIBot.botFuture = botFuture;
+        Bot.botFuture = botFuture;
     }
 
     public static Runnable getBotRunnable() {
@@ -30,6 +30,6 @@ public class APIBot {
     }
 
     public static void setBotRunnable(Runnable botRunnable) {
-        APIBot.botRunnable = botRunnable;
+        Bot.botRunnable = botRunnable;
     }
 }

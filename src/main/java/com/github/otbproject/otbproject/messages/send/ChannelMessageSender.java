@@ -1,7 +1,7 @@
 package com.github.otbproject.otbproject.messages.send;
 
 import com.github.otbproject.otbproject.App;
-import com.github.otbproject.otbproject.api.APIBot;
+import com.github.otbproject.otbproject.api.Bot;
 import com.github.otbproject.otbproject.api.APIConfig;
 import com.github.otbproject.otbproject.channels.Channel;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
@@ -94,7 +94,7 @@ public class ChannelMessageSender {
 
             while (true) {
                 message = queue.take();
-                APIBot.getBot().sendMessage(channel.getName(), message.getMessage());
+                Bot.getBot().sendMessage(channel.getName(), message.getMessage());
                 Thread.sleep(sleepTime);
             }
         } catch (InterruptedException e) {

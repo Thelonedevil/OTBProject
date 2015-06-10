@@ -1,7 +1,7 @@
 package com.github.otbproject.otbproject.bot.irc;
 
 import com.github.otbproject.otbproject.App;
-import com.github.otbproject.otbproject.api.APIBot;
+import com.github.otbproject.otbproject.api.Bot;
 import com.github.otbproject.otbproject.api.APIChannel;
 import com.github.otbproject.otbproject.api.APIConfig;
 import com.github.otbproject.otbproject.channels.Channel;
@@ -21,7 +21,7 @@ public class IrcListener extends ListenerAdapter {
         if (channel == null) {
             if (!APIChannel.join(channelName)) {
                 App.logger.error("Failed to join channel: " + channelName);
-                APIBot.getBot().leave(channelName);
+                Bot.getBot().leave(channelName);
                 return;
             }
             channel = APIChannel.get(channelName);
@@ -65,9 +65,9 @@ public class IrcListener extends ListenerAdapter {
 
     @Override
     public void onConnect(ConnectEvent event) {
-        ((IRCBot) APIBot.getBot()).sendRaw().rawLine("TWITCHCLIENT 3");
+        ((IRCBot) Bot.getBot()).sendRaw().rawLine("TWITCHCLIENT 3");
         // Join bot channel
-        APIChannel.join(APIBot.getBot().getUserName(),false);
+        APIChannel.join(Bot.getBot().getUserName(),false);
         // Join channels
         APIConfig.getBotConfig().currentChannels.forEach(channel -> APIChannel.join(channel, false));
     }

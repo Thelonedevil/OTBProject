@@ -1,6 +1,6 @@
 package com.github.otbproject.otbproject;
 
-import com.github.otbproject.otbproject.api.APIBot;
+import com.github.otbproject.otbproject.api.Bot;
 import com.github.otbproject.otbproject.api.APIConfig;
 import com.github.otbproject.otbproject.bot.BotInitException;
 import com.github.otbproject.otbproject.bot.beam.BeamBot;
@@ -157,24 +157,24 @@ public class App {
         try {
             switch (APIConfig.getGeneralConfig().getServiceName()){
                 case TWITCH:
-                    APIBot.setBot(new IRCBot());
-                    Class c = APIBot.getBot().getClass().getSuperclass();
+                    Bot.setBot(new IRCBot());
+                    Class c = Bot.getBot().getClass().getSuperclass();
                     Field input = c.getDeclaredField("inputParser");
                     input.setAccessible(true);
-                    input.set(APIBot.getBot(), new InputParserImproved((IRCBot) APIBot.getBot()));
+                    input.set(Bot.getBot(), new InputParserImproved((IRCBot) Bot.getBot()));
                     break;
                 case BEAM:
-                    APIBot.setBot(new BeamBot());
+                    Bot.setBot(new BeamBot());
                     break;
             }
         } catch (BotInitException e) {
             logger.catching(e);
         }
-        if (APIBot.getBot() == null) {
+        if (Bot.getBot() == null) {
             App.logger.error("Failed to start bot");
         } else {
-            APIBot.setBotRunnable(new BotRunnable());
-            APIBot.setBotFuture(Util.getSingleThreadExecutor("Bot").submit(APIBot.getBotRunnable()));
+            Bot.setBotRunnable(new BotRunnable());
+            Bot.setBotFuture(Util.getSingleThreadExecutor("Bot").submit(Bot.getBotRunnable()));
         }
         try{
             if(new File(WebStart.WAR_PATH).exists()){

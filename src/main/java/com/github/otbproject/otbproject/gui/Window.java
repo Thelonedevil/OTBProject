@@ -1,7 +1,7 @@
 package com.github.otbproject.otbproject.gui;
 
 import com.github.otbproject.otbproject.App;
-import com.github.otbproject.otbproject.api.APIBot;
+import com.github.otbproject.otbproject.api.Bot;
 
 import javax.swing.*;
 import java.awt.*;
@@ -73,8 +73,8 @@ public class Window extends JFrame implements ActionListener {
         String confirmMsg = "This will stop the bot from running.\nPress \"Cancel\" to continue running the bot.";
         String title = "Confirm Stop Bot";
         if (JOptionPane.showConfirmDialog(this, confirmMsg, title, JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE) == JOptionPane.OK_OPTION) {
-            if (APIBot.getBot() != null && APIBot.getBot().isConnected()) {
-                APIBot.getBot().shutdown();
+            if (Bot.getBot() != null && Bot.getBot().isConnected()) {
+                Bot.getBot().shutdown();
             }
             System.exit(0);
         }

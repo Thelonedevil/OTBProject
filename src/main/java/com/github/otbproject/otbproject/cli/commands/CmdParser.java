@@ -1,7 +1,7 @@
 package com.github.otbproject.otbproject.cli.commands;
 
 import com.github.otbproject.otbproject.App;
-import com.github.otbproject.otbproject.api.APIBot;
+import com.github.otbproject.otbproject.api.Bot;
 import com.github.otbproject.otbproject.api.APIChannel;
 import com.github.otbproject.otbproject.fs.groups.Base;
 import com.github.otbproject.otbproject.fs.groups.Chan;
@@ -236,13 +236,13 @@ public class CmdParser {
         commandBuilder.withShortHelp("restart")
                 .withLongHelp("Restarts the bot")
                 .withAction(() -> {
-                    if (APIBot.getBot() != null && APIBot.getBot().isConnected()) {
-                        APIBot.getBot().shutdown();
+                    if (Bot.getBot() != null && Bot.getBot().isConnected()) {
+                        Bot.getBot().shutdown();
                     }
 /*                    FSCommandLoader.LoadCommands();
                     FSCommandLoader.LoadAliases();*/
                     try {
-                        APIBot.setBotFuture(Util.getSingleThreadExecutor("Bot").submit(APIBot.getBotRunnable()));
+                        Bot.setBotFuture(Util.getSingleThreadExecutor("Bot").submit(Bot.getBotRunnable()));
                     } catch (IllegalThreadStateException e) {
                         App.logger.catching(e);
                         responseStr = "Restart Failed";
@@ -258,8 +258,8 @@ public class CmdParser {
                 .withLongHelp("Stops the bot and exits.")
                 .withAction(() -> {
                     App.logger.info("Stopping the process");
-                    if (APIBot.getBot() != null && APIBot.getBot().isConnected()) {
-                        APIBot.getBot().shutdown();
+                    if (Bot.getBot() != null && Bot.getBot().isConnected()) {
+                        Bot.getBot().shutdown();
                     }
                     App.logger.info("Process Stopped, Goodbye");
                     System.exit(0);

@@ -1,6 +1,6 @@
 package com.github.otbproject.otbproject.commands.parser;
 
-import com.github.otbproject.otbproject.api.APIBot;
+import com.github.otbproject.otbproject.api.Bot;
 import com.github.otbproject.otbproject.api.APIChannel;
 import com.github.otbproject.otbproject.api.APIConfig;
 import com.github.otbproject.otbproject.quotes.Quote;
@@ -162,7 +162,7 @@ public class CommandResponseParser {
         }
         // [[bot]]
         else if (isTerm(term, "bot")) {
-            return doModifier(APIBot.getBot().getUserName(), term);
+            return doModifier(Bot.getBot().getUserName(), term);
         } else {
             throw new InvalidTermException();
         }

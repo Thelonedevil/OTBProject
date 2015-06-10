@@ -1,6 +1,6 @@
 package com.github.otbproject.otbproject.gui;
 
-import com.github.otbproject.otbproject.api.APIBot;
+import com.github.otbproject.otbproject.api.Bot;
 import com.github.otbproject.otbproject.cli.commands.CmdParser;
 import com.github.otbproject.otbproject.messages.internal.InternalMessageSender;
 import com.github.otbproject.otbproject.util.Util;
@@ -94,7 +94,7 @@ public class GuiController {
                         case CmdParser.EXEC:
                         case CmdParser.LEAVECHANNEL:
                         case CmdParser.RELOAD:
-                            APIBot.getBot().getChannels().keySet().forEach(s -> commandsInput.setText(s.startsWith(parts[1]) ? (parts[0] + " " + s + " ") : commandsInput.getText()));
+                            Bot.getBot().getChannels().keySet().forEach(s -> commandsInput.setText(s.startsWith(parts[1]) ? (parts[0] + " " + s + " ") : commandsInput.getText()));
                             break;
                         case CmdParser.HELP:
                             CmdParser.getCommands().forEach(s -> commandsInput.setText(s.startsWith(parts[1]) ? (parts[0] + " " + s + " ") : commandsInput.getText()));

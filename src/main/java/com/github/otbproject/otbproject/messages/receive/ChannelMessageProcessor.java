@@ -1,7 +1,7 @@
 package com.github.otbproject.otbproject.messages.receive;
 
 import com.github.otbproject.otbproject.App;
-import com.github.otbproject.otbproject.api.APIBot;
+import com.github.otbproject.otbproject.api.Bot;
 import com.github.otbproject.otbproject.api.APIChannel;
 import com.github.otbproject.otbproject.api.APIConfig;
 import com.github.otbproject.otbproject.channels.Channel;
@@ -29,7 +29,7 @@ public class ChannelMessageProcessor {
     public ChannelMessageProcessor(Channel channel) {
         this.channel = channel;
         channelName = channel.getName();
-        inBotChannel = this.channel.getName().equals(APIBot.getBot().getUserName());
+        inBotChannel = this.channel.getName().equals(Bot.getBot().getUserName());
     }
 
     public void process(PackagedMessage packagedMessage) {
@@ -51,7 +51,7 @@ public class ChannelMessageProcessor {
 
         // Process commands for bot channel
         if (inBotChannel) {
-            DatabaseWrapper db = APIBot.getBot().getBotDB();
+            DatabaseWrapper db = Bot.getBot().getBotDB();
             UserLevel ul = packagedMessage.getUserLevel();
             ProcessedMessage processedMsg = MessageProcessor.process(db, packagedMessage.getMessage(), channelName, user, ul, APIConfig.getBotConfig().isBotChannelDebug());
             if (processedMsg.isScript || !processedMsg.response.isEmpty()) {
@@ -115,7 +115,7 @@ public class ChannelMessageProcessor {
             }
 
             // Skip cooldowns if in or sending to bot channel, or internal
-            if (inBotChannel || destChannelName.equals(APIBot.getBot().getUserName()) || internal) {
+            if (inBotChannel || destChannelName.equals(Bot.getBot().getUserName()) || internal) {
                 return;
             }
 
