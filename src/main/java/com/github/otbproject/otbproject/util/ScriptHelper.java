@@ -1,7 +1,7 @@
 package com.github.otbproject.otbproject.util;
 
 import com.github.otbproject.otbproject.App;
-import com.github.otbproject.otbproject.api.Channels;
+import com.github.otbproject.otbproject.channels.Channels;
 import com.github.otbproject.otbproject.messages.internal.InternalMessageSender;
 import com.github.otbproject.otbproject.messages.receive.PackagedMessage;
 import com.github.otbproject.otbproject.messages.send.MessageOut;

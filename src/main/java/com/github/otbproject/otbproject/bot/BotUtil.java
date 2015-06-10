@@ -1,6 +1,6 @@
 package com.github.otbproject.otbproject.bot;
 
-import com.github.otbproject.otbproject.api.Channels;
+import com.github.otbproject.otbproject.channels.Channels;
 import com.github.otbproject.otbproject.channels.Channel;
 import com.github.otbproject.otbproject.channels.ChannelNotFoundException;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;

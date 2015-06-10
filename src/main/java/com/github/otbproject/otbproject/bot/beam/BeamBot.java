@@ -1,7 +1,7 @@
 package com.github.otbproject.otbproject.bot.beam;
 
 import com.github.otbproject.otbproject.App;
-import com.github.otbproject.otbproject.api.Channels;
+import com.github.otbproject.otbproject.channels.Channels;
 import com.github.otbproject.otbproject.api.Configs;
 import com.github.otbproject.otbproject.api.Databases;
 import com.github.otbproject.otbproject.bot.BotInitException;

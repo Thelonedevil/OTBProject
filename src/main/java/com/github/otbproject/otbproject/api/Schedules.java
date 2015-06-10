@@ -2,6 +2,7 @@ package com.github.otbproject.otbproject.api;
 
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.channels.Channel;
+import com.github.otbproject.otbproject.channels.Channels;
 import com.github.otbproject.otbproject.commands.scheduler.ResetTask;
 import com.github.otbproject.otbproject.commands.scheduler.ScheduledCommand;
 import com.github.otbproject.otbproject.commands.scheduler.SchedulerFields;

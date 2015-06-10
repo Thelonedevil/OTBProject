@@ -2,7 +2,7 @@ package com.github.otbproject.otbproject.commands.scheduler;
 
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.bot.Bot;
-import com.github.otbproject.otbproject.api.Channels;
+import com.github.otbproject.otbproject.channels.Channels;
 import com.github.otbproject.otbproject.messages.receive.PackagedMessage;
 import com.github.otbproject.otbproject.messages.send.MessagePriority;
 import com.github.otbproject.otbproject.users.UserLevel;

@@ -1,6 +1,7 @@
-package com.github.otbproject.otbproject.api;
+package com.github.otbproject.otbproject.channels;
 
 import com.github.otbproject.otbproject.App;
+import com.github.otbproject.otbproject.api.Configs;
 import com.github.otbproject.otbproject.bot.Bot;
 import com.github.otbproject.otbproject.channels.Channel;
 import com.github.otbproject.otbproject.channels.ChannelInitException;
