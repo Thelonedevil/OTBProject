@@ -5,7 +5,7 @@ import com.github.otbproject.otbproject.channels.Channels;
 import com.github.otbproject.otbproject.bot.BotUtil;
 import com.github.otbproject.otbproject.bot.IBot;
 import com.github.otbproject.otbproject.config.Configs;
-import com.github.otbproject.otbproject.api.Databases;
+import com.github.otbproject.otbproject.database.Databases;
 import com.github.otbproject.otbproject.channels.Channel;
 import com.github.otbproject.otbproject.channels.ChannelNotFoundException;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;

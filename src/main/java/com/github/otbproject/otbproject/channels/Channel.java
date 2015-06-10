@@ -1,6 +1,6 @@
 package com.github.otbproject.otbproject.channels;
 
-import com.github.otbproject.otbproject.api.Databases;
+import com.github.otbproject.otbproject.database.Databases;
 import com.github.otbproject.otbproject.api.Schedules;
 import com.github.otbproject.otbproject.commands.scheduler.Scheduler;
 import com.github.otbproject.otbproject.config.ChannelConfig;

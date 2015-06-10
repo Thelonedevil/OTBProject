@@ -3,7 +3,7 @@ package com.github.otbproject.otbproject.bot.beam;
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.channels.Channels;
 import com.github.otbproject.otbproject.config.Configs;
-import com.github.otbproject.otbproject.api.Databases;
+import com.github.otbproject.otbproject.database.Databases;
 import com.github.otbproject.otbproject.bot.BotInitException;
 import com.github.otbproject.otbproject.bot.BotUtil;
 import com.github.otbproject.otbproject.bot.IBot;

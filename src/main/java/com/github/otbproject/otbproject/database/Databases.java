@@ -1,4 +1,4 @@
-package com.github.otbproject.otbproject.api;
+package com.github.otbproject.otbproject.database;
 
 import com.github.otbproject.otbproject.database.DatabaseHelper;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
