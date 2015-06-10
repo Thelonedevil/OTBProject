@@ -15,7 +15,7 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
-public class APISchedule {
+public class Schedules {
     public static void scheduleCommandInSeconds(String channel, String command, long delay, long period, boolean hourReset) {
         scheduleCommand(channel, command, delay, period, hourReset, TimeUnit.SECONDS);
     }

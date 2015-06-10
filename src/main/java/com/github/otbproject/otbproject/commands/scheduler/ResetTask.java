@@ -1,6 +1,6 @@
 package com.github.otbproject.otbproject.commands.scheduler;
 
-import com.github.otbproject.otbproject.api.APISchedule;
+import com.github.otbproject.otbproject.api.Schedules;
 
 import java.util.concurrent.TimeUnit;
 
@@ -22,11 +22,11 @@ public class ResetTask implements Runnable {
 
     @Override
     public void run() {
-        APISchedule.unScheduleCommand(channel,command);
+        Schedules.unScheduleCommand(channel, command);
         if (timeUnit.equals(TimeUnit.MINUTES)){
-            APISchedule.scheduleCommandInMinutes(channel,command,delay,period,false);
+            Schedules.scheduleCommandInMinutes(channel, command, delay, period, false);
         }else if (timeUnit.equals(TimeUnit.SECONDS)){
-            APISchedule.scheduleCommandInSeconds(channel,command,delay,period,false);
+            Schedules.scheduleCommandInSeconds(channel, command, delay, period, false);
         }
     }
 }
