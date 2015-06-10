@@ -46,7 +46,7 @@ public class Channels {
             isBotChannel = channelName.equals(Bot.getBot().getUserName());
 
             // Check whitelist/blacklist
-            botConfig = APIConfig.getBotConfig();
+            botConfig = Configs.getBotConfig();
             ChannelJoinSetting channelJoinSetting = botConfig.getChannelJoinSetting();
             if (!isBotChannel) {
                 if (channelJoinSetting == ChannelJoinSetting.WHITELIST) {
@@ -85,12 +85,12 @@ public class Channels {
                     App.logger.error("Already in the channel: "+ channelName);
                 }
             } else{
-                App.logger.error("Not connected to " + ResponseParserUtil.wordCap(APIConfig.getGeneralConfig().getServiceName().toString(), true));
+                App.logger.error("Not connected to " + ResponseParserUtil.wordCap(Configs.getGeneralConfig().getServiceName().toString(), true));
                 return false;
             }
             Channel channel;
             if (!Bot.getBot().getChannels().containsKey(channelName)) {
-                ChannelConfig channelConfig = APIConfig.readChannelConfig(channelName);
+                ChannelConfig channelConfig = Configs.readChannelConfig(channelName);
                 try {
                     channel = Channel.create(channelName, channelConfig);
                 } catch (ChannelInitException e) {
@@ -105,7 +105,7 @@ public class Channels {
 
             if (!isBotChannel) {
                 BotConfigHelper.addToCurrentChannels(botConfig, channelName);
-                APIConfig.writeBotConfig();
+                Configs.writeBotConfig();
             }
         } finally {
             lock.unlock();
@@ -125,8 +125,8 @@ public class Channels {
             }
             App.logger.info("Leaving channel: " + channelName);
             get(channelName).leave();
-            BotConfigHelper.removeFromCurrentChannels(APIConfig.getBotConfig(), channelName);
-            APIConfig.writeBotConfig();
+            BotConfigHelper.removeFromCurrentChannels(Configs.getBotConfig(), channelName);
+            Configs.writeBotConfig();
             Bot.getBot().leave(channelName);
         } finally {
             lock.unlock();

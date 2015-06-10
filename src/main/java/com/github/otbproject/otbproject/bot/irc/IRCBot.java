@@ -4,7 +4,7 @@ import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.api.Channels;
 import com.github.otbproject.otbproject.bot.BotUtil;
 import com.github.otbproject.otbproject.bot.IBot;
-import com.github.otbproject.otbproject.api.APIConfig;
+import com.github.otbproject.otbproject.api.Configs;
 import com.github.otbproject.otbproject.api.APIDatabase;
 import com.github.otbproject.otbproject.channels.Channel;
 import com.github.otbproject.otbproject.channels.ChannelNotFoundException;
@@ -32,8 +32,8 @@ public class IRCBot extends PircBotX implements IBot{
 
     @SuppressWarnings("unchecked")
     public IRCBot() {
-        super(new Configuration.Builder().setName(APIConfig.getAccount().getName()).setAutoNickChange(false).setCapEnabled(false).addListener(new IrcListener()).setServerHostname("irc.twitch.tv")
-                .setServerPort(6667).setServerPassword(APIConfig.getAccount().getPasskey()).setEncoding(Charset.forName("UTF-8")).buildConfiguration());
+        super(new Configuration.Builder().setName(Configs.getAccount().getName()).setAutoNickChange(false).setCapEnabled(false).addListener(new IrcListener()).setServerHostname("irc.twitch.tv")
+                .setServerPort(6667).setServerPassword(Configs.getAccount().getPasskey()).setEncoding(Charset.forName("UTF-8")).buildConfiguration());
         App.logger.info("Bot configuration built");
         newOutputRaw = new OutputRawImproved(this);
     }

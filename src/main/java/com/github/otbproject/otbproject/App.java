@@ -1,7 +1,7 @@
 package com.github.otbproject.otbproject;
 
 import com.github.otbproject.otbproject.api.Bot;
-import com.github.otbproject.otbproject.api.APIConfig;
+import com.github.otbproject.otbproject.api.Configs;
 import com.github.otbproject.otbproject.bot.BotInitException;
 import com.github.otbproject.otbproject.bot.beam.BeamBot;
 import com.github.otbproject.otbproject.bot.BotRunnable;
@@ -155,7 +155,7 @@ public class App {
 
         // Connect to service
         try {
-            switch (APIConfig.getGeneralConfig().getServiceName()){
+            switch (Configs.getGeneralConfig().getServiceName()){
                 case TWITCH:
                     Bot.setBot(new IRCBot());
                     Class c = Bot.getBot().getClass().getSuperclass();
@@ -265,27 +265,27 @@ public class App {
 
     public static void loadConfigs(CommandLine cmd) {
         // General config
-        GeneralConfig generalConfig = APIConfig.readGeneralConfig(); // Must be read first for service info
+        GeneralConfig generalConfig = Configs.readGeneralConfig(); // Must be read first for service info
         configManager.setGeneralConfig(generalConfig);
         if (cmd.hasOption(ArgParser.Opts.SERVICE)) {
             String serviceName = cmd.getOptionValue(ArgParser.Opts.SERVICE).toUpperCase();
             if (serviceName.equals(ServiceName.TWITCH.toString())) {
-                APIConfig.getGeneralConfig().setServiceName(ServiceName.TWITCH);
+                Configs.getGeneralConfig().setServiceName(ServiceName.TWITCH);
             } else if (serviceName.equals(ServiceName.BEAM.toString())) {
-                APIConfig.getGeneralConfig().setServiceName(ServiceName.BEAM);
+                Configs.getGeneralConfig().setServiceName(ServiceName.BEAM);
             } else {
                 logger.error("Invalid service name: " + serviceName);
                 ArgParser.printHelp();
                 System.exit(1);
             }
-            APIConfig.writeGeneralConfig();
+            Configs.writeGeneralConfig();
         }
 
         // Account config
         if (cmd.hasOption(ArgParser.Opts.ACCOUNT_FILE)) {
-            APIConfig.setAccountFileName(cmd.getOptionValue(ArgParser.Opts.ACCOUNT_FILE));
+            Configs.setAccountFileName(cmd.getOptionValue(ArgParser.Opts.ACCOUNT_FILE));
         }
-        Account account = APIConfig.readAccount();
+        Account account = Configs.readAccount();
         if (cmd.hasOption(ArgParser.Opts.ACCOUNT)) {
             account.setName(cmd.getOptionValue(ArgParser.Opts.ACCOUNT));
         }
@@ -293,10 +293,10 @@ public class App {
             account.setPasskey(cmd.getOptionValue(ArgParser.Opts.PASSKEY));
         }
         configManager.setAccount(account);
-        APIConfig.writeAccount();
+        Configs.writeAccount();
 
         // Bot config
-        BotConfig botConfig = APIConfig.readBotConfig();
+        BotConfig botConfig = Configs.readBotConfig();
         configManager.setBotConfig(botConfig);
     }
 }

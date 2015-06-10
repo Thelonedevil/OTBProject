@@ -2,7 +2,7 @@ package com.github.otbproject.otbproject.commands.parser;
 
 import com.github.otbproject.otbproject.api.Bot;
 import com.github.otbproject.otbproject.api.Channels;
-import com.github.otbproject.otbproject.api.APIConfig;
+import com.github.otbproject.otbproject.api.Configs;
 import com.github.otbproject.otbproject.quotes.Quote;
 import com.github.otbproject.otbproject.quotes.Quotes;
 
@@ -158,7 +158,7 @@ public class CommandResponseParser {
         }
         // [[service]]
         else if (isTerm(term, "service")) {
-            return doModifier(ResponseParserUtil.firstCap(APIConfig.getGeneralConfig().getServiceName().toString(), true), term);
+            return doModifier(ResponseParserUtil.firstCap(Configs.getGeneralConfig().getServiceName().toString(), true), term);
         }
         // [[bot]]
         else if (isTerm(term, "bot")) {

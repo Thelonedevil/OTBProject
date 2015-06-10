@@ -3,7 +3,7 @@ package com.github.otbproject.otbproject.bot.irc;
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.api.Bot;
 import com.github.otbproject.otbproject.api.Channels;
-import com.github.otbproject.otbproject.api.APIConfig;
+import com.github.otbproject.otbproject.api.Configs;
 import com.github.otbproject.otbproject.channels.Channel;
 import com.github.otbproject.otbproject.messages.receive.PackagedMessage;
 import com.github.otbproject.otbproject.messages.send.MessagePriority;
@@ -69,7 +69,7 @@ public class IrcListener extends ListenerAdapter {
         // Join bot channel
         Channels.join(Bot.getBot().getUserName(), false);
         // Join channels
-        APIConfig.getBotConfig().currentChannels.forEach(channel -> Channels.join(channel, false));
+        Configs.getBotConfig().currentChannels.forEach(channel -> Channels.join(channel, false));
     }
 
 }

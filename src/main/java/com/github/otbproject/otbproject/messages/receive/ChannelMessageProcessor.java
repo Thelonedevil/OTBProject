@@ -3,7 +3,7 @@ package com.github.otbproject.otbproject.messages.receive;
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.api.Bot;
 import com.github.otbproject.otbproject.api.Channels;
-import com.github.otbproject.otbproject.api.APIConfig;
+import com.github.otbproject.otbproject.api.Configs;
 import com.github.otbproject.otbproject.channels.Channel;
 import com.github.otbproject.otbproject.commands.Commands;
 import com.github.otbproject.otbproject.config.ChannelConfigHelper;
@@ -53,7 +53,7 @@ public class ChannelMessageProcessor {
         if (inBotChannel) {
             DatabaseWrapper db = Bot.getBot().getBotDB();
             UserLevel ul = packagedMessage.getUserLevel();
-            ProcessedMessage processedMsg = MessageProcessor.process(db, packagedMessage.getMessage(), channelName, user, ul, APIConfig.getBotConfig().isBotChannelDebug());
+            ProcessedMessage processedMsg = MessageProcessor.process(db, packagedMessage.getMessage(), channelName, user, ul, Configs.getBotConfig().isBotChannelDebug());
             if (processedMsg.isScript || !processedMsg.response.isEmpty()) {
                 doResponse(db, processedMsg, channelName, destChannelName, destChannel, user, ul, packagedMessage.getMessagePriority(), internal);
                 // Don't process response as regular channel if done as bot channel
@@ -71,12 +71,12 @@ public class ChannelMessageProcessor {
         UserLevel ul = packagedMessage.getUserLevel();
         boolean debug = channel.getConfig().isDebug();
         if (inBotChannel) {
-            debug = (debug || APIConfig.getBotConfig().isBotChannelDebug());
+            debug = (debug || Configs.getBotConfig().isBotChannelDebug());
         }
         ProcessedMessage processedMsg = MessageProcessor.process(db, packagedMessage.getMessage(), channelName, user, ul, debug);
 
         // Check if bot is enabled
-        if (channel.getConfig().isEnabled() || GeneralConfigHelper.isPermanentlyEnabled(APIConfig.getGeneralConfig(), processedMsg.commandName)) {
+        if (channel.getConfig().isEnabled() || GeneralConfigHelper.isPermanentlyEnabled(Configs.getGeneralConfig(), processedMsg.commandName)) {
             // Check if empty message, and then if command is on cooldown (skip cooldown check if internal)
             if ((processedMsg.isScript || !processedMsg.response.isEmpty()) && (internal || !destChannel.isCommandCooldown(processedMsg.commandName))) {
                 doResponse(db, processedMsg, channelName, destChannelName, destChannel, user, ul, packagedMessage.getMessagePriority(), internal);

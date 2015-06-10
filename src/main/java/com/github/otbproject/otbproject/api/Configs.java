@@ -7,7 +7,7 @@ import com.github.otbproject.otbproject.util.JsonHandler;
 
 import java.io.File;
 
-public class APIConfig {
+public class Configs {
     private static String accountFileName = "";
 
     public static final String GENERAL_CONFIG_PATH = FSUtil.configDir() + File.separator + FSUtil.ConfigFileNames.GENERAL_CONFIG;
@@ -106,7 +106,7 @@ public class APIConfig {
     }
 
     public static void setAccountFileName(String accountFileName) {
-        APIConfig.accountFileName = accountFileName;
+        Configs.accountFileName = accountFileName;
     }
 
     private static String getAccountPath() {
