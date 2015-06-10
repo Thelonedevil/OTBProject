@@ -32,7 +32,7 @@ public class ChannelMessageProcessor {
         inBotChannel = this.channel.getName().equals(APIBot.getBot().getUserName());
     }
 
-    public void processMessage(PackagedMessage packagedMessage) {
+    public void process(PackagedMessage packagedMessage) {
         boolean internal;
         String user = packagedMessage.getUser();
 
