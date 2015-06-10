@@ -13,8 +13,9 @@ import com.github.otbproject.otbproject.fs.Setup;
 import java.io.IOException;
 
 public class APIChannel {
-    public static boolean in(String channel) {
-        return APIBot.getBot().getChannels().containsKey(channel) && get(channel).isInChannel();
+    public static boolean in(String channelName) {
+        Channel channel = get(channelName);
+        return (channel != null) && channel.isInChannel();
     }
     
     public static Channel get(String channel) {
