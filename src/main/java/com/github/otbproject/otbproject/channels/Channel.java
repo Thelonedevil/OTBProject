@@ -38,7 +38,7 @@ public class Channel {
     private ConcurrentMap<String, GroupFilterSet> filterMap;
     private boolean inChannel;
 
-    private final ReadWriteLock lock = new ReentrantReadWriteLock();
+    private final ReadWriteLock lock = new ReentrantReadWriteLock(true);
 
     private Channel(String name, ChannelConfig config) throws ChannelInitException {
         this.name = name;
