@@ -1,6 +1,4 @@
-package com.github.otbproject.otbproject.api;
-
-import com.github.otbproject.otbproject.bot.IBot;
+package com.github.otbproject.otbproject.bot;
 
 import java.util.concurrent.Future;
 

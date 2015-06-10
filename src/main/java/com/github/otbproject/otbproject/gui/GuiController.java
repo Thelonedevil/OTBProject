@@ -1,6 +1,6 @@
 package com.github.otbproject.otbproject.gui;
 
-import com.github.otbproject.otbproject.api.Bot;
+import com.github.otbproject.otbproject.bot.Bot;
 import com.github.otbproject.otbproject.cli.commands.CmdParser;
 import com.github.otbproject.otbproject.messages.internal.InternalMessageSender;
 import com.github.otbproject.otbproject.util.Util;

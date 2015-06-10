@@ -1,6 +1,7 @@
 package com.github.otbproject.otbproject.api;
 
 import com.github.otbproject.otbproject.App;
+import com.github.otbproject.otbproject.bot.Bot;
 import com.github.otbproject.otbproject.config.*;
 import com.github.otbproject.otbproject.fs.FSUtil;
 import com.github.otbproject.otbproject.util.JsonHandler;

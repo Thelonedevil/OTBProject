@@ -1,7 +1,6 @@
 package com.github.otbproject.otbproject.bot;
 
 import com.github.otbproject.otbproject.App;
-import com.github.otbproject.otbproject.api.Bot;
 import org.pircbotx.exception.IrcException;
 
 import java.io.IOException;

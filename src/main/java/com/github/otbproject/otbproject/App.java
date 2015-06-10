@@ -1,6 +1,6 @@
 package com.github.otbproject.otbproject;
 
-import com.github.otbproject.otbproject.api.Bot;
+import com.github.otbproject.otbproject.bot.Bot;
 import com.github.otbproject.otbproject.api.Configs;
 import com.github.otbproject.otbproject.bot.BotInitException;
 import com.github.otbproject.otbproject.bot.beam.BeamBot;

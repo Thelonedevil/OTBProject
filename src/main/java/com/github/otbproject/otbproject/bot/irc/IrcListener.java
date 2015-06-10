@@ -1,7 +1,7 @@
 package com.github.otbproject.otbproject.bot.irc;
 
 import com.github.otbproject.otbproject.App;
-import com.github.otbproject.otbproject.api.Bot;
+import com.github.otbproject.otbproject.bot.Bot;
 import com.github.otbproject.otbproject.api.Channels;
 import com.github.otbproject.otbproject.api.Configs;
 import com.github.otbproject.otbproject.channels.Channel;

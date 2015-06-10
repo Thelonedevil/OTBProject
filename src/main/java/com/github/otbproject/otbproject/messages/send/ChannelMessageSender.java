@@ -1,7 +1,7 @@
 package com.github.otbproject.otbproject.messages.send;
 
 import com.github.otbproject.otbproject.App;
-import com.github.otbproject.otbproject.api.Bot;
+import com.github.otbproject.otbproject.bot.Bot;
 import com.github.otbproject.otbproject.api.Configs;
 import com.github.otbproject.otbproject.channels.Channel;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;

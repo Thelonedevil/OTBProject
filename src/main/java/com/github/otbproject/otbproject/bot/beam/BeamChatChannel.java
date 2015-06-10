@@ -1,7 +1,7 @@
 package com.github.otbproject.otbproject.bot.beam;
 
 import com.github.otbproject.otbproject.App;
-import com.github.otbproject.otbproject.api.Bot;
+import com.github.otbproject.otbproject.bot.Bot;
 import com.github.otbproject.otbproject.channels.ChannelInitException;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;

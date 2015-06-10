@@ -1,7 +1,7 @@
 package com.github.otbproject.otbproject.gui;
 
 import com.github.otbproject.otbproject.App;
-import com.github.otbproject.otbproject.api.Bot;
+import com.github.otbproject.otbproject.bot.Bot;
 import com.github.otbproject.otbproject.fs.FSUtil;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
