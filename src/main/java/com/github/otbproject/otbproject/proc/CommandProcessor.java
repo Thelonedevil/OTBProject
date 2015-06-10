@@ -7,7 +7,7 @@ import com.github.otbproject.otbproject.command.Command;
 import com.github.otbproject.otbproject.command.Commands;
 import com.github.otbproject.otbproject.command.parser.CommandResponseParser;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
-import com.github.otbproject.otbproject.users.UserLevel;
+import com.github.otbproject.otbproject.user.UserLevel;
 
 import java.util.Arrays;
 import java.util.HashSet;

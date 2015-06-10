@@ -4,7 +4,7 @@ import com.github.otbproject.otbproject.command.AliasFields;
 import com.github.otbproject.otbproject.command.CommandFields;
 import com.github.otbproject.otbproject.command.scheduler.SchedulerFields;
 import com.github.otbproject.otbproject.quote.QuoteFields;
-import com.github.otbproject.otbproject.users.UserFields;
+import com.github.otbproject.otbproject.user.UserFields;
 
 import java.util.HashMap;
 

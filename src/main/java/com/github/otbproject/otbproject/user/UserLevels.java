@@ -1,4 +1,4 @@
-package com.github.otbproject.otbproject.users;
+package com.github.otbproject.otbproject.user;
 
 
 import com.github.otbproject.otbproject.bot.Bot;

@@ -1,7 +1,7 @@
 package com.github.otbproject.otbproject.filter;
 
 import com.github.otbproject.otbproject.scripts.ScriptProcessor;
-import com.github.otbproject.otbproject.users.UserLevel;
+import com.github.otbproject.otbproject.user.UserLevel;
 
 import java.util.Map;
 import java.util.Optional;

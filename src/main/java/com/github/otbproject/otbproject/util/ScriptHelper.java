@@ -6,7 +6,7 @@ import com.github.otbproject.otbproject.messages.internal.InternalMessageSender;
 import com.github.otbproject.otbproject.messages.receive.PackagedMessage;
 import com.github.otbproject.otbproject.messages.send.MessageOut;
 import com.github.otbproject.otbproject.messages.send.MessagePriority;
-import com.github.otbproject.otbproject.users.UserLevel;
+import com.github.otbproject.otbproject.user.UserLevel;
 
 public class ScriptHelper {
     public static void runCommand(String message, String user, String channel, String destinationChannel, MessagePriority priority) {

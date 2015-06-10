@@ -15,7 +15,7 @@ import com.github.otbproject.otbproject.messages.send.MessagePriority;
 import com.github.otbproject.otbproject.proc.CommandScriptProcessor;
 import com.github.otbproject.otbproject.proc.MessageProcessor;
 import com.github.otbproject.otbproject.proc.ProcessedMessage;
-import com.github.otbproject.otbproject.users.UserLevel;
+import com.github.otbproject.otbproject.user.UserLevel;
 
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;

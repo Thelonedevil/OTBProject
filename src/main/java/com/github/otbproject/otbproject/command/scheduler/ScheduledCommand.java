@@ -5,7 +5,7 @@ import com.github.otbproject.otbproject.bot.Bot;
 import com.github.otbproject.otbproject.channel.Channels;
 import com.github.otbproject.otbproject.messages.receive.PackagedMessage;
 import com.github.otbproject.otbproject.messages.send.MessagePriority;
-import com.github.otbproject.otbproject.users.UserLevel;
+import com.github.otbproject.otbproject.user.UserLevel;
 
 public class ScheduledCommand implements Runnable {
 

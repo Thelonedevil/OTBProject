@@ -3,7 +3,7 @@ package com.github.otbproject.otbproject.proc;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.fs.FSUtil;
 import com.github.otbproject.otbproject.scripts.ScriptProcessor;
-import com.github.otbproject.otbproject.users.UserLevel;
+import com.github.otbproject.otbproject.user.UserLevel;
 
 import java.io.File;
 

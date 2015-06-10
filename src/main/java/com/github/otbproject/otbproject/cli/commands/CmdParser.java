@@ -9,7 +9,7 @@ import com.github.otbproject.otbproject.gui.GuiApplication;
 import com.github.otbproject.otbproject.messages.internal.InternalMessageSender;
 import com.github.otbproject.otbproject.messages.receive.PackagedMessage;
 import com.github.otbproject.otbproject.messages.send.MessagePriority;
-import com.github.otbproject.otbproject.users.UserLevel;
+import com.github.otbproject.otbproject.user.UserLevel;
 import com.github.otbproject.otbproject.util.Util;
 import com.github.otbproject.otbproject.util.preload.LoadStrategy;
 import com.github.otbproject.otbproject.util.preload.PreloadLoader;
