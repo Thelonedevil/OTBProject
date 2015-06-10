@@ -1,4 +1,4 @@
-package com.github.otbproject.otbproject.commands.parser;
+package com.github.otbproject.otbproject.command.parser;
 
 import java.util.stream.Collectors;
 import java.util.stream.Stream;

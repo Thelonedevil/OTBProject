@@ -2,7 +2,7 @@ package com.github.otbproject.otbproject.channels;
 
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.bot.Bot;
-import com.github.otbproject.otbproject.commands.parser.ResponseParserUtil;
+import com.github.otbproject.otbproject.command.parser.ResponseParserUtil;
 import com.github.otbproject.otbproject.config.*;
 import com.github.otbproject.otbproject.fs.Setup;
 

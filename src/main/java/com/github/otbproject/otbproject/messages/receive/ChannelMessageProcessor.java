@@ -4,7 +4,7 @@ import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.bot.Bot;
 import com.github.otbproject.otbproject.channels.Channel;
 import com.github.otbproject.otbproject.channels.Channels;
-import com.github.otbproject.otbproject.commands.Commands;
+import com.github.otbproject.otbproject.command.Commands;
 import com.github.otbproject.otbproject.config.ChannelConfigHelper;
 import com.github.otbproject.otbproject.config.Configs;
 import com.github.otbproject.otbproject.config.GeneralConfigHelper;

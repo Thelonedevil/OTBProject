@@ -1,11 +1,11 @@
 package com.github.otbproject.otbproject.proc;
 
 import com.github.otbproject.otbproject.App;
-import com.github.otbproject.otbproject.commands.Alias;
-import com.github.otbproject.otbproject.commands.Aliases;
-import com.github.otbproject.otbproject.commands.Command;
-import com.github.otbproject.otbproject.commands.Commands;
-import com.github.otbproject.otbproject.commands.parser.CommandResponseParser;
+import com.github.otbproject.otbproject.command.Alias;
+import com.github.otbproject.otbproject.command.Aliases;
+import com.github.otbproject.otbproject.command.Command;
+import com.github.otbproject.otbproject.command.Commands;
+import com.github.otbproject.otbproject.command.parser.CommandResponseParser;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.users.UserLevel;
 

@@ -1,4 +1,4 @@
-package com.github.otbproject.otbproject.commands.scheduler;
+package com.github.otbproject.otbproject.command.scheduler;
 
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.bot.Bot;

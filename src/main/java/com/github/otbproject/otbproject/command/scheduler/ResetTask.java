@@ -1,4 +1,4 @@
-package com.github.otbproject.otbproject.commands.scheduler;
+package com.github.otbproject.otbproject.command.scheduler;
 
 import java.util.concurrent.TimeUnit;
 

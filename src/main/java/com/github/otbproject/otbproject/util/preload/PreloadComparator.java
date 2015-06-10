@@ -1,9 +1,9 @@
 package com.github.otbproject.otbproject.util.preload;
 
-import com.github.otbproject.otbproject.commands.Alias;
-import com.github.otbproject.otbproject.commands.Aliases;
-import com.github.otbproject.otbproject.commands.Command;
-import com.github.otbproject.otbproject.commands.Commands;
+import com.github.otbproject.otbproject.command.Alias;
+import com.github.otbproject.otbproject.command.Aliases;
+import com.github.otbproject.otbproject.command.Command;
+import com.github.otbproject.otbproject.command.Commands;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.filters.BasicFilter;
 import com.github.otbproject.otbproject.filters.FilterGroup;

@@ -1,10 +1,8 @@
 package com.github.otbproject.otbproject.database;
 
-import com.github.otbproject.otbproject.commands.AliasFields;
-import com.github.otbproject.otbproject.commands.CommandFields;
-import com.github.otbproject.otbproject.commands.scheduler.SchedulerFields;
-import com.github.otbproject.otbproject.filters.FilterFields;
-import com.github.otbproject.otbproject.filters.FilterGroupFields;
+import com.github.otbproject.otbproject.command.AliasFields;
+import com.github.otbproject.otbproject.command.CommandFields;
+import com.github.otbproject.otbproject.command.scheduler.SchedulerFields;
 import com.github.otbproject.otbproject.quotes.QuoteFields;
 import com.github.otbproject.otbproject.users.UserFields;
 

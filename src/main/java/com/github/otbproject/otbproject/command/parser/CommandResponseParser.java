@@ -1,4 +1,4 @@
-package com.github.otbproject.otbproject.commands.parser;
+package com.github.otbproject.otbproject.command.parser;
 
 import com.github.otbproject.otbproject.bot.Bot;
 import com.github.otbproject.otbproject.channels.Channels;
