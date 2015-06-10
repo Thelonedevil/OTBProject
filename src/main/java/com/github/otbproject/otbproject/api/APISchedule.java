@@ -29,13 +29,13 @@ public class APISchedule {
     }
 
     public static boolean isScheduled(String channel, String command){
-        return APIChannel.get(channel).getScheduledCommands().containsKey(command);
+        return Channels.get(channel).getScheduledCommands().containsKey(command);
     }
 
     public static void unScheduleCommand(String channel, String command) {
-        APIChannel.get(channel).getScheduledCommands().get(command).cancel(false);
-        if (APIChannel.get(channel).getHourlyResetSchedules().containsKey(command))
-            APIChannel.get(channel).getHourlyResetSchedules().get(command).cancel(false);
+        Channels.get(channel).getScheduledCommands().get(command).cancel(false);
+        if (Channels.get(channel).getHourlyResetSchedules().containsKey(command))
+            Channels.get(channel).getHourlyResetSchedules().get(command).cancel(false);
     }
 
     public static long getSecondsSinceTheHour() {
@@ -50,7 +50,7 @@ public class APISchedule {
     }
 
     private static boolean scheduleCommand(String channelName, String command, long delay, long period, boolean hourReset, TimeUnit timeUnit) {
-        Channel channel = APIChannel.get(channelName);
+        Channel channel = Channels.get(channelName);
         if (channel == null) {
             App.logger.error("Cannot schedule command for channel '" + channelName + "' - channel is null.");
             return false;
@@ -86,7 +86,7 @@ public class APISchedule {
     }
 
     private static boolean addToDatabase(String channel, String command, long delay, long period, boolean hourReset, TimeUnit timeUnit) {
-        DatabaseWrapper db = APIChannel.get(channel).getMainDatabaseWrapper();
+        DatabaseWrapper db = Channels.get(channel).getMainDatabaseWrapper();
         if (db.exists(SchedulerFields.TABLE_NAME, command, SchedulerFields.COMMAND)) {
             return false;
         }
@@ -100,7 +100,7 @@ public class APISchedule {
     }
 
     public static void loadFromDatabase(String channelName) {
-        Channel channel = APIChannel.get(channelName);
+        Channel channel = Channels.get(channelName);
         if (channel == null) {
             return;
         }
@@ -131,7 +131,7 @@ public class APISchedule {
     }
 
     public static void removeFromDatabase(String channel, String command){
-        DatabaseWrapper db = APIChannel.get(channel).getMainDatabaseWrapper();
+        DatabaseWrapper db = Channels.get(channel).getMainDatabaseWrapper();
         db.removeRecord(SchedulerFields.TABLE_NAME,command, SchedulerFields.COMMAND);
     }
 

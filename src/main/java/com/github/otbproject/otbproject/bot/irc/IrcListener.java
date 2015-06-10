@@ -2,7 +2,7 @@ package com.github.otbproject.otbproject.bot.irc;
 
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.api.Bot;
-import com.github.otbproject.otbproject.api.APIChannel;
+import com.github.otbproject.otbproject.api.Channels;
 import com.github.otbproject.otbproject.api.APIConfig;
 import com.github.otbproject.otbproject.channels.Channel;
 import com.github.otbproject.otbproject.messages.receive.PackagedMessage;
@@ -17,14 +17,14 @@ public class IrcListener extends ListenerAdapter {
     @Override
     public void onMessage(MessageEvent event) throws Exception {
         String channelName = IRCBot.getInternalChannelName(event.getChannel().getName());
-        Channel channel = APIChannel.get(channelName);
+        Channel channel = Channels.get(channelName);
         if (channel == null) {
-            if (!APIChannel.join(channelName)) {
+            if (!Channels.join(channelName)) {
                 App.logger.error("Failed to join channel: " + channelName);
                 Bot.getBot().leave(channelName);
                 return;
             }
-            channel = APIChannel.get(channelName);
+            channel = Channels.get(channelName);
             if (channel == null) {
                 App.logger.error("The channel '" + channelName + "' really shouldn't be null here. Something has gone terribly wrong.");
                 return;
@@ -67,9 +67,9 @@ public class IrcListener extends ListenerAdapter {
     public void onConnect(ConnectEvent event) {
         ((IRCBot) Bot.getBot()).sendRaw().rawLine("TWITCHCLIENT 3");
         // Join bot channel
-        APIChannel.join(Bot.getBot().getUserName(),false);
+        Channels.join(Bot.getBot().getUserName(), false);
         // Join channels
-        APIConfig.getBotConfig().currentChannels.forEach(channel -> APIChannel.join(channel, false));
+        APIConfig.getBotConfig().currentChannels.forEach(channel -> Channels.join(channel, false));
     }
 
 }

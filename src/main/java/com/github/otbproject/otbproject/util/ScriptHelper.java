@@ -1,7 +1,7 @@
 package com.github.otbproject.otbproject.util;
 
 import com.github.otbproject.otbproject.App;
-import com.github.otbproject.otbproject.api.APIChannel;
+import com.github.otbproject.otbproject.api.Channels;
 import com.github.otbproject.otbproject.messages.internal.InternalMessageSender;
 import com.github.otbproject.otbproject.messages.receive.PackagedMessage;
 import com.github.otbproject.otbproject.messages.send.MessageOut;
@@ -12,7 +12,7 @@ public class ScriptHelper {
     public static void runCommand(String message, String user, String channel, String destinationChannel, MessagePriority priority) {
         App.logger.debug("Processing message as command: " + message);
         PackagedMessage packagedMessage = new PackagedMessage(message, user, channel, destinationChannel, UserLevel.INTERNAL, priority);
-        APIChannel.get(channel).receiveMessage(packagedMessage);
+        Channels.get(channel).receiveMessage(packagedMessage);
     }
 
     public static void sendMessage(String channel, String message, MessagePriority priority) {
@@ -20,7 +20,7 @@ public class ScriptHelper {
             InternalMessageSender.send(channel.replace(InternalMessageSender.DESTINATION_PREFIX, ""), message, "CmdExec");
         } else {
             MessageOut messageOut = new MessageOut(message, priority);
-            APIChannel.get(channel).sendMessage(messageOut);
+            Channels.get(channel).sendMessage(messageOut);
         }
     }
 }

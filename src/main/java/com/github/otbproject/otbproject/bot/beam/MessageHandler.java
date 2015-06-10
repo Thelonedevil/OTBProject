@@ -2,7 +2,7 @@ package com.github.otbproject.otbproject.bot.beam;
 
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.api.Bot;
-import com.github.otbproject.otbproject.api.APIChannel;
+import com.github.otbproject.otbproject.api.Channels;
 import com.github.otbproject.otbproject.bot.BotUtil;
 import com.github.otbproject.otbproject.channels.Channel;
 import com.github.otbproject.otbproject.channels.ChannelNotFoundException;
@@ -76,8 +76,8 @@ public class MessageHandler implements EventHandler<IncomingMessageEvent> {
                 return;
             }
 
-            PackagedMessage packagedMessage = new PackagedMessage(getMessage(data),data.user_name.toLowerCase(), channelName, UserLevels.getUserLevel(APIChannel.get(channelName).getMainDatabaseWrapper(), channelName, data.user_name.toLowerCase()), MessagePriority.DEFAULT);
-            Channel channel = APIChannel.get(channelName);
+            PackagedMessage packagedMessage = new PackagedMessage(getMessage(data),data.user_name.toLowerCase(), channelName, UserLevels.getUserLevel(Channels.get(channelName).getMainDatabaseWrapper(), channelName, data.user_name.toLowerCase()), MessagePriority.DEFAULT);
+            Channel channel = Channels.get(channelName);
             if(channel != null){
                 channel.receiveMessage(packagedMessage);
             } else {

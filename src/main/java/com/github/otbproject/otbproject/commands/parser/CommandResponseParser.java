@@ -1,7 +1,7 @@
 package com.github.otbproject.otbproject.commands.parser;
 
 import com.github.otbproject.otbproject.api.Bot;
-import com.github.otbproject.otbproject.api.APIChannel;
+import com.github.otbproject.otbproject.api.Channels;
 import com.github.otbproject.otbproject.api.APIConfig;
 import com.github.otbproject.otbproject.quotes.Quote;
 import com.github.otbproject.otbproject.quotes.Quotes;
@@ -67,14 +67,14 @@ public class CommandResponseParser {
             String quoteNumStr = getEmbeddedString(term, 1);
             Quote quote;
             if (quoteNumStr.isEmpty()) {
-                quote = Quotes.getRandomQuote(APIChannel.get(channel).getQuoteDatabaseWrapper());
+                quote = Quotes.getRandomQuote(Channels.get(channel).getQuoteDatabaseWrapper());
                 if (quote == null) {
                     return "[Error getting random quote]";
                 }
             } else {
                 try {
                     int quoteNum = Integer.valueOf(quoteNumStr);
-                    quote = Quotes.get(APIChannel.get(channel).getQuoteDatabaseWrapper(), quoteNum);
+                    quote = Quotes.get(Channels.get(channel).getQuoteDatabaseWrapper(), quoteNum);
                     if (quote == null) {
                         return "";
                     }

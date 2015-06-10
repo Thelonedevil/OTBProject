@@ -1,7 +1,7 @@
 package com.github.otbproject.otbproject.bot.beam;
 
 import com.github.otbproject.otbproject.App;
-import com.github.otbproject.otbproject.api.APIChannel;
+import com.github.otbproject.otbproject.api.Channels;
 import com.github.otbproject.otbproject.api.APIConfig;
 import com.github.otbproject.otbproject.api.APIDatabase;
 import com.github.otbproject.otbproject.bot.BotInitException;
@@ -125,8 +125,8 @@ public class BeamBot implements IBot {
 
     @Override
     public void startBot() {
-        APIChannel.join(getUserName(), false);
-        APIConfig.getBotConfig().currentChannels.forEach(channel -> APIChannel.join(channel, false));
+        Channels.join(getUserName(), false);
+        APIConfig.getBotConfig().currentChannels.forEach(channel -> Channels.join(channel, false));
         while(!beamChannels.isEmpty()){
             try {
                 Thread.sleep(200);

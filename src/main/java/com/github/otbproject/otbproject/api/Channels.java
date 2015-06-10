@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class APIChannel {
+public class Channels {
     private static final Lock lock = new ReentrantLock();
 
     public static boolean in(String channelName) {

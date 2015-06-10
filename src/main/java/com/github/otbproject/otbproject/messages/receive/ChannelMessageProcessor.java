@@ -2,7 +2,7 @@ package com.github.otbproject.otbproject.messages.receive;
 
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.api.Bot;
-import com.github.otbproject.otbproject.api.APIChannel;
+import com.github.otbproject.otbproject.api.Channels;
 import com.github.otbproject.otbproject.api.APIConfig;
 import com.github.otbproject.otbproject.channels.Channel;
 import com.github.otbproject.otbproject.commands.Commands;
@@ -42,8 +42,8 @@ public class ChannelMessageProcessor {
             internal = true;
         } else {
             internal = false;
-            destChannel = APIChannel.get(packagedMessage.getDestinationChannel());
-            if (destChannel == null || !APIChannel.in(destChannelName)) {
+            destChannel = Channels.get(packagedMessage.getDestinationChannel());
+            if (destChannel == null || !Channels.in(destChannelName)) {
                 App.logger.warn("Attempted to process message to be sent in channel in which bot is not listening: " + destChannelName);
                 return;
             }

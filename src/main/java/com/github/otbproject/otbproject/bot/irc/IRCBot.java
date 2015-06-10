@@ -1,7 +1,7 @@
 package com.github.otbproject.otbproject.bot.irc;
 
 import com.github.otbproject.otbproject.App;
-import com.github.otbproject.otbproject.api.APIChannel;
+import com.github.otbproject.otbproject.api.Channels;
 import com.github.otbproject.otbproject.bot.BotUtil;
 import com.github.otbproject.otbproject.bot.IBot;
 import com.github.otbproject.otbproject.api.APIConfig;
@@ -145,7 +145,7 @@ public class IRCBot extends PircBotX implements IBot{
 
     @Override
     public boolean isUserSubscriber(String channelName, String user) {
-        Channel channel = APIChannel.get(channelName);
+        Channel channel = Channels.get(channelName);
         return (channel != null) && channel.subscriberStorage.remove(user);
     }
 

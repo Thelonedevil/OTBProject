@@ -2,7 +2,7 @@ package com.github.otbproject.otbproject.cli.commands;
 
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.api.Bot;
-import com.github.otbproject.otbproject.api.APIChannel;
+import com.github.otbproject.otbproject.api.Channels;
 import com.github.otbproject.otbproject.fs.groups.Base;
 import com.github.otbproject.otbproject.fs.groups.Chan;
 import com.github.otbproject.otbproject.gui.GuiApplication;
@@ -160,7 +160,7 @@ public class CmdParser {
                         return;
                     }
                     String channelName = args.get(0).toLowerCase();
-                    if (!APIChannel.in(channelName)) {
+                    if (!Channels.in(channelName)) {
                         responseStr = "Not in channel: " + channelName;
                         return;
                     }
@@ -173,7 +173,7 @@ public class CmdParser {
                     String destinationChannel = InternalMessageSender.DESTINATION_PREFIX + source;
                     PackagedMessage packagedMessage = new PackagedMessage(command, destinationChannel, channelName, destinationChannel, ul, MessagePriority.DEFAULT);
                     try {
-                        APIChannel.get(channelName).receiveMessage(packagedMessage);
+                        Channels.get(channelName).receiveMessage(packagedMessage);
                         responseStr = "Command output above.";
                     } catch (NullPointerException npe) {
                         App.logger.catching(npe);
@@ -187,7 +187,7 @@ public class CmdParser {
                 .withLongHelp("Makes the bot join the channel denoted by CHANNEL")
                 .withAction(() -> {
                     if (args.size() > 0) {
-                        boolean success = APIChannel.join(args.get(0).toLowerCase(), true);
+                        boolean success = Channels.join(args.get(0).toLowerCase(), true);
                         String string = success ? "Successfully joined" : "Failed to join";
                         responseStr = string + " channel: " + args.get(0).toLowerCase();
                     } else {
@@ -202,7 +202,7 @@ public class CmdParser {
                 .withLongHelp("Makes the bot leave the channel denoted by CHANNEL")
                 .withAction(() -> {
                     if (args.size() > 0) {
-                        boolean success = APIChannel.leave(args.get(0).toLowerCase());
+                        boolean success = Channels.leave(args.get(0).toLowerCase());
                         String string = success ? "Successfully left" : "Failed to leave";
                         responseStr = string + " channel: " + args.get(0).toLowerCase();
                     } else {
