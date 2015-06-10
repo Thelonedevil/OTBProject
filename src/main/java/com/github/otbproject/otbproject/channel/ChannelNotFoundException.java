@@ -1,4 +1,4 @@
-package com.github.otbproject.otbproject.channels;
+package com.github.otbproject.otbproject.channel;
 
 public class ChannelNotFoundException extends Exception {
     public ChannelNotFoundException() {

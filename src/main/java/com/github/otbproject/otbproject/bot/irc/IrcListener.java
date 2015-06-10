@@ -2,8 +2,8 @@ package com.github.otbproject.otbproject.bot.irc;
 
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.bot.Bot;
-import com.github.otbproject.otbproject.channels.Channel;
-import com.github.otbproject.otbproject.channels.Channels;
+import com.github.otbproject.otbproject.channel.Channel;
+import com.github.otbproject.otbproject.channel.Channels;
 import com.github.otbproject.otbproject.config.Configs;
 import com.github.otbproject.otbproject.messages.receive.PackagedMessage;
 import com.github.otbproject.otbproject.messages.send.MessagePriority;

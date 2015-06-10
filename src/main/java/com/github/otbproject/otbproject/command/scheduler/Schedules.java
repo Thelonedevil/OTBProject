@@ -1,8 +1,8 @@
 package com.github.otbproject.otbproject.command.scheduler;
 
 import com.github.otbproject.otbproject.App;
-import com.github.otbproject.otbproject.channels.Channel;
-import com.github.otbproject.otbproject.channels.Channels;
+import com.github.otbproject.otbproject.channel.Channel;
+import com.github.otbproject.otbproject.channel.Channels;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 
 import java.sql.ResultSet;

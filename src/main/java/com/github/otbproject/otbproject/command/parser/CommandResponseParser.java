@@ -1,7 +1,7 @@
 package com.github.otbproject.otbproject.command.parser;
 
 import com.github.otbproject.otbproject.bot.Bot;
-import com.github.otbproject.otbproject.channels.Channels;
+import com.github.otbproject.otbproject.channel.Channels;
 import com.github.otbproject.otbproject.config.Configs;
 import com.github.otbproject.otbproject.quotes.Quote;
 import com.github.otbproject.otbproject.quotes.Quotes;
