@@ -6,7 +6,7 @@ import com.github.otbproject.otbproject.config.ChannelConfig;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.database.Databases;
 import com.github.otbproject.otbproject.database.SQLiteQuoteWrapper;
-import com.github.otbproject.otbproject.filters.GroupFilterSet;
+import com.github.otbproject.otbproject.filter.GroupFilterSet;
 import com.github.otbproject.otbproject.messages.receive.ChannelMessageProcessor;
 import com.github.otbproject.otbproject.messages.receive.PackagedMessage;
 import com.github.otbproject.otbproject.messages.send.ChannelMessageSender;

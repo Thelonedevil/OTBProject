@@ -1,4 +1,4 @@
-package com.github.otbproject.otbproject.filters;
+package com.github.otbproject.otbproject.filter;
 
 import com.github.otbproject.otbproject.fs.FSUtil;
 import org.apache.commons.lang3.builder.EqualsBuilder;

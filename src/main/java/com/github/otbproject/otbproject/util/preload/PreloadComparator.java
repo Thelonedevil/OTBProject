@@ -5,10 +5,10 @@ import com.github.otbproject.otbproject.command.Aliases;
 import com.github.otbproject.otbproject.command.Command;
 import com.github.otbproject.otbproject.command.Commands;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
-import com.github.otbproject.otbproject.filters.BasicFilter;
-import com.github.otbproject.otbproject.filters.FilterGroup;
-import com.github.otbproject.otbproject.filters.FilterGroups;
-import com.github.otbproject.otbproject.filters.Filters;
+import com.github.otbproject.otbproject.filter.BasicFilter;
+import com.github.otbproject.otbproject.filter.FilterGroup;
+import com.github.otbproject.otbproject.filter.FilterGroups;
+import com.github.otbproject.otbproject.filter.Filters;
 
 class PreloadComparator {
     static Alias generateAliasHybrid(DatabaseWrapper db, Alias newAlias, Alias oldAlias) {

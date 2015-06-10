@@ -1,4 +1,4 @@
-package com.github.otbproject.otbproject.filters;
+package com.github.otbproject.otbproject.filter;
 
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;

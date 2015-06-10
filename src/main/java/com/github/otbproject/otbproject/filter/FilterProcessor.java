@@ -1,4 +1,4 @@
-package com.github.otbproject.otbproject.filters;
+package com.github.otbproject.otbproject.filter;
 
 import com.github.otbproject.otbproject.scripts.ScriptProcessor;
 import com.github.otbproject.otbproject.users.UserLevel;
