@@ -83,7 +83,7 @@ public class APIChannel {
         if (!APIBot.getBot().getChannels().containsKey(channelName)) {
             ChannelConfig channelConfig = APIConfig.readChannelConfig(channelName);
             try {
-                channel = new Channel(channelName, channelConfig);
+                channel = Channel.create(channelName, channelConfig);
             } catch (ChannelInitException e) {
                 App.logger.catching(e);
                 return false;

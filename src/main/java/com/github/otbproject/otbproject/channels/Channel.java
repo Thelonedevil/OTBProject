@@ -30,8 +30,8 @@ public class Channel {
     private final ChannelConfig config;
     private final DatabaseWrapper mainDb;
     private final SQLiteQuoteWrapper quoteDb;
-    private final ChannelMessageSender messageSender;
-    private final ChannelMessageProcessor messageProcessor;
+    private ChannelMessageSender messageSender;
+    private ChannelMessageProcessor messageProcessor;
     private final Scheduler scheduler = new Scheduler();
     private final HashMap<String,ScheduledFuture> scheduledCommands = new HashMap<>();
     private final HashMap<String,ScheduledFuture> hourlyResetSchedules = new HashMap<>();
@@ -40,7 +40,7 @@ public class Channel {
 
     private final ReadWriteLock lock = new ReentrantReadWriteLock();
 
-    public Channel(String name, ChannelConfig config) throws ChannelInitException {
+    private Channel(String name, ChannelConfig config) throws ChannelInitException {
         this.name = name;
         this.config = config;
         this.inChannel = false;
@@ -54,9 +54,6 @@ public class Channel {
             throw new ChannelInitException(name, "Unable to get quote database");
         }
 
-        messageSender = new ChannelMessageSender(this);
-        messageProcessor = new ChannelMessageProcessor(this);
-
         commandCooldownSet = ExpiringMap.builder()
                 .variableExpiration()
                 .expirationPolicy(ExpiringMap.ExpirationPolicy.CREATED)
@@ -67,6 +64,17 @@ public class Channel {
                 .build();
 
         //filterMap = GroupFilterSet.createGroupFilterSetMap(FilterGroups.getFilterGroups(mainDb), Filters.getAllFilters(mainDb));
+    }
+
+    private void init() {
+        messageSender = new ChannelMessageSender(this);
+        messageProcessor = new ChannelMessageProcessor(this);
+    }
+
+    public static Channel create(String name, ChannelConfig config) throws ChannelInitException {
+        Channel channel = new Channel(name, config);
+        channel.init();
+        return channel;
     }
 
     public boolean join() {
