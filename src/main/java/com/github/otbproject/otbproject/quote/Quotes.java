@@ -1,4 +1,4 @@
-package com.github.otbproject.otbproject.quotes;
+package com.github.otbproject.otbproject.quote;
 
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.database.SQLiteQuoteWrapper;

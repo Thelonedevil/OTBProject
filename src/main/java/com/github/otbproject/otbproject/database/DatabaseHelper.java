@@ -3,7 +3,7 @@ package com.github.otbproject.otbproject.database;
 import com.github.otbproject.otbproject.command.AliasFields;
 import com.github.otbproject.otbproject.command.CommandFields;
 import com.github.otbproject.otbproject.command.scheduler.SchedulerFields;
-import com.github.otbproject.otbproject.quotes.QuoteFields;
+import com.github.otbproject.otbproject.quote.QuoteFields;
 import com.github.otbproject.otbproject.users.UserFields;
 
 import java.util.HashMap;

@@ -1,4 +1,4 @@
-package com.github.otbproject.otbproject.quotes;
+package com.github.otbproject.otbproject.quote;
 
 public class Quote {
     private Integer id;

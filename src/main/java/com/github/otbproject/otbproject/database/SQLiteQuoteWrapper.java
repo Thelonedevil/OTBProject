@@ -1,7 +1,7 @@
 package com.github.otbproject.otbproject.database;
 
 import com.github.otbproject.otbproject.App;
-import com.github.otbproject.otbproject.quotes.QuoteFields;
+import com.github.otbproject.otbproject.quote.QuoteFields;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
