@@ -1,13 +1,14 @@
-package com.github.otbproject.otbproject.api;
+package com.github.otbproject.otbproject.config;
 
 import com.github.otbproject.otbproject.App;
-import com.github.otbproject.otbproject.config.*;
+import com.github.otbproject.otbproject.bot.Bot;
+import com.github.otbproject.otbproject.channels.Channels;
 import com.github.otbproject.otbproject.fs.FSUtil;
 import com.github.otbproject.otbproject.util.JsonHandler;
 
 import java.io.File;
 
-public class APIConfig {
+public class Configs {
     private static String accountFileName = "";
 
     public static final String GENERAL_CONFIG_PATH = FSUtil.configDir() + File.separator + FSUtil.ConfigFileNames.GENERAL_CONFIG;
@@ -85,10 +86,10 @@ public class APIConfig {
     }
 
     public static ChannelConfig getChannelConfig(String channel) {
-        if (!APIBot.getBot().getChannels().containsKey(channel)) {
+        if (!Bot.getBot().getChannels().containsKey(channel)) {
             return null;
         }
-        return APIChannel.get(channel).getConfig();
+        return Channels.get(channel).getConfig();
     }
 
     // Misc
@@ -106,7 +107,7 @@ public class APIConfig {
     }
 
     public static void setAccountFileName(String accountFileName) {
-        APIConfig.accountFileName = accountFileName;
+        Configs.accountFileName = accountFileName;
     }
 
     private static String getAccountPath() {

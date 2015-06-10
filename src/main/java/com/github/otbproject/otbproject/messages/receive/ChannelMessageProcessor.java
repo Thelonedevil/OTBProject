@@ -1,20 +1,20 @@
 package com.github.otbproject.otbproject.messages.receive;
 
 import com.github.otbproject.otbproject.App;
-import com.github.otbproject.otbproject.api.APIBot;
-import com.github.otbproject.otbproject.api.APIChannel;
-import com.github.otbproject.otbproject.api.APIConfig;
+import com.github.otbproject.otbproject.bot.Bot;
 import com.github.otbproject.otbproject.channels.Channel;
+import com.github.otbproject.otbproject.channels.Channels;
 import com.github.otbproject.otbproject.commands.Commands;
 import com.github.otbproject.otbproject.config.ChannelConfigHelper;
+import com.github.otbproject.otbproject.config.Configs;
 import com.github.otbproject.otbproject.config.GeneralConfigHelper;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.messages.internal.InternalMessageSender;
 import com.github.otbproject.otbproject.messages.send.MessageOut;
 import com.github.otbproject.otbproject.messages.send.MessagePriority;
+import com.github.otbproject.otbproject.proc.CommandScriptProcessor;
 import com.github.otbproject.otbproject.proc.MessageProcessor;
 import com.github.otbproject.otbproject.proc.ProcessedMessage;
-import com.github.otbproject.otbproject.proc.CommandScriptProcessor;
 import com.github.otbproject.otbproject.users.UserLevel;
 
 import java.util.concurrent.locks.Lock;
@@ -29,7 +29,7 @@ public class ChannelMessageProcessor {
     public ChannelMessageProcessor(Channel channel) {
         this.channel = channel;
         channelName = channel.getName();
-        inBotChannel = this.channel.getName().equals(APIBot.getBot().getUserName());
+        inBotChannel = this.channel.getName().equals(Bot.getBot().getUserName());
     }
 
     public void process(PackagedMessage packagedMessage) {
@@ -42,8 +42,8 @@ public class ChannelMessageProcessor {
             internal = true;
         } else {
             internal = false;
-            destChannel = APIChannel.get(packagedMessage.getDestinationChannel());
-            if (destChannel == null || !APIChannel.in(destChannelName)) {
+            destChannel = Channels.get(packagedMessage.getDestinationChannel());
+            if (destChannel == null || !Channels.in(destChannelName)) {
                 App.logger.warn("Attempted to process message to be sent in channel in which bot is not listening: " + destChannelName);
                 return;
             }
@@ -51,9 +51,9 @@ public class ChannelMessageProcessor {
 
         // Process commands for bot channel
         if (inBotChannel) {
-            DatabaseWrapper db = APIBot.getBot().getBotDB();
+            DatabaseWrapper db = Bot.getBot().getBotDB();
             UserLevel ul = packagedMessage.getUserLevel();
-            ProcessedMessage processedMsg = MessageProcessor.process(db, packagedMessage.getMessage(), channelName, user, ul, APIConfig.getBotConfig().isBotChannelDebug());
+            ProcessedMessage processedMsg = MessageProcessor.process(db, packagedMessage.getMessage(), channelName, user, ul, Configs.getBotConfig().isBotChannelDebug());
             if (processedMsg.isScript || !processedMsg.response.isEmpty()) {
                 doResponse(db, processedMsg, channelName, destChannelName, destChannel, user, ul, packagedMessage.getMessagePriority(), internal);
                 // Don't process response as regular channel if done as bot channel
@@ -71,12 +71,12 @@ public class ChannelMessageProcessor {
         UserLevel ul = packagedMessage.getUserLevel();
         boolean debug = channel.getConfig().isDebug();
         if (inBotChannel) {
-            debug = (debug || APIConfig.getBotConfig().isBotChannelDebug());
+            debug = (debug || Configs.getBotConfig().isBotChannelDebug());
         }
         ProcessedMessage processedMsg = MessageProcessor.process(db, packagedMessage.getMessage(), channelName, user, ul, debug);
 
         // Check if bot is enabled
-        if (channel.getConfig().isEnabled() || GeneralConfigHelper.isPermanentlyEnabled(APIConfig.getGeneralConfig(), processedMsg.commandName)) {
+        if (channel.getConfig().isEnabled() || GeneralConfigHelper.isPermanentlyEnabled(Configs.getGeneralConfig(), processedMsg.commandName)) {
             // Check if empty message, and then if command is on cooldown (skip cooldown check if internal)
             if ((processedMsg.isScript || !processedMsg.response.isEmpty()) && (internal || !destChannel.isCommandCooldown(processedMsg.commandName))) {
                 doResponse(db, processedMsg, channelName, destChannelName, destChannel, user, ul, packagedMessage.getMessagePriority(), internal);
@@ -115,7 +115,7 @@ public class ChannelMessageProcessor {
             }
 
             // Skip cooldowns if in or sending to bot channel, or internal
-            if (inBotChannel || destChannelName.equals(APIBot.getBot().getUserName()) || internal) {
+            if (inBotChannel || destChannelName.equals(Bot.getBot().getUserName()) || internal) {
                 return;
             }
 

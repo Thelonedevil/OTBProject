@@ -1,13 +1,16 @@
 package com.github.otbproject.otbproject.gui;
 
 import com.github.otbproject.otbproject.App;
-import com.github.otbproject.otbproject.api.APIBot;
+import com.github.otbproject.otbproject.bot.Bot;
 import com.github.otbproject.otbproject.fs.FSUtil;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.DialogPane;
 import javafx.scene.image.Image;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
@@ -66,8 +69,8 @@ public class GuiApplication extends Application {
                     tailer.stop();
                 } else if (buttonType == buttonTypeExit) {
                     App.logger.info("Stopping the process");
-                    if (APIBot.getBot() != null && APIBot.getBot().isConnected()) {
-                        APIBot.getBot().shutdown();
+                    if (Bot.getBot() != null && Bot.getBot().isConnected()) {
+                        Bot.getBot().shutdown();
                     }
                     App.logger.info("Process Stopped, Goodbye");
                     System.exit(0);

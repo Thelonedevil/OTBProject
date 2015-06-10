@@ -1,11 +1,11 @@
 package com.github.otbproject.otbproject.bot.beam;
 
 import com.github.otbproject.otbproject.App;
-import com.github.otbproject.otbproject.api.APIBot;
-import com.github.otbproject.otbproject.api.APIChannel;
+import com.github.otbproject.otbproject.bot.Bot;
 import com.github.otbproject.otbproject.bot.BotUtil;
 import com.github.otbproject.otbproject.channels.Channel;
 import com.github.otbproject.otbproject.channels.ChannelNotFoundException;
+import com.github.otbproject.otbproject.channels.Channels;
 import com.github.otbproject.otbproject.messages.receive.PackagedMessage;
 import com.github.otbproject.otbproject.messages.send.MessagePriority;
 import com.github.otbproject.otbproject.users.UserLevels;
@@ -49,7 +49,7 @@ public class MessageHandler implements EventHandler<IncomingMessageEvent> {
             App.logger.info("<"+ channelName +"> "+ data.user_name + ": " + getMessage(data));
             beamChatChannel.userRoles.put(data.user_name.toLowerCase(), Collections.unmodifiableList(data.user_roles));
 
-            BeamBot bot = (BeamBot) APIBot.getBot();
+            BeamBot bot = (BeamBot) Bot.getBot();
 
             // Check if user is in timeout set
             if (beamChatChannel.timeoutSet.containsKey(data.user_name.toLowerCase())) {
@@ -71,13 +71,13 @@ public class MessageHandler implements EventHandler<IncomingMessageEvent> {
             beamChatChannel.cacheMessage(data);
 
             // Check if message is from bot and sent by bot
-            if (data.user_name.equalsIgnoreCase(APIBot.getBot().getUserName()) && (bot.sentMessageCache.containsKey(data.getMessage()))) {
+            if (data.user_name.equalsIgnoreCase(Bot.getBot().getUserName()) && (bot.sentMessageCache.containsKey(data.getMessage()))) {
                 App.logger.debug("Ignoring message sent by bot");
                 return;
             }
 
-            PackagedMessage packagedMessage = new PackagedMessage(getMessage(data),data.user_name.toLowerCase(), channelName, UserLevels.getUserLevel(APIChannel.get(channelName).getMainDatabaseWrapper(), channelName, data.user_name.toLowerCase()), MessagePriority.DEFAULT);
-            Channel channel = APIChannel.get(channelName);
+            PackagedMessage packagedMessage = new PackagedMessage(getMessage(data),data.user_name.toLowerCase(), channelName, UserLevels.getUserLevel(Channels.get(channelName).getMainDatabaseWrapper(), channelName, data.user_name.toLowerCase()), MessagePriority.DEFAULT);
+            Channel channel = Channels.get(channelName);
             if(channel != null){
                 channel.receiveMessage(packagedMessage);
             } else {

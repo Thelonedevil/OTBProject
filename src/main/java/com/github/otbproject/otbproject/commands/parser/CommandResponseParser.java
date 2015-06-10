@@ -1,8 +1,8 @@
 package com.github.otbproject.otbproject.commands.parser;
 
-import com.github.otbproject.otbproject.api.APIBot;
-import com.github.otbproject.otbproject.api.APIChannel;
-import com.github.otbproject.otbproject.api.APIConfig;
+import com.github.otbproject.otbproject.bot.Bot;
+import com.github.otbproject.otbproject.channels.Channels;
+import com.github.otbproject.otbproject.config.Configs;
 import com.github.otbproject.otbproject.quotes.Quote;
 import com.github.otbproject.otbproject.quotes.Quotes;
 
@@ -67,14 +67,14 @@ public class CommandResponseParser {
             String quoteNumStr = getEmbeddedString(term, 1);
             Quote quote;
             if (quoteNumStr.isEmpty()) {
-                quote = Quotes.getRandomQuote(APIChannel.get(channel).getQuoteDatabaseWrapper());
+                quote = Quotes.getRandomQuote(Channels.get(channel).getQuoteDatabaseWrapper());
                 if (quote == null) {
                     return "[Error getting random quote]";
                 }
             } else {
                 try {
                     int quoteNum = Integer.valueOf(quoteNumStr);
-                    quote = Quotes.get(APIChannel.get(channel).getQuoteDatabaseWrapper(), quoteNum);
+                    quote = Quotes.get(Channels.get(channel).getQuoteDatabaseWrapper(), quoteNum);
                     if (quote == null) {
                         return "";
                     }
@@ -158,11 +158,11 @@ public class CommandResponseParser {
         }
         // [[service]]
         else if (isTerm(term, "service")) {
-            return doModifier(ResponseParserUtil.firstCap(APIConfig.getGeneralConfig().getServiceName().toString(), true), term);
+            return doModifier(ResponseParserUtil.firstCap(Configs.getGeneralConfig().getServiceName().toString(), true), term);
         }
         // [[bot]]
         else if (isTerm(term, "bot")) {
-            return doModifier(APIBot.getBot().getUserName(), term);
+            return doModifier(Bot.getBot().getUserName(), term);
         } else {
             throw new InvalidTermException();
         }

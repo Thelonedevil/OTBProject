@@ -1,19 +1,20 @@
 package com.github.otbproject.otbproject;
 
-import com.github.otbproject.otbproject.api.APIBot;
-import com.github.otbproject.otbproject.api.APIConfig;
+import com.github.otbproject.otbproject.bot.Bot;
 import com.github.otbproject.otbproject.bot.BotInitException;
-import com.github.otbproject.otbproject.bot.beam.BeamBot;
 import com.github.otbproject.otbproject.bot.BotRunnable;
+import com.github.otbproject.otbproject.bot.beam.BeamBot;
+import com.github.otbproject.otbproject.bot.irc.IRCBot;
+import com.github.otbproject.otbproject.bot.irc.InputParserImproved;
 import com.github.otbproject.otbproject.cli.ArgParser;
 import com.github.otbproject.otbproject.cli.commands.CmdParser;
 import com.github.otbproject.otbproject.config.*;
 import com.github.otbproject.otbproject.fs.FSUtil;
 import com.github.otbproject.otbproject.fs.Setup;
-import com.github.otbproject.otbproject.fs.groups.*;
+import com.github.otbproject.otbproject.fs.groups.Base;
+import com.github.otbproject.otbproject.fs.groups.Chan;
+import com.github.otbproject.otbproject.fs.groups.Load;
 import com.github.otbproject.otbproject.gui.GuiApplication;
-import com.github.otbproject.otbproject.bot.irc.IRCBot;
-import com.github.otbproject.otbproject.bot.irc.InputParserImproved;
 import com.github.otbproject.otbproject.util.LibsLoader;
 import com.github.otbproject.otbproject.util.UnPacker;
 import com.github.otbproject.otbproject.util.Util;
@@ -155,26 +156,26 @@ public class App {
 
         // Connect to service
         try {
-            switch (APIConfig.getGeneralConfig().getServiceName()){
+            switch (Configs.getGeneralConfig().getServiceName()){
                 case TWITCH:
-                    APIBot.setBot(new IRCBot());
-                    Class c = APIBot.getBot().getClass().getSuperclass();
+                    Bot.setBot(new IRCBot());
+                    Class c = Bot.getBot().getClass().getSuperclass();
                     Field input = c.getDeclaredField("inputParser");
                     input.setAccessible(true);
-                    input.set(APIBot.getBot(), new InputParserImproved((IRCBot) APIBot.getBot()));
+                    input.set(Bot.getBot(), new InputParserImproved((IRCBot) Bot.getBot()));
                     break;
                 case BEAM:
-                    APIBot.setBot(new BeamBot());
+                    Bot.setBot(new BeamBot());
                     break;
             }
         } catch (BotInitException e) {
             logger.catching(e);
         }
-        if (APIBot.getBot() == null) {
+        if (Bot.getBot() == null) {
             App.logger.error("Failed to start bot");
         } else {
-            APIBot.setBotRunnable(new BotRunnable());
-            APIBot.setBotFuture(Util.getSingleThreadExecutor("Bot").submit(APIBot.getBotRunnable()));
+            Bot.setBotRunnable(new BotRunnable());
+            Bot.setBotFuture(Util.getSingleThreadExecutor("Bot").submit(Bot.getBotRunnable()));
         }
         try{
             if(new File(WebStart.WAR_PATH).exists()){
@@ -265,27 +266,27 @@ public class App {
 
     public static void loadConfigs(CommandLine cmd) {
         // General config
-        GeneralConfig generalConfig = APIConfig.readGeneralConfig(); // Must be read first for service info
+        GeneralConfig generalConfig = Configs.readGeneralConfig(); // Must be read first for service info
         configManager.setGeneralConfig(generalConfig);
         if (cmd.hasOption(ArgParser.Opts.SERVICE)) {
             String serviceName = cmd.getOptionValue(ArgParser.Opts.SERVICE).toUpperCase();
             if (serviceName.equals(ServiceName.TWITCH.toString())) {
-                APIConfig.getGeneralConfig().setServiceName(ServiceName.TWITCH);
+                Configs.getGeneralConfig().setServiceName(ServiceName.TWITCH);
             } else if (serviceName.equals(ServiceName.BEAM.toString())) {
-                APIConfig.getGeneralConfig().setServiceName(ServiceName.BEAM);
+                Configs.getGeneralConfig().setServiceName(ServiceName.BEAM);
             } else {
                 logger.error("Invalid service name: " + serviceName);
                 ArgParser.printHelp();
                 System.exit(1);
             }
-            APIConfig.writeGeneralConfig();
+            Configs.writeGeneralConfig();
         }
 
         // Account config
         if (cmd.hasOption(ArgParser.Opts.ACCOUNT_FILE)) {
-            APIConfig.setAccountFileName(cmd.getOptionValue(ArgParser.Opts.ACCOUNT_FILE));
+            Configs.setAccountFileName(cmd.getOptionValue(ArgParser.Opts.ACCOUNT_FILE));
         }
-        Account account = APIConfig.readAccount();
+        Account account = Configs.readAccount();
         if (cmd.hasOption(ArgParser.Opts.ACCOUNT)) {
             account.setName(cmd.getOptionValue(ArgParser.Opts.ACCOUNT));
         }
@@ -293,10 +294,10 @@ public class App {
             account.setPasskey(cmd.getOptionValue(ArgParser.Opts.PASSKEY));
         }
         configManager.setAccount(account);
-        APIConfig.writeAccount();
+        Configs.writeAccount();
 
         // Bot config
-        BotConfig botConfig = APIConfig.readBotConfig();
+        BotConfig botConfig = Configs.readBotConfig();
         configManager.setBotConfig(botConfig);
     }
 }

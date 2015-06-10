@@ -1,11 +1,9 @@
 package com.github.otbproject.otbproject.web;
 
 import com.github.otbproject.otbproject.App;
-import com.github.otbproject.otbproject.util.VersionClass;
 import org.apache.commons.codec.digest.DigestUtils;
 
 import java.io.*;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;

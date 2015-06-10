@@ -1,14 +1,14 @@
 package com.github.otbproject.otbproject.bot.irc;
 
 import com.github.otbproject.otbproject.App;
-import com.github.otbproject.otbproject.api.APIChannel;
 import com.github.otbproject.otbproject.bot.BotUtil;
 import com.github.otbproject.otbproject.bot.IBot;
-import com.github.otbproject.otbproject.api.APIConfig;
-import com.github.otbproject.otbproject.api.APIDatabase;
 import com.github.otbproject.otbproject.channels.Channel;
 import com.github.otbproject.otbproject.channels.ChannelNotFoundException;
+import com.github.otbproject.otbproject.channels.Channels;
+import com.github.otbproject.otbproject.config.Configs;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
+import com.github.otbproject.otbproject.database.Databases;
 import com.github.otbproject.otbproject.serviceapi.ApiRequest;
 import org.isomorphism.util.TokenBucket;
 import org.isomorphism.util.TokenBuckets;
@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit;
 
 public class IRCBot extends PircBotX implements IBot{
     private final HashMap<String, Channel> channels = new HashMap<>();
-    private final DatabaseWrapper botDB = APIDatabase.getBotDatabase();
+    private final DatabaseWrapper botDB = Databases.createBotDbWrapper();
     private final OutputRaw newOutputRaw;
     // Should take slightly more than 30 seconds to refill 99 tokens adding 1
     // token every 304 milliseconds
@@ -32,8 +32,8 @@ public class IRCBot extends PircBotX implements IBot{
 
     @SuppressWarnings("unchecked")
     public IRCBot() {
-        super(new Configuration.Builder().setName(APIConfig.getAccount().getName()).setAutoNickChange(false).setCapEnabled(false).addListener(new IrcListener()).setServerHostname("irc.twitch.tv")
-                .setServerPort(6667).setServerPassword(APIConfig.getAccount().getPasskey()).setEncoding(Charset.forName("UTF-8")).buildConfiguration());
+        super(new Configuration.Builder().setName(Configs.getAccount().getName()).setAutoNickChange(false).setCapEnabled(false).addListener(new IrcListener()).setServerHostname("irc.twitch.tv")
+                .setServerPort(6667).setServerPassword(Configs.getAccount().getPasskey()).setEncoding(Charset.forName("UTF-8")).buildConfiguration());
         App.logger.info("Bot configuration built");
         newOutputRaw = new OutputRawImproved(this);
     }
@@ -145,7 +145,7 @@ public class IRCBot extends PircBotX implements IBot{
 
     @Override
     public boolean isUserSubscriber(String channelName, String user) {
-        Channel channel = APIChannel.get(channelName);
+        Channel channel = Channels.get(channelName);
         return (channel != null) && channel.subscriberStorage.remove(user);
     }
 

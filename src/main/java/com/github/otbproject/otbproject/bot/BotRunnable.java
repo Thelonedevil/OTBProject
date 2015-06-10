@@ -1,8 +1,6 @@
 package com.github.otbproject.otbproject.bot;
 
 import com.github.otbproject.otbproject.App;
-import com.github.otbproject.otbproject.api.APIBot;
-import com.github.otbproject.otbproject.api.APIChannel;
 import org.pircbotx.exception.IrcException;
 
 import java.io.IOException;
@@ -12,7 +10,7 @@ public class BotRunnable implements Runnable {
     public void run() {
         try {
             App.logger.info("Bot Started");
-            APIBot.getBot().startBot();
+            Bot.getBot().startBot();
             App.logger.info("Bot Stopped");
         } catch (IOException | IrcException e) {
             App.logger.catching(e);

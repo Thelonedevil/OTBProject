@@ -1,16 +1,16 @@
 package com.github.otbproject.otbproject.bot.beam;
 
 import com.github.otbproject.otbproject.App;
-import com.github.otbproject.otbproject.api.APIChannel;
-import com.github.otbproject.otbproject.api.APIConfig;
-import com.github.otbproject.otbproject.api.APIDatabase;
 import com.github.otbproject.otbproject.bot.BotInitException;
 import com.github.otbproject.otbproject.bot.BotUtil;
 import com.github.otbproject.otbproject.bot.IBot;
 import com.github.otbproject.otbproject.channels.Channel;
 import com.github.otbproject.otbproject.channels.ChannelInitException;
 import com.github.otbproject.otbproject.channels.ChannelNotFoundException;
+import com.github.otbproject.otbproject.channels.Channels;
+import com.github.otbproject.otbproject.config.Configs;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
+import com.github.otbproject.otbproject.database.Databases;
 import net.jodah.expiringmap.ExpiringMap;
 import pro.beam.api.BeamAPI;
 import pro.beam.api.resource.BeamUser;
@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit;
 
 public class BeamBot implements IBot {
     private final HashMap<String, Channel> channels = new HashMap<>();
-    private final DatabaseWrapper botDB = APIDatabase.getBotDatabase();
+    private final DatabaseWrapper botDB = Databases.createBotDbWrapper();
 
     public final ExpiringMap<String, Boolean> sentMessageCache;
     private static final int CACHE_TIME = 4;
@@ -40,7 +40,7 @@ public class BeamBot implements IBot {
                 .build();
 
         try {
-            beamUser = beam.use(UsersService.class).login(APIConfig.getAccount().getName(), APIConfig.getAccount().getPasskey()).get();
+            beamUser = beam.use(UsersService.class).login(Configs.getAccount().getName(), Configs.getAccount().getPasskey()).get();
         } catch (InterruptedException | ExecutionException e) {
             throw new BotInitException("Unable to connect bot to Beam", e);
         }
@@ -125,8 +125,8 @@ public class BeamBot implements IBot {
 
     @Override
     public void startBot() {
-        APIChannel.join(getUserName(), false);
-        APIConfig.getBotConfig().currentChannels.forEach(channel -> APIChannel.join(channel, false));
+        Channels.join(getUserName(), false);
+        Configs.getBotConfig().currentChannels.forEach(channel -> Channels.join(channel, false));
         while(!beamChannels.isEmpty()){
             try {
                 Thread.sleep(200);

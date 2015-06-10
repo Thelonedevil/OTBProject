@@ -1,7 +1,7 @@
 package com.github.otbproject.otbproject.bot.beam;
 
 import com.github.otbproject.otbproject.App;
-import com.github.otbproject.otbproject.api.APIBot;
+import com.github.otbproject.otbproject.bot.Bot;
 import com.github.otbproject.otbproject.channels.ChannelInitException;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -67,7 +67,7 @@ public class BeamChatChannel {
                 })
                 .build();
 
-        beamBot = ((BeamBot) APIBot.getBot());
+        beamBot = ((BeamBot) Bot.getBot());
         try {
             channel = beamBot.beamUser.channel;
             for(BeamUser user : beamBot.beam.use(UsersService.class).search(channelName).get()){
@@ -104,7 +104,7 @@ public class BeamChatChannel {
         try {
             HashMap<String, Object> map = new HashMap<>();
             map.put("limit", USER_LIST_MAX_SIZE);
-            BeamChatUser[] users = ((BeamBot) APIBot.getBot()).beam.http.get(path, BeamChatUser[].class, map).get(USER_LIST_TIMEOUT, TimeUnit.SECONDS);
+            BeamChatUser[] users = ((BeamBot) Bot.getBot()).beam.http.get(path, BeamChatUser[].class, map).get(USER_LIST_TIMEOUT, TimeUnit.SECONDS);
             Map<String, List<BeamUser.Role>> roleMap =
                     Stream.of(users).collect(Collectors.toMap(user -> user.getUserName().toLowerCase(),
                             user -> Collections.unmodifiableList(user.getUserRoles())));

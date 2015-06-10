@@ -2,7 +2,6 @@ package com.github.otbproject.otbproject.users;
 
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
-import com.github.otbproject.otbproject.util.CustomCollectors;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

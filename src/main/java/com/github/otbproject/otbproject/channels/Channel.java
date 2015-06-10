@@ -1,10 +1,10 @@
 package com.github.otbproject.otbproject.channels;
 
-import com.github.otbproject.otbproject.api.APIDatabase;
-import com.github.otbproject.otbproject.api.APISchedule;
 import com.github.otbproject.otbproject.commands.scheduler.Scheduler;
+import com.github.otbproject.otbproject.commands.scheduler.Schedules;
 import com.github.otbproject.otbproject.config.ChannelConfig;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
+import com.github.otbproject.otbproject.database.Databases;
 import com.github.otbproject.otbproject.database.SQLiteQuoteWrapper;
 import com.github.otbproject.otbproject.filters.GroupFilterSet;
 import com.github.otbproject.otbproject.messages.receive.ChannelMessageProcessor;
@@ -46,11 +46,11 @@ public class Channel {
         this.config = config;
         this.inChannel = false;
 
-        mainDb = APIDatabase.getChannelMainDatabase(name);
+        mainDb = Databases.createChannelMainDbWrapper(name);
         if (mainDb == null) {
             throw new ChannelInitException(name, "Unable to get main database");
         }
-        quoteDb = APIDatabase.getChannelQuoteDatabase(name);
+        quoteDb = Databases.createChannelQuoteDbWrapper(name);
         if (quoteDb == null) {
             throw new ChannelInitException(name, "Unable to get quote database");
         }
@@ -70,7 +70,7 @@ public class Channel {
     private void init() {
         messageSender = new ChannelMessageSender(this);
         messageProcessor = new ChannelMessageProcessor(this);
-        APISchedule.loadFromDatabase(this);
+        Schedules.loadFromDatabase(this);
     }
 
     public static Channel create(String name, ChannelConfig config) throws ChannelInitException {

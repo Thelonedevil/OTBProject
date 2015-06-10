@@ -1,9 +1,9 @@
 package com.github.otbproject.otbproject.messages.send;
 
 import com.github.otbproject.otbproject.App;
-import com.github.otbproject.otbproject.api.APIBot;
-import com.github.otbproject.otbproject.api.APIConfig;
+import com.github.otbproject.otbproject.bot.Bot;
 import com.github.otbproject.otbproject.channels.Channel;
+import com.github.otbproject.otbproject.config.Configs;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 import java.util.concurrent.ExecutorService;
@@ -90,11 +90,11 @@ public class ChannelMessageSender {
         try {
             Thread.currentThread().setName(channel.getName() + " Message Sender");
             MessageOut message;
-            int sleepTime = APIConfig.getBotConfig().getMessageSendDelayInMilliseconds();
+            int sleepTime = Configs.getBotConfig().getMessageSendDelayInMilliseconds();
 
             while (true) {
                 message = queue.take();
-                APIBot.getBot().sendMessage(channel.getName(), message.getMessage());
+                Bot.getBot().sendMessage(channel.getName(), message.getMessage());
                 Thread.sleep(sleepTime);
             }
         } catch (InterruptedException e) {

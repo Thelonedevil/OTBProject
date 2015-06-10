@@ -1,15 +1,18 @@
 package com.github.otbproject.otbproject.proc;
 
 import com.github.otbproject.otbproject.App;
-import com.github.otbproject.otbproject.commands.Aliases;
-import com.github.otbproject.otbproject.commands.Commands;
 import com.github.otbproject.otbproject.commands.Alias;
+import com.github.otbproject.otbproject.commands.Aliases;
 import com.github.otbproject.otbproject.commands.Command;
+import com.github.otbproject.otbproject.commands.Commands;
 import com.github.otbproject.otbproject.commands.parser.CommandResponseParser;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.users.UserLevel;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
 
 public class CommandProcessor {
     public static ProcessedCommand process(DatabaseWrapper db, String message, String channel, String user, UserLevel userLevel, boolean debug) {
