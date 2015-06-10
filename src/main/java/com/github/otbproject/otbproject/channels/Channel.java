@@ -1,6 +1,6 @@
 package com.github.otbproject.otbproject.channels;
 
-import com.github.otbproject.otbproject.api.APIDatabase;
+import com.github.otbproject.otbproject.api.Databases;
 import com.github.otbproject.otbproject.api.APISchedule;
 import com.github.otbproject.otbproject.commands.scheduler.Scheduler;
 import com.github.otbproject.otbproject.config.ChannelConfig;
@@ -46,11 +46,11 @@ public class Channel {
         this.config = config;
         this.inChannel = false;
 
-        mainDb = APIDatabase.getChannelMainDatabase(name);
+        mainDb = Databases.getChannelMainDatabase(name);
         if (mainDb == null) {
             throw new ChannelInitException(name, "Unable to get main database");
         }
-        quoteDb = APIDatabase.getChannelQuoteDatabase(name);
+        quoteDb = Databases.getChannelQuoteDatabase(name);
         if (quoteDb == null) {
             throw new ChannelInitException(name, "Unable to get quote database");
         }

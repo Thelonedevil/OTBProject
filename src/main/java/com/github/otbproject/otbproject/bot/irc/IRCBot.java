@@ -5,7 +5,7 @@ import com.github.otbproject.otbproject.api.Channels;
 import com.github.otbproject.otbproject.bot.BotUtil;
 import com.github.otbproject.otbproject.bot.IBot;
 import com.github.otbproject.otbproject.api.Configs;
-import com.github.otbproject.otbproject.api.APIDatabase;
+import com.github.otbproject.otbproject.api.Databases;
 import com.github.otbproject.otbproject.channels.Channel;
 import com.github.otbproject.otbproject.channels.ChannelNotFoundException;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit;
 
 public class IRCBot extends PircBotX implements IBot{
     private final HashMap<String, Channel> channels = new HashMap<>();
-    private final DatabaseWrapper botDB = APIDatabase.getBotDatabase();
+    private final DatabaseWrapper botDB = Databases.getBotDatabase();
     private final OutputRaw newOutputRaw;
     // Should take slightly more than 30 seconds to refill 99 tokens adding 1
     // token every 304 milliseconds

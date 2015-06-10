@@ -3,7 +3,7 @@ package com.github.otbproject.otbproject.bot.beam;
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.api.Channels;
 import com.github.otbproject.otbproject.api.Configs;
-import com.github.otbproject.otbproject.api.APIDatabase;
+import com.github.otbproject.otbproject.api.Databases;
 import com.github.otbproject.otbproject.bot.BotInitException;
 import com.github.otbproject.otbproject.bot.BotUtil;
 import com.github.otbproject.otbproject.bot.IBot;
@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit;
 
 public class BeamBot implements IBot {
     private final HashMap<String, Channel> channels = new HashMap<>();
-    private final DatabaseWrapper botDB = APIDatabase.getBotDatabase();
+    private final DatabaseWrapper botDB = Databases.getBotDatabase();
 
     public final ExpiringMap<String, Boolean> sentMessageCache;
     private static final int CACHE_TIME = 4;

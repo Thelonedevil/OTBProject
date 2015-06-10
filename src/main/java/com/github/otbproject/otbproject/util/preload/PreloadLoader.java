@@ -1,7 +1,7 @@
 package com.github.otbproject.otbproject.util.preload;
 
 import com.github.otbproject.otbproject.App;
-import com.github.otbproject.otbproject.api.APIDatabase;
+import com.github.otbproject.otbproject.api.Databases;
 import com.github.otbproject.otbproject.commands.Alias;
 import com.github.otbproject.otbproject.commands.Aliases;
 import com.github.otbproject.otbproject.commands.Command;
@@ -72,7 +72,7 @@ public class PreloadLoader {
 
     private static void loadForChannel(List<PreloadPair<?>> list, String channel, Base base, LoadStrategy strategy) {
         App.logger.debug("Loading objects of type '" + base.toString() + "' for channel: " + channel);
-        DatabaseWrapper db = APIDatabase.getChannelMainDatabase(channel);
+        DatabaseWrapper db = Databases.getChannelMainDatabase(channel);
         if (db == null) {
             App.logger.error("Failed to load objects of type '" + base.toString() + "' for channel '" + channel + "' - unable to get database");
             return;
@@ -83,7 +83,7 @@ public class PreloadLoader {
 
     private static void loadForBotChannel(List<PreloadPair<?>> list, Base base, LoadStrategy strategy) {
         App.logger.debug("Loading objects of type '" + base.toString() + "' for bot channel");
-        DatabaseWrapper db = APIDatabase.getBotDatabase();
+        DatabaseWrapper db = Databases.getBotDatabase();
         if (db == null) {
             App.logger.error("Failed to load objects of type '" + base.toString() + "' for bot channel - unable to get bot database");
             return;
