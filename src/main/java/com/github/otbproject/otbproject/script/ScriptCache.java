@@ -1,4 +1,4 @@
-package com.github.otbproject.otbproject.scripts;
+package com.github.otbproject.otbproject.script;
 
 import groovy.lang.Script;
 
