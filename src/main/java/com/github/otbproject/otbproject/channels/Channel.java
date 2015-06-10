@@ -30,8 +30,8 @@ public class Channel {
     private final ChannelConfig config;
     private final DatabaseWrapper mainDb;
     private final SQLiteQuoteWrapper quoteDb;
-    private ChannelMessageSender messageSender;
-    private ChannelMessageProcessor messageReceiver;
+    private final ChannelMessageSender messageSender;
+    private final ChannelMessageProcessor messageProcessor;
     private final Scheduler scheduler = new Scheduler();
     private final HashMap<String,ScheduledFuture> scheduledCommands = new HashMap<>();
     private final HashMap<String,ScheduledFuture> hourlyResetSchedules = new HashMap<>();
@@ -54,6 +54,9 @@ public class Channel {
             throw new ChannelInitException(name, "Unable to get quote database");
         }
 
+        messageSender = new ChannelMessageSender(this);
+        messageProcessor = new ChannelMessageProcessor(this);
+
         commandCooldownSet = ExpiringMap.builder()
                 .variableExpiration()
                 .expirationPolicy(ExpiringMap.ExpirationPolicy.CREATED)
@@ -73,11 +76,7 @@ public class Channel {
                 return false;
             }
 
-            messageSender = new ChannelMessageSender(this);
             messageSender.start();
-
-            messageReceiver = new ChannelMessageProcessor(this);
-
             scheduler.start();
 
             inChannel = true;
@@ -97,10 +96,6 @@ public class Channel {
             inChannel = false;
 
             messageSender.stop();
-            messageSender = null;
-
-            messageReceiver = null;
-
             scheduler.stop();
 
             commandCooldownSet.clear();
@@ -133,7 +128,7 @@ public class Channel {
 
     public boolean receiveMessage(PackagedMessage packagedMessage) {
         if (inChannel) {
-            messageReceiver.processMessage(packagedMessage);
+            messageProcessor.processMessage(packagedMessage);
         }
         return inChannel;
     }
