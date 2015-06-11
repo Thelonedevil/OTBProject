@@ -1,6 +1,6 @@
 package com.github.otbproject.otbproject.bot;
 
-import com.github.otbproject.otbproject.channels.Channel;
+import com.github.otbproject.otbproject.channel.Channel;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import org.pircbotx.exception.IrcException;
 

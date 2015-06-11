@@ -1,16 +1,16 @@
 package com.github.otbproject.otbproject.util.preload;
 
 import com.github.otbproject.otbproject.App;
-import com.github.otbproject.otbproject.commands.Alias;
-import com.github.otbproject.otbproject.commands.Aliases;
-import com.github.otbproject.otbproject.commands.Command;
-import com.github.otbproject.otbproject.commands.Commands;
+import com.github.otbproject.otbproject.command.Alias;
+import com.github.otbproject.otbproject.command.Aliases;
+import com.github.otbproject.otbproject.command.Command;
+import com.github.otbproject.otbproject.command.Commands;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.database.Databases;
-import com.github.otbproject.otbproject.filters.BasicFilter;
-import com.github.otbproject.otbproject.filters.FilterGroup;
-import com.github.otbproject.otbproject.filters.FilterGroups;
-import com.github.otbproject.otbproject.filters.Filters;
+import com.github.otbproject.otbproject.filter.BasicFilter;
+import com.github.otbproject.otbproject.filter.FilterGroup;
+import com.github.otbproject.otbproject.filter.FilterGroups;
+import com.github.otbproject.otbproject.filter.Filters;
 import com.github.otbproject.otbproject.fs.FSUtil;
 import com.github.otbproject.otbproject.fs.groups.Base;
 import com.github.otbproject.otbproject.fs.groups.Chan;

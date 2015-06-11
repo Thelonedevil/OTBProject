@@ -2,9 +2,9 @@ package com.github.otbproject.otbproject.messages.receive;
 
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.bot.Bot;
-import com.github.otbproject.otbproject.channels.Channel;
-import com.github.otbproject.otbproject.channels.Channels;
-import com.github.otbproject.otbproject.commands.Commands;
+import com.github.otbproject.otbproject.channel.Channel;
+import com.github.otbproject.otbproject.channel.Channels;
+import com.github.otbproject.otbproject.command.Commands;
 import com.github.otbproject.otbproject.config.ChannelConfigHelper;
 import com.github.otbproject.otbproject.config.Configs;
 import com.github.otbproject.otbproject.config.GeneralConfigHelper;
@@ -15,7 +15,7 @@ import com.github.otbproject.otbproject.messages.send.MessagePriority;
 import com.github.otbproject.otbproject.proc.CommandScriptProcessor;
 import com.github.otbproject.otbproject.proc.MessageProcessor;
 import com.github.otbproject.otbproject.proc.ProcessedMessage;
-import com.github.otbproject.otbproject.users.UserLevel;
+import com.github.otbproject.otbproject.user.UserLevel;
 
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
