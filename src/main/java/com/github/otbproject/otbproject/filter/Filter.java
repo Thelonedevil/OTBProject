@@ -8,6 +8,10 @@ import java.io.File;
 import java.util.regex.Pattern;
 
 public class Filter {
+    private static final String ANY = ".*";
+    // Custom word boundary to match if phrase doesn't end in \w
+    private static final String WORD_BOUNDARY = "($|^|\\W|_)";
+
     private final String group;
     private final FilterType type;
     private final Pattern pattern;
@@ -32,6 +36,7 @@ public class Filter {
 
     public boolean matches(String message) {
         switch (type) {
+            case PHRASE:
             case PLAINTEXT:
             case REGEX:
                 return pattern.matcher(message).matches();
@@ -82,11 +87,14 @@ public class Filter {
     public static Filter fromBasicFilter(BasicFilter filter) {
         Pattern pattern = null;
         switch (filter.getType()) {
+            case PHRASE:
+                pattern = Pattern.compile((ANY + WORD_BOUNDARY + Pattern.quote(filter.getData()) + WORD_BOUNDARY + ANY), Pattern.CASE_INSENSITIVE);
+                break;
             case PLAINTEXT:
-                pattern = Pattern.compile(Pattern.quote(filter.getData()), Pattern.CASE_INSENSITIVE);
+                pattern = Pattern.compile((ANY + Pattern.quote(filter.getData()) + ANY), Pattern.CASE_INSENSITIVE);
                 break;
             case REGEX:
-                pattern = Pattern.compile(filter.getData(), Pattern.CASE_INSENSITIVE);
+                pattern = Pattern.compile((ANY + filter.getData() + ANY), Pattern.CASE_INSENSITIVE);
                 break;
         }
         boolean enabled = (filter.isEnabled() == null) ? true : filter.isEnabled();
