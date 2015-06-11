@@ -1,16 +1,13 @@
 package com.github.otbproject.otbproject.bot.beam;
 
 import com.github.otbproject.otbproject.App;
+import com.github.otbproject.otbproject.bot.AbstractBot;
 import com.github.otbproject.otbproject.bot.BotInitException;
 import com.github.otbproject.otbproject.bot.BotUtil;
-import com.github.otbproject.otbproject.bot.IBot;
-import com.github.otbproject.otbproject.channel.Channel;
 import com.github.otbproject.otbproject.channel.ChannelInitException;
 import com.github.otbproject.otbproject.channel.ChannelNotFoundException;
 import com.github.otbproject.otbproject.channel.Channels;
 import com.github.otbproject.otbproject.config.Configs;
-import com.github.otbproject.otbproject.database.DatabaseWrapper;
-import com.github.otbproject.otbproject.database.Databases;
 import net.jodah.expiringmap.ExpiringMap;
 import pro.beam.api.BeamAPI;
 import pro.beam.api.resource.BeamUser;
@@ -22,10 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
-public class BeamBot implements IBot {
-    private final ConcurrentHashMap<String, Channel> channels = new ConcurrentHashMap<>();
-    private final DatabaseWrapper botDB = Databases.createBotDbWrapper();
-
+public class BeamBot extends AbstractBot {
     public final ExpiringMap<String, Boolean> sentMessageCache;
     private static final int CACHE_TIME = 4;
 
@@ -57,11 +51,6 @@ public class BeamBot implements IBot {
     }
 
     @Override
-    public ConcurrentHashMap<String, Channel> getChannels() {
-        return channels;
-    }
-
-    @Override
     public boolean isChannel(String channelName) {
         try {
             for(BeamUser user : beam.use(UsersService.class).search(channelName).get()){
@@ -81,17 +70,12 @@ public class BeamBot implements IBot {
             beamChannels.get(key).beamChatConnectable.close();
         }
         beamChannels.clear();
-        IBot.super.shutdown();
+        super.shutdown();
     }
 
     @Override
     public String getUserName() {
         return beamUser.username.toLowerCase();
-    }
-
-    @Override
-    public DatabaseWrapper getBotDB() {
-        return botDB;
     }
 
     @Override
