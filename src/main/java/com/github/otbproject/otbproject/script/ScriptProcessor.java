@@ -47,11 +47,11 @@ public class ScriptProcessor<T> {
             response = defaultResponse;
         }
 
-        App.logger.debug("Script '" + scriptName + "' returned: " + response.toString());
+        App.logger.debug("Script '" + scriptName + "' returned: " + response);
         return response;
     }
 
-    public void flushScriptCache(String scriptName) {
+    public void dropFromScriptCache(String scriptName) {
         cache.remove(scriptName);
     }
 
