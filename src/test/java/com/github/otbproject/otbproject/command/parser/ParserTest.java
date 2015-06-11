@@ -14,7 +14,7 @@ import org.junit.Test;
 import org.pircbotx.exception.IrcException;
 
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -44,7 +44,7 @@ public class ParserTest {
             }
 
             @Override
-            public HashMap<String, Channel> getChannels() {
+            public ConcurrentHashMap<String, Channel> getChannels() {
                 return null;
             }
 
