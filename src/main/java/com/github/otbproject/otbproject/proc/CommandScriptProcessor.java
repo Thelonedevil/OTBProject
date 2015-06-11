@@ -9,7 +9,7 @@ import java.io.File;
 
 public class CommandScriptProcessor {
     private static final String METHOD_NAME = "execute";
-    private static final ScriptProcessor PROCESSOR = new ScriptProcessor();
+    private static final ScriptProcessor<Boolean> PROCESSOR = new ScriptProcessor<>(Boolean.class, false);
 
     public static boolean process(String scriptName, DatabaseWrapper db, String commandName, String[] commandArgs, String channel, String destinationChannel, String user, UserLevel userLevel) {
         ScriptArgs args = new ScriptArgs(db, commandName, commandArgs, channel, destinationChannel, user, userLevel);
