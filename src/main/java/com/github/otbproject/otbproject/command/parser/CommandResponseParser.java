@@ -219,11 +219,11 @@ public class CommandResponseParser {
         return message.replaceAll("\t", "");
     }
 
-    private static String doModifier(String toModify, String term) {
+    static String doModifier(String toModify, String term) {
         return modify(toModify, getModifier(term));
     }
 
-    private static String modify(String toModify, String modifier) {
+    static String modify(String toModify, String modifier) {
         switch (modifier) {
             case ModifierTypes.LOWER:
                 return toModify.toLowerCase();
@@ -242,7 +242,7 @@ public class CommandResponseParser {
         }
     }
 
-    private static String getModifier(String word) {
+    static String getModifier(String word) {
         // Split away default arg, if exists
         String[] temp = word.split(EMBED_START);
 
@@ -255,7 +255,7 @@ public class CommandResponseParser {
     }
 
     // Check if given index embedded string exists; return empty string if not
-    private static String getEmbeddedString(String term, int index) {
+    static String getEmbeddedString(String term, int index) {
         String[] temp = term.split(EMBED_START, 2);
         if (temp.length == 1) {
             return "";
@@ -275,7 +275,7 @@ public class CommandResponseParser {
         return temp[1].split(EMBED_END)[0];
     }
 
-    private static int getArgNum(String term, String prefix) throws InvalidTermException {
+    static int getArgNum(String term, String prefix) throws InvalidTermException {
         // Gets arg number
         String argNumStr = term.replaceFirst(prefix, "").split(EMBED_START, 2)[0].split(MODIFIER_DELIM, 2)[0];
         int argNum;
