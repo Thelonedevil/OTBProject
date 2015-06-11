@@ -1,6 +1,20 @@
 package com.github.otbproject.otbproject.command.parser;
 
+import com.github.otbproject.otbproject.App;
+import com.github.otbproject.otbproject.bot.Bot;
+import com.github.otbproject.otbproject.bot.IBot;
+import com.github.otbproject.otbproject.channel.Channel;
+import com.github.otbproject.otbproject.config.Configs;
+import com.github.otbproject.otbproject.config.GeneralConfig;
+import com.github.otbproject.otbproject.config.ServiceName;
+import com.github.otbproject.otbproject.database.DatabaseWrapper;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.pircbotx.exception.IrcException;
+
+import java.io.IOException;
+import java.util.HashMap;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -15,6 +29,89 @@ public class ParserTest {
     private static final String USER = "nthportal";
     private static final int COUNT = 1;
     private static final String CHANNEL = "the_lone_devil";
+
+    @BeforeClass
+    public static void init() {
+        Bot.setBot(new IBot() {
+            @Override
+            public boolean isConnected(String channelName) {
+                return false;
+            }
+
+            @Override
+            public boolean isConnected() {
+                return false;
+            }
+
+            @Override
+            public HashMap<String, Channel> getChannels() {
+                return null;
+            }
+
+            @Override
+            public boolean isChannel(String channelName) {
+                return false;
+            }
+
+            @Override
+            public String getUserName() {
+                return "test_user_name";
+            }
+
+            @Override
+            public DatabaseWrapper getBotDB() {
+                return null;
+            }
+
+            @Override
+            public boolean isUserMod(String channel, String user) {
+                return false;
+            }
+
+            @Override
+            public boolean isUserSubscriber(String channel, String user) {
+                return false;
+            }
+
+            @Override
+            public void sendMessage(String channel, String message) {
+
+            }
+
+            @Override
+            public void startBot() throws IOException, IrcException {
+
+            }
+
+            @Override
+            public boolean join(String channelName) {
+                return false;
+            }
+
+            @Override
+            public boolean leave(String channelName) {
+                return false;
+            }
+
+            @Override
+            public boolean timeout(String channelName, String user, int timeInSeconds) {
+                return false;
+            }
+
+            @Override
+            public boolean removeTimeout(String channelName, String user) {
+                return false;
+            }
+        });
+        App.configManager.setGeneralConfig(new GeneralConfig());
+        Configs.getGeneralConfig().setServiceName(ServiceName.BEAM);
+    }
+
+    @AfterClass
+    public static void cleanup() {
+        Bot.setBot(null);
+        App.configManager.setGeneralConfig(null);
+    }
 
     @Test
     // Term-independent tests
@@ -442,6 +539,20 @@ public class ParserTest {
         String[] args = "not_a_number".split(" ");
         String parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, args, rawMsg);
         assertEquals("Quote: <>", parsed);
+    }
+
+    @Test
+    // [[bot]]
+    public void botTest() {
+        String parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, new String[0], "[[bot]]");
+        assertEquals(Bot.getBot().getUserName(), parsed);
+    }
+
+    @Test
+    // [[service]]
+    public void serviceTest() {
+        String parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, new String[0], "[[service]]");
+        assertEquals("Beam", parsed);
     }
 
     @Test
