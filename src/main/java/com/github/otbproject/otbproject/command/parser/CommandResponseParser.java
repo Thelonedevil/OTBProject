@@ -5,6 +5,7 @@ import com.github.otbproject.otbproject.channel.Channels;
 import com.github.otbproject.otbproject.config.Configs;
 import com.github.otbproject.otbproject.quote.Quote;
 import com.github.otbproject.otbproject.quote.Quotes;
+import com.github.otbproject.otbproject.script.ScriptProcessor;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -21,7 +22,9 @@ public class CommandResponseParser {
     private static final String BASE_REGEX_START = "^";
     private static final String BASE_REGEX_END = "(" + MODIFIER_DELIM + "\\w*)?(" + EMBED_START + ".*" + EMBED_END + ")*$";
 
-    private static final Map<Pattern, ParserTermAction> terms = new HashMap<>();
+    private static final Map<Pattern, ParserTermAction> TERMS = new HashMap<>();
+    private static final ScriptProcessor<ParserTerm> PROCESSOR = new ScriptProcessor<>(ParserTerm.class, null);
+    private static final String METHOD_NAME = "getTerm";
 
     static {
         // Register terms
@@ -176,15 +179,25 @@ public class CommandResponseParser {
     }
 
     private static String parseTerm(String userNick, String channel, int count, String[] args, String term) throws InvalidTermException {
-        Optional<ParserTermAction> actionOptional = terms.entrySet().stream()
+        Optional<ParserTermAction> actionOptional = TERMS.entrySet().stream()
                 .filter(entry -> entry.getKey().matcher(term).matches())
                 .map(Map.Entry::getValue)
                 .findAny();
         if (actionOptional.isPresent()) {
-            return actionOptional.get().apply(userNick, channel, count, args, term);
+            String parsed = actionOptional.get().apply(userNick, channel, count, args, term);
+            if (parsed == null) {
+                throw new InvalidTermException();
+            }
+            return parsed;
         } else {
             throw new InvalidTermException();
         }
+    }
+
+    public static boolean registerTerm(String scriptPath) {
+        // TODO create actual path directory
+        ParserTerm term = PROCESSOR.process(scriptPath, scriptPath, METHOD_NAME, null);
+        return (term != null) && (term.value() != null) && (term.action() != null) && registerTerm(term);
     }
 
     public static boolean registerTerm(ParserTerm term) {
@@ -193,10 +206,10 @@ public class CommandResponseParser {
 
     private static boolean registerTerm(String value, ParserTermAction action) {
         Pattern pattern = Pattern.compile(BASE_REGEX_START + value + BASE_REGEX_END);
-        if (terms.containsKey(pattern)) {
+        if (TERMS.containsKey(pattern)) {
             return false;
         }
-        terms.put(pattern, action);
+        TERMS.put(pattern, action);
         return true;
     }
 
