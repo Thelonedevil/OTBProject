@@ -1,6 +1,7 @@
 package com.github.otbproject.otbproject.command.parser;
 
 import com.github.otbproject.otbproject.App;
+import com.github.otbproject.otbproject.bot.AbstractBot;
 import com.github.otbproject.otbproject.bot.Bot;
 import com.github.otbproject.otbproject.bot.IBot;
 import com.github.otbproject.otbproject.channel.Channel;
@@ -32,7 +33,7 @@ public class ParserTest {
 
     @BeforeClass
     public static void init() {
-        Bot.setBot(new IBot() {
+        Bot.setBot(new AbstractBot() {
             @Override
             public boolean isConnected(String channelName) {
                 return false;
@@ -44,11 +45,6 @@ public class ParserTest {
             }
 
             @Override
-            public ConcurrentHashMap<String, Channel> getChannels() {
-                return null;
-            }
-
-            @Override
             public boolean isChannel(String channelName) {
                 return false;
             }
@@ -56,11 +52,6 @@ public class ParserTest {
             @Override
             public String getUserName() {
                 return "test_user_name";
-            }
-
-            @Override
-            public DatabaseWrapper getBotDB() {
-                return null;
             }
 
             @Override
