@@ -24,8 +24,16 @@ public class CommandResponseParser {
     private static final Map<Pattern, ParserTermAction> TERMS = new HashMap<>();
 
     static {
-        // Register terms
+        registerTerms();
+    }
 
+    // In case terms need to be reloaded
+    public static void reRegisterTerms() {
+        TERMS.clear();
+        registerTerms();
+    }
+
+    private static void registerTerms() {
         // [[user.modifier]]
         registerTerm("user", (userNick, channel, count, args, term) -> doModifier(userNick, term));
 
