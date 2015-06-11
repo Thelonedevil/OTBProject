@@ -5,7 +5,6 @@ import com.github.otbproject.otbproject.channel.Channels;
 import com.github.otbproject.otbproject.config.Configs;
 import com.github.otbproject.otbproject.quote.Quote;
 import com.github.otbproject.otbproject.quote.Quotes;
-import com.github.otbproject.otbproject.script.ScriptProcessor;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -23,8 +22,6 @@ public class CommandResponseParser {
     private static final String BASE_REGEX_END = "(" + MODIFIER_DELIM + "\\w*)?(" + EMBED_START + ".*" + EMBED_END + ")*$";
 
     private static final Map<Pattern, ParserTermAction> TERMS = new HashMap<>();
-    private static final ScriptProcessor<ParserTerm> PROCESSOR = new ScriptProcessor<>(ParserTerm.class, null);
-    private static final String METHOD_NAME = "getTerm";
 
     static {
         // Register terms
@@ -194,13 +191,7 @@ public class CommandResponseParser {
         }
     }
 
-    public static boolean registerTerm(String scriptPath) {
-        // TODO create actual path directory
-        ParserTerm term = PROCESSOR.process(scriptPath, scriptPath, METHOD_NAME, null);
-        return (term != null) && (term.value() != null) && (term.action() != null) && registerTerm(term);
-    }
-
-    public static boolean registerTerm(ParserTerm term) {
+    static boolean registerTerm(ParserTerm term) {
         return registerTerm(term.value(), term.action());
     }
 
