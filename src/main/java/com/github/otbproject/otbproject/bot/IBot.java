@@ -5,14 +5,14 @@ import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import org.pircbotx.exception.IrcException;
 
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 public interface IBot {
     boolean isConnected(String channelName);
 
     boolean isConnected();
 
-    HashMap<String, Channel> getChannels();
+    ConcurrentHashMap<String, Channel> getChannels();
 
     boolean isChannel(String channelName);
 

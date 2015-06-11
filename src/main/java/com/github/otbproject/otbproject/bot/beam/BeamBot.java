@@ -17,13 +17,13 @@ import pro.beam.api.resource.BeamUser;
 import pro.beam.api.resource.chat.methods.ChatSendMethod;
 import pro.beam.api.services.impl.UsersService;
 
-import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 public class BeamBot implements IBot {
-    private final HashMap<String, Channel> channels = new HashMap<>();
+    private final ConcurrentHashMap<String, Channel> channels = new ConcurrentHashMap<>();
     private final DatabaseWrapper botDB = Databases.createBotDbWrapper();
 
     public final ExpiringMap<String, Boolean> sentMessageCache;
@@ -31,7 +31,7 @@ public class BeamBot implements IBot {
 
     final BeamAPI beam = new BeamAPI();
     BeamUser beamUser;
-    final HashMap<String,BeamChatChannel> beamChannels = new HashMap<>();
+    final ConcurrentHashMap<String,BeamChatChannel> beamChannels = new ConcurrentHashMap<>();
 
     public BeamBot() throws BotInitException {
         sentMessageCache = ExpiringMap.builder()
@@ -57,7 +57,7 @@ public class BeamBot implements IBot {
     }
 
     @Override
-    public HashMap<String, Channel> getChannels() {
+    public ConcurrentHashMap<String, Channel> getChannels() {
         return channels;
     }
 

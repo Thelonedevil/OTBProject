@@ -19,11 +19,11 @@ import org.pircbotx.output.OutputRaw;
 import java.io.InterruptedIOException;
 import java.net.SocketException;
 import java.nio.charset.Charset;
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 public class IRCBot extends PircBotX implements IBot{
-    private final HashMap<String, Channel> channels = new HashMap<>();
+    private final ConcurrentHashMap<String, Channel> channels = new ConcurrentHashMap<>();
     private final DatabaseWrapper botDB = Databases.createBotDbWrapper();
     private final OutputRaw newOutputRaw;
     // Should take slightly more than 30 seconds to refill 99 tokens adding 1
@@ -44,7 +44,7 @@ public class IRCBot extends PircBotX implements IBot{
     }
 
     @Override
-    public HashMap<String, Channel> getChannels() {
+    public ConcurrentHashMap<String, Channel> getChannels() {
         return channels;
     }
 

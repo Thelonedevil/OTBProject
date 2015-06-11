@@ -18,6 +18,7 @@ public class FSUtil {
     private static final String LOGS_DIR_NAME = "logs";
     private static final String SCRIPT_DIR_NAME = "scripts";
     private static final String LIBS_DIR_NAME = "libs";
+    private static final String TERMS_DIR_NAME = "terms";
     private static final String WEB_DIR_NAME = "web";
     private static String baseDir = BASE_DIR_DEFAULT;
 
@@ -73,6 +74,11 @@ public class FSUtil {
     public static String scriptLibsDir(){
         return scriptDir() + File.separator + LIBS_DIR_NAME;
     }
+
+    public static String termScriptDir() {
+        return scriptDir() + File.separator + TERMS_DIR_NAME;
+    }
+
     public static String webDir() {
         return baseDir + File.separator + WEB_DIR_NAME;
     }

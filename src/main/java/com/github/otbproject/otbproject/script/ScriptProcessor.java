@@ -6,13 +6,20 @@ import groovy.lang.Script;
 
 import java.io.File;
 
-public class ScriptProcessor {
+public class ScriptProcessor<T> {
     private static final GroovyShell SHELL = new GroovyShell();
 
     private final ScriptCache cache = new ScriptCache();
+    private final Class<T> tClass;
+    private final T defaultResponse;
 
-    public boolean process(String scriptName, String path, String methodName, Object paramContainer) {
-        Boolean success;
+    public ScriptProcessor(Class<T> tClass, T defaultResponse) {
+        this.tClass = tClass;
+        this.defaultResponse = defaultResponse;
+    }
+
+    public T process(String scriptName, String path, String methodName, Object paramContainer) {
+        T response;
         try {
             Script script;
             Object scriptReturn;
@@ -28,23 +35,23 @@ public class ScriptProcessor {
             App.logger.debug("Running script: " + scriptName);
             scriptReturn = script.invokeMethod(methodName, paramContainer);
             App.logger.debug("Finished running script: " + scriptName);
-            if ((scriptReturn == null) || !(scriptReturn instanceof Boolean)) {
+            if ((scriptReturn == null) || !(tClass.isInstance(scriptReturn))) {
                 App.logger.warn("Missing or invalid return statement in script: " + scriptName);
-                success = true;
+                response = defaultResponse;
             } else {
-                success = (Boolean) scriptReturn;
+                response = tClass.cast(scriptReturn);
             }
         } catch (Exception e) {
             App.logger.error("Exception when running script: " + scriptName);
             App.logger.catching(e);
-            success = false;
+            response = defaultResponse;
         }
 
-        App.logger.debug("Script '" + scriptName + "' returned: " + success.toString());
-        return success;
+        App.logger.debug("Script '" + scriptName + "' returned: " + response);
+        return response;
     }
 
-    public void flushScriptCache(String scriptName) {
+    public void dropFromScriptCache(String scriptName) {
         cache.remove(scriptName);
     }
 

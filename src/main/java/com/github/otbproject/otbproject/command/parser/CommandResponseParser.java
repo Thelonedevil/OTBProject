@@ -7,6 +7,10 @@ import com.github.otbproject.otbproject.quote.Quote;
 import com.github.otbproject.otbproject.quote.Quotes;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.regex.Pattern;
 
 public class CommandResponseParser {
     private static final String TERM_START = "[[";        // Not a regex
@@ -17,6 +21,136 @@ public class CommandResponseParser {
     private static final String BASE_REGEX_START = "^";
     private static final String BASE_REGEX_END = "(" + MODIFIER_DELIM + "\\w*)?(" + EMBED_START + ".*" + EMBED_END + ")*$";
 
+    private static final Map<Pattern, ParserTermAction> TERMS = new HashMap<>();
+
+    static {
+        registerTerms();
+    }
+
+    // In case terms need to be reloaded
+    public static void reRegisterTerms() {
+        TERMS.clear();
+        registerTerms();
+    }
+
+    private static void registerTerms() {
+        // [[user.modifier]]
+        registerTerm("user", (userNick, channel, count, args, term) -> doModifier(userNick, term));
+
+        // [[channel.modifier]]
+        registerTerm("channel", (userNick, channel, count, args, term) -> doModifier(channel, term));
+
+        // [[count]] - ignores modifier (because no effect)
+        registerTerm("count", (userNick, channel, count, args, term) -> Integer.toString(count));
+
+        // [[quote.modifier]] - can have a modifier, but it's unclear why you want one
+        registerTerm("quote", (userNick, channel, count, args, term) -> {
+            String quoteNumStr = getEmbeddedString(term, 1);
+            Quote quote;
+            if (quoteNumStr.isEmpty()) {
+                quote = Quotes.getRandomQuote(Channels.get(channel).getQuoteDatabaseWrapper());
+                if (quote == null) {
+                    return "[Error getting random quote]";
+                }
+            } else {
+                try {
+                    int quoteNum = Integer.valueOf(quoteNumStr);
+                    quote = Quotes.get(Channels.get(channel).getQuoteDatabaseWrapper(), quoteNum);
+                    if (quote == null) {
+                        return "";
+                    }
+                } catch (NumberFormatException e) {
+                    return "";
+                }
+            }
+            return quote.getText();
+        });
+
+        // [[game.modifier]]
+        // TODO fix when able to get game name from Twitch/Beam
+        registerTerm("game", (userNick, channel, count, args, term) -> doModifier("a game", term));
+
+        // [[numargs]] - ignores modifier (because no effect)
+        registerTerm("numargs", (userNick, channel, count, args, term) -> Integer.toString(args.length));
+
+        // [[args.modifier{{default}}]]
+        registerTerm("args", (userNick, channel, count, args, term) -> {
+            // If no args, parse default
+            if (args.length == 0) {
+                return getEmbeddedString(term, 1);
+            }
+            return doModifier(String.join(" ", args), term);
+        });
+
+        // [[ifargs{{string}}]] - ignores modifier
+        registerTerm("ifargs", (userNick, channel, count, args, term) -> {
+            // If no args, return empty string
+            if (args.length == 0) {
+                return getEmbeddedString(term, 2);
+            }
+            // Gets conditionally printed string
+            return getEmbeddedString(term, 1);
+        });
+
+        // [[fromargN.modifier{{default}}]]
+        registerTerm("fromarg\\d+", (userNick, channel, count, args, term) -> {
+            int argNum = getArgNum(term, "fromarg");
+            if (args.length < argNum) {
+                return getEmbeddedString(term, 1);
+            }
+            String[] lessArgs = Arrays.copyOfRange(args, (argNum - 1), args.length);
+            return doModifier(String.join(" ", lessArgs), term);
+        });
+
+        // [[argN.modifier{{default}}]] - N is a natural number
+        registerTerm("arg\\d+", (userNick, channel, count, args, term) -> {
+            int argNum = getArgNum(term, "arg");
+            // If insufficient args, parse default
+            if (args.length < argNum) {
+                return getEmbeddedString(term, 1);
+            }
+            return doModifier(args[argNum - 1], term);
+        });
+
+        // [[ifargN{{string}}]] - N is a natural number; ignores modifier
+        registerTerm("ifarg\\d+", (userNick, channel, count, args, term) -> {
+            int argNum = getArgNum(term, "ifarg");
+            // If insufficient args, return empty string
+            if (args.length < argNum) {
+                return getEmbeddedString(term, 2);
+            }
+            // Gets conditionally printed string
+            return getEmbeddedString(term, 1);
+        });
+
+        // [[foreach.modifier{{prepend}}{{append}}]]
+        registerTerm("foreach", (userNick, channel, count, args, term) -> {
+            String prepend = getEmbeddedString(term, 1);
+            String append = getEmbeddedString(term, 2);
+            StringBuilder result = new StringBuilder();
+            String modifier = getModifier(term);
+
+            Arrays.stream(args).forEach(arg -> result.append(prepend).append(modify(arg, modifier)).append(append));
+            return result.toString();
+        });
+
+        // [[equal{{compare1}}{{compare2}}{{if_same}}{{if_diff}}]]
+        registerTerm("equal", (userNick, channel, count, args, term) -> {
+            String compare1 = getEmbeddedString(term, 1);
+            String compare2 = getEmbeddedString(term, 2);
+            if (compare1.equals(compare2)) {
+                return getEmbeddedString(term, 3);
+            }
+            return getEmbeddedString(term, 4);
+        });
+
+        // [[service]]
+        registerTerm("service", (userNick, channel, count, args, term) ->
+                doModifier(ResponseParserUtil.firstCap(Configs.getGeneralConfig().getServiceName().toString(), true), term));
+
+        // [[bot]]
+        registerTerm("bot", (userNick, channel, count, args, term) -> doModifier(Bot.getBot().getUserName(), term));
+    }
 
     public static String parse(String userNick, String channel, int count, String[] args, String rawResponse) {
         return postUnProcessor(parseMessage(userNick, channel, count, args, rawResponse));
@@ -50,126 +184,32 @@ public class CommandResponseParser {
     }
 
     private static String parseTerm(String userNick, String channel, int count, String[] args, String term) throws InvalidTermException {
-        // [[user.modifier]]
-        if (isTerm(term, "user")) {
-            return doModifier(userNick, term);
-        }
-        // [[channel.modifier]]
-        else if (isTerm(term, "channel")) {
-            return doModifier(channel, term);
-        }
-        // [[count]] - ignores modifier (because no effect)
-        else if (isTerm(term, "count")) {
-            return Integer.toString(count);
-        }
-        // [[quote.modifier]] - can have a modifier, but it's unclear why you want one
-        else if (isTerm(term, "quote")) {
-            String quoteNumStr = getEmbeddedString(term, 1);
-            Quote quote;
-            if (quoteNumStr.isEmpty()) {
-                quote = Quotes.getRandomQuote(Channels.get(channel).getQuoteDatabaseWrapper());
-                if (quote == null) {
-                    return "[Error getting random quote]";
-                }
-            } else {
-                try {
-                    int quoteNum = Integer.valueOf(quoteNumStr);
-                    quote = Quotes.get(Channels.get(channel).getQuoteDatabaseWrapper(), quoteNum);
-                    if (quote == null) {
-                        return "";
-                    }
-                } catch (NumberFormatException e) {
-                    return "";
-                }
+        Optional<ParserTermAction> actionOptional = TERMS.entrySet().stream()
+                .filter(entry -> entry.getKey().matcher(term).matches())
+                .map(Map.Entry::getValue)
+                .findAny();
+        if (actionOptional.isPresent()) {
+            String parsed = actionOptional.get().apply(userNick, channel, count, args, term);
+            if (parsed == null) {
+                throw new InvalidTermException();
             }
-            return quote.getText();
-        }
-        // [[game.modifier]]
-        else if (isTerm(term, "game")) {
-            return doModifier("a game", term); // TODO fix when able to get game name from twitch
-        }
-        // [[numargs]] - ignores modifier (because no effect)
-        else if (isTerm(term, "numargs")) {
-            return Integer.toString(args.length);
-        }
-        // [[args.modifier{{default}}]]
-        else if (isTerm(term, "args")) {
-            // If no args, parse default
-            if (args.length == 0) {
-                return getEmbeddedString(term, 1);
-            }
-            return doModifier(String.join(" ", args), term);
-        }
-        // [[ifargs{{string}}]] - ignores modifier
-        else if (isTerm(term, "ifargs")) {
-            // If no args, return empty string
-            if (args.length == 0) {
-                return getEmbeddedString(term, 2);
-            }
-            // Gets conditionally printed string
-            return getEmbeddedString(term, 1);
-        }
-        // [[fromargN.modifier{{default}}]]
-        else if (isTerm(term, "fromarg\\d+")) {
-            int argNum = getArgNum(term, "fromarg");
-            if (args.length < argNum) {
-                return getEmbeddedString(term, 1);
-            }
-            String[] lessArgs = Arrays.copyOfRange(args, (argNum - 1), args.length);
-            return doModifier(String.join(" ", lessArgs), term);
-        }
-        // [[argN.modifier{{default}}]] - N is a natural number
-        else if (isTerm(term, "arg\\d+")) {
-            int argNum = getArgNum(term, "arg");
-            // If insufficient args, parse default
-            if (args.length < argNum) {
-                return getEmbeddedString(term, 1);
-            }
-            return doModifier(args[argNum - 1], term);
-        }
-        // [[ifargN{{string}}]] - N is a natural number; ignores modifier
-        else if (isTerm(term, "ifarg\\d+")) {
-            int argNum = getArgNum(term, "ifarg");
-            // If insufficient args, return empty string
-            if (args.length < argNum) {
-                return getEmbeddedString(term, 2);
-            }
-            // Gets conditionally printed string
-            return getEmbeddedString(term, 1);
-        }
-        // [[foreach.modifier{{prepend}}{{append}}]]
-        else if (isTerm(term, "foreach")) {
-            String prepend = getEmbeddedString(term, 1);
-            String append = getEmbeddedString(term, 2);
-            StringBuilder result = new StringBuilder();
-            String modifier = getModifier(term);
-
-            Arrays.stream(args).forEach(arg -> result.append(prepend).append(modify(arg, modifier)).append(append));
-            return result.toString();
-        }
-        // [[equal{{compare1}}{{compare2}}{{if_same}}{{if_diff}}]]
-        else if (isTerm(term, "equal")) {
-            String compare1 = getEmbeddedString(term, 1);
-            String compare2 = getEmbeddedString(term, 2);
-            if (compare1.equals(compare2)) {
-                return getEmbeddedString(term, 3);
-            }
-            return getEmbeddedString(term, 4);
-        }
-        // [[service]]
-        else if (isTerm(term, "service")) {
-            return doModifier(ResponseParserUtil.firstCap(Configs.getGeneralConfig().getServiceName().toString(), true), term);
-        }
-        // [[bot]]
-        else if (isTerm(term, "bot")) {
-            return doModifier(Bot.getBot().getUserName(), term);
+            return parsed;
         } else {
             throw new InvalidTermException();
         }
     }
 
-    private static boolean isTerm(String possibleTerm, String termName) {
-        return possibleTerm.matches(BASE_REGEX_START + termName + BASE_REGEX_END);
+    static boolean registerTerm(ParserTerm term) {
+        return registerTerm(term.value(), term.action());
+    }
+
+    private static boolean registerTerm(String value, ParserTermAction action) {
+        Pattern pattern = Pattern.compile(BASE_REGEX_START + value + BASE_REGEX_END);
+        if (TERMS.containsKey(pattern)) {
+            return false;
+        }
+        TERMS.put(pattern, action);
+        return true;
     }
 
     // Prevents terms and embedded strings from being passed into the parser as
@@ -191,11 +231,11 @@ public class CommandResponseParser {
         return message.replaceAll("\t", "");
     }
 
-    private static String doModifier(String toModify, String term) {
+    static String doModifier(String toModify, String term) {
         return modify(toModify, getModifier(term));
     }
 
-    private static String modify(String toModify, String modifier) {
+    static String modify(String toModify, String modifier) {
         switch (modifier) {
             case ModifierTypes.LOWER:
                 return toModify.toLowerCase();
@@ -214,7 +254,7 @@ public class CommandResponseParser {
         }
     }
 
-    private static String getModifier(String word) {
+    static String getModifier(String word) {
         // Split away default arg, if exists
         String[] temp = word.split(EMBED_START);
 
@@ -227,7 +267,7 @@ public class CommandResponseParser {
     }
 
     // Check if given index embedded string exists; return empty string if not
-    private static String getEmbeddedString(String term, int index) {
+    static String getEmbeddedString(String term, int index) {
         String[] temp = term.split(EMBED_START, 2);
         if (temp.length == 1) {
             return "";
@@ -247,7 +287,7 @@ public class CommandResponseParser {
         return temp[1].split(EMBED_END)[0];
     }
 
-    private static int getArgNum(String term, String prefix) throws InvalidTermException {
+    static int getArgNum(String term, String prefix) throws InvalidTermException {
         // Gets arg number
         String argNumStr = term.replaceFirst(prefix, "").split(EMBED_START, 2)[0].split(MODIFIER_DELIM, 2)[0];
         int argNum;

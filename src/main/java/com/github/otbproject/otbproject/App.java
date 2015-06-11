@@ -8,6 +8,7 @@ import com.github.otbproject.otbproject.bot.irc.IRCBot;
 import com.github.otbproject.otbproject.bot.irc.InputParserImproved;
 import com.github.otbproject.otbproject.cli.ArgParser;
 import com.github.otbproject.otbproject.cli.commands.CmdParser;
+import com.github.otbproject.otbproject.command.parser.TermLoader;
 import com.github.otbproject.otbproject.config.*;
 import com.github.otbproject.otbproject.fs.FSUtil;
 import com.github.otbproject.otbproject.fs.Setup;
@@ -262,6 +263,8 @@ public class App {
         loadConfigs(cmd);
 
         LibsLoader.load();
+
+        TermLoader.loadTerms();
     }
 
     public static void loadConfigs(CommandLine cmd) {
