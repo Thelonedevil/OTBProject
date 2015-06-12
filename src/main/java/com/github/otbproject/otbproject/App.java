@@ -147,10 +147,6 @@ public class App {
             logger.catching(e);
         }
 
-        // TODO remove in later release
-        // Must be done after version check for version 1.1 so the compatibility fix will work
-        Setup.createAccountFiles();
-
         // Perform various startup actions
         startup(cmd);
 
