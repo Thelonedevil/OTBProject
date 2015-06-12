@@ -126,15 +126,17 @@ public class BeamBot extends AbstractBot {
         } catch (ChannelInitException ignored) {
             return false;
         }
-        return beamChannels.containsKey(channelName);
+        return true;
     }
 
     @Override
     public boolean leave(String channelName) {
-        if (beamChannels.containsKey(channelName)) {
-            beamChannels.remove(channelName).beamChatConnectable.close();
+        BeamChatChannel channel = beamChannels.remove(channelName);
+        if (channel == null) {
+            return false;
         }
-        return !beamChannels.containsKey(channelName);
+        channel.beamChatConnectable.close();
+        return true;
     }
 
     @Override
