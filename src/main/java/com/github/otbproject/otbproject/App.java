@@ -1,14 +1,7 @@
 package com.github.otbproject.otbproject;
 
-import com.github.otbproject.otbproject.bot.Bot;
-import com.github.otbproject.otbproject.bot.BotInitException;
-import com.github.otbproject.otbproject.bot.BotRunnable;
-import com.github.otbproject.otbproject.bot.beam.BeamBot;
-import com.github.otbproject.otbproject.bot.irc.IRCBot;
-import com.github.otbproject.otbproject.bot.irc.InputParserImproved;
 import com.github.otbproject.otbproject.cli.ArgParser;
 import com.github.otbproject.otbproject.cli.commands.CmdParser;
-import com.github.otbproject.otbproject.command.parser.TermLoader;
 import com.github.otbproject.otbproject.config.*;
 import com.github.otbproject.otbproject.fs.FSUtil;
 import com.github.otbproject.otbproject.fs.Setup;
@@ -16,13 +9,11 @@ import com.github.otbproject.otbproject.fs.groups.Base;
 import com.github.otbproject.otbproject.fs.groups.Chan;
 import com.github.otbproject.otbproject.fs.groups.Load;
 import com.github.otbproject.otbproject.gui.GuiApplication;
-import com.github.otbproject.otbproject.util.LibsLoader;
 import com.github.otbproject.otbproject.util.UnPacker;
 import com.github.otbproject.otbproject.util.Util;
 import com.github.otbproject.otbproject.util.VersionClass;
 import com.github.otbproject.otbproject.util.compat.VersionCompatHelper;
 import com.github.otbproject.otbproject.util.preload.LoadStrategy;
-import com.github.otbproject.otbproject.util.preload.PreloadLoader;
 import com.github.otbproject.otbproject.web.WarDownload;
 import com.github.otbproject.otbproject.web.WebStart;
 import org.apache.commons.cli.CommandLine;
@@ -35,7 +26,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.*;
 import java.lang.management.ManagementFactory;
-import java.lang.reflect.Field;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -74,7 +64,7 @@ public class App {
 
 
 
-    private static void doMain(String[] args) throws NoSuchFieldException, IllegalAccessException {
+    private static void doMain(String[] args) {
         CommandLine cmd = initialArgParse(args);
 
         System.setProperty("OTBCONF", FSUtil.logsDir());
@@ -138,7 +128,7 @@ public class App {
             UnPacker.unPack("preloads/json/aliases/", FSUtil.builder.base(Base.ALIAS).channels(Chan.ALL).load(Load.TO).create());
             UnPacker.unPack("preloads/json/bot-channel/commands/", FSUtil.builder.base(Base.CMD).channels(Chan.BOT).load(Load.TO).create());
             UnPacker.unPack("preloads/groovy/scripts/", FSUtil.scriptDir());
-            loadPreloads(LoadStrategy.UPDATE);
+            Init.loadPreloads(LoadStrategy.UPDATE);
         }
         try {
             PrintStream ps = new PrintStream(versionFile);
@@ -148,31 +138,8 @@ public class App {
         }
 
         // Perform various startup actions
-        startup(cmd);
+        Init.startup(cmd);
 
-        // Connect to service
-        try {
-            switch (Configs.getGeneralConfig().getServiceName()){
-                case TWITCH:
-                    Bot.setBot(new IRCBot());
-                    Class c = Bot.getBot().getClass().getSuperclass();
-                    Field input = c.getDeclaredField("inputParser");
-                    input.setAccessible(true);
-                    input.set(Bot.getBot(), new InputParserImproved((IRCBot) Bot.getBot()));
-                    break;
-                case BEAM:
-                    Bot.setBot(new BeamBot());
-                    break;
-            }
-        } catch (BotInitException e) {
-            logger.catching(e);
-        }
-        if (Bot.getBot() == null) {
-            App.logger.error("Failed to start bot");
-        } else {
-            Bot.setBotRunnable(new BotRunnable());
-            Bot.setBotFuture(Util.getSingleThreadExecutor("Bot").submit(Bot.getBotRunnable()));
-        }
         try{
             if(new File(WebStart.WAR_PATH).exists()){
                 WebStart.main(args);
@@ -241,61 +208,4 @@ public class App {
         return cmd;
     }
 
-    private static void loadPreloads(LoadStrategy strategy) {
-        PreloadLoader.loadDirectory(Base.CMD, Chan.ALL, null, strategy);
-        PreloadLoader.loadDirectory(Base.ALIAS, Chan.ALL, null, strategy);
-        PreloadLoader.loadDirectory(Base.CMD, Chan.BOT, null, strategy);
-        PreloadLoader.loadDirectory(Base.ALIAS, Chan.BOT, null, strategy);
-
-        PreloadLoader.loadDirectoryForEachChannel(Base.CMD, strategy);
-        PreloadLoader.loadDirectoryForEachChannel(Base.ALIAS, strategy);
-    }
-
-    public static void startup(CommandLine cmd) {
-        // Load commands and aliases
-        loadPreloads(LoadStrategy.OVERWRITE);
-
-        loadConfigs(cmd);
-
-        LibsLoader.load();
-
-        TermLoader.loadTerms();
-    }
-
-    public static void loadConfigs(CommandLine cmd) {
-        // General config
-        GeneralConfig generalConfig = Configs.readGeneralConfig(); // Must be read first for service info
-        configManager.setGeneralConfig(generalConfig);
-        if (cmd.hasOption(ArgParser.Opts.SERVICE)) {
-            String serviceName = cmd.getOptionValue(ArgParser.Opts.SERVICE).toUpperCase();
-            if (serviceName.equals(ServiceName.TWITCH.toString())) {
-                Configs.getGeneralConfig().setServiceName(ServiceName.TWITCH);
-            } else if (serviceName.equals(ServiceName.BEAM.toString())) {
-                Configs.getGeneralConfig().setServiceName(ServiceName.BEAM);
-            } else {
-                logger.error("Invalid service name: " + serviceName);
-                ArgParser.printHelp();
-                System.exit(1);
-            }
-            Configs.writeGeneralConfig();
-        }
-
-        // Account config
-        if (cmd.hasOption(ArgParser.Opts.ACCOUNT_FILE)) {
-            Configs.setAccountFileName(cmd.getOptionValue(ArgParser.Opts.ACCOUNT_FILE));
-        }
-        Account account = Configs.readAccount();
-        if (cmd.hasOption(ArgParser.Opts.ACCOUNT)) {
-            account.setName(cmd.getOptionValue(ArgParser.Opts.ACCOUNT));
-        }
-        if (cmd.hasOption(ArgParser.Opts.PASSKEY)) {
-            account.setPasskey(cmd.getOptionValue(ArgParser.Opts.PASSKEY));
-        }
-        configManager.setAccount(account);
-        Configs.writeAccount();
-
-        // Bot config
-        BotConfig botConfig = Configs.readBotConfig();
-        configManager.setBotConfig(botConfig);
-    }
 }
