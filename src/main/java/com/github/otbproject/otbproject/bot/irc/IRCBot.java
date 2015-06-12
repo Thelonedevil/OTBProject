@@ -54,7 +54,7 @@ public class IRCBot extends PircBotX implements IBot{
     }
 
     @Override
-    public void shutdown() {
+    public synchronized void shutdown() {
         if (isConnected()) {
             super.shutdown(true);
         }
