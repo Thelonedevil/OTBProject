@@ -25,6 +25,7 @@ import com.github.otbproject.otbproject.util.preload.LoadStrategy;
 import com.github.otbproject.otbproject.util.preload.PreloadLoader;
 import com.github.otbproject.otbproject.web.WarDownload;
 import com.github.otbproject.otbproject.web.WebStart;
+import com.github.otbproject.otbproject.web.WebVersion;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.ParseException;
 import org.apache.logging.log4j.LogManager;
@@ -46,6 +47,7 @@ public class App {
     public static final Logger logger = LogManager.getLogger();
     public static final String VERSION = new VersionClass().getVersion();
     public static final ConfigManager configManager = new ConfigManager();
+    public static final String WEB_VERSION = WebVersion.getWebVersion();
 
     public static void main(String[] args) {
         try {
@@ -187,7 +189,7 @@ public class App {
                 thread.join();
                 WebStart.main(args);
             }else{
-                logger.warn("You are running a dev build of OTBProject, please also grab the latest build of the web interface and place in \""+FSUtil.webDir()+File.separator+"\" as \"WebInterface-"+new VersionClass().getVersion()+".war\". Releases will automatically download this for you");
+                logger.warn("You are running a dev build of OTBProject, please also grab the latest build of the web interface and place in \""+FSUtil.webDir()+File.separator+"\" as \"web-interface-"+WEB_VERSION+".war\". Releases will automatically download this for you");
             }
         }catch (Exception e){
             logger.catching(e);
