@@ -134,7 +134,6 @@ public class App {
             if (!VERSION.equalsIgnoreCase(version)) {
                 VersionCompatHelper.fixCompatIssues(version);
             }
-            // TODO unpack based on a list or something
             UnPacker.unPack("preloads/json/commands/", FSUtil.builder.base(Base.CMD).channels(Chan.ALL).load(Load.TO).create());
             UnPacker.unPack("preloads/json/aliases/", FSUtil.builder.base(Base.ALIAS).channels(Chan.ALL).load(Load.TO).create());
             UnPacker.unPack("preloads/json/bot-channel/commands/", FSUtil.builder.base(Base.CMD).channels(Chan.BOT).load(Load.TO).create());
