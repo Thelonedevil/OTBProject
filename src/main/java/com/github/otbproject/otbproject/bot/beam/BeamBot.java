@@ -193,4 +193,13 @@ public class BeamBot extends AbstractBot {
         channel.timeoutSet.remove(user);
         return true;
     }
+
+    public boolean clearChannelCache(String channel) {
+        BeamChatChannel beamChatChannel = beamChannels.get(channel);
+        if (beamChatChannel == null) {
+            return false;
+        }
+        beamChatChannel.clearCache();
+        return true;
+    }
 }
