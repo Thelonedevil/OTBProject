@@ -65,10 +65,8 @@ public class BeamBot extends AbstractBot {
     }
 
     @Override
-    public void shutdown() {
-        for(String key : beamChannels.keySet()){
-            beamChannels.get(key).beamChatConnectable.close();
-        }
+    public synchronized void shutdown() {
+        beamChannels.values().forEach(beamChatChannel -> beamChatChannel.beamChatConnectable.close());
         beamChannels.clear();
         super.shutdown();
     }
