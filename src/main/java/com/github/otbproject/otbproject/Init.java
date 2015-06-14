@@ -28,7 +28,7 @@ public class Init {
 
     private static boolean running = false;
 
-    static synchronized boolean startup(CommandLine cmd) {
+    public static synchronized boolean startup(CommandLine cmd) {
         loadConfigs(cmd);
         LibsLoader.load();
         init();
@@ -37,7 +37,7 @@ public class Init {
     }
 
     public static synchronized boolean restart() {
-        shutdown();
+        shutdown(true);
         try {
             return startup();
         } catch (InitStateException e) {
@@ -51,14 +51,20 @@ public class Init {
      * Stops the bot and cleans up anything which needs to be cleaned up
      *  before the bot is started again
      */
-    public static synchronized void shutdown() {
+    public static synchronized void shutdown(boolean cleanup) {
         IBot bot = Bot.getBot();
         if (bot != null) {
             bot.shutdown();
         }
+        if (cleanup) {
+            shutdownCleanup();
+        }
+        running = false;
+    }
+
+    private static synchronized void shutdownCleanup() {
         clearCaches();
         // TODO unload libs?
-        running = false;
     }
 
     /**
@@ -81,7 +87,7 @@ public class Init {
         init();
         running = createBot();
         if (!running) {
-            shutdown();
+            shutdown(true);
         }
         return running;
     }
