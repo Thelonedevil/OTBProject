@@ -58,10 +58,14 @@ public class ScriptProcessor {
     }
 
     public void dropFromScriptCache(String scriptName) {
-        cache.remove(scriptName);
+        if (doCache) {
+            cache.remove(scriptName);
+        }
     }
 
     public void clearScriptCache() {
-        cache.clear();
+        if (doCache) {
+            cache.clear();
+        }
     }
 }
