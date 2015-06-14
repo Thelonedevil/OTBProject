@@ -83,7 +83,7 @@ public class GuiApplication extends Application {
         controller = loader.<GuiController>getController();
         controller.cliOutput.appendText(">  ");
         controller.commandsInput.setEditable(false);
-        controller.commandsOutput.appendText("Type \"stop\" to stop the bot.\nThe PID of the bot is probably " + App.PID + ", if you are using an Oracle JVM, but it may be different, especially if you are using a different JVM. Be careful stopping the bot using this PID.");
+        controller.commandsOutput.appendText("Type \"help\" for help.\nThe PID of the bot is probably " + App.PID + ", if you are using an Oracle JVM, but it may be different, especially if you are using a different JVM. Be careful stopping the bot using this PID.");
         File logFile = new File(FSUtil.logsDir() + File.separator + "console.log");
         tailer = Tailer.create(logFile, new CustomTailer(), 250);
         primaryStage.show();

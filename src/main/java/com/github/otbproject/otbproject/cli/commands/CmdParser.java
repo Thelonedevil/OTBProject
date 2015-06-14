@@ -1,7 +1,7 @@
 package com.github.otbproject.otbproject.cli.commands;
 
 import com.github.otbproject.otbproject.App;
-import com.github.otbproject.otbproject.bot.Bot;
+import com.github.otbproject.otbproject.Init;
 import com.github.otbproject.otbproject.channel.Channels;
 import com.github.otbproject.otbproject.fs.groups.Base;
 import com.github.otbproject.otbproject.fs.groups.Chan;
@@ -10,7 +10,7 @@ import com.github.otbproject.otbproject.messages.internal.InternalMessageSender;
 import com.github.otbproject.otbproject.messages.receive.PackagedMessage;
 import com.github.otbproject.otbproject.messages.send.MessagePriority;
 import com.github.otbproject.otbproject.user.UserLevel;
-import com.github.otbproject.otbproject.util.Util;
+import com.github.otbproject.otbproject.util.InitStateException;
 import com.github.otbproject.otbproject.util.preload.LoadStrategy;
 import com.github.otbproject.otbproject.util.preload.PreloadLoader;
 import com.google.common.collect.ImmutableSet;
@@ -28,8 +28,10 @@ public class CmdParser {
     public static final String EXEC = "exec";
     public static final String JOINCHANNEL = "join";
     public static final String LEAVECHANNEL = "leave";
+    public static final String QUIT = "quit";
     public static final String RELOAD = "reload";
     public static final String RESTART = "restart";
+    public static final String START = "start";
     public static final String STOP = "stop";
     public static final String HELP = "help";
     private static final HashMap<String, CliCommand> map = new HashMap<>();
@@ -63,8 +65,10 @@ public class CmdParser {
         initExec();
         initJoinChannel();
         initLeaveChannel();
+        initQuit();
         initReload();
-        //initRestart();
+        initRestart();
+        initStart();
         initStop();
         initHelp();
     }
@@ -236,33 +240,50 @@ public class CmdParser {
         commandBuilder.withShortHelp("restart")
                 .withLongHelp("Restarts the bot")
                 .withAction(() -> {
-                    if (Bot.getBot() != null && Bot.getBot().isConnected()) {
-                        Bot.getBot().shutdown();
+                    if (Init.restart()) {
+                        responseStr = "Restarted bot";
+                    } else {
+                        responseStr = "Restart failed";
                     }
-/*                    FSCommandLoader.LoadCommands();
-                    FSCommandLoader.LoadAliases();*/
-                    try {
-                        Bot.setBotFuture(Util.getSingleThreadExecutor("Bot").submit(Bot.getBotRunnable()));
-                    } catch (IllegalThreadStateException e) {
-                        App.logger.catching(e);
-                        responseStr = "Restart Failed";
-                        return;
-                    }
-                    responseStr = "Restart Complete";
                 });
         map.put(RESTART, commandBuilder.create());
     }
 
-    private static void initStop() {
-        commandBuilder.withShortHelp("stop")
-                .withLongHelp("Stops the bot and exits.")
+    private static void initQuit() {
+        commandBuilder.withShortHelp("quit")
+                .withLongHelp("Stops the bot and exits")
                 .withAction(() -> {
                     App.logger.info("Stopping the process");
-                    if (Bot.getBot() != null && Bot.getBot().isConnected()) {
-                        Bot.getBot().shutdown();
-                    }
+                    Init.shutdown();
                     App.logger.info("Process Stopped, Goodbye");
                     System.exit(0);
+                });
+        map.put(QUIT, commandBuilder.create());
+    }
+
+    private static void initStart() {
+        commandBuilder.withShortHelp("start")
+                .withLongHelp("Starts the bot")
+                .withAction(() -> {
+                    try {
+                        if (Init.startup()) {
+                            responseStr = "Started bot";
+                        } else {
+                            responseStr = "Failed to start bot";
+                        }
+                    } catch (InitStateException ignored) {
+                        responseStr = "Unable to start bot: bot already running";
+                    }
+                });
+        map.put(START, commandBuilder.create());
+    }
+
+    private static void initStop() {
+        commandBuilder.withShortHelp("stop")
+                .withLongHelp("Stops the bot")
+                .withAction(() -> {
+                    Init.shutdown();
+                    responseStr = "Stopped bot";
                 });
         map.put(STOP, commandBuilder.create());
     }

@@ -15,6 +15,7 @@ import com.github.otbproject.otbproject.filter.FilterProcessor;
 import com.github.otbproject.otbproject.fs.groups.Base;
 import com.github.otbproject.otbproject.fs.groups.Chan;
 import com.github.otbproject.otbproject.proc.CommandScriptProcessor;
+import com.github.otbproject.otbproject.util.InitStateException;
 import com.github.otbproject.otbproject.util.LibsLoader;
 import com.github.otbproject.otbproject.util.Util;
 import com.github.otbproject.otbproject.util.preload.LoadStrategy;
@@ -25,16 +26,25 @@ import java.lang.reflect.Field;
 
 public class Init {
 
-    static void startup(CommandLine cmd) {
+    private static boolean running = false;
+
+    static synchronized boolean startup(CommandLine cmd) {
         loadConfigs(cmd);
         LibsLoader.load();
         init();
-        createBot();
+        running = createBot();
+        return running;
     }
 
-    public static synchronized void restart() {
+    public static synchronized boolean restart() {
         shutdown();
-        startup();
+        try {
+            return startup();
+        } catch (InitStateException e) {
+            App.logger.catching(e);
+            App.logger.error("Unknown error restarting bot");
+            return false;
+        }
     }
 
     /**
@@ -48,6 +58,7 @@ public class Init {
         }
         clearCaches();
         // TODO unload libs?
+        running = false;
     }
 
     /**
@@ -56,12 +67,23 @@ public class Init {
      *  start the bot the first time.
      *
      * Should be run to start the bot after shutdown() has been called
+     *
+     * @return true if bot started successfully
+     * @throws InitStateException if bot is already running
      */
-    public static synchronized void startup() {
+    public static synchronized boolean startup() throws InitStateException {
+        if (running) {
+            throw new InitStateException("Unable to start bot: bot already running");
+        }
+
         loadConfigs();
         CommandResponseParser.reRegisterTerms();
         init();
-        createBot();
+        running = createBot();
+        if (!running) {
+            shutdown();
+        }
+        return running;
     }
 
     private static void clearCaches() {
@@ -69,7 +91,7 @@ public class Init {
         FilterProcessor.clearScriptCache();
     }
 
-    private static void createBot() {
+    private static boolean createBot() {
         // Connect to service
         try {
             switch (Configs.getGeneralConfig().getServiceName()){
@@ -89,9 +111,11 @@ public class Init {
         }
         if (Bot.getBot() == null) {
             App.logger.error("Failed to start bot");
+            return false;
         } else {
             Bot.setBotRunnable(new BotRunnable());
             Bot.setBotFuture(Util.getSingleThreadExecutor("Bot").submit(Bot.getBotRunnable()));
+            return true;
         }
     }
 
