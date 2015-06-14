@@ -5,11 +5,12 @@ import groovy.lang.GroovyShell;
 import groovy.lang.Script;
 
 import java.io.File;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ScriptProcessor<T> {
     private static final GroovyShell SHELL = new GroovyShell();
 
-    private final ScriptCache cache = new ScriptCache();
+    private final ConcurrentHashMap<String, Script> cache = new ConcurrentHashMap<>();
     private final Class<T> tClass;
     private final T defaultResponse;
 
@@ -25,7 +26,7 @@ public class ScriptProcessor<T> {
             Object scriptReturn;
 
             // Get script
-            if (cache.contains(scriptName)) {
+            if (cache.containsKey(scriptName)) {
                 script = cache.get(scriptName);
             } else {
                 script = SHELL.parse(new File(path));
