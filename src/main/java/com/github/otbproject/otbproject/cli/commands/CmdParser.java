@@ -1,7 +1,7 @@
 package com.github.otbproject.otbproject.cli.commands;
 
 import com.github.otbproject.otbproject.App;
-import com.github.otbproject.otbproject.Init;
+import com.github.otbproject.otbproject.bot.Bot;
 import com.github.otbproject.otbproject.channel.Channels;
 import com.github.otbproject.otbproject.fs.groups.Base;
 import com.github.otbproject.otbproject.fs.groups.Chan;
@@ -240,7 +240,7 @@ public class CmdParser {
         commandBuilder.withShortHelp("restart")
                 .withLongHelp("Restarts the bot")
                 .withAction(() -> {
-                    if (Init.restart()) {
+                    if (Bot.Control.restart()) {
                         responseStr = "Restarted bot";
                     } else {
                         responseStr = "Restart failed";
@@ -254,7 +254,7 @@ public class CmdParser {
                 .withLongHelp("Stops the bot and exits")
                 .withAction(() -> {
                     App.logger.info("Stopping the process");
-                    Init.shutdown(false);
+                    Bot.Control.shutdown(false);
                     App.logger.info("Process Stopped, Goodbye");
                     System.exit(0);
                 });
@@ -266,7 +266,7 @@ public class CmdParser {
                 .withLongHelp("Starts the bot")
                 .withAction(() -> {
                     try {
-                        if (Init.startup()) {
+                        if (Bot.Control.startup()) {
                             responseStr = "Started bot";
                         } else {
                             responseStr = "Failed to start bot";
@@ -282,7 +282,7 @@ public class CmdParser {
         commandBuilder.withShortHelp("stop")
                 .withLongHelp("Stops the bot")
                 .withAction(() -> {
-                    Init.shutdown(true);
+                    Bot.Control.shutdown(true);
                     responseStr = "Stopped bot";
                 });
         map.put(STOP, commandBuilder.create());

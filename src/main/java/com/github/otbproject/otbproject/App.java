@@ -1,5 +1,6 @@
 package com.github.otbproject.otbproject;
 
+import com.github.otbproject.otbproject.bot.Bot;
 import com.github.otbproject.otbproject.cli.ArgParser;
 import com.github.otbproject.otbproject.cli.commands.CmdParser;
 import com.github.otbproject.otbproject.config.*;
@@ -128,7 +129,7 @@ public class App {
             UnPacker.unPack("preloads/json/aliases/", FSUtil.builder.base(Base.ALIAS).channels(Chan.ALL).load(Load.TO).create());
             UnPacker.unPack("preloads/json/bot-channel/commands/", FSUtil.builder.base(Base.CMD).channels(Chan.BOT).load(Load.TO).create());
             UnPacker.unPack("preloads/groovy/scripts/", FSUtil.scriptDir());
-            Init.loadPreloads(LoadStrategy.UPDATE);
+            Bot.Control.loadPreloads(LoadStrategy.UPDATE);
         }
         try {
             PrintStream ps = new PrintStream(versionFile);
@@ -138,7 +139,7 @@ public class App {
         }
 
         // Perform various startup actions
-        Init.startup(cmd);
+        Bot.Control.startup(cmd);
 
         try{
             if(new File(WebStart.WAR_PATH).exists()){
