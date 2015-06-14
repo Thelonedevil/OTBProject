@@ -51,7 +51,6 @@ public class Bot {
     }
 
     public static class Control {
-
         private static boolean running = false;
 
         public static synchronized boolean startup(CommandLine cmd) {
@@ -221,11 +220,11 @@ public class Bot {
     }
 
     public static class StartupException extends Exception {
-        public StartupException() {
+        private StartupException() {
             super();
         }
 
-        public StartupException(String message) {
+        private StartupException(String message) {
             super(message);
         }
     }
