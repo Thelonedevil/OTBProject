@@ -3,6 +3,7 @@ package com.github.otbproject.otbproject;
 import com.github.otbproject.otbproject.bot.Bot;
 import com.github.otbproject.otbproject.bot.BotInitException;
 import com.github.otbproject.otbproject.bot.BotRunnable;
+import com.github.otbproject.otbproject.bot.IBot;
 import com.github.otbproject.otbproject.bot.beam.BeamBot;
 import com.github.otbproject.otbproject.bot.irc.IRCBot;
 import com.github.otbproject.otbproject.bot.irc.InputParserImproved;
@@ -27,25 +28,38 @@ public class Init {
     static void startup(CommandLine cmd) {
         loadConfigs(cmd);
         LibsLoader.load();
-        TermLoader.loadTerms();
         init();
         createBot();
     }
 
-    public static void restart() {
-        restartShutdown();
-        restartInit();
+    public static synchronized void restart() {
+        shutdown();
+        startup();
     }
 
-    private static void restartShutdown() {
-        Bot.getBot().shutdown();
+    /**
+     * Stops the bot and cleans up anything which needs to be cleaned up
+     *  before the bot is started again
+     */
+    public static synchronized void shutdown() {
+        IBot bot = Bot.getBot();
+        if (bot != null) {
+            bot.shutdown();
+        }
         clearCaches();
+        // TODO unload libs?
     }
 
-    private static void restartInit() {
+    /**
+     * Should NOT be used for initial startup. Does not handle command line
+     *  args. The function startup(CommandLine) should instead be used to
+     *  start the bot the first time.
+     *
+     * Should be run to start the bot after shutdown() has been called
+     */
+    public static synchronized void startup() {
         loadConfigs();
         CommandResponseParser.reRegisterTerms();
-        TermLoader.loadTerms();
         init();
         createBot();
     }
@@ -83,6 +97,8 @@ public class Init {
 
     private static void init() {
         loadPreloads(LoadStrategy.OVERWRITE);
+        TermLoader.loadTerms();
+        // TODO load filters (scripts)
     }
 
     static void loadPreloads(LoadStrategy strategy) {
