@@ -28,7 +28,7 @@ public class CmdParser {
     public static final String JOINCHANNEL = "join";
     public static final String LEAVECHANNEL = "leave";
     public static final String QUIT = "quit";
-    public static final String RELOAD = "reload";
+    public static final String RESET = "reset";
     public static final String RESTART = "restart";
     public static final String START = "start";
     public static final String STOP = "stop";
@@ -65,7 +65,7 @@ public class CmdParser {
         initJoinChannel();
         initLeaveChannel();
         initQuit();
-        initReload();
+        initReset();
         initRestart();
         initStart();
         initStop();
@@ -215,9 +215,9 @@ public class CmdParser {
         map.put(LEAVECHANNEL, commandBuilder.create());
     }
 
-    private static void initReload() {
-        commandBuilder.withShortHelp("reload [CHANNEL]")
-                .withLongHelp("Resets all commands from the json files. Either for CHANNEL, or if not specified, all channels.")
+    private static void initReset() {
+        commandBuilder.withShortHelp("reset [CHANNEL]")
+                .withLongHelp("Resets all commands and aliases to their defaults. Either for CHANNEL, or if not specified, all channels.")
                 .withAction(() -> {
                     if (args.size() > 0) {
                         PreloadLoader.loadDirectory(Base.CMD, Chan.SPECIFIC, args.get(0).toLowerCase(), LoadStrategy.FROM_LOADED);
@@ -232,7 +232,7 @@ public class CmdParser {
                     }
                     responseStr += "Reload Complete";
                 });
-        map.put(RELOAD, commandBuilder.create());
+        map.put(RESET, commandBuilder.create());
     }
 
     private static void initRestart() {

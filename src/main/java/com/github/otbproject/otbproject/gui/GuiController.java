@@ -93,7 +93,7 @@ public class GuiController {
                             break;
                         case CmdParser.EXEC:
                         case CmdParser.LEAVECHANNEL:
-                        case CmdParser.RELOAD:
+                        case CmdParser.RESET:
                             Bot.getBot().getChannels().keySet().forEach(s -> commandsInput.setText(s.startsWith(parts[1]) ? (parts[0] + " " + s + " ") : commandsInput.getText()));
                             break;
                         case CmdParser.HELP:
