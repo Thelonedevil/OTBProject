@@ -42,7 +42,7 @@ public class Filter {
                 return pattern.matcher(message).matches();
             case SCRIPT:
                 // TODO possibly tweak method name and parameter(s) passed in
-                return FilterProcessor.PROCESSOR.process(data, (FSUtil.filtersDir() + File.separator + data), FilterProcessor.METHOD_NAME, message);
+                return FilterProcessor.PROCESSOR.process(data, (FSUtil.filtersDir() + File.separator + data), FilterProcessor.METHOD_NAME, message, Boolean.class, false);
             // Default should never occur
             default:
                 return false;

@@ -10,7 +10,7 @@ import java.util.concurrent.ConcurrentMap;
 
 public class FilterProcessor {
     static final String METHOD_NAME = "checkMessage";
-    static final ScriptProcessor<Boolean> PROCESSOR = new ScriptProcessor<>(Boolean.class, false);
+    static final ScriptProcessor PROCESSOR = new ScriptProcessor(true);
 
     // TODO delete
     public static FilterGroup process(ConcurrentHashMap.KeySetView<Filter, Boolean> filters, ConcurrentMap<String, FilterGroup> filterGroups, String message, UserLevel userLevel) {
