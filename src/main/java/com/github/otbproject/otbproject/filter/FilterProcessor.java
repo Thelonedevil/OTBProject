@@ -50,4 +50,8 @@ public class FilterProcessor {
         }
         return entryOptional.get().getValue().group;
     }
+
+    public static void clearScriptCache() {
+        PROCESSOR.clearScriptCache();
+    }
 }

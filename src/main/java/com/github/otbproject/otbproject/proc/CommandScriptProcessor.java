@@ -15,4 +15,8 @@ public class CommandScriptProcessor {
         ScriptArgs args = new ScriptArgs(db, commandName, commandArgs, channel, destinationChannel, user, userLevel);
         return PROCESSOR.process(scriptName, (FSUtil.scriptDir() + File.separator + scriptName), METHOD_NAME, args, Boolean.class, false);
     }
+
+    public static void clearScriptCache() {
+        PROCESSOR.clearScriptCache();
+    }
 }

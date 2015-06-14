@@ -10,8 +10,10 @@ import com.github.otbproject.otbproject.cli.ArgParser;
 import com.github.otbproject.otbproject.command.parser.CommandResponseParser;
 import com.github.otbproject.otbproject.command.parser.TermLoader;
 import com.github.otbproject.otbproject.config.*;
+import com.github.otbproject.otbproject.filter.FilterProcessor;
 import com.github.otbproject.otbproject.fs.groups.Base;
 import com.github.otbproject.otbproject.fs.groups.Chan;
+import com.github.otbproject.otbproject.proc.CommandScriptProcessor;
 import com.github.otbproject.otbproject.util.LibsLoader;
 import com.github.otbproject.otbproject.util.Util;
 import com.github.otbproject.otbproject.util.preload.LoadStrategy;
@@ -31,8 +33,13 @@ public class Init {
     }
 
     public static void restart() {
-        Bot.getBot().shutdown();
+        restartShutdown();
         restartInit();
+    }
+
+    private static void restartShutdown() {
+        Bot.getBot().shutdown();
+        clearCaches();
     }
 
     private static void restartInit() {
@@ -41,6 +48,11 @@ public class Init {
         TermLoader.loadTerms();
         init();
         createBot();
+    }
+
+    private static void clearCaches() {
+        CommandScriptProcessor.clearScriptCache();
+        FilterProcessor.clearScriptCache();
     }
 
     private static void createBot() {
