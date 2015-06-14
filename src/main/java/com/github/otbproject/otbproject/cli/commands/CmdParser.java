@@ -10,7 +10,6 @@ import com.github.otbproject.otbproject.messages.internal.InternalMessageSender;
 import com.github.otbproject.otbproject.messages.receive.PackagedMessage;
 import com.github.otbproject.otbproject.messages.send.MessagePriority;
 import com.github.otbproject.otbproject.user.UserLevel;
-import com.github.otbproject.otbproject.util.InitStateException;
 import com.github.otbproject.otbproject.util.preload.LoadStrategy;
 import com.github.otbproject.otbproject.util.preload.PreloadLoader;
 import com.google.common.collect.ImmutableSet;
@@ -271,7 +270,7 @@ public class CmdParser {
                         } else {
                             responseStr = "Failed to start bot";
                         }
-                    } catch (InitStateException ignored) {
+                    } catch (Bot.StartupException ignored) {
                         responseStr = "Unable to start bot: bot already running";
                     }
                 });

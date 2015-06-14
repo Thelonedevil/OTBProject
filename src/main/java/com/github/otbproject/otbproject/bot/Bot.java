@@ -12,7 +12,6 @@ import com.github.otbproject.otbproject.filter.FilterProcessor;
 import com.github.otbproject.otbproject.fs.groups.Base;
 import com.github.otbproject.otbproject.fs.groups.Chan;
 import com.github.otbproject.otbproject.proc.CommandScriptProcessor;
-import com.github.otbproject.otbproject.util.InitStateException;
 import com.github.otbproject.otbproject.util.LibsLoader;
 import com.github.otbproject.otbproject.util.Util;
 import com.github.otbproject.otbproject.util.preload.LoadStrategy;
@@ -67,7 +66,7 @@ public class Bot {
             shutdown(true);
             try {
                 return startup();
-            } catch (InitStateException e) {
+            } catch (StartupException e) {
                 App.logger.catching(e);
                 App.logger.error("Unknown error restarting bot");
                 return false;
@@ -102,11 +101,11 @@ public class Bot {
          * Should be run to start the bot after shutdown() has been called
          *
          * @return true if bot started successfully
-         * @throws InitStateException if bot is already running
+         * @throws StartupException if bot is already running
          */
-        public static synchronized boolean startup() throws InitStateException {
+        public static synchronized boolean startup() throws StartupException {
             if (running) {
-                throw new InitStateException("Unable to start bot: bot already running");
+                throw new StartupException("Unable to start bot: bot already running");
             }
 
             loadConfigs();
@@ -218,6 +217,16 @@ public class Bot {
             // Bot config
             BotConfig botConfig = Configs.readBotConfig();
             App.configManager.setBotConfig(botConfig);
+        }
+    }
+
+    public static class StartupException extends Exception {
+        public StartupException() {
+            super();
+        }
+
+        public StartupException(String message) {
+            super(message);
         }
     }
 }
