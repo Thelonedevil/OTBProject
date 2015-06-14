@@ -75,6 +75,9 @@ public class Bot {
         /**
          * Stops the bot and cleans up anything which needs to be cleaned up
          *  before the bot is started again
+         *
+         * @param cleanup whether or not to cleanup various data with the
+         *                expectation that the bot will be started again
          */
         public static synchronized void shutdown(boolean cleanup) {
             IBot bot = getBot();
