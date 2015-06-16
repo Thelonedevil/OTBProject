@@ -3,7 +3,9 @@ package com.github.otbproject.otbproject.filter;
 import com.github.otbproject.otbproject.script.ScriptProcessor;
 import com.github.otbproject.otbproject.user.UserLevel;
 
+import java.util.Comparator;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -11,6 +13,9 @@ import java.util.concurrent.ConcurrentMap;
 public class FilterProcessor {
     static final String METHOD_NAME = "checkMessage";
     static final ScriptProcessor PROCESSOR = new ScriptProcessor(true);
+    private static final Comparator<FilterGroup> COMPARATOR = (o1, o2) ->
+            Objects.compare(o1.getAction().severity, o2.getAction().severity, Comparator.<Integer>reverseOrder());
+
 
     // TODO delete
     public static FilterGroup process(ConcurrentHashMap.KeySetView<Filter, Boolean> filters, ConcurrentMap<String, FilterGroup> filterGroups, String message, UserLevel userLevel) {
@@ -36,19 +41,19 @@ public class FilterProcessor {
         if (userLevel.getValue() < UserLevel.MODERATOR.getValue()) {
             return null;
         }
-        Optional<Map.Entry<String, GroupFilterSet>> entryOptional = groupFilterSets.entrySet().stream()
-                .filter(entry -> entry.getValue().group.isEnabled())
-                .filter(entry -> entry.getValue().group.getUserLevel().getValue() >= userLevel.getValue())
-                .filter(entry -> entry.getValue().filterSet.stream()
+        Optional<FilterGroup> entryOptional = groupFilterSets.entrySet().stream()
+                .map(Map.Entry::getValue)
+                .filter(groupFilterSet -> groupFilterSet.group.isEnabled())
+                .filter(groupFilterSet -> groupFilterSet.group.getUserLevel().getValue() >= userLevel.getValue())
+                .filter(groupFilterSet -> groupFilterSet.filterSet.stream()
                         .filter(Filter::isEnabled)
                         .filter(filter -> filter.matches(message))
                         .findAny().isPresent()
                 )
-                .findAny();
-        if (!entryOptional.isPresent()) {
-            return null;
-        }
-        return entryOptional.get().getValue().group;
+                .map(set -> set.group)
+                .sorted(COMPARATOR)
+                .findFirst();
+        return entryOptional.isPresent() ? entryOptional.get() : null;
     }
 
     public static void clearScriptCache() {
