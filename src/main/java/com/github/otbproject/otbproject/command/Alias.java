@@ -12,7 +12,7 @@ public class Alias {
     private String command;
 
     private UserLevel modifyingUserLevel = UserLevel.DEFAULT;
-    private Boolean enabled = true;
+    private boolean enabled = true;
 
     public String getName() {
         return name;
@@ -38,11 +38,11 @@ public class Alias {
         this.modifyingUserLevel = modifyingUserLevel;
     }
 
-    public Boolean isEnabled() {
+    public boolean isEnabled() {
         return enabled;
     }
 
-    public void setEnabled(Boolean enabled) {
+    public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
 }

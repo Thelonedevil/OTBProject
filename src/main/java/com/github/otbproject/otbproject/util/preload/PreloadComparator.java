@@ -28,7 +28,7 @@ class PreloadComparator {
         if (!oldAlias.getModifyingUserLevel().equals(dbAlias.getModifyingUserLevel())) {
             newAlias.setModifyingUserLevel(dbAlias.getModifyingUserLevel());
         }
-        if (!oldAlias.isEnabled().equals(dbAlias.isEnabled())) {
+        if (oldAlias.isEnabled() != dbAlias.isEnabled()) {
             newAlias.setEnabled(dbAlias.isEnabled());
         }
 
@@ -70,7 +70,7 @@ class PreloadComparator {
                 || ((oldCommand.getScript() != null) && !oldCommand.getScript().equals(dbCommand.getScript()))  ) {
             newCommand.setScript(dbCommand.getScript());
         }
-        if (!oldCommand.isEnabled().equals(dbCommand.isEnabled())) {
+        if (oldCommand.isEnabled() != dbCommand.isEnabled()) {
             newCommand.setEnabled(dbCommand.isEnabled());
         }
         if (oldCommand.isDebug() != dbCommand.isDebug()) {
@@ -95,7 +95,7 @@ class PreloadComparator {
         if (!oldFilter.getGroup().equals(dbFilter.getGroup())) {
             newFilter.setGroup(dbFilter.getGroup());
         }
-        if (!oldFilter.isEnabled().equals(dbFilter.isEnabled())) {
+        if (oldFilter.isEnabled() != dbFilter.isEnabled()) {
             newFilter.setEnabled(dbFilter.isEnabled());
         }
 
@@ -122,7 +122,7 @@ class PreloadComparator {
         if (!oldGroup.getAction().equals(dbGroup.getAction())) {
             newGroup.setAction(dbGroup.getAction());
         }
-        if (!oldGroup.isEnabled().equals(dbGroup.isEnabled())) {
+        if (oldGroup.isEnabled() != dbGroup.isEnabled()) {
             newGroup.setEnabled(dbGroup.isEnabled());
         }
 

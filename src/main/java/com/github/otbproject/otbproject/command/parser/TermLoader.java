@@ -8,11 +8,11 @@ import java.io.File;
 import java.util.stream.Stream;
 
 public class TermLoader {
-    private static final ScriptProcessor<ParserTerm> PROCESSOR = new ScriptProcessor<>(ParserTerm.class, null);
+    private static final ScriptProcessor PROCESSOR = new ScriptProcessor(false);
     private static final String METHOD_NAME = "getTerm";
 
     public static boolean loadTerm(String scriptName) {
-        ParserTerm term = PROCESSOR.process(scriptName, (FSUtil.termScriptDir() + File.separator + scriptName), METHOD_NAME, null);
+        ParserTerm term = PROCESSOR.process(scriptName, (FSUtil.termScriptDir() + File.separator + scriptName), METHOD_NAME, null, ParserTerm.class, null);
         return (term != null) && (term.value() != null) && (term.action() != null) && CommandResponseParser.registerTerm(term);
     }
 

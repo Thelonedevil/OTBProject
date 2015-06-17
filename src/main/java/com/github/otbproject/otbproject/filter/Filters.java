@@ -91,7 +91,7 @@ public class Filters {
         map.put(FilterFields.DATA, basicFilter.getData());
         map.put(FilterFields.TYPE, basicFilter.getType().name());
         map.put(FilterFields.GROUP, basicFilter.getGroup());
-        map.put(FilterFields.ENABLED, basicFilter.isEnabled().toString());
+        map.put(FilterFields.ENABLED, String.valueOf(basicFilter.isEnabled()));
 
         if (exists(db, basicFilter.getData(), basicFilter.getType())) {
             return update(db, map);

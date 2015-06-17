@@ -5,31 +5,37 @@ import groovy.lang.GroovyShell;
 import groovy.lang.Script;
 
 import java.io.File;
+import java.util.concurrent.ConcurrentHashMap;
 
-public class ScriptProcessor<T> {
+public class ScriptProcessor {
     private static final GroovyShell SHELL = new GroovyShell();
 
-    private final ScriptCache cache = new ScriptCache();
-    private final Class<T> tClass;
-    private final T defaultResponse;
+    private final ConcurrentHashMap<String, Script> cache;
+    private final boolean doCache;
 
-    public ScriptProcessor(Class<T> tClass, T defaultResponse) {
-        this.tClass = tClass;
-        this.defaultResponse = defaultResponse;
+    public ScriptProcessor(boolean doCache) {
+        this.doCache = doCache;
+        if (doCache) {
+            cache = new ConcurrentHashMap<>();
+        } else {
+            cache = null;
+        }
     }
 
-    public T process(String scriptName, String path, String methodName, Object paramContainer) {
+    public <T> T process(String scriptName, String path, String methodName, Object paramContainer, Class<T> tClass, T defaultResponse) {
         T response;
         try {
             Script script;
             Object scriptReturn;
 
             // Get script
-            if (cache.contains(scriptName)) {
+            if (doCache && cache.containsKey(scriptName)) {
                 script = cache.get(scriptName);
             } else {
                 script = SHELL.parse(new File(path));
-                cache.put(scriptName, script);
+                if (doCache) {
+                    cache.put(scriptName, script);
+                }
             }
 
             App.logger.debug("Running script: " + scriptName);
@@ -52,10 +58,14 @@ public class ScriptProcessor<T> {
     }
 
     public void dropFromScriptCache(String scriptName) {
-        cache.remove(scriptName);
+        if (doCache) {
+            cache.remove(scriptName);
+        }
     }
 
     public void clearScriptCache() {
-        cache.clear();
+        if (doCache) {
+            cache.clear();
+        }
     }
 }

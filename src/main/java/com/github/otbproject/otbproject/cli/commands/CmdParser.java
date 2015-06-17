@@ -10,7 +10,6 @@ import com.github.otbproject.otbproject.messages.internal.InternalMessageSender;
 import com.github.otbproject.otbproject.messages.receive.PackagedMessage;
 import com.github.otbproject.otbproject.messages.send.MessagePriority;
 import com.github.otbproject.otbproject.user.UserLevel;
-import com.github.otbproject.otbproject.util.Util;
 import com.github.otbproject.otbproject.util.preload.LoadStrategy;
 import com.github.otbproject.otbproject.util.preload.PreloadLoader;
 import com.google.common.collect.ImmutableSet;
@@ -28,8 +27,10 @@ public class CmdParser {
     public static final String EXEC = "exec";
     public static final String JOINCHANNEL = "join";
     public static final String LEAVECHANNEL = "leave";
-    public static final String RELOAD = "reload";
+    public static final String QUIT = "quit";
+    public static final String RESET = "reset";
     public static final String RESTART = "restart";
+    public static final String START = "start";
     public static final String STOP = "stop";
     public static final String HELP = "help";
     private static final HashMap<String, CliCommand> map = new HashMap<>();
@@ -63,8 +64,10 @@ public class CmdParser {
         initExec();
         initJoinChannel();
         initLeaveChannel();
-        initReload();
-        //initRestart();
+        initQuit();
+        initReset();
+        initRestart();
+        initStart();
         initStop();
         initHelp();
     }
@@ -212,9 +215,9 @@ public class CmdParser {
         map.put(LEAVECHANNEL, commandBuilder.create());
     }
 
-    private static void initReload() {
-        commandBuilder.withShortHelp("reload [CHANNEL]")
-                .withLongHelp("Resets all commands from the json files. Either for CHANNEL, or if not specified, all channels.")
+    private static void initReset() {
+        commandBuilder.withShortHelp("reset [CHANNEL]")
+                .withLongHelp("Resets all commands and aliases to their defaults. Either for CHANNEL, or if not specified, all channels.")
                 .withAction(() -> {
                     if (args.size() > 0) {
                         PreloadLoader.loadDirectory(Base.CMD, Chan.SPECIFIC, args.get(0).toLowerCase(), LoadStrategy.FROM_LOADED);
@@ -229,40 +232,57 @@ public class CmdParser {
                     }
                     responseStr += "Reload Complete";
                 });
-        map.put(RELOAD, commandBuilder.create());
+        map.put(RESET, commandBuilder.create());
     }
 
     private static void initRestart() {
         commandBuilder.withShortHelp("restart")
                 .withLongHelp("Restarts the bot")
                 .withAction(() -> {
-                    if (Bot.getBot() != null && Bot.getBot().isConnected()) {
-                        Bot.getBot().shutdown();
+                    if (Bot.Control.restart()) {
+                        responseStr = "Restarted bot";
+                    } else {
+                        responseStr = "Restart failed";
                     }
-/*                    FSCommandLoader.LoadCommands();
-                    FSCommandLoader.LoadAliases();*/
-                    try {
-                        Bot.setBotFuture(Util.getSingleThreadExecutor("Bot").submit(Bot.getBotRunnable()));
-                    } catch (IllegalThreadStateException e) {
-                        App.logger.catching(e);
-                        responseStr = "Restart Failed";
-                        return;
-                    }
-                    responseStr = "Restart Complete";
                 });
         map.put(RESTART, commandBuilder.create());
     }
 
-    private static void initStop() {
-        commandBuilder.withShortHelp("stop")
-                .withLongHelp("Stops the bot and exits.")
+    private static void initQuit() {
+        commandBuilder.withShortHelp("quit")
+                .withLongHelp("Stops the bot and exits")
                 .withAction(() -> {
                     App.logger.info("Stopping the process");
-                    if (Bot.getBot() != null && Bot.getBot().isConnected()) {
-                        Bot.getBot().shutdown();
-                    }
+                    Bot.Control.shutdown(false);
                     App.logger.info("Process Stopped, Goodbye");
                     System.exit(0);
+                });
+        map.put(QUIT, commandBuilder.create());
+    }
+
+    private static void initStart() {
+        commandBuilder.withShortHelp("start")
+                .withLongHelp("Starts the bot")
+                .withAction(() -> {
+                    try {
+                        if (Bot.Control.startup()) {
+                            responseStr = "Started bot";
+                        } else {
+                            responseStr = "Failed to start bot";
+                        }
+                    } catch (Bot.StartupException ignored) {
+                        responseStr = "Unable to start bot: bot already running";
+                    }
+                });
+        map.put(START, commandBuilder.create());
+    }
+
+    private static void initStop() {
+        commandBuilder.withShortHelp("stop")
+                .withLongHelp("Stops the bot")
+                .withAction(() -> {
+                    Bot.Control.shutdown(true);
+                    responseStr = "Stopped bot";
                 });
         map.put(STOP, commandBuilder.create());
     }

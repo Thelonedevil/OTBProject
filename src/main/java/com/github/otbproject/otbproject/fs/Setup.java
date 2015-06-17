@@ -20,7 +20,7 @@ public class Setup {
 
         // Config Directory
         createDirs(FSUtil.configDir());
-        // createAccountFiles(); TODO uncomment in later release
+        createAccountFiles();
 
         // Data Directory
         createDirs(FSUtil.dataDir() + File.separator + FSUtil.DirNames.BOT_CHANNEL);

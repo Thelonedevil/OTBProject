@@ -42,7 +42,7 @@ public class Filter {
                 return pattern.matcher(message).matches();
             case SCRIPT:
                 // TODO possibly tweak method name and parameter(s) passed in
-                return FilterProcessor.PROCESSOR.process(data, (FSUtil.filtersDir() + File.separator + data), FilterProcessor.METHOD_NAME, message);
+                return FilterProcessor.PROCESSOR.process(data, (FSUtil.filtersDir() + File.separator + data), FilterProcessor.METHOD_NAME, message, Boolean.class, false);
             // Default should never occur
             default:
                 return false;
@@ -97,7 +97,6 @@ public class Filter {
                 pattern = Pattern.compile((ANY + filter.getData() + ANY), Pattern.CASE_INSENSITIVE);
                 break;
         }
-        boolean enabled = (filter.isEnabled() == null) ? true : filter.isEnabled();
-        return new Filter(filter.getGroup(), filter.getType(), pattern, filter.getData(), enabled);
+        return new Filter(filter.getGroup(), filter.getType(), pattern, filter.getData(), filter.isEnabled());
     }
 }

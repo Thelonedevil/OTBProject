@@ -10,7 +10,7 @@ public class FilterGroup {
     private String responseCommand = "~%filter.response.default";
     private UserLevel userLevel = UserLevel.SUBSCRIBER;
     private FilterAction action = FilterAction.PURGE;
-    private Boolean enabled = true;
+    private boolean enabled = true;
 
     public String getName() {
         return name;
@@ -44,11 +44,11 @@ public class FilterGroup {
         this.action = action;
     }
 
-    public Boolean isEnabled() {
+    public boolean isEnabled() {
         return enabled;
     }
 
-    public void setEnabled(Boolean enabled) {
+    public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
 }
