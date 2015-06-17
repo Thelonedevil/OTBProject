@@ -8,7 +8,7 @@ public class BasicFilter {
     @NotNull
     private FilterType type;
     private String group = "default";
-    private Boolean enabled = true;
+    private boolean enabled = true;
 
     public String getData() {
         return data;
@@ -34,11 +34,11 @@ public class BasicFilter {
         this.group = group;
     }
 
-    public Boolean isEnabled() {
+    public boolean isEnabled() {
         return enabled;
     }
 
-    public void setEnabled(Boolean enabled) {
+    public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
 }
