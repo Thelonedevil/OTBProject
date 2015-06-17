@@ -97,7 +97,6 @@ public class Filter {
                 pattern = Pattern.compile((ANY + filter.getData() + ANY), Pattern.CASE_INSENSITIVE);
                 break;
         }
-        boolean enabled = (filter.isEnabled() == null) ? true : filter.isEnabled();
-        return new Filter(filter.getGroup(), filter.getType(), pattern, filter.getData(), enabled);
+        return new Filter(filter.getGroup(), filter.getType(), pattern, filter.getData(), filter.isEnabled());
     }
 }

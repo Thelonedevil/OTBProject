@@ -85,7 +85,7 @@ public class FilterGroups {
         map.put(FilterGroupFields.NAME, group.getName());
         map.put(FilterGroupFields.USER_LEVEL, group.getUserLevel().name());
         map.put(FilterGroupFields.RESPONSE_COMMAND, group.getResponseCommand());
-        map.put(FilterGroupFields.ENABLED, group.isEnabled().toString());
+        map.put(FilterGroupFields.ENABLED, String.valueOf(group.isEnabled()));
 
         if (exists(db, group.getName())) {
             return update(db, map);
