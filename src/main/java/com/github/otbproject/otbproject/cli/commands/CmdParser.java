@@ -80,8 +80,7 @@ public class CmdParser {
         CmdParser.source = source;
     }
 
-    // TODO make thread-safe
-    public static String processLine(String aLine) {
+    public static synchronized String processLine(String aLine) {
         //use a second Scanner to parse the content of each line
 
         aLine = aLine.trim();

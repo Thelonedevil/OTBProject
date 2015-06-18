@@ -11,7 +11,7 @@ import java.io.File;
 public class WebStart {
 
     // Resource path pointing to where the WEBROOT is
-    public static final String WAR_PATH= FSUtil.webDir()+ File.separator+"web-interface-"+App.WEB_VERSION+".war";
+    public static final String WAR_PATH= FSUtil.webDir()+ File.separator+"web-interface-"+WebVersion.get()+".war";
     public static void main(String[] args) throws Exception {
         int port = 8081;
         WebStart main = new WebStart(port);
