@@ -9,8 +9,19 @@ import java.net.URL;
 import java.util.Optional;
 
 public class WebVersion {
+    private static String VERSION;
 
-    public static String getWebVersion(){
+    public static String get() {
+        if (VERSION == null) {
+            VERSION = getWebVersion();
+        }
+        return VERSION;
+    }
+
+    private static synchronized String getWebVersion() {
+        if (VERSION != null) {
+            return VERSION;
+        }
         String xmlPath = "http://ts.tldcode.uk:8081/nexus/content/repositories/releases/com/github/otbproject/web-interface/maven-metadata.xml";
         URL xmlURL;
         BufferedReader in = null;
