@@ -13,15 +13,18 @@ public class WebVersion {
 
     public static String get() {
         if (VERSION == null) {
-            VERSION = getWebVersion();
+            getVersion();
         }
         return VERSION;
     }
 
-    private static synchronized String getWebVersion() {
-        if (VERSION != null) {
-            return VERSION;
+    private static synchronized void getVersion() {
+        if (VERSION == null) {
+            VERSION = lookupVersion();
         }
+    }
+
+    private static String lookupVersion() {
         String xmlPath = "http://ts.tldcode.uk:8081/nexus/content/repositories/releases/com/github/otbproject/web-interface/maven-metadata.xml";
         URL xmlURL;
         BufferedReader in = null;
