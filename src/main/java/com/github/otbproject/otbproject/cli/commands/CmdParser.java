@@ -2,6 +2,7 @@ package com.github.otbproject.otbproject.cli.commands;
 
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.bot.Bot;
+import com.github.otbproject.otbproject.channel.ChannelNotFoundException;
 import com.github.otbproject.otbproject.channel.Channels;
 import com.github.otbproject.otbproject.fs.groups.Base;
 import com.github.otbproject.otbproject.fs.groups.Chan;
@@ -176,10 +177,10 @@ public class CmdParser {
                     String destinationChannel = InternalMessageSender.DESTINATION_PREFIX + source;
                     PackagedMessage packagedMessage = new PackagedMessage(command, destinationChannel, channelName, destinationChannel, ul, MessagePriority.DEFAULT);
                     try {
-                        Channels.get(channelName).receiveMessage(packagedMessage);
+                        Channels.get(channelName).orElseThrow(ChannelNotFoundException::new).receiveMessage(packagedMessage);
                         return "Command output above.";
-                    } catch (NullPointerException npe) {
-                        App.logger.catching(npe);
+                    } catch (ChannelNotFoundException e) {
+                        App.logger.catching(e);
                         return "";
                     }
                 });
