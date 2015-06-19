@@ -17,6 +17,7 @@ import com.github.otbproject.otbproject.proc.MessageProcessor;
 import com.github.otbproject.otbproject.proc.ProcessedMessage;
 import com.github.otbproject.otbproject.user.UserLevel;
 
+import java.util.Optional;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -42,11 +43,12 @@ public class ChannelMessageProcessor {
             internal = true;
         } else {
             internal = false;
-            destChannel = Channels.get(packagedMessage.getDestinationChannel());
-            if (destChannel == null || !Channels.in(destChannelName)) {
+            Optional<Channel> optional = Channels.get(packagedMessage.getDestinationChannel());
+            if (!optional.isPresent() || !optional.get().isInChannel()) {
                 App.logger.warn("Attempted to process message to be sent in channel in which bot is not listening: " + destChannelName);
                 return;
             }
+            destChannel = optional.get();
         }
 
         // Process commands for bot channel

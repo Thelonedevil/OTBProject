@@ -10,10 +10,7 @@ import com.github.otbproject.otbproject.user.UserLevels;
 public class BotUtil {
     public static boolean isModOrHigher(String channelName, String user) throws ChannelNotFoundException {
         // Check if user has user level mod or higher
-        Channel channel;
-        if (!Channels.in(channelName) || ((channel = Channels.get(channelName)) == null)) {
-            throw new ChannelNotFoundException("Not in channel or channel is null.");
-        }
+        Channel channel = Channels.get(channelName).orElseThrow(() -> new ChannelNotFoundException("Not in channel or channel is null."));
         DatabaseWrapper db = channel.getMainDatabaseWrapper();
         UserLevel ul = UserLevels.getUserLevel(db, channelName, user);
         return ul.getValue() >= UserLevel.MODERATOR.getValue();
