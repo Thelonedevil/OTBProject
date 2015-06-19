@@ -24,21 +24,23 @@ public class Schedules {
     }
 
     public static boolean isScheduled(String channelName, String command) {
-        Channel channel = Channels.get(channelName);
-        if (channel == null) {
+        Optional<Channel> optional = Channels.get(channelName);
+        if (!optional.isPresent()) {
             App.logger.error("Cannot check scheduled commands for channel '" + channelName + "' - channel is null.");
             return false;
         }
-        return channel.hasCommandFuture(command);
+        return optional.get().hasCommandFuture(command);
     }
 
     public static boolean unScheduleCommand(String channelName, String command) {
-        Channel channel = Channels.get(channelName);
-        if (channel == null) {
+        Optional<Channel> optional = Channels.get(channelName);
+        if (!optional.isPresent()) {
             App.logger.error("Cannot unschedule command for channel '" + channelName + "' - channel is null.");
             return false;
         }
-        boolean success = channel.removeCommandFuture(command);
+        Channel channel = optional.get();
+        boolean success = removeFromDatabase(channel, command);
+        channel.removeCommandFuture(command);
         channel.removeResetFuture(command);
         return success;
     }
@@ -55,13 +57,14 @@ public class Schedules {
     }
 
     private static boolean scheduleCommand(String channelName, String command, long delay, long period, boolean hourReset, TimeUnit timeUnit) {
-        Channel channel = Channels.get(channelName);
-        if (channel == null) {
+        Optional<Channel> optional = Channels.get(channelName);
+        if (!optional.isPresent()) {
             App.logger.error("Cannot schedule command for channel '" + channelName + "' - channel is null.");
             return false;
         }
+        Channel channel = optional.get();
         doScheduleCommand(channel, command, delay, period, hourReset, timeUnit);
-        return addToDatabase(channelName, command, delay, period, hourReset, timeUnit);
+        return addToDatabase(channel, command, delay, period, hourReset, timeUnit);
     }
 
     // Channel should not be null
@@ -99,8 +102,8 @@ public class Schedules {
         return true;
     }
 
-    private static boolean addToDatabase(String channel, String command, long delay, long period, boolean hourReset, TimeUnit timeUnit) {
-        DatabaseWrapper db = Channels.get(channel).getMainDatabaseWrapper();
+    private static boolean addToDatabase(Channel channel, String command, long delay, long period, boolean hourReset, TimeUnit timeUnit) {
+        DatabaseWrapper db = channel.getMainDatabaseWrapper();
         if (db.exists(SchedulerFields.TABLE_NAME, command, SchedulerFields.COMMAND)) {
             return false;
         }
@@ -114,11 +117,11 @@ public class Schedules {
     }
 
     public static void loadFromDatabase(String channelName) {
-        Channel channel = Channels.get(channelName);
-        if (channel == null) {
+        Optional<Channel> optional = Channels.get(channelName);
+        if (!optional.isPresent()) {
             return;
         }
-        loadFromDatabase(channel);
+        loadFromDatabase(optional.get());
     }
     public static void loadFromDatabase(Channel channel) {
         DatabaseWrapper db = channel.getMainDatabaseWrapper();
@@ -144,16 +147,16 @@ public class Schedules {
 
     }
 
-    public static void removeFromDatabase(String channel, String command){
-        DatabaseWrapper db = Channels.get(channel).getMainDatabaseWrapper();
-        db.removeRecord(SchedulerFields.TABLE_NAME,command, SchedulerFields.COMMAND);
+    private static boolean removeFromDatabase(Channel channel, String command){
+        DatabaseWrapper db = channel.getMainDatabaseWrapper();
+        return db.removeRecord(SchedulerFields.TABLE_NAME,command, SchedulerFields.COMMAND);
     }
 
     public static Set<String> getScheduledCommands(String channelName) {
-        Channel channel = Channels.get(channelName);
-        if (channel == null) {
+        Optional<Channel> optional = Channels.get(channelName);
+        if (!optional.isPresent()) {
             return Collections.<String>emptySet();
         }
-        return channel.getScheduledCommands();
+        return optional.get().getScheduledCommands();
     }
 }
