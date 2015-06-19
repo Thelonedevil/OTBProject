@@ -70,7 +70,6 @@ public class Channel {
     private void init() {
         messageSender = new ChannelMessageSender(this);
         messageProcessor = new ChannelMessageProcessor(this);
-        Schedules.loadFromDatabase(this);
     }
 
     public static Channel create(String name, ChannelConfig config) throws ChannelInitException {
@@ -88,6 +87,7 @@ public class Channel {
 
             messageSender.start();
             scheduler.start();
+            Schedules.loadFromDatabase(this);
 
             inChannel = true;
 

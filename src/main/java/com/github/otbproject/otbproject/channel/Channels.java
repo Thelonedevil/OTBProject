@@ -7,6 +7,7 @@ import com.github.otbproject.otbproject.config.*;
 import com.github.otbproject.otbproject.fs.Setup;
 
 import java.io.IOException;
+import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -128,5 +129,9 @@ public class Channels {
             lock.unlock();
         }
         return true;
+    }
+
+    public static Set<String> list() {
+        return Bot.getBot().getChannels().keySet();
     }
 }
