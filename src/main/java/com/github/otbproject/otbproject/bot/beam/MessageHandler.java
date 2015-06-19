@@ -8,6 +8,7 @@ import com.github.otbproject.otbproject.channel.ChannelNotFoundException;
 import com.github.otbproject.otbproject.channel.Channels;
 import com.github.otbproject.otbproject.messages.receive.PackagedMessage;
 import com.github.otbproject.otbproject.messages.send.MessagePriority;
+import com.github.otbproject.otbproject.user.UserLevel;
 import com.github.otbproject.otbproject.user.UserLevels;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Iterators;
@@ -76,9 +77,9 @@ public class MessageHandler implements EventHandler<IncomingMessageEvent> {
                 return;
             }
 
-            PackagedMessage packagedMessage = new PackagedMessage(getMessage(data),data.user_name.toLowerCase(), channelName, UserLevels.getUserLevel(Channels.get(channelName).getMainDatabaseWrapper(), channelName, data.user_name.toLowerCase()), MessagePriority.DEFAULT);
             Channel channel = Channels.get(channelName);
             if(channel != null){
+                PackagedMessage packagedMessage = new PackagedMessage(getMessage(data),data.user_name.toLowerCase(), channelName, UserLevels.getUserLevel(channel.getMainDatabaseWrapper(), channelName, data.user_name.toLowerCase()), MessagePriority.DEFAULT);
                 channel.receiveMessage(packagedMessage);
             } else {
                 App.logger.error("Channel: " + channelName + " appears not to exist");
