@@ -69,7 +69,7 @@ public class Schedules {
 
     // Channel should not be null
     private static void doScheduleCommand(Channel channel, String command, long delay, long period, boolean hourReset, TimeUnit timeUnit) {
-        Runnable task = new ScheduledCommand(channel.getName(), command);
+        Runnable task = new ScheduledCommand(channel, command);
         if (!hourReset) {
             scheduleTask(channel, command, task, delay, period, timeUnit);
         } else {

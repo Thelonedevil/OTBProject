@@ -2,11 +2,13 @@ package com.github.otbproject.otbproject.config;
 
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.bot.Bot;
+import com.github.otbproject.otbproject.channel.Channel;
 import com.github.otbproject.otbproject.channel.Channels;
 import com.github.otbproject.otbproject.fs.FSUtil;
 import com.github.otbproject.otbproject.util.JsonHandler;
 
 import java.io.File;
+import java.util.Optional;
 
 public class Configs {
     private static String accountFileName = "";
@@ -86,10 +88,11 @@ public class Configs {
     }
 
     public static ChannelConfig getChannelConfig(String channel) {
-        if (!Bot.getBot().getChannels().containsKey(channel)) {
+        Optional<Channel> optional = Channels.get(channel);
+        if (!optional.isPresent()) {
             return null;
         }
-        return Channels.get(channel).getConfig();
+        return optional.get().getConfig();
     }
 
     // Misc
