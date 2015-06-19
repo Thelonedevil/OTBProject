@@ -7,6 +7,7 @@ import com.github.otbproject.otbproject.config.*;
 import com.github.otbproject.otbproject.fs.Setup;
 
 import java.io.IOException;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -15,12 +16,12 @@ public class Channels {
     private static final Lock lock = new ReentrantLock();
 
     public static boolean in(String channelName) {
-        Channel channel = get(channelName);
-        return (channel != null) && channel.isInChannel();
+        Optional<Channel> optional = get(channelName);
+        return optional.isPresent() && optional.get().isInChannel();
     }
     
-    public static Channel get(String channel) {
-        return Bot.getBot().getChannels().get(channel);
+    public static Optional<Channel> get(String channel) {
+        return Optional.ofNullable(Bot.getBot().getChannels().get(channel));
     }
 
     public static boolean join(String channelName) {
@@ -85,8 +86,9 @@ public class Channels {
                 App.logger.error("Not connected to " + ResponseParserUtil.wordCap(Configs.getGeneralConfig().getServiceName().toString(), true));
                 return false;
             }
+            Optional<Channel> optional = get(channelName);
             Channel channel;
-            if (!Bot.getBot().getChannels().containsKey(channelName)) {
+            if (!optional.isPresent()) {
                 ChannelConfig channelConfig = Configs.readChannelConfig(channelName);
                 try {
                     channel = Channel.create(channelName, channelConfig);
@@ -96,7 +98,7 @@ public class Channels {
                 }
                 Bot.getBot().getChannels().put(channelName, channel);
             } else {
-                channel = get(channelName);
+                channel = optional.get();
             }
             channel.join();
 
@@ -115,13 +117,15 @@ public class Channels {
         channelName = channelName.toLowerCase();
         lock.lock();
         try {
-            if (!in(channelName) || channelName.equals(Bot.getBot().getUserName())) {
-                App.logger.debug("In channel: " + in(channelName));
-                App.logger.debug("Bot channel: " + channelName.equals(Bot.getBot().getUserName()));
+            if (!in(channelName)) {
+                App.logger.info("Not leaving channel '" + channelName + "' - not in channel");
+                return false;
+            } else if (channelName.equals(Bot.getBot().getUserName())) {
+                App.logger.info("Not leaving channel '" + channelName + "' - cannot leave bot channel");
                 return false;
             }
             App.logger.info("Leaving channel: " + channelName);
-            get(channelName).leave();
+            get(channelName).ifPresent(Channel::leave);
             BotConfigHelper.removeFromCurrentChannels(Configs.getBotConfig(), channelName);
             Configs.writeBotConfig();
             Bot.getBot().leave(channelName);
