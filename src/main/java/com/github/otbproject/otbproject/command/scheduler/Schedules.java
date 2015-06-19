@@ -7,10 +7,7 @@ import com.github.otbproject.otbproject.database.DatabaseWrapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 public class Schedules {
@@ -72,14 +69,23 @@ public class Schedules {
             }
             // Setup reset
             Runnable reset = new ResetTask(channel.getName(), command, delay, period, timeUnit);
-            channel.getHourlyResetSchedules().put(command, channel.getScheduler().schedule(reset, getSecondsTillTheHour(), TimeUnit.HOURS.toSeconds(1), TimeUnit.SECONDS));
+            try {
+                channel.getHourlyResetSchedules().put(command, channel.getScheduler().schedule(reset, getSecondsTillTheHour(), TimeUnit.HOURS.toSeconds(1), TimeUnit.SECONDS));
+            } catch (SchedulingException e) {
+                App.logger.catching(e);
+            }
         }
     }
 
     // Channel should not be null
     private static boolean scheduleTask(Channel channel, String command, Runnable task, long delay, long period, TimeUnit timeUnit) {
-        channel.getScheduledCommands().put(command, channel.getScheduler().schedule(task, delay, period, timeUnit));
-        App.logger.debug("Scheduled Command: " + command + " to run every " + period + " " + timeUnit.toString());
+        try {
+            channel.getScheduledCommands().put(command, channel.getScheduler().schedule(task, delay, period, timeUnit));
+        } catch (SchedulingException e) {
+            App.logger.catching(e);
+            return false;
+        }
+        App.logger.debug("Scheduled Command: " + command + " to run every " + period + " " + timeUnit.toString().toLowerCase() + " in channel: " + channel.getName());
         return true;
     }
 
@@ -133,4 +139,11 @@ public class Schedules {
         db.removeRecord(SchedulerFields.TABLE_NAME,command, SchedulerFields.COMMAND);
     }
 
+    public static Set<String> getScheduledCommands(String channelName) {
+        Channel channel = Channels.get(channelName);
+        if (channel == null) {
+            return Collections.<String>emptySet();
+        }
+        return channel.getScheduledCommands().keySet();
+    }
 }
