@@ -23,14 +23,24 @@ public class Schedules {
         scheduleCommand(channel, command, delay, period, false, TimeUnit.HOURS);
     }
 
-    public static boolean isScheduled(String channel, String command){
-        return Channels.get(channel).getScheduledCommands().containsKey(command);
+    public static boolean isScheduled(String channelName, String command) {
+        Channel channel = Channels.get(channelName);
+        if (channel == null) {
+            App.logger.error("Cannot check scheduled commands for channel '" + channelName + "' - channel is null.");
+            return false;
+        }
+        return channel.hasCommandFuture(command);
     }
 
-    public static void unScheduleCommand(String channel, String command) {
-        Channels.get(channel).getScheduledCommands().get(command).cancel(false);
-        if (Channels.get(channel).getHourlyResetSchedules().containsKey(command))
-            Channels.get(channel).getHourlyResetSchedules().get(command).cancel(false);
+    public static boolean unScheduleCommand(String channelName, String command) {
+        Channel channel = Channels.get(channelName);
+        if (channel == null) {
+            App.logger.error("Cannot unschedule command for channel '" + channelName + "' - channel is null.");
+            return false;
+        }
+        boolean success = channel.removeCommandFuture(command);
+        channel.removeResetFuture(command);
+        return success;
     }
 
     public static long getSecondsSinceTheHour() {
@@ -70,7 +80,7 @@ public class Schedules {
             // Setup reset
             Runnable reset = new ResetTask(channel.getName(), command, delay, period, timeUnit);
             try {
-                channel.getHourlyResetSchedules().put(command, channel.getScheduler().schedule(reset, getSecondsTillTheHour(), TimeUnit.HOURS.toSeconds(1), TimeUnit.SECONDS));
+                channel.putResetFuture(command, channel.getScheduler().schedule(reset, getSecondsTillTheHour(), TimeUnit.HOURS.toSeconds(1), TimeUnit.SECONDS));
             } catch (SchedulingException e) {
                 App.logger.catching(e);
             }
@@ -80,7 +90,7 @@ public class Schedules {
     // Channel should not be null
     private static boolean scheduleTask(Channel channel, String command, Runnable task, long delay, long period, TimeUnit timeUnit) {
         try {
-            channel.getScheduledCommands().put(command, channel.getScheduler().schedule(task, delay, period, timeUnit));
+            channel.putCommandFuture(command, channel.getScheduler().schedule(task, delay, period, timeUnit));
         } catch (SchedulingException e) {
             App.logger.catching(e);
             return false;
@@ -144,6 +154,6 @@ public class Schedules {
         if (channel == null) {
             return Collections.<String>emptySet();
         }
-        return channel.getScheduledCommands().keySet();
+        return channel.getScheduledCommands();
     }
 }
