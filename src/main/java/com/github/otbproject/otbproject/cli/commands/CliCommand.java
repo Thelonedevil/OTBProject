@@ -2,19 +2,21 @@ package com.github.otbproject.otbproject.cli.commands;
 
 import com.github.otbproject.otbproject.App;
 
-public class CliCommand implements Runnable {
+import java.util.concurrent.Callable;
+
+public class CliCommand implements Callable<String> {
     private String shortHelp;
     private String longHelp;
-    private Runnable runnable;
+    private Callable<String> callable;
 
-    private CliCommand(String shortHelp, String longHelp, Runnable runnable) {
+    private CliCommand(String shortHelp, String longHelp, Callable<String> callable) {
         this.shortHelp = shortHelp;
         this.longHelp = longHelp;
-        this.runnable = runnable;
+        this.callable = callable;
     }
 
-    public void run() {
-        runnable.run();
+    public String call() throws Exception {
+        return callable.call();
     }
 
     public String getLongHelp() {
@@ -33,7 +35,7 @@ public class CliCommand implements Runnable {
 
         private String shortHelp;
         private String longHelp;
-        private Runnable runnable;
+        private Callable<String> callable;
 
         public Builder() {
             init();
@@ -42,7 +44,10 @@ public class CliCommand implements Runnable {
         private void init() {
             shortHelp = "No short help message provided";
             longHelp = "No long help message provided";
-            runnable = () -> App.logger.warn("Missing runnable for cli command");
+            callable = () -> {
+                App.logger.warn("Missing callable for cli command");
+                return "";
+            };
         }
 
         public Builder withShortHelp(String shortHelp) {
@@ -55,13 +60,13 @@ public class CliCommand implements Runnable {
             return this;
         }
 
-        public Builder withAction(Runnable runnable) {
-            this.runnable = runnable;
+        public Builder withAction(Callable<String> callable) {
+            this.callable = callable;
             return this;
         }
 
         public CliCommand create() {
-            CliCommand cliCommand = new CliCommand(shortHelp, longHelp, runnable);
+            CliCommand cliCommand = new CliCommand(shortHelp, longHelp, callable);
             init();
             return cliCommand;
         }

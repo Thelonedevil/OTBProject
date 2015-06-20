@@ -19,6 +19,7 @@ import org.pircbotx.output.OutputRaw;
 import java.io.InterruptedIOException;
 import java.net.SocketException;
 import java.nio.charset.Charset;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
@@ -147,8 +148,8 @@ public class IRCBot extends PircBotX implements IBot{
 
     @Override
     public boolean isUserSubscriber(String channelName, String user) {
-        Channel channel = Channels.get(channelName);
-        return (channel != null) && channel.subscriberStorage.remove(user);
+        Optional<Channel> optional = Channels.get(channelName);
+        return optional.isPresent() && optional.get().subscriberStorage.remove(user);
     }
 
     @Override

@@ -14,12 +14,8 @@ import com.github.otbproject.otbproject.messages.send.MessageOut;
 import net.jodah.expiringmap.ExpiringMap;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -34,8 +30,8 @@ public class Channel {
     private ChannelMessageSender messageSender;
     private ChannelMessageProcessor messageProcessor;
     private final Scheduler scheduler = new Scheduler();
-    private final HashMap<String,ScheduledFuture> scheduledCommands = new HashMap<>();
-    private final HashMap<String,ScheduledFuture> hourlyResetSchedules = new HashMap<>();
+    private final ConcurrentHashMap<String, ScheduledFuture<?>> scheduledCommands = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, ScheduledFuture<?>> hourlyResetSchedules = new ConcurrentHashMap<>();
     private ConcurrentMap<String, GroupFilterSet> filterMap;
     private boolean inChannel;
 
@@ -70,7 +66,6 @@ public class Channel {
     private void init() {
         messageSender = new ChannelMessageSender(this);
         messageProcessor = new ChannelMessageProcessor(this);
-        Schedules.loadFromDatabase(this);
     }
 
     public static Channel create(String name, ChannelConfig config) throws ChannelInitException {
@@ -88,6 +83,7 @@ public class Channel {
 
             messageSender.start();
             scheduler.start();
+            Schedules.loadFromDatabase(this);
 
             inChannel = true;
 
@@ -107,6 +103,8 @@ public class Channel {
 
             messageSender.stop();
             scheduler.stop();
+            scheduledCommands.clear();
+            hourlyResetSchedules.clear();
 
             commandCooldownSet.clear();
             userCooldownSet.clear();
@@ -217,6 +215,58 @@ public class Channel {
         }
     }
 
+    public Set<String> getScheduledCommands() {
+        return scheduledCommands.keySet();
+    }
+
+    public void putCommandFuture(String command, ScheduledFuture<?> future) {
+        lock.readLock().lock();
+        try {
+            scheduledCommands.put(command, future);
+        } finally {
+            lock.readLock().unlock();
+        }
+    }
+
+    public boolean hasCommandFuture(String command) {
+        return scheduledCommands.containsKey(command);
+    }
+
+    public boolean removeCommandFuture(String command) {
+        ScheduledFuture<?> future;
+        lock.readLock().lock();
+        try {
+            future = scheduledCommands.remove(command);
+        } finally {
+            lock.readLock().unlock();
+        }
+        return (future != null) && future.cancel(true);
+    }
+
+    public void putResetFuture(String command, ScheduledFuture<?> future) {
+        lock.readLock().lock();
+        try {
+            hourlyResetSchedules.put(command, future);
+        } finally {
+            lock.readLock().unlock();
+        }
+    }
+
+    public boolean hasResetFuture(String command) {
+        return hourlyResetSchedules.containsKey(command);
+    }
+
+    public boolean removeResetFuture(String command) {
+        ScheduledFuture<?> future;
+        lock.readLock().lock();
+        try {
+            future = hourlyResetSchedules.remove(command);
+        } finally {
+            lock.readLock().unlock();
+        }
+        return (future != null) && future.cancel(true);
+    }
+
     public DatabaseWrapper getMainDatabaseWrapper() {
         return mainDb;
     }
@@ -231,14 +281,6 @@ public class Channel {
 
     public Scheduler getScheduler() {
         return scheduler;
-    }
-
-    public HashMap<String, ScheduledFuture> getScheduledCommands() {
-        return scheduledCommands;
-    }
-
-    public HashMap<String, ScheduledFuture> getHourlyResetSchedules() {
-        return hourlyResetSchedules;
     }
 
     public ConcurrentMap<String, GroupFilterSet> getFilterMap() {

@@ -10,7 +10,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class Scheduler {
     private ScheduledExecutorService scheduledExecutorService;
     private boolean running;
-    private final ReadWriteLock lock = new ReentrantReadWriteLock();
+    private final ReadWriteLock lock = new ReentrantReadWriteLock(true);
 
     public boolean start() {
         lock.writeLock().lock();
@@ -49,9 +49,12 @@ public class Scheduler {
         }
     }
 
-    public ScheduledFuture<?> schedule(Runnable task, long delay, long period, TimeUnit timeUnit){
+    public ScheduledFuture<?> schedule(Runnable task, long delay, long period, TimeUnit timeUnit) throws SchedulingException {
         lock.readLock().lock();
         try {
+            if (!isRunning()) {
+                throw new SchedulingException("Unable to schedule task - scheduler not running");
+            }
             return scheduledExecutorService.scheduleAtFixedRate(task, delay, period, timeUnit);
         } finally {
             lock.readLock().unlock();

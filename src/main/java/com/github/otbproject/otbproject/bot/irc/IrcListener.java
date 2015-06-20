@@ -12,24 +12,19 @@ import com.github.otbproject.otbproject.user.UserLevels;
 import org.pircbotx.hooks.ListenerAdapter;
 import org.pircbotx.hooks.events.*;
 
+import java.util.Optional;
+
 public class IrcListener extends ListenerAdapter {
 
     @Override
     public void onMessage(MessageEvent event) throws Exception {
         String channelName = IRCBot.getInternalChannelName(event.getChannel().getName());
-        Channel channel = Channels.get(channelName);
-        if (channel == null) {
-            if (!Channels.join(channelName)) {
-                App.logger.error("Failed to join channel: " + channelName);
-                Bot.getBot().leave(channelName);
-                return;
-            }
-            channel = Channels.get(channelName);
-            if (channel == null) {
-                App.logger.error("The channel '" + channelName + "' really shouldn't be null here. Something has gone terribly wrong.");
-                return;
-            }
+        Optional<Channel> optional = Channels.get(channelName);
+        if (!optional.isPresent()) {
+            App.logger.error("The channel '" + channelName + "' really shouldn't be null here. Something has gone terribly wrong.");
+            return;
         }
+        Channel channel = optional.get();
 
         String user = event.getUser().getNick();
 

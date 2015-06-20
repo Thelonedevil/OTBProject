@@ -1,6 +1,7 @@
 package com.github.otbproject.otbproject.command.parser;
 
 import com.github.otbproject.otbproject.bot.Bot;
+import com.github.otbproject.otbproject.channel.Channel;
 import com.github.otbproject.otbproject.channel.Channels;
 import com.github.otbproject.otbproject.config.Configs;
 import com.github.otbproject.otbproject.quote.Quote;
@@ -46,16 +47,21 @@ public class CommandResponseParser {
         // [[quote.modifier]] - can have a modifier, but it's unclear why you want one
         registerTerm("quote", (userNick, channel, count, args, term) -> {
             String quoteNumStr = getEmbeddedString(term, 1);
-            Quote quote;
+            Quote quote = null;
+            Optional<Channel> channelOptional = Channels.get(channel);
             if (quoteNumStr.isEmpty()) {
-                quote = Quotes.getRandomQuote(Channels.get(channel).getQuoteDatabaseWrapper());
+                if (channelOptional.isPresent()) {
+                    quote = Quotes.getRandomQuote(channelOptional.get().getQuoteDatabaseWrapper());
+                }
                 if (quote == null) {
                     return "[Error getting random quote]";
                 }
             } else {
                 try {
                     int quoteNum = Integer.valueOf(quoteNumStr);
-                    quote = Quotes.get(Channels.get(channel).getQuoteDatabaseWrapper(), quoteNum);
+                    if (channelOptional.isPresent()) {
+                        quote = Quotes.get(channelOptional.get().getQuoteDatabaseWrapper(), quoteNum);
+                    }
                     if (quote == null) {
                         return "";
                     }

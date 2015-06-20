@@ -2,6 +2,7 @@ package com.github.otbproject.otbproject.cli.commands;
 
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.bot.Bot;
+import com.github.otbproject.otbproject.channel.ChannelNotFoundException;
 import com.github.otbproject.otbproject.channel.Channels;
 import com.github.otbproject.otbproject.fs.groups.Base;
 import com.github.otbproject.otbproject.fs.groups.Chan;
@@ -36,7 +37,6 @@ public class CmdParser {
     private static final HashMap<String, CliCommand> map = new HashMap<>();
     private static final CliCommand.Builder commandBuilder = new CliCommand.Builder();
     private static final ArrayList<String> args = new ArrayList<>();
-    private static String responseStr = "";
     private static String source = "";
 
     public static class ClearTargets {
@@ -80,42 +80,46 @@ public class CmdParser {
         CmdParser.source = source;
     }
 
-    public static synchronized String processLine(String aLine) {
+    public static synchronized String processLine(String line) {
+        String response = doLine(line);
+        if (!response.isEmpty()) {
+            App.logger.debug(response);
+        }
+        return response;
+    }
+    private static String doLine(String line) {
         //use a second Scanner to parse the content of each line
+        line = line.trim();
 
-        aLine = aLine.trim();
-
-        Scanner scanner = new Scanner(aLine);
+        Scanner scanner = new Scanner(line);
         scanner.useDelimiter(" ");
         try {
             if (scanner.hasNext()) {
-                App.logger.debug("Processing input line: " + aLine);
+                App.logger.debug("Processing input line: " + line);
                 String name = scanner.next().toLowerCase();
                 while (scanner.hasNext()) {
                     args.add(scanner.next());
                 }
                 if (map.containsKey(name)) {
-                    map.get(name).run();
+                    return map.get(name).call();
                 } else {
-                    printHelpNoCommand(name);
-                }
-                if (!responseStr.isEmpty()) {
-                    App.logger.debug(responseStr);
+                    return printHelpNoCommand(name);
                 }
             } else {
                 App.logger.warn("Empty or invalid line. Unable to process.");
             }
-            return responseStr;
+        } catch (Exception e) {
+            App.logger.catching(e);
         } finally {
             scanner.close();
-            responseStr = "";
             args.clear();
             source = "";
         }
+        return "";
     }
 
-    static void printHelpNoCommand(String term) {
-        responseStr = term + ": command not found";
+    static String printHelpNoCommand(String term) {
+        return term + ": command not found";
     }
 
     private static void initClear() {
@@ -124,8 +128,7 @@ public class CmdParser {
                         + "Valid targets are: " + ClearTargets.targets.stream().sorted().collect(Collectors.joining(", ")))
                 .withAction(() -> {
                     if (args.isEmpty()) {
-                        responseStr = "Not enough args for '" + CLEAR + "'";
-                        return;
+                        return "Not enough args for '" + CLEAR + "'";
                     }
 
                     switch (args.get(0)) {
@@ -147,8 +150,9 @@ public class CmdParser {
                             GuiApplication.clearHistory();
                             break;
                         default:
-                            responseStr = "Invalid target to clear: " + args.get(0) + "\nValid targets are: " + ClearTargets.targets.stream().sorted().collect(Collectors.joining(", "));
+                            return  "Invalid target to clear: " + args.get(0) + "\nValid targets are: " + ClearTargets.targets.stream().sorted().collect(Collectors.joining(", "));
                     }
+                    return "";
                 });
         map.put(CLEAR, commandBuilder.create());
     }
@@ -158,13 +162,11 @@ public class CmdParser {
                 .withLongHelp("Runs the command denoted by COMMAND in the channel denoted by CHANNEL")
                 .withAction(() -> {
                     if (args.size() < 2) {
-                        responseStr = "Not enough args for '" + EXEC + "'";
-                        return;
+                        return "Not enough args for '" + EXEC + "'";
                     }
                     String channelName = args.get(0).toLowerCase();
                     if (!Channels.in(channelName)) {
-                        responseStr = "Not in channel: " + channelName;
-                        return;
+                        return "Not in channel: " + channelName;
                     }
                     UserLevel ul = UserLevel.INTERNAL;
                     String command = args.get(1);
@@ -175,10 +177,11 @@ public class CmdParser {
                     String destinationChannel = InternalMessageSender.DESTINATION_PREFIX + source;
                     PackagedMessage packagedMessage = new PackagedMessage(command, destinationChannel, channelName, destinationChannel, ul, MessagePriority.DEFAULT);
                     try {
-                        Channels.get(channelName).receiveMessage(packagedMessage);
-                        responseStr = "Command output above.";
-                    } catch (NullPointerException npe) {
-                        App.logger.catching(npe);
+                        Channels.get(channelName).orElseThrow(ChannelNotFoundException::new).receiveMessage(packagedMessage);
+                        return "Command output above.";
+                    } catch (ChannelNotFoundException e) {
+                        App.logger.catching(e);
+                        return "";
                     }
                 });
         map.put(EXEC, commandBuilder.create());
@@ -191,9 +194,9 @@ public class CmdParser {
                     if (args.size() > 0) {
                         boolean success = Channels.join(args.get(0).toLowerCase(), true);
                         String string = success ? "Successfully joined" : "Failed to join";
-                        responseStr = string + " channel: " + args.get(0).toLowerCase();
+                        return string + " channel: " + args.get(0).toLowerCase();
                     } else {
-                        responseStr = "Not Enough Args for '" + JOINCHANNEL + "'";
+                        return "Not Enough Args for '" + JOINCHANNEL + "'";
                     }
                 });
         map.put(JOINCHANNEL, commandBuilder.create());
@@ -206,9 +209,9 @@ public class CmdParser {
                     if (args.size() > 0) {
                         boolean success = Channels.leave(args.get(0).toLowerCase());
                         String string = success ? "Successfully left" : "Failed to leave";
-                        responseStr = string + " channel: " + args.get(0).toLowerCase();
+                        return string + " channel: " + args.get(0).toLowerCase();
                     } else {
-                        responseStr = "Not Enough Args for '" + LEAVECHANNEL + "'";
+                        return "Not Enough Args for '" + LEAVECHANNEL + "'";
                     }
                 });
         map.put(LEAVECHANNEL, commandBuilder.create());
@@ -229,7 +232,7 @@ public class CmdParser {
                         PreloadLoader.loadDirectoryForEachChannel(Base.CMD, LoadStrategy.FROM_LOADED);
                         PreloadLoader.loadDirectoryForEachChannel(Base.ALIAS, LoadStrategy.FROM_LOADED);
                     }
-                    responseStr += "Reload Complete";
+                    return "Reload Complete";
                 });
         map.put(RESET, commandBuilder.create());
     }
@@ -239,9 +242,9 @@ public class CmdParser {
                 .withLongHelp("Restarts the bot")
                 .withAction(() -> {
                     if (Bot.Control.restart()) {
-                        responseStr = "Restarted bot";
+                        return "Restarted bot";
                     } else {
-                        responseStr = "Restart failed";
+                        return "Restart failed";
                     }
                 });
         map.put(RESTART, commandBuilder.create());
@@ -255,6 +258,7 @@ public class CmdParser {
                     Bot.Control.shutdown(false);
                     App.logger.info("Process Stopped, Goodbye");
                     System.exit(0);
+                    return "";
                 });
         map.put(QUIT, commandBuilder.create());
     }
@@ -265,12 +269,12 @@ public class CmdParser {
                 .withAction(() -> {
                     try {
                         if (Bot.Control.startup()) {
-                            responseStr = "Started bot";
+                            return "Started bot";
                         } else {
-                            responseStr = "Failed to start bot";
+                            return "Failed to start bot";
                         }
                     } catch (Bot.StartupException ignored) {
-                        responseStr = "Unable to start bot: bot already running";
+                        return "Unable to start bot: bot already running";
                     }
                 });
         map.put(START, commandBuilder.create());
@@ -281,7 +285,7 @@ public class CmdParser {
                 .withLongHelp("Stops the bot")
                 .withAction(() -> {
                     Bot.Control.shutdown(true);
-                    responseStr = "Stopped bot";
+                    return "Stopped bot";
                 });
         map.put(STOP, commandBuilder.create());
     }
@@ -290,6 +294,7 @@ public class CmdParser {
         commandBuilder.withShortHelp("help [CLI_COMMAND]")
                 .withLongHelp("Prints the help message for the cli command denoted by CLI_COMMAND, or if not specified will list all the cli commands")
                 .withAction(() -> {
+                    String responseStr;
                     if (args.isEmpty()) {
                         responseStr = map.keySet().stream().filter(key -> !key.equals(HELP)).map(key -> map.get(key).getShortHelp()).sorted().collect(Collectors.joining("\n"));
                         responseStr += "\n" + map.get(HELP).getShortHelp();
@@ -298,9 +303,10 @@ public class CmdParser {
                         if (map.keySet().contains(arg)) {
                             responseStr = map.get(arg).getFullHelp();
                         } else {
-                            printHelpNoCommand(arg);
+                            return printHelpNoCommand(arg);
                         }
                     }
+                    return responseStr;
                 });
         map.put(HELP, commandBuilder.create());
     }
