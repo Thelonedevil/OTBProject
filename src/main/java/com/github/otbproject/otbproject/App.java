@@ -143,7 +143,7 @@ public class App {
 
         // Perform various startup actions
         Bot.Control.startup(cmd);
-
+/*
         try{
             if(new File(WebStart.WAR_PATH).exists()){
                 WebStart.main(args);
@@ -158,6 +158,7 @@ public class App {
         }catch (Exception e){
             logger.catching(e);
         }
+        */
         if (!GraphicsEnvironment.isHeadless()) {
             GuiApplication.setInputActive();
         }
