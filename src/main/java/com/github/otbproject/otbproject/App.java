@@ -131,7 +131,7 @@ public class App {
             UnPacker.unPack("preloads/json/commands/", builder.base(Base.CMD).channels(Chan.ALL).load(Load.TO).create());
             UnPacker.unPack("preloads/json/aliases/", builder.base(Base.ALIAS).channels(Chan.ALL).load(Load.TO).create());
             UnPacker.unPack("preloads/json/bot-channel/commands/", builder.base(Base.CMD).channels(Chan.BOT).load(Load.TO).create());
-            UnPacker.unPack("preloads/groovy/scripts/", FSUtil.scriptDir());
+            UnPacker.unPack("preloads/groovy/scripts/commands/", FSUtil.commandScriptDir());
             Bot.Control.loadPreloads(LoadStrategy.UPDATE);
         }
         try {
