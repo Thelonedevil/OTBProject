@@ -30,7 +30,7 @@
                 <Font name="Ubuntu Mono" size="16.0"/>
             </font>
         </TextArea>
-        <TextField fx:id="commandsInput" onKeyPressed="#command" prefHeight="30.0" promptText="Enter Command Here..."
+        <TextField fx:id="commandsInput" onKeyPressed="#command" prefHeight="30.0" promptText="Starting up, please wait..."
                    GridPane.columnIndex="3" GridPane.rowIndex="6">
             <font>
                 <Font name="Ubuntu Mono" size="16.0"/>
