@@ -196,7 +196,7 @@ public class CmdParser {
                         String string = success ? "Successfully joined" : "Failed to join";
                         return string + " channel: " + args.get(0).toLowerCase();
                     } else {
-                        return "Not Enough Args for '" + JOINCHANNEL + "'";
+                        return "Not enough args for '" + JOINCHANNEL + "'";
                     }
                 });
         map.put(JOINCHANNEL, commandBuilder.create());
@@ -232,7 +232,7 @@ public class CmdParser {
                         PreloadLoader.loadDirectoryForEachChannel(Base.CMD, LoadStrategy.FROM_LOADED);
                         PreloadLoader.loadDirectoryForEachChannel(Base.ALIAS, LoadStrategy.FROM_LOADED);
                     }
-                    return "Reload Complete";
+                    return "Reset complete";
                 });
         map.put(RESET, commandBuilder.create());
     }
