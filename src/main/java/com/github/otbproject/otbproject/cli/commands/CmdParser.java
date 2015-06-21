@@ -177,7 +177,7 @@ public class CmdParser {
                     String destinationChannel = InternalMessageSender.DESTINATION_PREFIX + source;
                     PackagedMessage packagedMessage = new PackagedMessage(command, destinationChannel, channelName, destinationChannel, ul, MessagePriority.DEFAULT);
                     try {
-                        Channels.get(channelName).orElseThrow(ChannelNotFoundException::new).receiveMessage(packagedMessage);
+                        Channels.getOrThrow(channelName).receiveMessage(packagedMessage);
                         return "Command output above.";
                     } catch (ChannelNotFoundException e) {
                         App.logger.catching(e);

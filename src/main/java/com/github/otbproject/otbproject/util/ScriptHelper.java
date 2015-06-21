@@ -17,7 +17,7 @@ public class ScriptHelper {
     public static void runCommand(String message, String user, String channelName, String destinationChannel, MessagePriority priority) {
         App.logger.debug("Processing message as command: " + message);
         PackagedMessage packagedMessage = new PackagedMessage(message, user, channelName, destinationChannel, UserLevel.INTERNAL, priority);
-        Channels.get(channelName).orElseThrow(ChannelNotFoundException::new).receiveMessage(packagedMessage);
+        Channels.getOrThrow(channelName).receiveMessage(packagedMessage);
     }
 
     public static void sendMessage(String channelName, String message, MessagePriority priority) {
@@ -25,7 +25,7 @@ public class ScriptHelper {
             InternalMessageSender.send(channelName.replace(InternalMessageSender.DESTINATION_PREFIX, ""), message, "CmdExec");
         } else {
             MessageOut messageOut = new MessageOut(message, priority);
-            Channels.get(channelName).orElseThrow(ChannelNotFoundException::new).sendMessage(messageOut);
+            Channels.getOrThrow(channelName).sendMessage(messageOut);
         }
     }
 }
