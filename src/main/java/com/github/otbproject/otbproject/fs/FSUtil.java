@@ -77,6 +77,10 @@ public class FSUtil {
         return scriptDir() + File.separator + TERMS_DIR_NAME;
     }
 
+    public static String filterScriptDir() {
+        return scriptDir() + File.separator + FILTERS_DIR_NAME;
+    }
+
     public static String webDir() {
         return baseDir + File.separator + WEB_DIR_NAME;
     }

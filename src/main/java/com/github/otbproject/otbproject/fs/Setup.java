@@ -51,12 +51,9 @@ public class Setup {
 
         // Scripts Directory
         createDirs(FSUtil.scriptDir());
-
-        // Scripts Libs Directory
         createDirs(FSUtil.scriptLibsDir());
-
-        // Term Scripts Directory
         createDirs(FSUtil.termScriptDir());
+        createDirs(FSUtil.filterScriptDir());
 
         // Web Directory
         createDirs(FSUtil.webDir());
