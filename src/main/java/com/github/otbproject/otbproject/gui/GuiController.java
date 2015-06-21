@@ -1,6 +1,7 @@
 package com.github.otbproject.otbproject.gui;
 
 import com.github.otbproject.otbproject.bot.Bot;
+import com.github.otbproject.otbproject.channel.Channels;
 import com.github.otbproject.otbproject.cli.commands.CmdParser;
 import com.github.otbproject.otbproject.messages.internal.InternalMessageSender;
 import com.github.otbproject.otbproject.util.Util;
@@ -39,15 +40,12 @@ public class GuiController {
                 cliOutput.appendText(input + "\n");
                 commandsInput.clear();
                 commandsInput.setEditable(false);
-                commandsInput.setPromptText("Command Executing... Please Wait...");
+                commandsInput.setPromptText("Command executing, please wait...");
                 executorService.execute(() -> {
                     CmdParser.from(InternalMessageSender.CLI);
                     String output = CmdParser.processLine(input);
-                    GuiUtils.runSafe(() -> {
-                        cliOutput.appendText((output.isEmpty() ? "" : (output + "\n")) + ">  ");
-                        commandsInput.setEditable(true);
-                        commandsInput.setPromptText("Enter Command Here...");
-                    });
+                    GuiUtils.runSafe(() -> cliOutput.appendText((output.isEmpty() ? "" : (output + "\n")) + ">  "));
+                    GuiApplication.setInputActive();
                 });
                 if (history.isEmpty() || !history.get(history.size() - 1).equals(input)) {
                     history.add(input);
@@ -94,7 +92,7 @@ public class GuiController {
                         case CmdParser.EXEC:
                         case CmdParser.LEAVECHANNEL:
                         case CmdParser.RESET:
-                            Bot.getBot().getChannels().keySet().forEach(s -> commandsInput.setText(s.startsWith(parts[1]) ? (parts[0] + " " + s + " ") : commandsInput.getText()));
+                            Channels.list().forEach(s -> commandsInput.setText(s.startsWith(parts[1]) ? (parts[0] + " " + s + " ") : commandsInput.getText()));
                             break;
                         case CmdParser.HELP:
                             CmdParser.getCommands().forEach(s -> commandsInput.setText(s.startsWith(parts[1]) ? (parts[0] + " " + s + " ") : commandsInput.getText()));

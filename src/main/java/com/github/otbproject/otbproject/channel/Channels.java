@@ -24,6 +24,10 @@ public class Channels {
         return Optional.ofNullable(Bot.getBot().getChannels().get(channel));
     }
 
+    public static Channel getOrThrow(String channel) throws ChannelNotFoundException {
+        return get(channel).orElseThrow(ChannelNotFoundException::new);
+    }
+
     public static boolean join(String channelName) {
         return join(channelName, true);
     }

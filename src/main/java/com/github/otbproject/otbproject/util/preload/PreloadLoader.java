@@ -12,6 +12,7 @@ import com.github.otbproject.otbproject.filter.FilterGroup;
 import com.github.otbproject.otbproject.filter.FilterGroups;
 import com.github.otbproject.otbproject.filter.Filters;
 import com.github.otbproject.otbproject.fs.FSUtil;
+import com.github.otbproject.otbproject.fs.PathBuilder;
 import com.github.otbproject.otbproject.fs.groups.Base;
 import com.github.otbproject.otbproject.fs.groups.Chan;
 import com.github.otbproject.otbproject.fs.groups.Load;
@@ -144,10 +145,11 @@ public class PreloadLoader {
             return null;
         }
         File dir;
+        PathBuilder builder = new PathBuilder();
         if (strategy == LoadStrategy.FROM_LOADED) {
-            dir = FSUtil.builder.base(base).channels(chan).forChannel(channelName).load(Load.ED).asFile();
+            dir = builder.base(base).channels(chan).forChannel(channelName).load(Load.ED).asFile();
         } else {
-            dir = FSUtil.builder.base(base).channels(chan).forChannel(channelName).load(Load.TO).asFile();
+            dir = builder.base(base).channels(chan).forChannel(channelName).load(Load.TO).asFile();
         }
 
         File[] files = dir.listFiles();
@@ -165,14 +167,14 @@ public class PreloadLoader {
         return Stream.of(files)
                 .map(file -> {
                     String name = file.getName();
-                    String pathOld = FSUtil.builder.base(base).channels(chan).forChannel(channelName).load(Load.ED).create() + File.separator + name;
+                    String pathOld = builder.base(base).channels(chan).forChannel(channelName).load(Load.ED).create() + File.separator + name;
                     String pathNew;
                     if (strategy == LoadStrategy.FROM_LOADED) {
                         pathNew = pathOld;
                     } else {
-                        pathNew = FSUtil.builder.base(base).channels(chan).forChannel(channelName).load(Load.TO).create() + File.separator + name;
+                        pathNew = builder.base(base).channels(chan).forChannel(channelName).load(Load.TO).create() + File.separator + name;
                     }
-                    String pathFail = FSUtil.builder.base(base).channels(chan).forChannel(channelName).load(Load.FAIL).create() + File.separator + name;
+                    String pathFail = builder.base(base).channels(chan).forChannel(channelName).load(Load.FAIL).create() + File.separator + name;
                     return loadFromFile(pathNew, pathOld, pathFail, tClass, strategy);
                 })
                 .collect(Collectors.toList());

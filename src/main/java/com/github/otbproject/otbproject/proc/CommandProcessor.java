@@ -9,10 +9,7 @@ import com.github.otbproject.otbproject.command.parser.CommandResponseParser;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.user.UserLevel;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 public class CommandProcessor {
     public static ProcessedCommand process(DatabaseWrapper db, String message, String channel, String user, UserLevel userLevel, boolean debug) {
@@ -56,7 +53,7 @@ public class CommandProcessor {
             args = new String[0];
         } else {
             args = splitMsg[1].split(" ");
-            List<String> tempArrayList = Arrays.asList(args);
+            List<String> tempArrayList = new ArrayList<>(Arrays.asList(args));
             for (Iterator<String> i = tempArrayList.iterator(); i.hasNext();) {
                 if (i.next().isEmpty()) {
                     i.remove();
