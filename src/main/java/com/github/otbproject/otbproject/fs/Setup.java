@@ -50,7 +50,7 @@ public class Setup {
         createDirs(FSUtil.logsDir());
 
         // Scripts Directory
-        createDirs(FSUtil.scriptDir());
+        createDirs(FSUtil.commandScriptDir());
         createDirs(FSUtil.scriptLibsDir());
         createDirs(FSUtil.termScriptDir());
         createDirs(FSUtil.filterScriptDir());

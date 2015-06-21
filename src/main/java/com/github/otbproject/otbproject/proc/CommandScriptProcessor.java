@@ -13,7 +13,7 @@ public class CommandScriptProcessor {
 
     public static boolean process(String scriptName, DatabaseWrapper db, String commandName, String[] commandArgs, String channel, String destinationChannel, String user, UserLevel userLevel) {
         ScriptArgs args = new ScriptArgs(db, commandName, commandArgs, channel, destinationChannel, user, userLevel);
-        return PROCESSOR.process(scriptName, (FSUtil.scriptDir() + File.separator + scriptName), METHOD_NAME, args, Boolean.class, false);
+        return PROCESSOR.process(scriptName, (FSUtil.commandScriptDir() + File.separator + scriptName), METHOD_NAME, args, Boolean.class, false);
     }
 
     public static void clearScriptCache() {
