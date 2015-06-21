@@ -74,7 +74,7 @@ public class CommandResponseParser {
 
         // [[game.modifier]]
         // TODO fix when able to get game name from Twitch/Beam
-        registerTerm("game", (userNick, channel, count, args, term) -> doModifier("a game", term));
+        //registerTerm("game", (userNick, channel, count, args, term) -> doModifier("a game", term));
 
         // [[numargs]] - ignores modifier (because no effect)
         registerTerm("numargs", (userNick, channel, count, args, term) -> Integer.toString(args.length));
