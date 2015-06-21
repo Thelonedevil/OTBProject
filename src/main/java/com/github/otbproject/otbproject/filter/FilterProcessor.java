@@ -1,14 +1,17 @@
 package com.github.otbproject.otbproject.filter;
 
+import com.github.otbproject.otbproject.fs.FSUtil;
 import com.github.otbproject.otbproject.script.ScriptProcessor;
 import com.github.otbproject.otbproject.user.UserLevel;
 
+import java.io.File;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.stream.Stream;
 
 public class FilterProcessor {
     static final String METHOD_NAME = "checkMessage";
@@ -58,5 +61,13 @@ public class FilterProcessor {
 
     public static void clearScriptCache() {
         PROCESSOR.clearScriptCache();
+    }
+
+    public static void cacheScripts() {
+        File[] files = new File(FSUtil.filterScriptDir()).listFiles();
+        if (files == null) {
+            return;
+        }
+        Stream.of(files).filter(File::isFile).forEach(file -> PROCESSOR.cache(file.getName(), file.getPath()));
     }
 }

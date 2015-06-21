@@ -5,6 +5,7 @@ import groovy.lang.GroovyShell;
 import groovy.lang.Script;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ScriptProcessor {
@@ -22,7 +23,7 @@ public class ScriptProcessor {
         }
     }
 
-    public <T> T process(String scriptName, String path, String methodName, Object paramContainer, Class<T> tClass, T defaultResponse) {
+    public <T> T process(String scriptName, String path, String methodName, Object paramContainer, Class<T> responseClass, T defaultResponse) {
         T response;
         try {
             Script script;
@@ -41,11 +42,11 @@ public class ScriptProcessor {
             App.logger.debug("Running script: " + scriptName);
             scriptReturn = script.invokeMethod(methodName, paramContainer);
             App.logger.debug("Finished running script: " + scriptName);
-            if ((scriptReturn == null) || !(tClass.isInstance(scriptReturn))) {
+            if ((scriptReturn == null) || !(responseClass.isInstance(scriptReturn))) {
                 App.logger.warn("Missing or invalid return statement in script: " + scriptName);
                 response = defaultResponse;
             } else {
-                response = tClass.cast(scriptReturn);
+                response = responseClass.cast(scriptReturn);
             }
         } catch (Exception e) {
             App.logger.error("Exception when running script: " + scriptName);
@@ -66,6 +67,16 @@ public class ScriptProcessor {
     public void clearScriptCache() {
         if (doCache) {
             cache.clear();
+        }
+    }
+
+    public void cache(String scriptName, String path) {
+        Script script;
+        try {
+            script = SHELL.parse(new File(path));
+            cache.put(scriptName, script);
+        } catch (IOException e) {
+            App.logger.catching(e);
         }
     }
 }
