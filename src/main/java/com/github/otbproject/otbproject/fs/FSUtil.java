@@ -3,8 +3,6 @@ package com.github.otbproject.otbproject.fs;
 import java.io.File;
 
 public class FSUtil {
-    public static final PathBuilder builder = new PathBuilder();
-
     public static final String ERROR_MSG = "Failed to create directory: ";
     private static final String BASE_DIR_NAME = ".otbproject";
     public static final String BASE_DIR_DEFAULT = System.getProperty("user.home") + File.separator + BASE_DIR_NAME;

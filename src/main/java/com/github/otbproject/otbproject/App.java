@@ -5,6 +5,7 @@ import com.github.otbproject.otbproject.cli.ArgParser;
 import com.github.otbproject.otbproject.cli.commands.CmdParser;
 import com.github.otbproject.otbproject.config.*;
 import com.github.otbproject.otbproject.fs.FSUtil;
+import com.github.otbproject.otbproject.fs.PathBuilder;
 import com.github.otbproject.otbproject.fs.Setup;
 import com.github.otbproject.otbproject.fs.groups.Base;
 import com.github.otbproject.otbproject.fs.groups.Chan;
@@ -126,9 +127,10 @@ public class App {
             if (!VERSION.equalsIgnoreCase(version)) {
                 VersionCompatHelper.fixCompatIssues(version);
             }
-            UnPacker.unPack("preloads/json/commands/", FSUtil.builder.base(Base.CMD).channels(Chan.ALL).load(Load.TO).create());
-            UnPacker.unPack("preloads/json/aliases/", FSUtil.builder.base(Base.ALIAS).channels(Chan.ALL).load(Load.TO).create());
-            UnPacker.unPack("preloads/json/bot-channel/commands/", FSUtil.builder.base(Base.CMD).channels(Chan.BOT).load(Load.TO).create());
+            PathBuilder builder = new PathBuilder();
+            UnPacker.unPack("preloads/json/commands/", builder.base(Base.CMD).channels(Chan.ALL).load(Load.TO).create());
+            UnPacker.unPack("preloads/json/aliases/", builder.base(Base.ALIAS).channels(Chan.ALL).load(Load.TO).create());
+            UnPacker.unPack("preloads/json/bot-channel/commands/", builder.base(Base.CMD).channels(Chan.BOT).load(Load.TO).create());
             UnPacker.unPack("preloads/groovy/scripts/", FSUtil.scriptDir());
             Bot.Control.loadPreloads(LoadStrategy.UPDATE);
         }
