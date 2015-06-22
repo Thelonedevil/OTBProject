@@ -76,7 +76,7 @@ public class Schedules {
     static void doScheduleCommand(Channel channel, String command, long delay, long period, boolean hourReset, TimeUnit timeUnit) {
         Runnable task = new ScheduledCommand(channel, command);
         if (!hourReset) {
-            scheduleTask(channel, command, task, delay, period, timeUnit);
+            scheduleTask(channel, command, task, ((delay == 0) ? period : delay), period, timeUnit);
         } else {
             long result = getSecondsSinceTheHour() - delay;
             if (result < 0) {
