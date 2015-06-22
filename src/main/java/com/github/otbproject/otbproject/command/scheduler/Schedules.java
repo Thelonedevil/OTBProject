@@ -38,7 +38,10 @@ public class Schedules {
             App.logger.error("Cannot unschedule command for channel '" + channelName + "' - channel is null.");
             return false;
         }
-        Channel channel = optional.get();
+        return unScheduleCommand(optional.get(), command);
+    }
+
+    static boolean unScheduleCommand(Channel channel, String command) {
         boolean success = removeFromDatabase(channel, command);
         channel.removeCommandFuture(command);
         channel.removeResetFuture(command);
@@ -57,6 +60,8 @@ public class Schedules {
     }
 
     private static boolean scheduleCommand(String channelName, String command, long delay, long period, boolean hourReset, TimeUnit timeUnit) {
+        App.logger.debug("Attempting to schedule command for channel '" + channelName + "' with period=" + period
+                + ", offset=" + delay + " in " + timeUnit.name().toLowerCase() + ", and hourly reset: " + hourReset);
         Optional<Channel> optional = Channels.get(channelName);
         if (!optional.isPresent()) {
             App.logger.error("Cannot schedule command for channel '" + channelName + "' - channel is null.");
@@ -68,7 +73,7 @@ public class Schedules {
     }
 
     // Channel should not be null
-    private static void doScheduleCommand(Channel channel, String command, long delay, long period, boolean hourReset, TimeUnit timeUnit) {
+    static void doScheduleCommand(Channel channel, String command, long delay, long period, boolean hourReset, TimeUnit timeUnit) {
         Runnable task = new ScheduledCommand(channel, command);
         if (!hourReset) {
             scheduleTask(channel, command, task, delay, period, timeUnit);
@@ -81,7 +86,7 @@ public class Schedules {
                 scheduleTask(channel, command, task, (period - (result % period)), period, timeUnit);
             }
             // Setup reset
-            Runnable reset = new ResetTask(channel.getName(), command, delay, period, timeUnit);
+            Runnable reset = new ResetTask(channel, command, delay, period, timeUnit);
             try {
                 channel.putResetFuture(command, channel.getScheduler().schedule(reset, getSecondsTillTheHour(), TimeUnit.HOURS.toSeconds(1), TimeUnit.SECONDS));
             } catch (SchedulingException e) {
@@ -98,7 +103,7 @@ public class Schedules {
             App.logger.catching(e);
             return false;
         }
-        App.logger.debug("Scheduled Command: " + command + " to run every " + period + " " + timeUnit.toString().toLowerCase() + " in channel: " + channel.getName());
+        App.logger.debug("Scheduled command '" + command + "' to run every " + period + " " + timeUnit.toString().toLowerCase() + " in channel: " + channel.getName());
         return true;
     }
 
