@@ -88,7 +88,7 @@ public class Schedules {
             // Setup reset
             Runnable reset = new ResetTask(channel, command, delay, period, timeUnit);
             try {
-                channel.scheduleReset(command, reset, getSecondsTillTheHour(), TimeUnit.HOURS.toSeconds(1), TimeUnit.SECONDS);
+                channel.putResetFuture(command, channel.getScheduler().schedule(reset, getSecondsTillTheHour(), TimeUnit.HOURS.toSeconds(1), TimeUnit.SECONDS));
             } catch (SchedulingException e) {
                 App.logger.catching(e);
             }
@@ -98,7 +98,7 @@ public class Schedules {
     // Channel should not be null
     private static boolean scheduleTask(Channel channel, String command, Runnable task, long delay, long period, TimeUnit timeUnit) {
         try {
-            channel.scheduleCommmand(command, task, delay, period, timeUnit);
+            channel.putCommandFuture(command, channel.getScheduler().schedule(task, delay, period, timeUnit));
         } catch (SchedulingException e) {
             App.logger.catching(e);
             return false;

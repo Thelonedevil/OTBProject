@@ -1,9 +1,7 @@
 package com.github.otbproject.otbproject.channel;
 
-import com.github.otbproject.otbproject.command.scheduler.ResetTask;
 import com.github.otbproject.otbproject.command.scheduler.Scheduler;
 import com.github.otbproject.otbproject.command.scheduler.Schedules;
-import com.github.otbproject.otbproject.command.scheduler.SchedulingException;
 import com.github.otbproject.otbproject.config.ChannelConfig;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.database.Databases;
@@ -222,10 +220,10 @@ public class Channel {
         return scheduledCommands.keySet();
     }
 
-    public void scheduleCommmand(String command, Runnable task, long delay, long period, TimeUnit timeUnit) throws SchedulingException {
+    public void putCommandFuture(String command, ScheduledFuture<?> future) {
         lock.readLock().lock();
         try {
-            scheduledCommands.put(command, scheduler.schedule(task, delay, period, timeUnit));
+            scheduledCommands.put(command, future);
         } finally {
             lock.readLock().unlock();
         }
@@ -246,10 +244,10 @@ public class Channel {
         return (future != null) && future.cancel(true);
     }
 
-    public void scheduleReset(String command, Runnable task, long delay, long period, TimeUnit timeUnit) throws SchedulingException {
+    public void putResetFuture(String command, ScheduledFuture<?> future) {
         lock.readLock().lock();
         try {
-            hourlyResetSchedules.put(command, scheduler.schedule(task, delay, period, timeUnit));
+            hourlyResetSchedules.put(command, future);
         } finally {
             lock.readLock().unlock();
         }
