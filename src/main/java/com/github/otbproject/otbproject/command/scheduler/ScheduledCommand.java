@@ -21,6 +21,7 @@ public class ScheduledCommand implements Runnable {
     @Override
     public void run() {
         try {
+            App.logger.debug("Attempting to run scheduled command '" + packagedMessage.getMessage() + "' in channel: " + channel.getName());
             channel.receiveMessage(packagedMessage);
         } catch (NullPointerException npe) {
             App.logger.catching(npe);
