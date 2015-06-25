@@ -35,11 +35,13 @@ public class JsonHandler {
     }
 
     // Logs exception if can't write object
-    public static <T> void writeValue(String path, T object) {
+    public static <T> boolean writeValue(String path, T object) {
         try {
             mapper.writerWithDefaultPrettyPrinter().writeValue(new File(path), object);
+            return true;
         } catch (IOException e) {
             App.logger.catching(e);
+            return false;
         }
     }
 }
