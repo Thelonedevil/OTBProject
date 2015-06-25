@@ -8,7 +8,7 @@ public class DefaultConfigGeneratorTest {
 
     @Test
     public void defaultChannelConfigShouldBeCreatedWithNoNullElements() {
-        ChannelConfig config = DefaultConfigGenerator.createChannelConfig();
+        ChannelConfig config = new ChannelConfig();
         //Test that nothing that can be null, is null
         assertNotNull(config.getCommandCooldown());
         assertNotNull(config.isEnabled());
@@ -23,36 +23,36 @@ public class DefaultConfigGeneratorTest {
 
     @Test
     public void defaultChannelConfigShouldHaveAllTheDefaultValues(){
-        ChannelConfig config = DefaultConfigGenerator.createChannelConfig();
+        ChannelConfig config = new ChannelConfig();
         assertNotNull(config);
-        assertEquals(config.getCommandCooldown(), Integer.valueOf(8));
+        assertEquals(config.getCommandCooldown(), 8);
         assertNotNull(config.userCooldowns);
         assertEquals(config.userCooldowns.getUl_internal(), 0);
         assertEquals(config.userCooldowns.getUl_broadcaster(), 0);
         assertEquals(config.userCooldowns.getUl_super_moderator(), 0);
         assertEquals(config.userCooldowns.getUl_moderator(), 0);
-        assertEquals(config.userCooldowns.getUl_regular(), Integer.valueOf(15));
-        assertEquals(config.userCooldowns.getUl_subscriber(), Integer.valueOf(30));
-        assertEquals(config.userCooldowns.getUl_default(), Integer.valueOf(30));
+        assertEquals(config.userCooldowns.getUl_regular(), 15);
+        assertEquals(config.userCooldowns.getUl_subscriber(), 30);
+        assertEquals(config.userCooldowns.getUl_default(), 30);
         assertFalse(config.isDebug());
         assertTrue(config.isEnabled());
         assertFalse(config.isSilenced());
         assertNotNull(config.queueLimits);
-        assertEquals(config.queueLimits.getHighPriorityLimit(), Integer.valueOf(-1));
-        assertEquals(config.queueLimits.getDefaultPriorityLimit(), Integer.valueOf(5));
+        assertEquals(config.queueLimits.getHighPriorityLimit(), -1);
+        assertEquals(config.queueLimits.getDefaultPriorityLimit(), 5);
         assertEquals(config.queueLimits.getLowPriorityLimit(), 0);
     }
 
     @Test
     public void defaultAccountConfigShouldBeCreatedWithNoNullElements(){
-        Account config = DefaultConfigGenerator.createAccountConfig();
+        Account config = new Account();
         assertNotNull(config);
         assertNotNull(config.getName());
         assertNotNull(config.getPasskey());
     }
     @Test
     public void defaultAccountConfigShouldHaveAllTheDefaultValues(){
-        Account config = DefaultConfigGenerator.createAccountConfig();
+        Account config = new Account();
         assertNotNull(config);
         assertEquals(config.getName(), "your_name_here");
         assertEquals(config.getPasskey(), "your_passkey_here");
@@ -60,7 +60,7 @@ public class DefaultConfigGeneratorTest {
 
     @Test
     public void defaultBotConfigShouldBeCreatedWithNoNullElements(){
-        BotConfig config = DefaultConfigGenerator.createBotConfig();
+        BotConfig config = new BotConfig();
         assertNotNull(config);
         assertNotNull(config.getChannelJoinSetting());
         assertNotNull(config.getMessageSendDelayInMilliseconds());
@@ -71,7 +71,7 @@ public class DefaultConfigGeneratorTest {
     }
     @Test
     public void defaultBotConfigShouldHaveAllTheDefaultValues(){
-        BotConfig config = DefaultConfigGenerator.createBotConfig();
+        BotConfig config = new BotConfig();
         assertNotNull(config);
         assertEquals(config.getChannelJoinSetting(), ChannelJoinSetting.NONE);
         assertEquals(config.getMessageSendDelayInMilliseconds(), Integer.valueOf(1600));
@@ -80,7 +80,7 @@ public class DefaultConfigGeneratorTest {
 
     @Test
     public void defaultGeneralConfigShouldBeCreatedWithNoNullElements(){
-        GeneralConfig config = DefaultConfigGenerator.createGeneralConfig();
+        GeneralConfig config = new GeneralConfig();
         assertNotNull(config);
         assertNotNull(config.getIp_binding());
         assertNotNull(config.getServiceName());
@@ -89,7 +89,7 @@ public class DefaultConfigGeneratorTest {
     }
     @Test
     public void defaultGeneralConfigShouldHaveAllTheDefaultValues(){
-        GeneralConfig config = DefaultConfigGenerator.createGeneralConfig();
+        GeneralConfig config = new GeneralConfig();
         assertNotNull(config);
         assertEquals(config.getIp_binding(), "0.0.0.0");
         assertEquals(config.getServiceName(), ServiceName.TWITCH);

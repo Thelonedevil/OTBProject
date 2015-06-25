@@ -1,17 +1,17 @@
 package com.github.otbproject.otbproject.config;
 
 public class ChannelConfig {
-    private Integer commandCooldown;
-    public UserCooldowns userCooldowns;
+    private int commandCooldown = 8;
+    public UserCooldowns userCooldowns = new UserCooldowns();
 
     public class UserCooldowns {
-        private int ul_internal;
-        private int ul_broadcaster;
-        private int ul_super_moderator;
-        private int ul_moderator;
-        private Integer ul_regular;
-        private Integer ul_subscriber;
-        private Integer ul_default;
+        private int ul_internal = 0;
+        private int ul_broadcaster = 0;
+        private int ul_super_moderator = 0;
+        private int ul_moderator = 0;
+        private int ul_regular = 15;
+        private int ul_subscriber = 30;
+        private int ul_default = 30;
 
         public int getUl_internal() {
             return ul_internal;
@@ -45,55 +45,55 @@ public class ChannelConfig {
             this.ul_moderator = ul_moderator;
         }
 
-        public Integer getUl_regular() {
+        public int getUl_regular() {
             return ul_regular;
         }
 
-        public void setUl_regular(Integer ul_regular) {
+        public void setUl_regular(int ul_regular) {
             this.ul_regular = ul_regular;
         }
 
-        public Integer getUl_subscriber() {
+        public int getUl_subscriber() {
             return ul_subscriber;
         }
 
-        public void setUl_subscriber(Integer ul_subscriber) {
+        public void setUl_subscriber(int ul_subscriber) {
             this.ul_subscriber = ul_subscriber;
         }
 
-        public Integer getUl_default() {
+        public int getUl_default() {
             return ul_default;
         }
 
-        public void setUl_default(Integer ul_default) {
+        public void setUl_default(int ul_default) {
             this.ul_default = ul_default;
         }
     }
 
-    private boolean debug;
-    private Boolean enabled;
-    private boolean silenced;
+    private boolean debug = false;
+    private boolean enabled = true;
+    private boolean silenced = false;
 
-    public QueueLimits queueLimits;
+    public QueueLimits queueLimits = new QueueLimits();
 
     public class QueueLimits {
-        private Integer highPriorityLimit;
-        private Integer defaultPriorityLimit;
-        private int lowPriorityLimit;
+        private int highPriorityLimit = -1;
+        private int defaultPriorityLimit = 5;
+        private int lowPriorityLimit = 0;
 
-        public Integer getHighPriorityLimit() {
+        public int getHighPriorityLimit() {
             return highPriorityLimit;
         }
 
-        public void setHighPriorityLimit(Integer highPriorityLimit) {
+        public void setHighPriorityLimit(int highPriorityLimit) {
             this.highPriorityLimit = highPriorityLimit;
         }
 
-        public Integer getDefaultPriorityLimit() {
+        public int getDefaultPriorityLimit() {
             return defaultPriorityLimit;
         }
 
-        public void setDefaultPriorityLimit(Integer defaultPriorityLimit) {
+        public void setDefaultPriorityLimit(int defaultPriorityLimit) {
             this.defaultPriorityLimit = defaultPriorityLimit;
         }
 
@@ -106,11 +106,11 @@ public class ChannelConfig {
         }
     }
 
-    public Integer getCommandCooldown() {
+    public int getCommandCooldown() {
         return commandCooldown;
     }
 
-    public void setCommandCooldown(Integer commandCooldown) {
+    public void setCommandCooldown(int commandCooldown) {
         this.commandCooldown = commandCooldown;
     }
 
@@ -122,11 +122,11 @@ public class ChannelConfig {
         this.debug = debug;
     }
 
-    public Boolean isEnabled() {
+    public boolean isEnabled() {
         return enabled;
     }
 
-    public void setEnabled(Boolean enabled) {
+    public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
 

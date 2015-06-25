@@ -1,20 +1,6 @@
 package com.github.otbproject.otbproject.config;
 
-import java.util.ArrayList;
-
 public class BotConfigHelper {
-    public static void initialize(BotConfig botConfig) {
-        if (botConfig.whitelist == null) {
-            botConfig.whitelist = new ArrayList<>();
-        }
-        if (botConfig.blacklist == null) {
-            botConfig.blacklist = new ArrayList<>();
-        }
-        if (botConfig.currentChannels == null) {
-            botConfig.currentChannels = new ArrayList<>();
-        }
-    }
-
     public static boolean addToWhitelist(BotConfig botConfig, String channel) {
         if (!botConfig.whitelist.contains(channel)) {
             botConfig.whitelist.add(channel);
@@ -73,34 +59,5 @@ public class BotConfigHelper {
 
     public static boolean isInChannel(BotConfig botConfig, String channel) {
         return botConfig.currentChannels.contains(channel);
-    }
-
-    public static BotConfig getCopy(BotConfig config) {
-        BotConfig copy = new BotConfig();
-
-        copy.setChannelJoinSetting(config.getChannelJoinSetting());
-        copy.setBotChannelDebug(config.isBotChannelDebug());
-
-        if (config.whitelist == null) {
-            copy.whitelist = null;
-        } else {
-            copy.whitelist = new ArrayList<>(config.whitelist);
-        }
-
-        if (config.blacklist == null) {
-            copy.blacklist = null;
-        } else {
-            copy.blacklist = new ArrayList<>(config.blacklist);
-        }
-
-        if (config.currentChannels == null) {
-            copy.currentChannels = null;
-        } else {
-            copy.currentChannels = new ArrayList<>(config.currentChannels);
-        }
-
-        copy.setMessageSendDelayInMilliseconds(config.getMessageSendDelayInMilliseconds());
-
-        return copy;
     }
 }

@@ -1,8 +1,8 @@
 package com.github.otbproject.otbproject.config;
 
 public class Account {
-    private String name;
-    private String passkey;
+    private String name = "your_name_here";
+    private String passkey = "your_passkey_here";
 
     public String getName() {
         return name;

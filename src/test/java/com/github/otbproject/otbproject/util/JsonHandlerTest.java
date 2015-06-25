@@ -5,10 +5,9 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.File;
+import java.util.Optional;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class JsonHandlerTest {
     public static final String path ="target/test.json";
@@ -26,15 +25,15 @@ public class JsonHandlerTest {
     @Test
     public void dataShouldBeWrittenAsJsonAndReadBack(){
         JsonHandler.writeValue(path, testObject);
-        Account newObject = JsonHandler.readValue(path, Account.class);
-        assertNotNull(newObject);
-        assertTrue(compareAccount(testObject, newObject));
+        Optional<Account> newObjectOptional = JsonHandler.readValue(path, Account.class);
+        assertTrue(newObjectOptional.isPresent());
+        assertTrue(compareAccount(testObject, newObjectOptional.get()));
     }
 
     @Test
     public void fileShouldNotBeFound(){
         JsonHandler.writeValue(path, testObject);
-        assertNull(JsonHandler.readValue(path + 1, Account.class));
+        assertFalse(JsonHandler.readValue(path + 1, Account.class).isPresent());
     }
     @Test
     public void shouldCauseAnIOExceptionOnWrite(){

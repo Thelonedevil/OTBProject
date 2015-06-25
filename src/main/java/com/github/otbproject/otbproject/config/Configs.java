@@ -18,25 +18,25 @@ public class Configs {
 
     // Reading
     public static Account readAccount() {
-        Account account = ConfigValidator.validateAccount(JsonHandler.readValue(getAccountPath(), Account.class));
+        Account account = JsonHandler.readValue(getAccountPath(), Account.class).orElse(new Account());
         writeAccount(account);
         return account;
     }
 
     public static GeneralConfig readGeneralConfig() {
-        GeneralConfig config = ConfigValidator.validateGeneralConfig(JsonHandler.readValue(GENERAL_CONFIG_PATH, GeneralConfig.class));
+        GeneralConfig config = JsonHandler.readValue(GENERAL_CONFIG_PATH, GeneralConfig.class).orElse(new GeneralConfig());
         writeGeneralConfig(config);
         return config;
     }
 
     public static BotConfig readBotConfig() {
-        BotConfig config = ConfigValidator.validateBotConfig(JsonHandler.readValue(BOT_CONFIG_PATH, BotConfig.class));
+        BotConfig config = JsonHandler.readValue(BOT_CONFIG_PATH, BotConfig.class).orElse(new BotConfig());
         writeBotConfig(config);
         return config;
     }
 
     public static ChannelConfig readChannelConfig(String channel) {
-        ChannelConfig config = ConfigValidator.validateChannelConfig(JsonHandler.readValue(getChannelPath(channel), ChannelConfig.class));
+        ChannelConfig config = JsonHandler.readValue(getChannelPath(channel), ChannelConfig.class).orElse(new ChannelConfig());
         writeChannelConfig(config, channel);
         return config;
     }

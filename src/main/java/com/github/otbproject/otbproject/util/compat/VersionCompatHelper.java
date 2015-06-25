@@ -7,6 +7,7 @@ import com.github.otbproject.otbproject.util.JsonHandler;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 public class VersionCompatHelper {
@@ -28,10 +29,11 @@ public class VersionCompatHelper {
         File twitchAcctFile = new File(twitchAccountFilePath);
 
         if (oldAcctFile.exists() && !twitchAcctFile.exists()) {
-            AccountOld accountOld = JsonHandler.readValue(oldAccountFilePath, AccountOld.class);
-            if (accountOld == null) {
+            Optional<AccountOld> optional = JsonHandler.readValue(oldAccountFilePath, AccountOld.class);
+            if (!optional.isPresent()) {
                 return;
             }
+            AccountOld accountOld = optional.get();
             Account accountNew = new Account();
             accountNew.setName(accountOld.getName());
             accountNew.setPasskey(accountOld.getOauth());

@@ -3,10 +3,15 @@ package com.github.otbproject.otbproject.config;
 import java.util.ArrayList;
 
 public class GeneralConfig {
-    private ServiceName serviceName;
-    private int portNumber;
-    private String ip_binding;
+    private ServiceName serviceName = ServiceName.TWITCH;
+    private int portNumber = 80;
+    private String ip_binding = "0.0.0.0";
     public ArrayList<String> permanently_enabled_commands;
+
+    public GeneralConfig() {
+        permanently_enabled_commands = new ArrayList<>();
+        permanently_enabled_commands.add("!bot-enable-meta");
+    }
 
     public ServiceName getServiceName() {
         return serviceName;

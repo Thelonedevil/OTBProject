@@ -1,6 +1,6 @@
 package com.github.otbproject.otbproject.fs;
 
-import com.github.otbproject.otbproject.config.DefaultConfigGenerator;
+import com.github.otbproject.otbproject.config.Account;
 import com.github.otbproject.otbproject.fs.groups.Base;
 import com.github.otbproject.otbproject.fs.groups.Chan;
 import com.github.otbproject.otbproject.util.JsonHandler;
@@ -115,10 +115,10 @@ public class Setup {
         String twitchAcctPath = FSUtil.configDir() + File.separator + FSUtil.ConfigFileNames.ACCOUNT_TWITCH;
         String beamAcctPath = FSUtil.configDir() + File.separator + FSUtil.ConfigFileNames.ACCOUNT_BEAM;
         if (!new File(twitchAcctPath).exists()) {
-            JsonHandler.writeValue(twitchAcctPath, DefaultConfigGenerator.createAccountConfig());
+            JsonHandler.writeValue(twitchAcctPath, new Account());
         }
         if (!new File(beamAcctPath).exists()) {
-            JsonHandler.writeValue(beamAcctPath, DefaultConfigGenerator.createAccountConfig());
+            JsonHandler.writeValue(beamAcctPath, new Account());
         }
     }
 

@@ -182,10 +182,10 @@ public class PreloadLoader {
 
     private static <T> PreloadPair<T> loadFromFile(String pathNew, String pathOld, String pathFail, Class<T> tClass, LoadStrategy strategy) {
         App.logger.info("Attempting to load from file: " + pathNew);
-        T tNew = JsonHandler.readValue(pathNew, tClass);
+        T tNew = JsonHandler.readValue(pathNew, tClass).orElse(null); // TODO change orElse()
         T tOld;
         if (strategy == LoadStrategy.UPDATE) {
-            tOld = JsonHandler.readValue(pathOld, tClass);
+            tOld = JsonHandler.readValue(pathOld, tClass).orElse(null); // TODO change orElse()
         } else {
             tOld = null;
         }
