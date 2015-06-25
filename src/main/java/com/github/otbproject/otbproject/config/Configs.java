@@ -3,6 +3,8 @@ package com.github.otbproject.otbproject.config;
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.bot.Bot;
 import com.github.otbproject.otbproject.channel.Channel;
+import com.github.otbproject.otbproject.channel.ChannelGetException;
+import com.github.otbproject.otbproject.channel.ChannelNotFoundException;
 import com.github.otbproject.otbproject.channel.Channels;
 import com.github.otbproject.otbproject.fs.FSUtil;
 import com.github.otbproject.otbproject.util.JsonHandler;
@@ -18,25 +20,25 @@ public class Configs {
 
     // Reading
     public static Account readAccount() {
-        Account account = ConfigValidator.validateAccount(JsonHandler.readValue(getAccountPath(), Account.class));
+        Account account = JsonHandler.readValue(getAccountPath(), Account.class).orElse(new Account());
         writeAccount(account);
         return account;
     }
 
     public static GeneralConfig readGeneralConfig() {
-        GeneralConfig config = ConfigValidator.validateGeneralConfig(JsonHandler.readValue(GENERAL_CONFIG_PATH, GeneralConfig.class));
+        GeneralConfig config = JsonHandler.readValue(GENERAL_CONFIG_PATH, GeneralConfig.class).orElse(new GeneralConfig());
         writeGeneralConfig(config);
         return config;
     }
 
     public static BotConfig readBotConfig() {
-        BotConfig config = ConfigValidator.validateBotConfig(JsonHandler.readValue(BOT_CONFIG_PATH, BotConfig.class));
+        BotConfig config = JsonHandler.readValue(BOT_CONFIG_PATH, BotConfig.class).orElse(new BotConfig());
         writeBotConfig(config);
         return config;
     }
 
     public static ChannelConfig readChannelConfig(String channel) {
-        ChannelConfig config = ConfigValidator.validateChannelConfig(JsonHandler.readValue(getChannelPath(channel), ChannelConfig.class));
+        ChannelConfig config = JsonHandler.readValue(getChannelPath(channel), ChannelConfig.class).orElse(new ChannelConfig());
         writeChannelConfig(config, channel);
         return config;
     }
@@ -70,7 +72,7 @@ public class Configs {
         JsonHandler.writeValue(getChannelPath(channel), config);
     }
 
-    public static void writeChannelConfig(String channel) {
+    public static void writeChannelConfig(String channel) throws ChannelGetException {
         writeChannelConfig(getChannelConfig(channel), channel);
     }
 
@@ -87,16 +89,16 @@ public class Configs {
         return App.configManager.getBotConfig();
     }
 
-    public static ChannelConfig getChannelConfig(String channel) {
+    public static ChannelConfig getChannelConfig(String channel) throws ChannelGetException {
         Optional<Channel> optional = Channels.get(channel);
         if (!optional.isPresent()) {
-            return null;
+            throw new ChannelGetException();
         }
         return optional.get().getConfig();
     }
 
     // Misc
-    public static String getAccountFileName() {
+    private static String getAccountFileName() {
         if (!accountFileName.equals("")) {
             return accountFileName;
         }

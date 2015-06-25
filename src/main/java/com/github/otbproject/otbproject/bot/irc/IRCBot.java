@@ -4,6 +4,7 @@ import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.bot.BotUtil;
 import com.github.otbproject.otbproject.bot.IBot;
 import com.github.otbproject.otbproject.channel.Channel;
+import com.github.otbproject.otbproject.channel.ChannelGetException;
 import com.github.otbproject.otbproject.channel.ChannelNotFoundException;
 import com.github.otbproject.otbproject.channel.Channels;
 import com.github.otbproject.otbproject.config.Configs;
@@ -172,7 +173,7 @@ public class IRCBot extends PircBotX implements IBot{
             if (BotUtil.isModOrHigher(channelName, user)) {
                 return false;
             }
-        } catch (ChannelNotFoundException e) {
+        } catch (ChannelGetException e) {
             App.logger.error("Channel '" + channelName + "' did not exist in which to timeout user");
             App.logger.catching(e);
         }
