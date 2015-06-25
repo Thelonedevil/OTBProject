@@ -1,16 +1,18 @@
 package com.github.otbproject.otbproject.command.scheduler;
 
+import com.github.otbproject.otbproject.channel.Channel;
+
 import java.util.concurrent.TimeUnit;
 
 public class ResetTask implements Runnable {
 
-    private final String channel;
+    private final Channel channel;
     private final String command;
     private final long delay;
     private final long period;
     private final TimeUnit timeUnit;
 
-    public ResetTask(String channel, String command, long delay,long period,TimeUnit timeUnit){
+    public ResetTask(Channel channel, String command, long delay,long period,TimeUnit timeUnit){
         this.channel = channel;
         this.command = command;
         this.delay = delay;
@@ -21,10 +23,6 @@ public class ResetTask implements Runnable {
     @Override
     public void run() {
         Schedules.unScheduleCommand(channel, command);
-        if (timeUnit.equals(TimeUnit.MINUTES)){
-            Schedules.scheduleCommandInMinutes(channel, command, delay, period, false);
-        }else if (timeUnit.equals(TimeUnit.SECONDS)){
-            Schedules.scheduleCommandInSeconds(channel, command, delay, period, false);
-        }
+        Schedules.doScheduleCommand(channel, command, delay, period, true, timeUnit);
     }
 }

@@ -29,7 +29,7 @@ public class Channel {
     private final SQLiteQuoteWrapper quoteDb;
     private ChannelMessageSender messageSender;
     private ChannelMessageProcessor messageProcessor;
-    private final Scheduler scheduler = new Scheduler();
+    private final Scheduler scheduler;
     private final ConcurrentHashMap<String, ScheduledFuture<?>> scheduledCommands = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<String, ScheduledFuture<?>> hourlyResetSchedules = new ConcurrentHashMap<>();
     private ConcurrentMap<String, GroupFilterSet> filterMap;
@@ -40,7 +40,8 @@ public class Channel {
     private Channel(String name, ChannelConfig config) throws ChannelInitException {
         this.name = name;
         this.config = config;
-        this.inChannel = false;
+        inChannel = false;
+        scheduler = new Scheduler(name);
 
         mainDb = Databases.createChannelMainDbWrapper(name);
         if (mainDb == null) {

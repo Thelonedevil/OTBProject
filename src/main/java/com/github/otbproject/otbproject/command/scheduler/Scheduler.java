@@ -1,5 +1,7 @@
 package com.github.otbproject.otbproject.command.scheduler;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
+
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -11,6 +13,19 @@ public class Scheduler {
     private ScheduledExecutorService scheduledExecutorService;
     private boolean running;
     private final ReadWriteLock lock = new ReentrantReadWriteLock(true);
+    private final String channel;
+
+    public Scheduler(String channel) {
+        this.channel = channel;
+    }
+
+    private ScheduledExecutorService getService() {
+        return Executors.newScheduledThreadPool(5,
+                new ThreadFactoryBuilder()
+                        .setNameFormat(channel + "-scheduler-%d")
+                        .build()
+        );
+    }
 
     public boolean start() {
         lock.writeLock().lock();
@@ -19,7 +34,7 @@ public class Scheduler {
                 return false;
             }
             running = true;
-            scheduledExecutorService = Executors.newScheduledThreadPool(5);
+            scheduledExecutorService = getService();
             return true;
         } finally {
             lock.writeLock().unlock();
