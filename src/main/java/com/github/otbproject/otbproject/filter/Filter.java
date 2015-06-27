@@ -1,6 +1,7 @@
 package com.github.otbproject.otbproject.filter;
 
 import com.github.otbproject.otbproject.fs.FSUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
@@ -37,12 +38,13 @@ public class Filter {
     public boolean matches(String message) {
         switch (type) {
             case PHRASE:
-            case PLAINTEXT:
             case REGEX:
                 return pattern.matcher(message).matches();
             case SCRIPT:
                 // TODO possibly tweak method name and parameter(s) passed in
                 return FilterProcessor.PROCESSOR.process(data, (FSUtil.filtersDir() + File.separator + data), FilterProcessor.METHOD_NAME, message, Boolean.class, false);
+            case STRING:
+                return StringUtils.containsIgnoreCase(message, data);
             // Default should never occur
             default:
                 return false;
@@ -89,9 +91,6 @@ public class Filter {
         switch (filter.getType()) {
             case PHRASE:
                 pattern = Pattern.compile((ANY + WORD_BOUNDARY + Pattern.quote(filter.getData()) + WORD_BOUNDARY + ANY), Pattern.CASE_INSENSITIVE);
-                break;
-            case PLAINTEXT:
-                pattern = Pattern.compile((ANY + Pattern.quote(filter.getData()) + ANY), Pattern.CASE_INSENSITIVE);
                 break;
             case REGEX:
                 pattern = Pattern.compile((ANY + filter.getData() + ANY), Pattern.CASE_INSENSITIVE);

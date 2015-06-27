@@ -52,7 +52,7 @@ public class IRCBot extends PircBotX implements IBot{
 
     @Override
     public boolean isChannel(String channelName) {
-        return ApiRequest.attemptRequest("channels/" + channelName, 3, 500) == null;
+        return ApiRequest.attemptRequest("channels/" + channelName, 3, 500) != null;
     }
 
     @Override
