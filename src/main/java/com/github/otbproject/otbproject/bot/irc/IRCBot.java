@@ -167,7 +167,28 @@ public class IRCBot extends PircBotX implements IBot{
     }
 
     @Override
+    public boolean ban(String channelName, String user) {
+        // Check if user has user level mod or higher
+        try {
+            if (BotUtil.isModOrHigher(channelName, user)) {
+                return false;
+            }
+        } catch (ChannelGetException e) {
+            App.logger.error("Channel '" + channelName + "' did not exist in which to timeout user");
+            App.logger.catching(e);
+        }
+
+        sendMessage(channelName, ".ban " + user);
+        return true;
+    }
+
+    @Override
     public boolean timeout(String channelName, String user, int timeInSeconds) {
+        if (timeInSeconds <= 0) {
+            App.logger.warn("Cannot time out user for non-positive amount of time");
+            return false;
+        }
+
         // Check if user has user level mod or higher
         try {
             if (BotUtil.isModOrHigher(channelName, user)) {
