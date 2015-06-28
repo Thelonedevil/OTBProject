@@ -10,10 +10,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -32,6 +29,8 @@ public class GuiController {
     protected final List<String> history = new ArrayList<>();
     protected int historyPointer = 0;
     private final ExecutorService executorService = Util.getSingleThreadExecutor("CLI Command Processor");
+    private List<String> tabCompleteList = Collections.emptyList();
+    private int tabCompleteIndex = 0;
 
     @FXML
     public void command(KeyEvent event) {
@@ -58,6 +57,8 @@ public class GuiController {
                     history.remove(0);
                 }
                 historyPointer = history.size();
+
+                notTabCompleting();
                 break;
             case UP:
                 if (historyPointer == 0) {
@@ -67,6 +68,8 @@ public class GuiController {
                 commandsInput.setText(history.get(historyPointer));
                 commandsInput.positionCaret(commandsInput.getText().length());
                 event.consume();
+
+                notTabCompleting();
                 break;
             case DOWN:
                 if (historyPointer == history.size()) {
@@ -78,6 +81,8 @@ public class GuiController {
                 }
                 historyPointer++;
                 commandsInput.setText(history.get(historyPointer));
+
+                notTabCompleting();
                 break;
             case TAB:
                 input = commandsInput.getText();
@@ -115,7 +120,11 @@ public class GuiController {
             case ESCAPE:
                 commandsInput.clear();
                 historyPointer = history.size();
+
+                notTabCompleting();
                 break;
+            default:
+                notTabCompleting();
         }
     }
 
@@ -124,15 +133,29 @@ public class GuiController {
     }
 
     private void tabComplete(String[] parts, int index, Collection<String> completions, Predicate<String> predicate) {
-        List<String> list = completions.stream()
+        if (tabCompleteIndex != 0) {
+            multipleTabComplete(parts, index);
+            return;
+        }
+
+        tabCompleteList = completions.stream()
                 .filter(string -> string.startsWith(parts[index]))
                 .filter(predicate)
                 .collect(Collectors.toList());
-        if (list.size() == 1) {
-            commandsInput.setText(getInputPartsTillIndex(parts, index) + list.get(0) + " ");
-        } else if (list.size() != 0) {
+        if (tabCompleteList.size() == 1) {
+            commandsInput.setText(getInputPartsTillIndex(parts, index) + tabCompleteList.get(0) + " ");
+        } else if (tabCompleteList.size() != 0) {
             // TODO handle prompt for multiple completions
+            multipleTabComplete(parts, index);
         }
+    }
+
+    private void multipleTabComplete(String[] parts, int index) {
+        if (tabCompleteIndex >= tabCompleteList.size()) {
+            tabCompleteIndex = 0;
+        }
+        commandsInput.setText(getInputPartsTillIndex(parts, index) + tabCompleteList.get(tabCompleteIndex));
+        tabCompleteIndex++;
     }
 
     private String getInputPartsTillIndex(String[] parts, int index) {
@@ -140,5 +163,10 @@ public class GuiController {
         List<String> subList = list.subList(0, ((index > list.size()) ? list.size() : index));
         String input = subList.stream().collect(Collectors.joining(" "));
         return input + ((input.length() == 0) ? "" : " ");
+    }
+
+    private void notTabCompleting() {
+        tabCompleteList.clear();
+        tabCompleteIndex = 0;
     }
 }
