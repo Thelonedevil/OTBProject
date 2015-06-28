@@ -142,4 +142,12 @@ public class Channels {
     public static Set<String> list() {
         return Bot.getBot().getChannels().keySet();
     }
+
+    public static boolean isBotChannel(String channel) {
+        return channel.equals(Bot.getBot().getUserName());
+    }
+
+    public static boolean isBotChannel(Channel channel) {
+        return isBotChannel(channel.getName());
+    }
 }
