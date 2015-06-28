@@ -160,6 +160,7 @@ public class App {
 
         Scanner scanner = new Scanner(System.in);
         scanner.useDelimiter("\n");
+        System.out.println("Terminal input is now active.");
         while (scanner.hasNext()) {
             String in = scanner.next();
             if (!in.equals(""))
