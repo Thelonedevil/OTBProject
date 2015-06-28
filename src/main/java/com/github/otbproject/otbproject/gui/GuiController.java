@@ -87,6 +87,7 @@ public class GuiController {
             case TAB:
                 input = commandsInput.getText();
                 if (input.isEmpty()) {
+                    notTabCompleting();
                     break;
                 }
                 String[] parts = input.split(" ");
