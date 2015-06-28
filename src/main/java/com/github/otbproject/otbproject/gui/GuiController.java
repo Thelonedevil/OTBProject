@@ -1,8 +1,11 @@
 package com.github.otbproject.otbproject.gui;
 
 import com.github.otbproject.otbproject.bot.Bot;
+import com.github.otbproject.otbproject.channel.Channel;
 import com.github.otbproject.otbproject.channel.Channels;
 import com.github.otbproject.otbproject.cli.commands.CmdParser;
+import com.github.otbproject.otbproject.command.Aliases;
+import com.github.otbproject.otbproject.command.Commands;
 import com.github.otbproject.otbproject.messages.internal.InternalMessageSender;
 import com.github.otbproject.otbproject.util.Util;
 import javafx.fxml.FXML;
@@ -93,8 +96,7 @@ public class GuiController {
                 String[] parts = input.split(" ");
                 if (parts.length == 1) {
                     tabComplete(parts, 0, CmdParser.getCommands());
-                }
-                if (parts.length == 2 && CmdParser.getCommands().contains(parts[0])) {
+                } else if (parts.length == 2 && CmdParser.getCommands().contains(parts[0])) {
                     switch (parts[0]) {
                         case CmdParser.CLEAR:
                             tabComplete(parts, 1, CmdParser.ClearTargets.targets);
@@ -109,6 +111,19 @@ public class GuiController {
                         case CmdParser.HELP:
                             tabComplete(parts, 1, CmdParser.getCommands());
                             break;
+                    }
+                } else if (parts.length == 3 && parts[0].equals(CmdParser.EXEC)) {
+                    Optional<Channel> optional = Channels.get(parts[1]);
+                    if (optional.isPresent() && optional.get().isInChannel()) {
+                        Channel channel = optional.get();
+                        List<String> list = Commands.getCommands(channel.getMainDatabaseWrapper());
+                        list = (list == null) ? new ArrayList<>() : list;
+                        addIfNotNull(list, Aliases.getAliases(channel.getMainDatabaseWrapper()));
+                        if (Channels.isBotChannel(channel)) {
+                            addIfNotNull(list, Commands.getCommands(Bot.getBot().getBotDB()));
+                            addIfNotNull(list, Aliases.getAliases(Bot.getBot().getBotDB()));
+                        }
+                        tabComplete(parts, 2, list);
                     }
                 }
                 commandsInput.positionCaret(commandsInput.getText().length());
@@ -164,5 +179,11 @@ public class GuiController {
     private void notTabCompleting() {
         tabCompleteList.clear();
         tabCompleteIndex = 0;
+    }
+
+    private static void addIfNotNull(List<String> l1, List<String> l2) {
+        if (l2 != null) {
+            l1.addAll(l2);
+        }
     }
 }
