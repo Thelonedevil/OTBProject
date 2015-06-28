@@ -125,6 +125,8 @@ public class GuiController {
                         }
                         tabComplete(parts, 2, list);
                     }
+                } else {
+                    notTabCompleting();
                 }
                 commandsInput.positionCaret(commandsInput.getText().length());
                 break;
@@ -158,6 +160,8 @@ public class GuiController {
             commandsInput.setText(getInputPartsTillIndex(parts, index) + tabCompleteList.get(0) + " ");
         } else if (tabCompleteList.size() != 0) {
             multipleTabComplete(parts, index);
+        } else {
+            notTabCompleting();
         }
     }
 
