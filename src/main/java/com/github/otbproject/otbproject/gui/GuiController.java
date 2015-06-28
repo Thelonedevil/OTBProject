@@ -92,26 +92,21 @@ public class GuiController {
                 String[] parts = input.split(" ");
                 if (parts.length == 1) {
                     tabComplete(parts, 0, CmdParser.getCommands());
-
-                    //CmdParser.getCommands().forEach(s -> commandsInput.setText(s.startsWith(parts[0]) ? (s + " ") : commandsInput.getText()));
                 }
                 if (parts.length == 2 && CmdParser.getCommands().contains(parts[0])) {
                     switch (parts[0]) {
                         case CmdParser.CLEAR:
                             tabComplete(parts, 1, CmdParser.ClearTargets.targets);
-                            //CmdParser.ClearTargets.targets.forEach(s -> commandsInput.setText(s.startsWith(parts[1]) ? (parts[0] + " " + s + " ") : commandsInput.getText()));
                             break;
                         case CmdParser.EXEC:
                         case CmdParser.RESET:
                             tabComplete(parts, 1, Channels.list());
-                            //Channels.list().forEach(s -> commandsInput.setText(s.startsWith(parts[1]) ? (parts[0] + " " + s + " ") : commandsInput.getText()));
                             break;
                         case CmdParser.LEAVECHANNEL:
                             tabComplete(parts, 1, Channels.list(), s -> !s.equalsIgnoreCase(Bot.getBot().getUserName()));
                             break;
                         case CmdParser.HELP:
                             tabComplete(parts, 1, CmdParser.getCommands());
-                            //CmdParser.getCommands().forEach(s -> commandsInput.setText(s.startsWith(parts[1]) ? (parts[0] + " " + s + " ") : commandsInput.getText()));
                             break;
                     }
                 }
@@ -145,7 +140,6 @@ public class GuiController {
         if (tabCompleteList.size() == 1) {
             commandsInput.setText(getInputPartsTillIndex(parts, index) + tabCompleteList.get(0) + " ");
         } else if (tabCompleteList.size() != 0) {
-            // TODO handle prompt for multiple completions
             multipleTabComplete(parts, index);
         }
     }
