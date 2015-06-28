@@ -17,6 +17,7 @@ import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class GuiController {
 
@@ -89,15 +90,14 @@ public class GuiController {
                 break;
             case TAB:
                 input = commandsInput.getText();
-                if (input.isEmpty()) {
-                    notTabCompleting();
-                    break;
+                List<String> parts = Stream.of(input.split(" ")).filter(s -> !s.isEmpty()).collect(Collectors.toList());
+                if (input.isEmpty() || input.endsWith(" ")) {
+                    parts.add("");
                 }
-                String[] parts = input.split(" ");
-                if (parts.length == 1) {
+                if (parts.size() == 1) {
                     tabComplete(parts, 0, CmdParser.getCommands());
-                } else if (parts.length == 2 && CmdParser.getCommands().contains(parts[0])) {
-                    switch (parts[0]) {
+                } else if (parts.size() == 2 && CmdParser.getCommands().contains(parts.get(0))) {
+                    switch (parts.get(0)) {
                         case CmdParser.CLEAR:
                             tabComplete(parts, 1, CmdParser.ClearTargets.targets);
                             break;
@@ -112,8 +112,8 @@ public class GuiController {
                             tabComplete(parts, 1, CmdParser.getCommands());
                             break;
                     }
-                } else if (parts.length == 3 && parts[0].equals(CmdParser.EXEC)) {
-                    Optional<Channel> optional = Channels.get(parts[1]);
+                } else if (parts.size() == 3 && parts.get(0).equals(CmdParser.EXEC)) {
+                    Optional<Channel> optional = Channels.get(parts.get(1));
                     if (optional.isPresent() && optional.get().isInChannel()) {
                         Channel channel = optional.get();
                         List<String> list = Commands.getCommands(channel.getMainDatabaseWrapper());
@@ -141,18 +141,18 @@ public class GuiController {
         }
     }
 
-    private void tabComplete(String[] parts, int index, Collection<String> completions) {
+    private void tabComplete(List<String> parts, int index, Collection<String> completions) {
         tabComplete(parts, index, completions, s -> true);
     }
 
-    private void tabComplete(String[] parts, int index, Collection<String> completions, Predicate<String> predicate) {
+    private void tabComplete(List<String> parts, int index, Collection<String> completions, Predicate<String> predicate) {
         if (tabCompleteIndex != 0) {
             multipleTabComplete(parts, index);
             return;
         }
 
         tabCompleteList = completions.stream()
-                .filter(string -> string.startsWith(parts[index]))
+                .filter(string -> string.startsWith(parts.get(index)))
                 .filter(predicate)
                 .sorted()
                 .collect(Collectors.toList());
@@ -165,7 +165,7 @@ public class GuiController {
         }
     }
 
-    private void multipleTabComplete(String[] parts, int index) {
+    private void multipleTabComplete(List<String> parts, int index) {
         if (tabCompleteIndex >= tabCompleteList.size()) {
             tabCompleteIndex = 0;
         }
@@ -173,9 +173,8 @@ public class GuiController {
         tabCompleteIndex++;
     }
 
-    private String getInputPartsTillIndex(String[] parts, int index) {
-        List<String> list = Arrays.asList(parts);
-        List<String> subList = list.subList(0, ((index > list.size()) ? list.size() : index));
+    private String getInputPartsTillIndex(List<String> parts, int index) {
+        List<String> subList = parts.subList(0, ((index > parts.size()) ? parts.size() : index));
         String input = subList.stream().collect(Collectors.joining(" "));
         return input + ((input.length() == 0) ? "" : " ");
     }
