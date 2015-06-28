@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class GeneralConfig {
     private ServiceName serviceName = ServiceName.TWITCH;
-    private int portNumber = 80;
+    private int portNumber = 22222;
     private String ip_binding = "0.0.0.0";
     public ArrayList<String> permanently_enabled_commands;
 
