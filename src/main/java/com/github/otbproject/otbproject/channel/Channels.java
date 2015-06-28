@@ -144,7 +144,7 @@ public class Channels {
     }
 
     public static boolean isBotChannel(String channel) {
-        return channel.equals(Bot.getBot().getUserName());
+        return channel.equalsIgnoreCase(Bot.getBot().getUserName());
     }
 
     public static boolean isBotChannel(Channel channel) {
