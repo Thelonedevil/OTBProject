@@ -10,15 +10,18 @@ import com.github.otbproject.otbproject.channel.ChannelNotFoundException;
 import com.github.otbproject.otbproject.channel.Channels;
 import com.github.otbproject.otbproject.config.Configs;
 import net.jodah.expiringmap.ExpiringMap;
+import org.apache.logging.log4j.Level;
 import pro.beam.api.BeamAPI;
 import pro.beam.api.resource.BeamUser;
 import pro.beam.api.resource.chat.methods.ChatSendMethod;
 import pro.beam.api.services.impl.UsersService;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 public class BeamBot extends AbstractBot {
     public final ExpiringMap<String, Boolean> sentMessageCache;
@@ -136,6 +139,40 @@ public class BeamBot extends AbstractBot {
         }
         channel.beamChatConnectable.close();
         return true;
+    }
+
+    @Override
+    public boolean ban(String channelName, String user) {
+        // Check if user has user level mod or higher
+        try {
+            if (BotUtil.isModOrHigher(channelName, user)) {
+                return false;
+            }
+        } catch (ChannelGetException e) {
+            App.logger.error("Channel '" + channelName + "' did not exist in which to timeout user");
+            App.logger.catching(e);
+        }
+
+        // Get channel info
+        BeamChatChannel beamChatChannel = beamChannels.get(channelName);
+        if (beamChatChannel == null) {
+            return false;
+        }
+
+        String path = BeamAPI.BASE_PATH.resolve("channels/" + beamChatChannel.channel.id + "/users/" + user.toLowerCase()).toString();
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("add", new String[]{"Banned"});
+        try {
+            Object result = beam.http.patch(path, Object.class, map).get(4, TimeUnit.SECONDS);
+            if ((result != null) && result.toString().contains("username")) {
+                return true;
+            }
+        } catch (InterruptedException | TimeoutException e) {
+            App.logger.catching(e);
+        } catch (ExecutionException e) {
+            App.logger.catching(Level.DEBUG, e);
+        }
+        return false;
     }
 
     @Override
