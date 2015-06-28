@@ -136,6 +136,7 @@ public class GuiController {
         tabCompleteList = completions.stream()
                 .filter(string -> string.startsWith(parts[index]))
                 .filter(predicate)
+                .sorted()
                 .collect(Collectors.toList());
         if (tabCompleteList.size() == 1) {
             commandsInput.setText(getInputPartsTillIndex(parts, index) + tabCompleteList.get(0) + " ");
