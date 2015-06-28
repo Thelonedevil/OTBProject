@@ -106,7 +106,7 @@ public class GuiController {
                             tabComplete(parts, 1, Channels.list());
                             break;
                         case CmdParser.LEAVECHANNEL:
-                            tabComplete(parts, 1, Channels.list(), s -> !s.equalsIgnoreCase(Bot.getBot().getUserName()));
+                            tabComplete(parts, 1, Channels.list(), s -> !Channels.isBotChannel(s));
                             break;
                         case CmdParser.HELP:
                             tabComplete(parts, 1, CmdParser.getCommands());
