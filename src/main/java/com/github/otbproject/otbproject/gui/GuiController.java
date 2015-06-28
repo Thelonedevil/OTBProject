@@ -11,8 +11,12 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class GuiController {
 
@@ -82,20 +86,27 @@ public class GuiController {
                 }
                 String[] parts = input.split(" ");
                 if (parts.length == 1) {
-                    CmdParser.getCommands().forEach(s -> commandsInput.setText(s.startsWith(parts[0]) ? (s + " ") : commandsInput.getText()));
+                    tabComplete(parts, 0, CmdParser.getCommands());
+
+                    //CmdParser.getCommands().forEach(s -> commandsInput.setText(s.startsWith(parts[0]) ? (s + " ") : commandsInput.getText()));
                 }
                 if (parts.length == 2 && CmdParser.getCommands().contains(parts[0])) {
                     switch (parts[0]) {
                         case CmdParser.CLEAR:
-                            CmdParser.ClearTargets.targets.forEach(s -> commandsInput.setText(s.startsWith(parts[1]) ? (parts[0] + " " + s + " ") : commandsInput.getText()));
+                            tabComplete(parts, 1, CmdParser.ClearTargets.targets);
+                            //CmdParser.ClearTargets.targets.forEach(s -> commandsInput.setText(s.startsWith(parts[1]) ? (parts[0] + " " + s + " ") : commandsInput.getText()));
                             break;
                         case CmdParser.EXEC:
-                        case CmdParser.LEAVECHANNEL:
                         case CmdParser.RESET:
-                            Channels.list().forEach(s -> commandsInput.setText(s.startsWith(parts[1]) ? (parts[0] + " " + s + " ") : commandsInput.getText()));
+                            tabComplete(parts, 1, Channels.list());
+                            //Channels.list().forEach(s -> commandsInput.setText(s.startsWith(parts[1]) ? (parts[0] + " " + s + " ") : commandsInput.getText()));
+                            break;
+                        case CmdParser.LEAVECHANNEL:
+                            tabComplete(parts, 1, Channels.list(), s -> !s.equalsIgnoreCase(Bot.getBot().getUserName()));
                             break;
                         case CmdParser.HELP:
-                            CmdParser.getCommands().forEach(s -> commandsInput.setText(s.startsWith(parts[1]) ? (parts[0] + " " + s + " ") : commandsInput.getText()));
+                            tabComplete(parts, 1, CmdParser.getCommands());
+                            //CmdParser.getCommands().forEach(s -> commandsInput.setText(s.startsWith(parts[1]) ? (parts[0] + " " + s + " ") : commandsInput.getText()));
                             break;
                     }
                 }
@@ -106,5 +117,28 @@ public class GuiController {
                 historyPointer = history.size();
                 break;
         }
+    }
+
+    private void tabComplete(String[] parts, int index, Collection<String> completions) {
+        tabComplete(parts, index, completions, s -> true);
+    }
+
+    private void tabComplete(String[] parts, int index, Collection<String> completions, Predicate<String> predicate) {
+        List<String> list = completions.stream()
+                .filter(string -> string.startsWith(parts[index]))
+                .filter(predicate)
+                .collect(Collectors.toList());
+        if (list.size() == 1) {
+            commandsInput.setText(getInputPartsTillIndex(parts, index) + list.get(0) + " ");
+        } else if (list.size() != 0) {
+            // TODO handle prompt for multiple completions
+        }
+    }
+
+    private String getInputPartsTillIndex(String[] parts, int index) {
+        List<String> list = Arrays.asList(parts);
+        List<String> subList = list.subList(0, ((index > list.size()) ? list.size() : index));
+        String input = subList.stream().collect(Collectors.joining(" "));
+        return input + ((input.length() == 0) ? "" : " ");
     }
 }
