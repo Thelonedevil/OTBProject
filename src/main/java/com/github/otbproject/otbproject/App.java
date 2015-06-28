@@ -90,12 +90,7 @@ public class App {
 
         // Log version
         logger.info("OTBProject version " + VERSION);
-        if (!GraphicsEnvironment.isHeadless()) {
-            try {
-                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-            } catch (Exception e) {
-                App.logger.catching(e);
-            }
+        if (Bot.Graphics.present()) {
             Util.getSingleThreadExecutor().execute(() -> GuiApplication.start(args));
         }
 
@@ -159,7 +154,7 @@ public class App {
             logger.catching(e);
         }
         */
-        if (!GraphicsEnvironment.isHeadless()) {
+        if (Bot.Graphics.present()) {
             GuiApplication.setInputActive();
         }
 
@@ -208,6 +203,10 @@ public class App {
                 ArgParser.printHelp();
                 System.exit(2);
             }
+        }
+
+        if (cmd.hasOption(ArgParser.Opts.NO_GUI)) {
+            Bot.Graphics.useGui(false);
         }
 
         return cmd;

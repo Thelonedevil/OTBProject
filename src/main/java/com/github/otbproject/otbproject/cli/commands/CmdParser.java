@@ -15,7 +15,6 @@ import com.github.otbproject.otbproject.util.preload.LoadStrategy;
 import com.github.otbproject.otbproject.util.preload.PreloadLoader;
 import com.google.common.collect.ImmutableSet;
 
-import java.awt.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -33,7 +32,7 @@ public class CmdParser {
     public static final String HELP = "help";
     private static final HashMap<String, CliCommand> map = new HashMap<>();
     private static final CliCommand.Builder commandBuilder = new CliCommand.Builder();
-    private static java.util.List<String> args = new ArrayList<>();
+    private static List<String> args = new ArrayList<>();
     private static String source = "";
 
     public static class ClearTargets {
@@ -55,7 +54,7 @@ public class CmdParser {
 
     static {
         // Add CLI commands
-        if (!GraphicsEnvironment.isHeadless()) {
+        if (Bot.Graphics.present()) {
             initClear();
         }
         initExec();

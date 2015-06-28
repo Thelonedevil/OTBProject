@@ -18,6 +18,7 @@ import com.github.otbproject.otbproject.util.preload.LoadStrategy;
 import com.github.otbproject.otbproject.util.preload.PreloadLoader;
 import org.apache.commons.cli.CommandLine;
 
+import java.awt.*;
 import java.lang.reflect.Field;
 import java.util.concurrent.Future;
 
@@ -219,6 +220,18 @@ public class Bot {
             // Bot config
             BotConfig botConfig = Configs.readBotConfig();
             App.configManager.setBotConfig(botConfig);
+        }
+    }
+
+    public static class Graphics {
+        private static boolean withGui = true;
+
+        public static void useGui(boolean useGui) {
+            withGui = useGui;
+        }
+
+        public static boolean present() {
+            return withGui && !GraphicsEnvironment.isHeadless();
         }
     }
 

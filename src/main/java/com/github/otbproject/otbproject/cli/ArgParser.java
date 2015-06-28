@@ -74,6 +74,11 @@ public class ArgParser {
         OptionBuilder.withArgName("SERVICE_NAME");
         options.addOption(OptionBuilder.create());
 
+        // --no-gui
+        OptionBuilder.withLongOpt(Opts.NO_GUI);
+        OptionBuilder.withDescription("Runs the bot without a GUI");
+        options.addOption(OptionBuilder.create());
+
         return options;
     }
 
@@ -94,5 +99,6 @@ public class ArgParser {
         public static final String SERVICE = "service";
         public static final String VERSION = "version";
         public static final String VERSION_SHORT = "v";
+        public static final String NO_GUI = "no-gui";
     }
 }
