@@ -16,10 +16,7 @@ import com.github.otbproject.otbproject.util.preload.PreloadLoader;
 import com.google.common.collect.ImmutableSet;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Scanner;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class CmdParser {
@@ -36,7 +33,7 @@ public class CmdParser {
     public static final String HELP = "help";
     private static final HashMap<String, CliCommand> map = new HashMap<>();
     private static final CliCommand.Builder commandBuilder = new CliCommand.Builder();
-    private static final ArrayList<String> args = new ArrayList<>();
+    private static java.util.List<String> args = new ArrayList<>();
     private static String source = "";
 
     public static class ClearTargets {
@@ -100,6 +97,9 @@ public class CmdParser {
                 while (scanner.hasNext()) {
                     args.add(scanner.next());
                 }
+                // Remove empty elements from list
+                args = args.stream().filter(s -> !s.isEmpty()).collect(Collectors.toList());
+
                 if (map.containsKey(name)) {
                     return map.get(name).call();
                 } else {
@@ -298,6 +298,7 @@ public class CmdParser {
                     if (args.isEmpty()) {
                         responseStr = map.keySet().stream().filter(key -> !key.equals(HELP)).map(key -> map.get(key).getShortHelp()).sorted().collect(Collectors.joining("\n"));
                         responseStr += "\n" + map.get(HELP).getShortHelp();
+                        responseStr += "\n\nType \"help <command>\" to print the help message for a cli command.";
                     } else {
                         String arg = args.get(0);
                         if (map.keySet().contains(arg)) {
