@@ -12,6 +12,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
 import java.util.concurrent.ExecutorService;
@@ -152,7 +153,7 @@ public class GuiController {
         }
 
         tabCompleteList = completions.stream()
-                .filter(string -> string.startsWith(parts.get(index)))
+                .filter(string -> StringUtils.startsWithIgnoreCase(string, parts.get(index)))
                 .filter(predicate)
                 .sorted()
                 .collect(Collectors.toList());
