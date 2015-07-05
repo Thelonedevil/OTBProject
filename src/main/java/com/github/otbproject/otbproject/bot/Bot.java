@@ -192,11 +192,9 @@ public class Bot {
             App.configManager.setGeneralConfig(generalConfig);
             if (cmd.hasOption(ArgParser.Opts.SERVICE)) {
                 String serviceName = cmd.getOptionValue(ArgParser.Opts.SERVICE).toUpperCase();
-                if (serviceName.equals(ServiceName.TWITCH.toString())) {
-                    Configs.getGeneralConfig().setServiceName(ServiceName.TWITCH);
-                } else if (serviceName.equals(ServiceName.BEAM.toString())) {
-                    Configs.getGeneralConfig().setServiceName(ServiceName.BEAM);
-                } else {
+                try {
+                    Configs.getGeneralConfig().setServiceName(ServiceName.valueOf(serviceName));
+                } catch (IllegalArgumentException e) {
                     App.logger.error("Invalid service name: " + serviceName);
                     ArgParser.printHelp();
                     System.exit(1);
