@@ -193,7 +193,7 @@ public class Bot {
             if (cmd.hasOption(ArgParser.Opts.SERVICE)) {
                 String serviceName = cmd.getOptionValue(ArgParser.Opts.SERVICE).toUpperCase();
                 try {
-                    Configs.getGeneralConfig().setServiceName(ServiceName.valueOf(serviceName));
+                    Configs.getGeneralConfig().setServiceName(Service.valueOf(serviceName));
                 } catch (IllegalArgumentException e) {
                     App.logger.error("Invalid service name: " + serviceName);
                     ArgParser.printHelp();

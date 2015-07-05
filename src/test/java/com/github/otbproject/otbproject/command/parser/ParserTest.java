@@ -3,19 +3,15 @@ package com.github.otbproject.otbproject.command.parser;
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.bot.AbstractBot;
 import com.github.otbproject.otbproject.bot.Bot;
-import com.github.otbproject.otbproject.bot.IBot;
-import com.github.otbproject.otbproject.channel.Channel;
 import com.github.otbproject.otbproject.config.Configs;
 import com.github.otbproject.otbproject.config.GeneralConfig;
-import com.github.otbproject.otbproject.config.ServiceName;
-import com.github.otbproject.otbproject.database.DatabaseWrapper;
+import com.github.otbproject.otbproject.config.Service;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pircbotx.exception.IrcException;
 
 import java.io.IOException;
-import java.util.concurrent.ConcurrentHashMap;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -100,7 +96,7 @@ public class ParserTest {
             }
         });
         App.configManager.setGeneralConfig(new GeneralConfig());
-        Configs.getGeneralConfig().setServiceName(ServiceName.BEAM);
+        Configs.getGeneralConfig().setServiceName(Service.BEAM);
     }
 
     @AfterClass

@@ -1,10 +1,8 @@
 package com.github.otbproject.otbproject.config;
 
 import com.github.otbproject.otbproject.App;
-import com.github.otbproject.otbproject.bot.Bot;
 import com.github.otbproject.otbproject.channel.Channel;
 import com.github.otbproject.otbproject.channel.ChannelGetException;
-import com.github.otbproject.otbproject.channel.ChannelNotFoundException;
 import com.github.otbproject.otbproject.channel.Channels;
 import com.github.otbproject.otbproject.fs.FSUtil;
 import com.github.otbproject.otbproject.util.JsonHandler;
@@ -103,8 +101,8 @@ public class Configs {
             return accountFileName;
         }
 
-        ServiceName serviceName = getGeneralConfig().getServiceName();
-        if (serviceName == ServiceName.BEAM) {
+        Service service = getGeneralConfig().getServiceName();
+        if (service == Service.BEAM) {
             return FSUtil.ConfigFileNames.ACCOUNT_BEAM;
         } else { // Defaults to Twitch
             return FSUtil.ConfigFileNames.ACCOUNT_TWITCH;

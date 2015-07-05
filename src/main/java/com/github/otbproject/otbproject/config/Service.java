@@ -1,5 +1,5 @@
 package com.github.otbproject.otbproject.config;
 
-public enum ServiceName {
+public enum Service {
     TWITCH, BEAM
 }
