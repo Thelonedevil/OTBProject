@@ -91,8 +91,9 @@ public class Bot {
             running = false;
         }
 
-        private static synchronized void shutdownCleanup() {
+        private static void shutdownCleanup() {
             clearCaches();
+            getBot().getChannels().clear();
             // TODO unload libs?
         }
 
