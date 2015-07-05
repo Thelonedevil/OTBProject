@@ -101,7 +101,7 @@ public class Configs {
             return accountFileName;
         }
 
-        Service service = getGeneralConfig().getServiceName();
+        Service service = getGeneralConfig().getService();
         if (service == Service.BEAM) {
             return FSUtil.ConfigFileNames.ACCOUNT_BEAM;
         } else { // Defaults to Twitch

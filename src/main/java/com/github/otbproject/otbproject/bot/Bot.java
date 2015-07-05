@@ -130,7 +130,7 @@ public class Bot {
         private static boolean createBot() {
             // Connect to service
             try {
-                switch (Configs.getGeneralConfig().getServiceName()){
+                switch (Configs.getGeneralConfig().getService()){
                     case TWITCH:
                         setBot(new IRCBot());
                         Class c = getBot().getClass().getSuperclass();
@@ -193,7 +193,7 @@ public class Bot {
             if (cmd.hasOption(ArgParser.Opts.SERVICE)) {
                 String serviceName = cmd.getOptionValue(ArgParser.Opts.SERVICE).toUpperCase();
                 try {
-                    Configs.getGeneralConfig().setServiceName(Service.valueOf(serviceName));
+                    Configs.getGeneralConfig().setService(Service.valueOf(serviceName));
                 } catch (IllegalArgumentException e) {
                     App.logger.error("Invalid service name: " + serviceName);
                     ArgParser.printHelp();

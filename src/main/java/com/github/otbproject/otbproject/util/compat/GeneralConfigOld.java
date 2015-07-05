@@ -1,24 +1,26 @@
-package com.github.otbproject.otbproject.config;
+package com.github.otbproject.otbproject.util.compat;
+
+import com.github.otbproject.otbproject.config.Service;
 
 import java.util.ArrayList;
 
-public class GeneralConfig {
-    private Service service = Service.TWITCH;
+class GeneralConfigOld {
+    private Service serviceName = Service.TWITCH;
     private int portNumber = 22222;
     private String ip_binding = "0.0.0.0";
     public ArrayList<String> permanently_enabled_commands;
 
-    public GeneralConfig() {
+    public GeneralConfigOld() {
         permanently_enabled_commands = new ArrayList<>();
         permanently_enabled_commands.add("!bot-enable-meta");
     }
 
-    public Service getService() {
-        return service;
+    public Service getServiceName() {
+        return serviceName;
     }
 
-    public void setService(Service service) {
-        this.service = service;
+    public void setServiceName(Service serviceName) {
+        this.serviceName = serviceName;
     }
 
     public int getPortNumber() {

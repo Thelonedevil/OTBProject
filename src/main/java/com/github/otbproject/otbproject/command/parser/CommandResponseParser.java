@@ -152,7 +152,7 @@ public class CommandResponseParser {
 
         // [[service]]
         registerTerm("service", (userNick, channel, count, args, term) ->
-                doModifier(ResponseParserUtil.firstCap(Configs.getGeneralConfig().getServiceName().toString(), true), term));
+                doModifier(ResponseParserUtil.firstCap(Configs.getGeneralConfig().getService().toString(), true), term));
 
         // [[bot]]
         registerTerm("bot", (userNick, channel, count, args, term) -> doModifier(Bot.getBot().getUserName(), term));

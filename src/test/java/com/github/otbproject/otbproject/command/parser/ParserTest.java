@@ -96,7 +96,7 @@ public class ParserTest {
             }
         });
         App.configManager.setGeneralConfig(new GeneralConfig());
-        Configs.getGeneralConfig().setServiceName(Service.BEAM);
+        Configs.getGeneralConfig().setService(Service.BEAM);
     }
 
     @AfterClass

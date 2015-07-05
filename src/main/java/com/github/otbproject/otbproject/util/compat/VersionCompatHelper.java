@@ -2,6 +2,7 @@ package com.github.otbproject.otbproject.util.compat;
 
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.config.Account;
+import com.github.otbproject.otbproject.config.GeneralConfig;
 import com.github.otbproject.otbproject.fs.FSUtil;
 import com.github.otbproject.otbproject.util.JsonHandler;
 import org.apache.commons.io.FileUtils;
@@ -46,6 +47,11 @@ public class VersionCompatHelper {
     }
 
     private static void fix1_1To2_0() {
+        fixScripts();
+        fixGeneralConfig();
+    }
+
+    private static void fixScripts() {
         // Delete scripts from base dir, because they will be unpacked into a subdirectory
         File scriptsDir = new File(FSUtil.scriptDir());
         File[] files = scriptsDir.listFiles();
@@ -56,5 +62,20 @@ public class VersionCompatHelper {
         Stream.of(files)
                 .filter(File::isFile)
                 .forEach(file -> file.renameTo(new File(newDir + file.getName())));
+    }
+
+    private static void fixGeneralConfig() {
+        Optional<GeneralConfigOld> optional = JsonHandler.readValue((FSUtil.configDir() + File.separator + FSUtil.ConfigFileNames.GENERAL_CONFIG), GeneralConfigOld.class);
+        if (!optional.isPresent()) {
+            return;
+        }
+        GeneralConfigOld configOld = optional.get();
+        GeneralConfig configNew = new GeneralConfig();
+
+        configNew.setService(configOld.getServiceName());
+        configNew.setPortNumber(configOld.getPortNumber());
+        configNew.setIp_binding(configOld.getIp_binding());
+        configNew.permanently_enabled_commands = configOld.permanently_enabled_commands;
+        JsonHandler.writeValue((FSUtil.configDir() + File.separator + FSUtil.ConfigFileNames.GENERAL_CONFIG), configNew);
     }
 }
