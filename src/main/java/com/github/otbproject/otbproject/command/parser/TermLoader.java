@@ -5,8 +5,6 @@ import com.github.otbproject.otbproject.fs.FSUtil;
 import com.github.otbproject.otbproject.script.ScriptProcessor;
 
 import java.io.File;
-import java.nio.file.Files;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class TermLoader {
@@ -16,7 +14,6 @@ public class TermLoader {
     public static boolean loadTerm(String scriptName) {
         try {
             ParserTerm term = PROCESSOR.process(scriptName, (FSUtil.termScriptDir() + File.separator + scriptName), METHOD_NAME, null, ParserTerm.class, null);
-            App.logger.debug(Files.lines(new File(FSUtil.termScriptDir() + File.separator + scriptName).toPath()).collect(Collectors.joining("\n")));
             return (term != null) && (term.value() != null) && (term.action() != null) && CommandResponseParser.registerTerm(term);
         } catch (Exception | IllegalAccessError e) {
             App.logger.catching(e);
