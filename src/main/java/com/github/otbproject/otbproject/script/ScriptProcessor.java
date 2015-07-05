@@ -33,6 +33,7 @@ public class ScriptProcessor {
             if (doCache && cache.containsKey(scriptName)) {
                 script = cache.get(scriptName);
             } else {
+                App.logger.debug("Compiling script: " + scriptName);
                 script = SHELL.parse(new File(path));
                 if (doCache) {
                     cache.put(scriptName, script);
@@ -48,7 +49,7 @@ public class ScriptProcessor {
             } else {
                 response = responseClass.cast(scriptReturn);
             }
-        } catch (Exception e) {
+        } catch (Exception | IllegalAccessError e) {
             App.logger.error("Exception when running script: " + scriptName);
             App.logger.catching(e);
             response = defaultResponse;
