@@ -128,28 +128,27 @@ public class BeamChatChannel {
         return channel;
     }
 
-    // TODO maybe lock
     private void addToCacheLookup(String user, String messageId) {
         Set<String> set = cacheLookup.get(user);
         if (set != null) {
             set.add(messageId);
         } else {
-            Set<String> newSet = Collections.newSetFromMap(new ConcurrentHashMap<>());
+            Set<String> newSet = ConcurrentHashMap.newKeySet();
             newSet.add(messageId);
-            set = cacheLookup.put(user, newSet);
+            set = cacheLookup.putIfAbsent(user, newSet);
             if (set != null) {
-                newSet.addAll(set);
+                set.addAll(newSet);
             }
         }
     }
 
-    // TODO maybe lock
     private boolean removeFromCacheLookup(String user, String messageId) {
         Set<String> set = cacheLookup.get(user);
         if (set != null) {
             boolean success = set.remove(messageId);
+            // Only do more expensive concurrent call if it actually seems empty
             if (set.isEmpty()) {
-                cacheLookup.remove(user);
+                cacheLookup.compute(user, (s, strings) -> strings.isEmpty() ? null : strings);
             }
             return success;
         }
@@ -166,7 +165,6 @@ public class BeamChatChannel {
 
     public void clearCache() {
         messageCache.invalidateAll();
-        cacheLookup.clear();
     }
 
     public void invalidateAllForUser(String user) {
@@ -177,7 +175,7 @@ public class BeamChatChannel {
         set.forEach(messageCache::invalidate);
     }
 
-    public void deleteCachedMessages(String user) {
+    public void deleteMessages(String user) {
         Set<String> set = cacheLookup.get(user);
         if (set == null) {
             return;
