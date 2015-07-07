@@ -25,8 +25,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
 
-import javax.swing.*;
-import java.awt.*;
 import java.io.*;
 import java.lang.management.ManagementFactory;
 import java.text.DateFormat;
