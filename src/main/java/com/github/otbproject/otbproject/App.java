@@ -86,7 +86,7 @@ public class App {
             coreLogger.removeAppender(config.getAppender("Routing-console-debug"));
         }
         File logFile = new File(FSUtil.logsDir() + File.separator + "console.log");
-        if (!logFile.delete()) {
+        if (logFile.exists() && !logFile.delete()) {
             logger.error("Failed to delete old console log file");
         }
 
