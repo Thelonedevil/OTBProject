@@ -111,5 +111,6 @@ public class FSUtil {
         public static final String GENERAL_CONFIG = "general-config.json";
         public static final String BOT_CONFIG = "bot-config.json";
         public static final String CHANNEL_CONFIG = "config.json";
+        public static final String WEB_CONFIG = "web-config.json";
     }
 }
