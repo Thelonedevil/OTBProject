@@ -4,40 +4,28 @@ import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.user.UserLevel;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class Aliases {
 
     public static Alias get(DatabaseWrapper db, String aliasName) {
-        if (db.exists(AliasFields.TABLE_NAME, aliasName, AliasFields.NAME)) {
-            Alias alias = new Alias();
-            ResultSet rs = db.getRecord(AliasFields.TABLE_NAME, aliasName, AliasFields.NAME);
-            try {
-                alias.setName(rs.getString(AliasFields.NAME));
-                alias.setCommand(rs.getString(AliasFields.COMMAND));
-                alias.setModifyingUserLevel(UserLevel.valueOf(rs.getString(AliasFields.MODIFYING_UL)));
-                alias.setEnabled(Boolean.valueOf(rs.getString(AliasFields.ENABLED)));
-                return alias;
-            } catch (SQLException e) {
-                App.logger.catching(e);
-            } finally {
-                try {
-                    rs.close();
-                } catch (SQLException e) {
-                    App.logger.catching(e);
-                }
-            }
-        }
-        return null;
+        Optional<Alias> optional = db.getRecord(AliasFields.TABLE_NAME, aliasName, AliasFields.NAME,
+                rs -> {
+                    Alias alias = new Alias();
+                    alias.setName(rs.getString(AliasFields.NAME));
+                    alias.setCommand(rs.getString(AliasFields.COMMAND));
+                    alias.setModifyingUserLevel(UserLevel.valueOf(rs.getString(AliasFields.MODIFYING_UL)));
+                    alias.setEnabled(Boolean.valueOf(rs.getString(AliasFields.ENABLED)));
+                    return alias;
+                });
+        return optional.orElse(null); // TODO return an optional and update references
     }
 
     public static List<String> getAliases(DatabaseWrapper db) {
-        ArrayList<Object> list =  db.getRecordsList(AliasFields.TABLE_NAME, AliasFields.NAME);
+        List<Object> list =  db.getRecordsList(AliasFields.TABLE_NAME, AliasFields.NAME);
         if (list == null) {
             return null;
         }

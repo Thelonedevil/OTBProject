@@ -130,26 +130,18 @@ public class Schedules {
     }
     public static void loadFromDatabase(Channel channel) {
         DatabaseWrapper db = channel.getMainDatabaseWrapper();
-        ResultSet rs = db.tableDump(SchedulerFields.TABLE_NAME);
-        try {
-            while (rs.next()) {
-                String command = rs.getString(SchedulerFields.COMMAND);
-                long delay = rs.getLong(SchedulerFields.OFFSET);
-                long period = rs.getLong(SchedulerFields.PERIOD);
-                boolean hourReset = Boolean.parseBoolean(rs.getString(SchedulerFields.RESET));
-                TimeUnit timeUnit =  TimeUnit.valueOf(rs.getString(SchedulerFields.TYPE));
-                doScheduleCommand(channel, command, delay, period, hourReset, timeUnit);
-            }
-        } catch (SQLException e) {
-            App.logger.catching(e);
-        }finally {
-            try {
-                rs.close();
-            } catch (SQLException e) {
-                App.logger.catching(e);
-            }
-        }
-
+        db.tableDump(SchedulerFields.TABLE_NAME,
+                rs -> {
+                    while (rs.next()) {
+                        String command = rs.getString(SchedulerFields.COMMAND);
+                        long delay = rs.getLong(SchedulerFields.OFFSET);
+                        long period = rs.getLong(SchedulerFields.PERIOD);
+                        boolean hourReset = Boolean.parseBoolean(rs.getString(SchedulerFields.RESET));
+                        TimeUnit timeUnit =  TimeUnit.valueOf(rs.getString(SchedulerFields.TYPE));
+                        doScheduleCommand(channel, command, delay, period, hourReset, timeUnit);
+                    }
+                    return null;
+                });
     }
 
     private static boolean removeFromDatabase(Channel channel, String command){

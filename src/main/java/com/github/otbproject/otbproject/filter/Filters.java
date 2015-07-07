@@ -1,6 +1,5 @@
 package com.github.otbproject.otbproject.filter;
 
-import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.util.CustomCollectors;
 
@@ -14,40 +13,20 @@ public class Filters {
         List<Map.Entry<String, Object>> list = new ArrayList<>();
         list.add(new AbstractMap.SimpleEntry<>(FilterFields.DATA, data));
         list.add(new AbstractMap.SimpleEntry<>(FilterFields.TYPE, type.name()));
-        if (db.exists(FilterFields.TABLE_NAME, data, FilterFields.DATA)) {
-            ResultSet rs = db.getRecord(FilterFields.TABLE_NAME, list);
-            try {
-                return getFilterFromResultSet(rs);
-            } catch (SQLException e) {
-                App.logger.catching(e);
-            } finally {
-                try {
-                    rs.close();
-                } catch (SQLException e) {
-                    App.logger.catching(e);
-                }
-            }
-        }
-        return null;
+        Optional<BasicFilter> optional = db.getRecord(FilterFields.TABLE_NAME, list, Filters::getFilterFromResultSet);
+        return optional.orElse(null); // TODO return an optional and update references
     }
 
-    public static ArrayList<BasicFilter> getBasicFilters(DatabaseWrapper db) {
-        ArrayList<BasicFilter> filters = new ArrayList<>();
-        ResultSet rs = db.tableDump(FilterFields.TABLE_NAME);
-        try {
-            while (rs.next()) {
-                filters.add(getFilterFromResultSet(rs));
-            }
-        } catch (SQLException e) {
-            App.logger.catching(e);
-        } finally {
-            try {
-                rs.close();
-            } catch (SQLException e) {
-                App.logger.catching(e);
-            }
-        }
-        return filters;
+    public static List<BasicFilter> getBasicFilters(DatabaseWrapper db) {
+        Optional<List<BasicFilter>> optional = db.tableDump(FilterFields.TABLE_NAME,
+                rs -> {
+                    List<BasicFilter> filters = new ArrayList<>();
+                    while (rs.next()) {
+                        filters.add(getFilterFromResultSet(rs));
+                    }
+                    return filters;
+                });
+        return optional.orElse(Collections.emptyList());
     }
 
     public static ConcurrentHashMap.KeySetView<Filter, Boolean> getAllFilters(DatabaseWrapper db) {

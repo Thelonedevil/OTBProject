@@ -61,11 +61,17 @@ public class DatabaseWrapperTest {
 
     @Test
     public void tableDataShouldBeDumped(){
-        assertNotNull(db.tableDump(tableName));
+        db.tableDump(tableName, rs -> {
+            assertNotNull(rs);
+            return null;
+        });
     }
     @Test
     public void tableDataShouldNotBeDumped(){
-        assertNull(db.tableDump(tableName + "poop"));
+        db.tableDump(tableName + "poop", rs -> {
+            assertNull(rs);
+            return null;
+        });
     }
     @Test
     public void listOfRecordsShouldBeRetrieved(){
@@ -117,9 +123,11 @@ public class DatabaseWrapperTest {
     public void dataShouldBeInsertedIntoAndRetrievedFromDatabase() throws SQLException {
         assertTrue(db.insertRecord(tableName, testData));
         assertTrue(db.exists(tableName, testData.get(fieldName), fieldName));
-        ResultSet rs = db.getRecord(tableName, testData.get(fieldName), fieldName);
-        assertEquals(testData.get(fieldName), rs.getString(fieldName));
+        db.getRecord(tableName, testData.get(fieldName), fieldName,
+                rs -> {
+                    assertEquals(testData.get(fieldName), rs.getString(fieldName));
+                    return null;
+                });
         assertTrue(db.removeRecord(tableName, testData.get(fieldName), fieldName));
-
     }
 }

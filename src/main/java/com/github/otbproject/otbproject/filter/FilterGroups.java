@@ -1,52 +1,31 @@
 package com.github.otbproject.otbproject.filter;
 
-import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.user.UserLevel;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
 
 public class FilterGroups {
     public static FilterGroup get(DatabaseWrapper db, String groupName) {
-        if (db.exists(FilterGroupFields.TABLE_NAME, groupName, FilterGroupFields.NAME)) {
-            ResultSet rs = db.getRecord(FilterGroupFields.TABLE_NAME, groupName, FilterGroupFields.NAME);
-            try {
-                return getFilterGroupFromResultSet(rs);
-            } catch (SQLException e) {
-                App.logger.catching(e);
-            } finally {
-                try {
-                    rs.close();
-                } catch (SQLException e) {
-                    App.logger.catching(e);
-                }
-            }
-        }
-        return null;
+        Optional<FilterGroup> optional = db.getRecord(FilterGroupFields.TABLE_NAME, groupName,
+                FilterGroupFields.NAME, FilterGroups::getFilterGroupFromResultSet);
+        return optional.orElse(null); // TODO return an optional and update references
     }
 
-    public static ArrayList<FilterGroup> getFilterGroups(DatabaseWrapper db) {
-        ArrayList<FilterGroup> filterGroups = new ArrayList<>();
-        ResultSet rs = db.tableDump(FilterGroupFields.TABLE_NAME);
-        try {
-            while (rs.next()) {
-                filterGroups.add(getFilterGroupFromResultSet(rs));
-            }
-        } catch (SQLException e) {
-            App.logger.catching(e);
-        } finally {
-            try {
-                rs.close();
-            } catch (SQLException e) {
-                App.logger.catching(e);
-            }
-        }
-        return filterGroups;
+    public static List<FilterGroup> getFilterGroups(DatabaseWrapper db) {
+        Optional<List<FilterGroup>> optional = db.tableDump(FilterGroupFields.TABLE_NAME,
+                rs -> {
+                    List<FilterGroup> filterGroups = new ArrayList<>();
+                    while (rs.next()) {
+                        filterGroups.add(getFilterGroupFromResultSet(rs));
+                    }
+                    return filterGroups;
+                });
+        return optional.orElse(Collections.emptyList());
     }
 
     // The Map is implemented as a HashMap, but it returns a generic Map

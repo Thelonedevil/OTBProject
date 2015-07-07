@@ -5,47 +5,35 @@ import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.user.UserLevel;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class Commands {
 
     public static Command get(DatabaseWrapper db, String commandName) {
-        if (db.exists(CommandFields.TABLE_NAME, commandName, CommandFields.NAME)) {
-            Command command = new Command();
-            ResultSet rs = db.getRecord(CommandFields.TABLE_NAME, commandName, CommandFields.NAME);
-            try {
-                command.setName(rs.getString(CommandFields.NAME));
-                command.setResponse(rs.getString(CommandFields.RESPONSE));
-                command.setCount(Integer.parseInt(rs.getString(CommandFields.COUNT)));
-                command.setEnabled(Boolean.valueOf(rs.getString(CommandFields.ENABLED)));
-                command.setDebug((Boolean.valueOf(rs.getString(CommandFields.DEBUG))));
-                command.setExecUserLevel(UserLevel.valueOf(rs.getString(CommandFields.EXEC_USER_LEVEL)));
-                command.setMinArgs(Integer.parseInt(rs.getString(CommandFields.MIN_ARGS)));
-                command.setScript(rs.getString(CommandFields.SCRIPT));
-                command.modifyingUserLevels.setNameModifyingUL(UserLevel.valueOf(rs.getString(CommandFields.NAME_MODIFYING_UL)));
-                command.modifyingUserLevels.setResponseModifyingUL(UserLevel.valueOf(rs.getString(CommandFields.RESPONSE_MODIFYING_UL)));
-                command.modifyingUserLevels.setUserLevelModifyingUL(UserLevel.valueOf(rs.getString(CommandFields.USER_LEVEL_MODIFYING_UL)));
-                return command;
-            } catch (SQLException e) {
-                App.logger.catching(e);
-            } finally {
-                try {
-                    rs.close();
-                } catch (SQLException e) {
-                    App.logger.catching(e);
-                }
-            }
-        }
-        return null;
+        Optional<Command> optional = db.getRecord(CommandFields.TABLE_NAME, commandName, CommandFields.NAME,
+                rs -> {
+                    Command command = new Command();
+                    command.setName(rs.getString(CommandFields.NAME));
+                    command.setResponse(rs.getString(CommandFields.RESPONSE));
+                    command.setCount(Integer.parseInt(rs.getString(CommandFields.COUNT)));
+                    command.setEnabled(Boolean.valueOf(rs.getString(CommandFields.ENABLED)));
+                    command.setDebug((Boolean.valueOf(rs.getString(CommandFields.DEBUG))));
+                    command.setExecUserLevel(UserLevel.valueOf(rs.getString(CommandFields.EXEC_USER_LEVEL)));
+                    command.setMinArgs(Integer.parseInt(rs.getString(CommandFields.MIN_ARGS)));
+                    command.setScript(rs.getString(CommandFields.SCRIPT));
+                    command.modifyingUserLevels.setNameModifyingUL(UserLevel.valueOf(rs.getString(CommandFields.NAME_MODIFYING_UL)));
+                    command.modifyingUserLevels.setResponseModifyingUL(UserLevel.valueOf(rs.getString(CommandFields.RESPONSE_MODIFYING_UL)));
+                    command.modifyingUserLevels.setUserLevelModifyingUL(UserLevel.valueOf(rs.getString(CommandFields.USER_LEVEL_MODIFYING_UL)));
+                    return command;
+                });
+        return optional.orElse(null); // TODO return an optional and update references
     }
 
     public static List<String> getCommands(DatabaseWrapper db) {
-        ArrayList<Object> list =  db.getRecordsList(CommandFields.TABLE_NAME, CommandFields.NAME);
+        List<Object> list =  db.getRecordsList(CommandFields.TABLE_NAME, CommandFields.NAME);
         if (list == null) {
             return null;
         }
