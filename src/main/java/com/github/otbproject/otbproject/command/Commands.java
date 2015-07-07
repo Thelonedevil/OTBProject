@@ -15,6 +15,9 @@ public class Commands {
     public static Command get(DatabaseWrapper db, String commandName) {
         Optional<Command> optional = db.getRecord(CommandFields.TABLE_NAME, commandName, CommandFields.NAME,
                 rs -> {
+                    if (rs.isAfterLast()) {
+                        return null;
+                    }
                     Command command = new Command();
                     command.setName(rs.getString(CommandFields.NAME));
                     command.setResponse(rs.getString(CommandFields.RESPONSE));

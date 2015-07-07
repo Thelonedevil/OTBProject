@@ -14,6 +14,9 @@ public class Aliases {
     public static Alias get(DatabaseWrapper db, String aliasName) {
         Optional<Alias> optional = db.getRecord(AliasFields.TABLE_NAME, aliasName, AliasFields.NAME,
                 rs -> {
+                    if (rs.isAfterLast()) {
+                        return null;
+                    }
                     Alias alias = new Alias();
                     alias.setName(rs.getString(AliasFields.NAME));
                     alias.setCommand(rs.getString(AliasFields.COMMAND));

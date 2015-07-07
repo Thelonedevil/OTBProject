@@ -13,6 +13,9 @@ public class Users {
     public static User get(DatabaseWrapper db, String userNick) {
         Optional<User> optional = db.getRecord(UserFields.TABLE_NAME, userNick, UserFields.NICK,
                 rs -> {
+                    if (rs.isAfterLast()) {
+                        return null;
+                    }
                     User user = new User();
                     user.setNick(rs.getString(UserFields.NICK));
                     user.setUserLevel(UserLevel.valueOf(rs.getString(UserFields.USER_LEVEL)));
