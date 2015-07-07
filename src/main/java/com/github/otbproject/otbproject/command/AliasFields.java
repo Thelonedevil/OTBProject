@@ -13,7 +13,7 @@ public class AliasFields {
     public static final String ENABLED = "enabled";
 
     public static final String TABLE_NAME = "tblAliases";
-    public static final HashSet<String> PRIMARY_KEYS = new HashSet<>();
+    static final HashSet<String> PRIMARY_KEYS = new HashSet<>();
 
     static {
         PRIMARY_KEYS.add(NAME);

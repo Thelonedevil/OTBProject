@@ -11,7 +11,7 @@ public class QuoteFields {
     public static final String TEXT = "text";
 
     public static final String TABLE_NAME = "tblQuotes";
-    public static final HashSet<String> PRIMARY_KEYS = new HashSet<>();
+    static final HashSet<String> PRIMARY_KEYS = new HashSet<>();
 
     static {
         PRIMARY_KEYS.add(ID);

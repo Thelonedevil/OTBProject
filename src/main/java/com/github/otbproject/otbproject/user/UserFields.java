@@ -11,7 +11,7 @@ public class UserFields {
     public static final String USER_LEVEL = "userLevel";
 
     public static final String TABLE_NAME = "tblUsers";
-    public static final HashSet<String> PRIMARY_KEYS = new HashSet<>();
+    static final HashSet<String> PRIMARY_KEYS = new HashSet<>();
 
     static {
         PRIMARY_KEYS.add(NICK);
