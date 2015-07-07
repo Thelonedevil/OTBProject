@@ -14,7 +14,7 @@ public class Command {
 
     public ModifyingUserLevels modifyingUserLevels = new ModifyingUserLevels();
 
-    public class ModifyingUserLevels {
+    public static class ModifyingUserLevels {
         private UserLevel nameModifyingUL = UserLevel.DEFAULT;
         private UserLevel responseModifyingUL = UserLevel.DEFAULT;
         private UserLevel userLevelModifyingUL = UserLevel.DEFAULT;

@@ -123,7 +123,7 @@ public class GuiApplication extends Application {
         });
     }
 
-    class CustomTailer extends TailerListenerAdapter {
+    static class CustomTailer extends TailerListenerAdapter {
         @Override
         public void handle(String line) {
             GuiUtils.runSafe(() -> controller.logOutput.appendText(line + "\n"));

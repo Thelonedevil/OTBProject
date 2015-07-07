@@ -26,9 +26,9 @@ public class DatabaseWrapper {
         try {
             Class.forName("org.sqlite.JDBC");
             connection = DriverManager.getConnection("jdbc:sqlite:" + path);
-            for (String key : tables.keySet()) {
-                if (!createTable(key, tables.get(key).map, tables.get(key).primaryKeys)) {
-                    throw new SQLException("Failed to create table: " + key);
+            for (Map.Entry<String, TableFields> entry : tables.entrySet()) {
+                if (!createTable(entry.getKey(), entry.getValue().map, entry.getValue().primaryKeys)) {
+                    throw new SQLException("Failed to create table: " + entry.getKey());
                 }
             }
         } finally {

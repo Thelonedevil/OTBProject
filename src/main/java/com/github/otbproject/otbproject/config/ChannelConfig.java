@@ -4,7 +4,7 @@ public class ChannelConfig {
     private int commandCooldown = 8;
     public UserCooldowns userCooldowns = new UserCooldowns();
 
-    public class UserCooldowns {
+    public static class UserCooldowns {
         private int ul_internal = 0;
         private int ul_broadcaster = 0;
         private int ul_super_moderator = 0;
@@ -76,7 +76,7 @@ public class ChannelConfig {
 
     public QueueLimits queueLimits = new QueueLimits();
 
-    public class QueueLimits {
+    public static class QueueLimits {
         private int highPriorityLimit = -1;
         private int defaultPriorityLimit = 5;
         private int lowPriorityLimit = 0;
