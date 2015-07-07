@@ -87,7 +87,7 @@ public class Channels {
                     App.logger.error("Already in the channel: "+ channelName);
                 }
             } else{
-                App.logger.error("Not connected to " + ResponseParserUtil.wordCap(Configs.getGeneralConfig().getServiceName().toString(), true));
+                App.logger.error("Not connected to " + ResponseParserUtil.wordCap(Configs.getGeneralConfig().getService().toString(), true));
                 return false;
             }
             Optional<Channel> optional = get(channelName);

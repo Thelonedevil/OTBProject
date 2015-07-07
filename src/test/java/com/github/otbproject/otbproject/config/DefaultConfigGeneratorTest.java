@@ -83,7 +83,7 @@ public class DefaultConfigGeneratorTest {
         GeneralConfig config = new GeneralConfig();
         assertNotNull(config);
         assertNotNull(config.getIp_binding());
-        assertNotNull(config.getServiceName());
+        assertNotNull(config.getService());
         assertNotNull(config.permanently_enabled_commands);
 
     }
@@ -92,7 +92,7 @@ public class DefaultConfigGeneratorTest {
         GeneralConfig config = new GeneralConfig();
         assertNotNull(config);
         assertEquals(config.getIp_binding(), "0.0.0.0");
-        assertEquals(config.getServiceName(), ServiceName.TWITCH);
+        assertEquals(config.getService(), Service.TWITCH);
         assertEquals(config.getPortNumber(), 22222);
         assertArrayEquals(config.permanently_enabled_commands.toArray(), new String[]{"!bot-enable-meta"});
     }
