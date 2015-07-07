@@ -6,7 +6,9 @@ import com.github.otbproject.otbproject.channel.Channels;
 import com.github.otbproject.otbproject.cli.commands.CmdParser;
 import com.github.otbproject.otbproject.command.Aliases;
 import com.github.otbproject.otbproject.command.Commands;
+import com.github.otbproject.otbproject.fs.FSUtil;
 import com.github.otbproject.otbproject.messages.internal.InternalMessageSender;
+import com.github.otbproject.otbproject.util.JsonHandler;
 import com.github.otbproject.otbproject.util.Util;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextArea;
@@ -14,6 +16,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
 import org.apache.commons.lang3.StringUtils;
 
+import java.io.File;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Predicate;
@@ -36,6 +39,8 @@ public class GuiController {
     private final ExecutorService executorService = Util.getSingleThreadExecutor("CLI Command Processor");
     private List<String> tabCompleteList = Collections.emptyList();
     private int tabCompleteIndex = 0;
+    private static final int MAX_HISTORY_SIZE = 100;
+    private static final String HISTORY_PATH = FSUtil.dataDir() + File.separator + FSUtil.GUI_HISTORY_FILE;
 
     @FXML
     public void command(KeyEvent event) {
@@ -55,11 +60,18 @@ public class GuiController {
                     GuiUtils.runSafe(() -> cliOutput.appendText((output.isEmpty() ? "" : (output + "\n")) + ">  "));
                     GuiApplication.setInputActive();
                 });
+
+                boolean writeHistory = false;
                 if (history.isEmpty() || !history.get(history.size() - 1).equals(input)) {
                     history.add(input);
+                    writeHistory = true;
                 }
-                while (history.size() > 1000) {
+                while (history.size() > MAX_HISTORY_SIZE) {
                     history.remove(0);
+                    writeHistory = true;
+                }
+                if (writeHistory) {
+                    writeHistory();
                 }
                 historyPointer = history.size();
 
@@ -189,5 +201,14 @@ public class GuiController {
         if (l2 != null) {
             l1.addAll(l2);
         }
+    }
+
+    private void writeHistory() {
+        JsonHandler.writeValue(HISTORY_PATH, history); // TODO fix path
+    }
+
+    void readHistory() {
+        JsonHandler.readValue(HISTORY_PATH, String[].class).ifPresent(strings -> history.addAll(Arrays.asList(strings)));
+        historyPointer = history.size();
     }
 }
