@@ -7,7 +7,7 @@ import java.util.List;
 public class WebConfig {
     private int portNumber = 22222;
     private String ip_binding = "0.0.0.0";
-    private List<String> whitelistedIPAddressesWithSubnettingPrefix;
+    public List<String> whitelistedIPAddressesWithSubnettingPrefix;
 
     public WebConfig() {
         whitelistedIPAddressesWithSubnettingPrefix = new ArrayList<>(Arrays.asList("127.0.0.0/8", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"));
