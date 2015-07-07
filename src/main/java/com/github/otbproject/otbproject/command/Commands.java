@@ -27,7 +27,6 @@ public class Commands {
                 command.setExecUserLevel(UserLevel.valueOf(rs.getString(CommandFields.EXEC_USER_LEVEL)));
                 command.setMinArgs(Integer.parseInt(rs.getString(CommandFields.MIN_ARGS)));
                 command.setScript(rs.getString(CommandFields.SCRIPT));
-                command.modifyingUserLevels = command.new ModifyingUserLevels();
                 command.modifyingUserLevels.setNameModifyingUL(UserLevel.valueOf(rs.getString(CommandFields.NAME_MODIFYING_UL)));
                 command.modifyingUserLevels.setResponseModifyingUL(UserLevel.valueOf(rs.getString(CommandFields.RESPONSE_MODIFYING_UL)));
                 command.modifyingUserLevels.setUserLevelModifyingUL(UserLevel.valueOf(rs.getString(CommandFields.USER_LEVEL_MODIFYING_UL)));

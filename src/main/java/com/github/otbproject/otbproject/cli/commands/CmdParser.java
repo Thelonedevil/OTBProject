@@ -41,14 +41,16 @@ public class CmdParser {
         public static final String INFO = "info";
         public static final String LOG = "log";
         public static final String WINDOWS = "windows";
-        public static HashSet<String> targets = new HashSet<>();
+        public static final Set<String> targets;
 
         static {
-            targets.add(CLI);
-            targets.add(HISTORY);
-            targets.add(INFO);
-            targets.add(LOG);
-            targets.add(WINDOWS);
+            Set<String> set = new HashSet<>();
+            set.add(CLI);
+            set.add(HISTORY);
+            set.add(INFO);
+            set.add(LOG);
+            set.add(WINDOWS);
+            targets = Collections.unmodifiableSet(set);
         }
     }
 

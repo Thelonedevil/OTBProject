@@ -86,7 +86,9 @@ public class App {
             coreLogger.removeAppender(config.getAppender("Routing-console-debug"));
         }
         File logFile = new File(FSUtil.logsDir() + File.separator + "console.log");
-        logFile.delete();
+        if (logFile.exists() && !logFile.delete()) {
+            logger.error("Failed to delete old console log file");
+        }
 
         // Log version
         logger.info("OTBProject version " + VERSION);
@@ -115,6 +117,7 @@ public class App {
         try {
             BufferedReader fileReader = new BufferedReader(new FileReader(versionFile));
             version = fileReader.readLine();
+            fileReader.close();
         } catch (IOException e) {
             logger.catching(e);
         }
@@ -132,6 +135,7 @@ public class App {
         try {
             PrintStream ps = new PrintStream(versionFile);
             ps.println(VERSION);
+            ps.close();
         } catch (IOException e) {
             logger.catching(e);
         }

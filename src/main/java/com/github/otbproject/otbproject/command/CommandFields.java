@@ -21,7 +21,7 @@ public class CommandFields {
     public static final String DEBUG = "debug"; // If true, only sends if channel set for debug
 
     public static final String TABLE_NAME = "tblCommands";
-    public static final HashSet<String> PRIMARY_KEYS = new HashSet<>();
+    static final HashSet<String> PRIMARY_KEYS = new HashSet<>();
 
     static {
         PRIMARY_KEYS.add(NAME);

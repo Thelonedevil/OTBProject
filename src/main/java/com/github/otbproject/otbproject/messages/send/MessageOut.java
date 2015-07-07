@@ -1,6 +1,6 @@
 package com.github.otbproject.otbproject.messages.send;
 
-public class MessageOut implements Comparable<MessageOut> {
+public class MessageOut {
     private final String message;
     private final MessagePriority priority;
 
@@ -19,12 +19,5 @@ public class MessageOut implements Comparable<MessageOut> {
 
     public MessagePriority getPriority() {
         return priority;
-    }
-
-    public int compareTo(MessageOut messageOut) {
-        if (messageOut == null) {
-            throw new NullPointerException("Cannot compare to a MessageOut which is null.");
-        }
-        return Integer.valueOf(priority.getValue()).compareTo(messageOut.getPriority().getValue());
     }
 }
