@@ -1,9 +1,6 @@
 package com.github.otbproject.otbproject.messages.send;
 
-/**
- * Note: this class has a natural ordering that is inconsistent with equals.
- */
-public class MessageOut implements Comparable<MessageOut> {
+public class MessageOut {
     private final String message;
     private final MessagePriority priority;
 
@@ -22,10 +19,5 @@ public class MessageOut implements Comparable<MessageOut> {
 
     public MessagePriority getPriority() {
         return priority;
-    }
-
-    @Override
-    public int compareTo(MessageOut messageOut) {
-        return Integer.compare(priority.getValue(), messageOut.priority.getValue());
     }
 }
