@@ -86,6 +86,7 @@ public class GuiApplication extends Application {
         controller.commandsOutput.appendText("Type \"help\" for a list of commands.\nThe PID of the bot is probably " + App.PID + ", if you are using an Oracle JVM, but it may be different, especially if you are using a different JVM. Be careful stopping the bot using this PID.");
         File logFile = new File(FSUtil.logsDir() + File.separator + "console.log");
         tailer = Tailer.create(logFile, new CustomTailer(), 250);
+        controller.readHistory();
         primaryStage.show();
     }
 

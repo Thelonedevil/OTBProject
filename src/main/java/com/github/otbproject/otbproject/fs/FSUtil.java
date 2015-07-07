@@ -18,6 +18,9 @@ public class FSUtil {
     private static final String LIBS_DIR_NAME = "libs";
     private static final String TERMS_DIR_NAME = "terms";
     private static final String WEB_DIR_NAME = "web";
+
+    public static final String GUI_HISTORY_FILE = "gui-command-history.json";
+
     private static String baseDir = BASE_DIR_DEFAULT;
 
     public static String getBaseDir() {
