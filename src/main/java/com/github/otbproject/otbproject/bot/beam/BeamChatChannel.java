@@ -175,7 +175,7 @@ public class BeamChatChannel {
         set.forEach(messageCache::invalidate);
     }
 
-    public void deleteCachedMessages(String user) {
+    public void deleteMessages(String user) {
         Set<String> set = cacheLookup.get(user);
         if (set == null) {
             return;
