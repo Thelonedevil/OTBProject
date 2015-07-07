@@ -63,7 +63,9 @@ public class Configs {
     private static void writeWebConfig(WebConfig config) {
         JsonHandler.writeValue(WEB_CONFIG_PATH, config);
     }
-
+    public static void writeWebConfig() {
+        writeWebConfig(getWebConfig());
+    }
     public static void writeGeneralConfig() {
         writeGeneralConfig(getGeneralConfig());
     }
