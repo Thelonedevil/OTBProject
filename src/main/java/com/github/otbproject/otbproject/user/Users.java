@@ -3,38 +3,29 @@ package com.github.otbproject.otbproject.user;
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class Users {
 
     public static User get(DatabaseWrapper db, String userNick) {
-        if (db.exists(UserFields.TABLE_NAME, userNick, UserFields.NICK)) {
-            User user = new User();
-            ResultSet rs = db.getRecord(UserFields.TABLE_NAME, userNick, UserFields.NICK);
-            try {
-                user.setNick(rs.getString(UserFields.NICK));
-                user.setUserLevel(UserLevel.valueOf(rs.getString(UserFields.USER_LEVEL)));
-                return user;
-            } catch (SQLException e) {
-                App.logger.catching(e);
-            } finally {
-                try {
-                    rs.close();
-                } catch (SQLException e) {
-                    App.logger.catching(e);
-                }
-            }
-        }
-        return null;
+        Optional<User> optional = db.getRecord(UserFields.TABLE_NAME, userNick, UserFields.NICK,
+                rs -> {
+                    if (rs.isAfterLast()) {
+                        return null;
+                    }
+                    User user = new User();
+                    user.setNick(rs.getString(UserFields.NICK));
+                    user.setUserLevel(UserLevel.valueOf(rs.getString(UserFields.USER_LEVEL)));
+                    return user;
+                });
+        return optional.orElse(null); // TODO return an optional and update references
     }
 
     public static List<String> getUsers(DatabaseWrapper db) {
-        ArrayList<Object> list =  db.getRecordsList(UserFields.TABLE_NAME, UserFields.NICK);
+        List<Object> list =  db.getRecordsList(UserFields.TABLE_NAME, UserFields.NICK);
         if (list == null) {
             return null;
         }

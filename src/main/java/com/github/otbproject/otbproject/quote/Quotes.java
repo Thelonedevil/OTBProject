@@ -5,66 +5,39 @@ import com.github.otbproject.otbproject.database.SQLiteQuoteWrapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class Quotes {
     public static Quote get(SQLiteQuoteWrapper db, Integer id) {
-        if (db.exists(QuoteFields.TABLE_NAME, id, QuoteFields.ID)) {
-            ResultSet rs = db.getRecord(QuoteFields.TABLE_NAME, id, QuoteFields.ID);
-            Quote quote = getQuoteFromResultSet(rs);
-            // Check for null or empty quote text which means it was removed
-            if ((quote == null) || (quote.getText() == null) || quote.getText().equals("")) {
-                return null;
-            }
-            return quote;
-        }
-        return null;
+        Optional<Quote> optional = db.getRecord(QuoteFields.TABLE_NAME, id, QuoteFields.ID, Quotes::getQuoteFromResultSet);
+        return optional.orElse(null); // TODO return an optional and update references
     }
 
     public static Quote get(SQLiteQuoteWrapper db, String text) {
-        if (db.exists(QuoteFields.TABLE_NAME, text, QuoteFields.TEXT)) {
-            ResultSet rs = db.getRecord(QuoteFields.TABLE_NAME, text, QuoteFields.TEXT);
-            Quote quote = getQuoteFromResultSet(rs);
-            // Check for null or empty quote text which means it was removed
-            if ((quote == null) || (quote.getText() == null) || quote.getText().equals("")) {
-                return null;
-            }
-            return quote;
-        }
-        return null;
+        Optional<Quote> optional = db.getRecord(QuoteFields.TABLE_NAME, text, QuoteFields.TEXT, Quotes::getQuoteFromResultSet);
+        return optional.orElse(null); // TODO return an optional and update references
     }
 
     public static Quote getRandomQuote(SQLiteQuoteWrapper db) {
-        ResultSet rs = db.getRandomRecord(QuoteFields.TABLE_NAME);
-        return getQuoteFromResultSet(rs);
+        Optional<Quote> optional = db.getRandomRecord(QuoteFields.TABLE_NAME, Quotes::getQuoteFromResultSet);
+        return optional.orElse(null); // TODO return an optional and update references
     }
 
-    private static Quote getQuoteFromResultSet(ResultSet rs) {
-        try {
-            if (rs.isAfterLast()) {
-                return null;
-            }
-            Quote quote = new Quote();
-            quote.setId(rs.getInt(QuoteFields.ID));
-            quote.setText(rs.getString(QuoteFields.TEXT));
-            return quote;
-        } catch (SQLException e) {
-            App.logger.catching(e);
+    private static Quote getQuoteFromResultSet(ResultSet rs) throws SQLException {
+        if (rs.isAfterLast()) {
             return null;
-        } finally {
-            try {
-                rs.close();
-            } catch (SQLException e) {
-                App.logger.catching(e);
-            }
         }
+        Quote quote = new Quote();
+        quote.setId(rs.getInt(QuoteFields.ID));
+        quote.setText(rs.getString(QuoteFields.TEXT));
+        return quote;
     }
 
     public static List<Integer> getQuoteIds(SQLiteQuoteWrapper db) {
-        ArrayList<Object> list =  db.getNonRemovedRecordsList(QuoteFields.TABLE_NAME, QuoteFields.ID);
+        List<Object> list =  db.getNonRemovedRecordsList(QuoteFields.TABLE_NAME, QuoteFields.ID);
         if (list == null) {
             return null;
         }

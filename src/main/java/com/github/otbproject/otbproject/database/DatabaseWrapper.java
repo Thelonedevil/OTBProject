@@ -55,17 +55,6 @@ public class DatabaseWrapper {
     }
 
     /**
-     * Creates a table in the database with no primary key.
-     *
-     * @param name  The name of the table to create.
-     * @param table A HashMap of field names  to Field Types for the table.
-     * @return False if an <code>SQLException</code> is thrown, else it returns true.
-     */
-    private boolean createTable(String name, HashMap<String, String> table) {
-        return createTable(name, table, null);
-    }
-
-    /**
      * Creates a table in the database with a primary key.
      *
      * @param name       The name of the table to create.
@@ -83,10 +72,8 @@ public class DatabaseWrapper {
         sql += ")";
         boolean bool = true;
         try {
-            connection.setAutoCommit(false);
             preparedStatement = connection.prepareStatement(sql);
             preparedStatement.executeUpdate();
-            connection.commit();
         } catch (SQLException e) {
             App.logger.error("SQL: " + sql);
             App.logger.catching(e);
@@ -96,7 +83,6 @@ public class DatabaseWrapper {
                 if (preparedStatement != null) {
                     preparedStatement.close();
                 }
-                connection.setAutoCommit(true);
             } catch (SQLException e) {
                 App.logger.catching(e);
                 bool = false;
@@ -106,14 +92,13 @@ public class DatabaseWrapper {
         return bool;
     }
 
-    public ResultSet getRecord(String table, List<Map.Entry<String, Object>> entryList) {
-        PreparedStatement preparedStatement;
+    public <R> Optional<R> getRecord(String table, List<Map.Entry<String, Object>> entryList, SQLFunction<R> function) {
+        PreparedStatement preparedStatement = null;
         String sql = "SELECT * FROM " + table + " WHERE ";
         sql += entryList.stream().map(entry -> (entry.getKey() + "= ?")).collect(Collectors.joining(", "));
-        ResultSet rs = null;
+        ResultSet rs;
         lock.lock();
         try {
-            connection.setAutoCommit(false);
             preparedStatement = connection.prepareStatement(sql);
             int index = 1;
             for (Map.Entry entry : entryList) {
@@ -121,18 +106,20 @@ public class DatabaseWrapper {
                 index++;
             }
             rs = preparedStatement.executeQuery();
-            connection.commit();
+            return Optional.ofNullable(function.apply(rs));
         } catch (SQLException e) {
             App.logger.catching(e);
         } finally {
             try {
-                connection.setAutoCommit(true);
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
             } catch (SQLException e) {
                 App.logger.catching(e);
             }
             lock.unlock();
         }
-        return rs;
+        return Optional.empty();
     }
 
     /**
@@ -147,32 +134,33 @@ public class DatabaseWrapper {
      * @return a <code>ResultSet</code> that contains the records that match the Identifier in the field specified.
      * @see java.sql.ResultSet
      */
-    public ResultSet getRecord(String table, Object identifier, String fieldName) {
+    public <R> Optional<R> getRecord(String table, Object identifier, String fieldName, SQLFunction<R> function) {
         List<Map.Entry<String, Object>> list = new ArrayList<>();
         list.add(new AbstractMap.SimpleEntry<>(fieldName, identifier));
-        return getRecord(table, list);
+        return getRecord(table, list, function);
     }
 
-    public ResultSet getRandomRecord(String table) {
+    public <R> Optional<R> getRandomRecord(String table, SQLFunction<R> function) {
         String sql = "SELECT * FROM " + table + " ORDER BY RANDOM() LIMIT 1";
         ResultSet rs = null;
         lock.lock();
         try {
-            connection.setAutoCommit(false);
             rs = connection.createStatement().executeQuery(sql);
-            connection.commit();
+            return Optional.ofNullable(function.apply(rs));
         } catch (SQLException e) {
             App.logger.error("SQL: " + sql);
             App.logger.catching(e);
         } finally {
             try {
-                connection.setAutoCommit(true);
+                if (rs != null) {
+                    rs.close();
+                }
             } catch (SQLException e) {
                 App.logger.catching(e);
             }
             lock.unlock();
         }
-        return rs;
+        return Optional.empty();
     }
 
     public boolean exists(String table, List<Map.Entry<String, Object>> entryList) {
@@ -182,7 +170,6 @@ public class DatabaseWrapper {
         ResultSet rs;
         lock.lock();
         try {
-            connection.setAutoCommit(false);
             preparedStatement = connection.prepareStatement(sql);
             int index = 1;
             for (Map.Entry entry : entryList) {
@@ -190,7 +177,6 @@ public class DatabaseWrapper {
                 index++;
             }
             rs = preparedStatement.executeQuery();
-            connection.commit();
             return  (rs.getInt(1) > 0);
         } catch (SQLException e) {
             App.logger.catching(e);
@@ -199,7 +185,6 @@ public class DatabaseWrapper {
                 if (preparedStatement != null) {
                     preparedStatement.close();
                 }
-                connection.setAutoCommit(true);
             } catch (SQLException e) {
                 App.logger.catching(e);
             }
@@ -239,7 +224,6 @@ public class DatabaseWrapper {
         sql += " WHERE " + fieldName + "= ?";
         lock.lock();
         try {
-            connection.setAutoCommit(false);
             preparedStatement = connection.prepareStatement(sql);
             int index = 1;
             for (Map.Entry entry : entryList) {
@@ -252,7 +236,6 @@ public class DatabaseWrapper {
                 preparedStatement.setInt(index, (Integer) identifier);
             }
             int i = preparedStatement.executeUpdate();
-            connection.commit();
             return  (i > 0);
         } catch (SQLException e) {
             App.logger.error("SQL: " + sql);
@@ -262,7 +245,6 @@ public class DatabaseWrapper {
                 if (preparedStatement != null) {
                     preparedStatement.close();
                 }
-                connection.setAutoCommit(true);
             } catch (SQLException e) {
                 App.logger.catching(e);
             }
@@ -288,7 +270,6 @@ public class DatabaseWrapper {
         sql += ")";
         lock.lock();
         try {
-            connection.setAutoCommit(false);
             preparedStatement = connection.prepareStatement(sql);
             int index = 1;
             for (Map.Entry entry : entryList) {
@@ -296,7 +277,6 @@ public class DatabaseWrapper {
                 index++;
             }
             int i = preparedStatement.executeUpdate();
-            connection.commit();
             return  (i > 0);
         } catch (SQLException e) {
             App.logger.error("SQL: " + sql);
@@ -306,7 +286,6 @@ public class DatabaseWrapper {
                 if (preparedStatement != null) {
                     preparedStatement.close();
                 }
-                connection.setAutoCommit(true);
             } catch (SQLException e) {
                 App.logger.catching(e);
             }
@@ -321,7 +300,6 @@ public class DatabaseWrapper {
         sql += entryList.stream().map(entry -> (entry.getKey() + "=?")).collect(Collectors.joining(", "));
         lock.lock();
         try {
-            connection.setAutoCommit(false);
             preparedStatement = connection.prepareStatement(sql);
             int index = 1;
             for (Map.Entry entry : entryList) {
@@ -329,7 +307,6 @@ public class DatabaseWrapper {
                 index++;
             }
             int i = preparedStatement.executeUpdate();
-            connection.commit();
             return (i > 0);
         } catch (SQLException e) {
             App.logger.error("SQL: " + sql);
@@ -339,7 +316,6 @@ public class DatabaseWrapper {
                 if (preparedStatement != null) {
                     preparedStatement.close();
                 }
-                connection.setAutoCommit(true);
             } catch (SQLException e) {
                 App.logger.catching(e);
             }
@@ -368,18 +344,27 @@ public class DatabaseWrapper {
      * @param table The Table name.
      * @return result set that contains all records of the table.
      */
-    public ResultSet tableDump(String table) {
+    public <R> Optional<R> tableDump(String table, SQLFunction<R> function) {
         String sql = "SELECT * FROM " + table;
+        ResultSet rs = null;
         lock.lock();
         try {
-            return connection.createStatement().executeQuery(sql);
+            rs = connection.createStatement().executeQuery(sql);
+            return Optional.ofNullable(function.apply(rs));
         } catch (SQLException e) {
             App.logger.error("SQL: " + sql);
             App.logger.catching(e);
-            return null;
         } finally {
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+            } catch (SQLException e) {
+                App.logger.catching(e);
+            }
             lock.unlock();
         }
+        return Optional.empty();
     }
 
     /**
@@ -390,15 +375,16 @@ public class DatabaseWrapper {
      * @param key   The field in the table you want to get.
      * @return an <code>ArrayList&lt;String&gt;</code> that contains all entries in the table specified for the field key or <code>null</code> if an <code>SQLException</code> is thrown.
      */
-    public ArrayList<Object> getRecordsList(String table, String key) {
+    public List<Object> getRecordsList(String table, String key) {
         String sql = "";
+        ResultSet rs = null;
         lock.lock();
         try {
-            ArrayList<Object> set = new ArrayList<>();
+            List<Object> set = new ArrayList<>();
             sql = "SELECT " + key + " FROM " + table;
-            ResultSet resultSet = connection.createStatement().executeQuery(sql);
-            while (resultSet.next()) {
-                set.add(resultSet.getString(key));
+             rs = connection.createStatement().executeQuery(sql);
+            while (rs.next()) {
+                set.add(rs.getString(key));
             }
             return set;
         } catch (SQLException e) {
@@ -406,6 +392,13 @@ public class DatabaseWrapper {
             App.logger.catching(e);
             return null;
         } finally {
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+            } catch (SQLException e) {
+                App.logger.catching(e);
+            }
             lock.unlock();
         }
     }
