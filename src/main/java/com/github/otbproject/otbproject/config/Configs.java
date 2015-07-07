@@ -15,12 +15,19 @@ public class Configs {
 
     public static final String GENERAL_CONFIG_PATH = FSUtil.configDir() + File.separator + FSUtil.ConfigFileNames.GENERAL_CONFIG;
     public static final String BOT_CONFIG_PATH = FSUtil.dataDir() + File.separator + FSUtil.DirNames.BOT_CHANNEL + File.separator + FSUtil.ConfigFileNames.BOT_CONFIG;
+    public static final String WEB_CONFIG_PATH = FSUtil.configDir() + File.separator + FSUtil.ConfigFileNames.WEB_CONFIG;
 
     // Reading
     public static Account readAccount() {
         Account account = JsonHandler.readValue(getAccountPath(), Account.class).orElse(new Account());
         writeAccount(account);
         return account;
+    }
+    
+    public static WebConfig readWebConfig(){
+        WebConfig config = JsonHandler.readValue(WEB_CONFIG_PATH, WebConfig.class).orElse(new WebConfig());
+        writeWebConfig(config);
+        return config;
     }
 
     public static GeneralConfig readGeneralConfig() {
@@ -53,7 +60,12 @@ public class Configs {
     private static void writeGeneralConfig(GeneralConfig config) {
         JsonHandler.writeValue(GENERAL_CONFIG_PATH, config);
     }
-
+    private static void writeWebConfig(WebConfig config) {
+        JsonHandler.writeValue(WEB_CONFIG_PATH, config);
+    }
+    public static void writeWebConfig() {
+        writeWebConfig(getWebConfig());
+    }
     public static void writeGeneralConfig() {
         writeGeneralConfig(getGeneralConfig());
     }
@@ -82,7 +94,9 @@ public class Configs {
     public static GeneralConfig getGeneralConfig() {
         return App.configManager.getGeneralConfig();
     }
-
+    public static WebConfig getWebConfig() {
+        return App.configManager.getWebConfig();
+    }
     public static BotConfig getBotConfig() {
         return App.configManager.getBotConfig();
     }

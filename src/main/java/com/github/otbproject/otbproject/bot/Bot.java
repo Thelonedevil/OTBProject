@@ -184,6 +184,10 @@ public class Bot {
             // Bot config
             BotConfig botConfig = Configs.readBotConfig();
             App.configManager.setBotConfig(botConfig);
+
+            // Web Config
+            WebConfig webConfig = Configs.readWebConfig();
+            App.configManager.setWebConfig(webConfig);
         }
 
         private static void loadConfigs(CommandLine cmd) {
@@ -219,6 +223,10 @@ public class Bot {
             // Bot config
             BotConfig botConfig = Configs.readBotConfig();
             App.configManager.setBotConfig(botConfig);
+
+            // Web Config
+            WebConfig webConfig = Configs.readWebConfig();
+            App.configManager.setWebConfig(webConfig);
         }
     }
 
