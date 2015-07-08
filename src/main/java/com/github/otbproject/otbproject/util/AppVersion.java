@@ -1,7 +1,5 @@
 package com.github.otbproject.otbproject.util;
 
-import com.github.otbproject.otbproject.App;
-
 public class AppVersion {
 
     public String getVersionString() {
@@ -13,7 +11,7 @@ public class AppVersion {
         try {
             version = Version.parseVersion(getVersionString());
         } catch (Version.ParseException e) {
-            App.logger.catching(e);
+            e.printStackTrace(); // because logger not initialized, and should also never fail in actual execution
             version = new Version(0, 0, 0, Version.Type.RELEASE);
         }
         return version;
