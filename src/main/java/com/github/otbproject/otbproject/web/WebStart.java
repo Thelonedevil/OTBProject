@@ -3,7 +3,6 @@ package com.github.otbproject.otbproject.web;
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.config.Configs;
 import com.github.otbproject.otbproject.fs.FSUtil;
-import com.github.otbproject.otbproject.util.VersionClass;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.webapp.WebAppContext;

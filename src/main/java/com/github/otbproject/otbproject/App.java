@@ -13,7 +13,7 @@ import com.github.otbproject.otbproject.fs.groups.Load;
 import com.github.otbproject.otbproject.gui.GuiApplication;
 import com.github.otbproject.otbproject.util.UnPacker;
 import com.github.otbproject.otbproject.util.Util;
-import com.github.otbproject.otbproject.util.VersionClass;
+import com.github.otbproject.otbproject.util.AppVersion;
 import com.github.otbproject.otbproject.util.compat.VersionCompatHelper;
 import com.github.otbproject.otbproject.util.preload.LoadStrategy;
 import com.github.otbproject.otbproject.web.WarDownload;
@@ -35,7 +35,7 @@ import java.util.Scanner;
 public class App {
     public static final String PID = ManagementFactory.getRuntimeMXBean().getName().split("@")[0];
     public static final Logger logger = LogManager.getLogger();
-    public static final String VERSION = new VersionClass().getVersion();
+    public static final String VERSION = new AppVersion().getVersionString();
     public static final ConfigManager configManager = new ConfigManager();
 
     public static void main(String[] args) {
@@ -140,7 +140,7 @@ public class App {
 
         // Perform various startup actions
         Bot.Control.startup(cmd);
-/*
+
         try{
             if(new File(WebStart.WAR_PATH).exists()){
                 WebStart.main(args);
@@ -155,7 +155,7 @@ public class App {
         }catch (Exception e){
             logger.catching(e);
         }
-        */
+
         if (Bot.Graphics.present()) {
             GuiApplication.setInputActive();
         }
