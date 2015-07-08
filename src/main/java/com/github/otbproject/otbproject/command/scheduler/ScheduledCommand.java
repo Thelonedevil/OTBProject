@@ -3,7 +3,6 @@ package com.github.otbproject.otbproject.command.scheduler;
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.bot.Bot;
 import com.github.otbproject.otbproject.channel.Channel;
-import com.github.otbproject.otbproject.channel.Channels;
 import com.github.otbproject.otbproject.messages.receive.PackagedMessage;
 import com.github.otbproject.otbproject.messages.send.MessagePriority;
 import com.github.otbproject.otbproject.user.UserLevel;
@@ -21,7 +20,7 @@ public class ScheduledCommand implements Runnable {
     @Override
     public void run() {
         try {
-            App.logger.debug("Attempting to run scheduled command '" + packagedMessage.getMessage() + "' in channel: " + channel.getName());
+            App.logger.debug("Attempting to run scheduled command '" + packagedMessage.message + "' in channel: " + channel.getName());
             channel.receiveMessage(packagedMessage);
         } catch (NullPointerException npe) {
             App.logger.catching(npe);
