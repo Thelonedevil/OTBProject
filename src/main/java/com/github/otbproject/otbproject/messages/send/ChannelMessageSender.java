@@ -17,9 +17,8 @@ public class ChannelMessageSender {
     private static final ExecutorService EXECUTOR_SERVICE;
 
     private final Channel channel;
-    private final PriorityBlockingQueue<MessageOut> queue = new PriorityBlockingQueue<>(11,
-            (o1, o2) -> Integer.compare(o1.priority.value, o2.priority.value)
-    );
+    private final PriorityBlockingQueue<MessageOut> queue =
+            new PriorityBlockingQueue<>(11, MessageOut.PRIORITY_COMPARATOR);
     private Future<?> future;
     private boolean active = false;
 
@@ -81,6 +80,7 @@ public class ChannelMessageSender {
             return false;
         }
 
+        message.recordInsertionTime();
         return queue.add(message);
     }
 
