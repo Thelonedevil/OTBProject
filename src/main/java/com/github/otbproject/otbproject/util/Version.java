@@ -3,6 +3,8 @@ package com.github.otbproject.otbproject.util;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import java.util.Optional;
+
 public class Version implements Comparable<Version> {
     public final int major;
     public final int minor;
@@ -71,6 +73,14 @@ public class Version implements Comparable<Version> {
         }
     }
 
+    public static Optional<Version> parseAsOptional(String versionString) {
+        try {
+            return Optional.of(parseVersion(versionString));
+        } catch (ParseException ignored) {
+            return Optional.empty();
+        }
+    }
+
     @Override
     public String toString() {
         return major + "." + minor +
@@ -108,11 +118,13 @@ public class Version implements Comparable<Version> {
                 .isEquals();
     }
 
+    // x.x sorts less than x.x.0
     @Override
     public int compareTo(Version o) {
         return (major != o.major) ? Integer.compare(major, o.major)
                 : ((minor != o.minor) ? Integer.compare(minor, o.minor)
-                : Integer.compare(patch, o.patch));
+                : ((patch != o.patch) ? Integer.compare(patch, o.patch)
+                : Boolean.compare(hasPatch, o.hasPatch)  ));
     }
 
     public Checker checker() {

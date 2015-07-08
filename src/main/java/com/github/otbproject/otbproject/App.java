@@ -155,7 +155,7 @@ public class App {
                 thread.join();
                 WebStart.main(args);
             } else {
-                logger.warn("You are running a dev build of OTBProject, please also grab the latest build of the web interface and place in \"" + FSUtil.webDir() + File.separator + "\" as \"web-interface-" + WebVersion.get() + ".war\". Releases will automatically download this for you");
+                logger.warn("You are running a dev build of OTBProject, please also grab the latest build of the web interface and place in \"" + FSUtil.webDir() + File.separator + "\" as \"web-interface-" + WebVersion.latest() + ".war\". Releases will automatically download this for you");
             }
         } catch (Exception e) {
             logger.catching(e);

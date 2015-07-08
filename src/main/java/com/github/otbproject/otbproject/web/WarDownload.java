@@ -12,7 +12,7 @@ public class WarDownload implements Runnable {
 
     @Override
     public void run() {
-        String war = "http://ts.tldcode.uk:8081/nexus/content/repositories/releases/com/github/otbproject/web-interface/"+WebVersion.get()+"/"+"web-interface-"+WebVersion.get()+".war";
+        String war = "http://ts.tldcode.uk:8081/nexus/content/repositories/releases/com/github/otbproject/web-interface/"+WebVersion.latest()+"/"+"web-interface-"+WebVersion.latest()+".war";
         URL website = null;
         try {
             website = new URL(war);

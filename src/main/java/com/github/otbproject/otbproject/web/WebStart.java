@@ -12,7 +12,7 @@ import java.io.File;
 public class WebStart {
 
     // Resource path pointing to where the WEBROOT is
-    public static final String WAR_PATH= FSUtil.webDir()+ File.separator+"web-interface-"+WebVersion.get()+".war";
+    public static final String WAR_PATH= FSUtil.webDir()+ File.separator+"web-interface-"+WebVersion.latest()+".war";
     public static void main(String[] args) throws Exception {
         int port = Configs.getWebConfig().getPortNumber();
         String address = Configs.getWebConfig().getIp_binding();

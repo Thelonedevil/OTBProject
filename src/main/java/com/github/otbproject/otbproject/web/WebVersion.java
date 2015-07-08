@@ -1,6 +1,7 @@
 package com.github.otbproject.otbproject.web;
 
 import com.github.otbproject.otbproject.App;
+import com.github.otbproject.otbproject.util.Version;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,18 +10,18 @@ import java.net.URL;
 import java.util.Optional;
 
 public class WebVersion {
-    private static String VERSION;
+    private static Version LATEST;
 
-    public static String get() {
-        if (VERSION == null) {
+    public static Version latest() {
+        if (LATEST == null) {
             getVersion();
         }
-        return VERSION;
+        return LATEST;
     }
 
     private static synchronized void getVersion() {
-        if (VERSION == null) {
-            VERSION = lookupVersion();
+        if (LATEST == null) {
+            LATEST = Version.parseAsOptional(lookupVersion()).orElse(new Version(0, 0, Version.Type.RELEASE));
         }
     }
 
