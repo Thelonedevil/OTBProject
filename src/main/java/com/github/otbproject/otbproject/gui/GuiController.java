@@ -203,7 +203,7 @@ public class GuiController {
         }
     }
 
-    private void writeHistory() {
+    void writeHistory() {
         JsonHandler.writeValue(HISTORY_PATH, history); // TODO fix path
     }
 
