@@ -7,7 +7,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.File;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -61,17 +60,11 @@ public class DatabaseWrapperTest {
 
     @Test
     public void tableDataShouldBeDumped(){
-        db.tableDump(tableName, rs -> {
-            assertNotNull(rs);
-            return null;
-        });
+        assertTrue(db.tableDump(tableName, rs -> (rs == null) ? null : 0).isPresent());
     }
     @Test
     public void tableDataShouldNotBeDumped(){
-        db.tableDump(tableName + "poop", rs -> {
-            assertNull(rs);
-            return null;
-        });
+        assertFalse(db.tableDump(tableName + "poop", rs -> (rs == null) ? null : 0).isPresent());
     }
     @Test
     public void listOfRecordsShouldBeRetrieved(){
