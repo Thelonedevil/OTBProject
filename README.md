@@ -1,7 +1,9 @@
 OTBProject
 ====================
 
-[![Join the chat at https://gitter.im/OTBProject/OTBProject](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/OTBProject/OTBProject?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+<a href="https://travis-ci.org/OTBProject/OTBProject" target="_blank"><img src="https://travis-ci.org/OTBProject/OTBProject.svg?branch=master"/></a>
+
+<a href="https://gitter.im/OTBProject/OTBProject" target="_blank"><img src="https://badges.gitter.im/Join%20Chat.svg"/></a>
 
 An open source chat bot for <a href="http://www.twitch.tv" target="_blank">Twitch</a> and <a href="https://beam.pro" target="_blank">Beam</a>.
 
@@ -12,5 +14,3 @@ A tutorial for how to set up your bot and run it the first time can be found on 
 Issues and feature requests should be submitted to the [Issue Tracker](../../issues).
 
 The latest successful build can be found <a target="_blank" href="http://ts.tldcode.uk:8081/nexus/content/repositories/snapshots/com/github/otbproject/otbproject/">here</a>.
-
-<a href="https://travis-ci.org/OTBProject/OTBProject" target="_blank" ><img src="https://travis-ci.org/OTBProject/OTBProject.svg?branch=master"/> </a>
