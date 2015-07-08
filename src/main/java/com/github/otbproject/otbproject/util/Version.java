@@ -19,6 +19,7 @@ public class Version implements Comparable<Version> {
     }
 
     private Version(int major, int minor, int patch, boolean hasPatch, Type type) {
+        typeCheck(type);
         this.major = major;
         this.minor = minor;
         this.patch = patch;
@@ -110,6 +111,16 @@ public class Version implements Comparable<Version> {
                 : Integer.compare(patch, o.patch));
     }
 
+    public Checker checker() {
+        return new Checker(this);
+    }
+
+    private static void typeCheck(Type type) throws IllegalArgumentException {
+        if (type == null) {
+            throw new IllegalArgumentException("Version type cannot be null");
+        }
+    }
+
     public enum Type {
         RELEASE, SNAPSHOT, UNSTABLE
     }
@@ -121,6 +132,55 @@ public class Version implements Comparable<Version> {
 
         private ParseException(String versionString, Throwable cause) {
             super(("Invalid version string: " + versionString), cause);
+        }
+    }
+
+    public static class Checker {
+        private final Version version;
+        private int major = -1;
+        private int minor = -1;
+        private int patch = -1;
+        private Type type = null;
+
+        private Checker(Version version) {
+            this.version = version;
+        }
+
+        public Checker major(int value) throws IllegalArgumentException {
+            valueCheck(value);
+            major = value;
+            return this;
+        }
+
+        public Checker minor(int value) throws IllegalArgumentException {
+            valueCheck(value);
+            minor = value;
+            return this;
+        }
+
+        public Checker patch(int value) throws IllegalArgumentException {
+            valueCheck(value);
+            patch = value;
+            return this;
+        }
+
+        private static void valueCheck(int value) throws IllegalArgumentException {
+            if (value < 0) {
+                throw new IllegalArgumentException("Versions cannot have negative values");
+            }
+        }
+
+        public Checker type(Type type) {
+            typeCheck(type);
+            this.type = type;
+            return this;
+        }
+
+        public boolean isVersion() {
+            return  (   (major >= 0) && (major == version.major)    ) &&
+                    (   (minor >= 0) && (minor == version.minor)    ) &&
+                    (   (patch >= 0) && (patch == version.patch)    ) &&
+                    (   (type != null) && (type == version.type)    );
         }
     }
 }
