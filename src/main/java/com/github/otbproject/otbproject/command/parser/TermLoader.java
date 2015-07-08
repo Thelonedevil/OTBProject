@@ -12,8 +12,13 @@ public class TermLoader {
     private static final String METHOD_NAME = "getTerm";
 
     public static boolean loadTerm(String scriptName) {
-        ParserTerm term = PROCESSOR.process(scriptName, (FSUtil.termScriptDir() + File.separator + scriptName), METHOD_NAME, null, ParserTerm.class, null);
-        return (term != null) && (term.value() != null) && (term.action() != null) && CommandResponseParser.registerTerm(term);
+        try {
+            ParserTerm term = PROCESSOR.process(scriptName, (FSUtil.termScriptDir() + File.separator + scriptName), METHOD_NAME, null, ParserTerm.class, null);
+            return (term != null) && (term.value() != null) && (term.action() != null) && CommandResponseParser.registerTerm(term);
+        } catch (Exception | IllegalAccessError e) {
+            App.logger.catching(e);
+            return false;
+        }
     }
 
     public static void loadTerms() {
