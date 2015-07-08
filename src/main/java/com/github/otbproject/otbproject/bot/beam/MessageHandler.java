@@ -5,14 +5,10 @@ import com.github.otbproject.otbproject.bot.Bot;
 import com.github.otbproject.otbproject.bot.BotUtil;
 import com.github.otbproject.otbproject.channel.Channel;
 import com.github.otbproject.otbproject.channel.ChannelGetException;
-import com.github.otbproject.otbproject.channel.ChannelNotFoundException;
 import com.github.otbproject.otbproject.channel.Channels;
 import com.github.otbproject.otbproject.messages.receive.PackagedMessage;
 import com.github.otbproject.otbproject.messages.send.MessagePriority;
-import com.github.otbproject.otbproject.user.UserLevel;
 import com.github.otbproject.otbproject.user.UserLevels;
-import com.google.common.base.Joiner;
-import com.google.common.collect.Iterators;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import pro.beam.api.resource.chat.events.EventHandler;
 import pro.beam.api.resource.chat.events.IncomingMessageEvent;
@@ -22,6 +18,7 @@ import java.util.Collections;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 public class MessageHandler implements EventHandler<IncomingMessageEvent> {
     private static final ExecutorService EXECUTOR_SERVICE;
@@ -94,18 +91,20 @@ public class MessageHandler implements EventHandler<IncomingMessageEvent> {
     // Does not insert a space between different parts like Beam's method does, and gets
     //  plaintext of emoticons
     private static String getMessage(IncomingMessageData data) {
-        return Joiner.on("").join(Iterators.transform(data.message.iterator(), part -> {
-            switch(part.type) {
-                case ME:
-                    return "/me " + part.text;
-                case EMOTICON:
-                    return part.text;
-                case LINK:
-                    return part.url;
-                case TEXT:
-                default:
-                    return part.data;
-            }
-        }));
+        return data.message.stream()
+                .map(part -> {
+                    switch (part.type) {
+                        case ME:
+                            return "/me " + part.text;
+                        case EMOTICON:
+                            return part.text;
+                        case LINK:
+                            return part.url;
+                        case TEXT:
+                        default:
+                            return part.data;
+                    }
+                })
+                .collect(Collectors.joining(""));
     }
 }

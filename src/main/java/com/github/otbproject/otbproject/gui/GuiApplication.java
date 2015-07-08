@@ -121,6 +121,7 @@ public class GuiApplication extends Application {
         GuiUtils.runSafe(() -> {
             controller.history.clear();
             controller.historyPointer = 0;
+            controller.writeHistory();
         });
     }
 

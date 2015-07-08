@@ -1,8 +1,11 @@
 package com.github.otbproject.otbproject.messages.send;
 
+import java.util.Comparator;
+
 public class MessageOut {
-    private final String message;
-    private final MessagePriority priority;
+    public final String message;
+    public final MessagePriority priority;
+    private long insertionTime;
 
     public MessageOut(String message) {
         this(message, MessagePriority.DEFAULT);
@@ -13,11 +16,12 @@ public class MessageOut {
         this.priority = priority;
     }
 
-    public String getMessage() {
-        return message;
+    void recordInsertionTime() {
+        insertionTime = System.currentTimeMillis();
     }
 
-    public MessagePriority getPriority() {
-        return priority;
-    }
+    public static final Comparator<MessageOut> PRIORITY_COMPARATOR =
+            (o1, o2) -> (o1.priority.value == o2.priority.value) ?
+                    Long.compare(o1.insertionTime, o2.insertionTime)
+                    : Integer.compare(o1.priority.value, o2.priority.value);
 }

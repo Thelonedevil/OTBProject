@@ -35,15 +35,15 @@ public class ChannelMessageProcessor {
 
     public void process(PackagedMessage packagedMessage) {
         boolean internal;
-        String user = packagedMessage.getUser();
+        String user = packagedMessage.user;
 
-        String destChannelName = packagedMessage.getDestinationChannel();
+        String destChannelName = packagedMessage.destinationChannel;
         Channel destChannel = null;
-        if (packagedMessage.getDestinationChannel().startsWith(InternalMessageSender.DESTINATION_PREFIX)) {
+        if (packagedMessage.destinationChannel.startsWith(InternalMessageSender.DESTINATION_PREFIX)) {
             internal = true;
         } else {
             internal = false;
-            Optional<Channel> optional = Channels.get(packagedMessage.getDestinationChannel());
+            Optional<Channel> optional = Channels.get(packagedMessage.destinationChannel);
             if (!optional.isPresent() || !optional.get().isInChannel()) {
                 App.logger.warn("Attempted to process message to be sent in channel in which bot is not listening: " + destChannelName);
                 return;
@@ -54,10 +54,10 @@ public class ChannelMessageProcessor {
         // Process commands for bot channel
         if (inBotChannel) {
             DatabaseWrapper db = Bot.getBot().getBotDB();
-            UserLevel ul = packagedMessage.getUserLevel();
-            ProcessedMessage processedMsg = MessageProcessor.process(db, packagedMessage.getMessage(), channelName, user, ul, Configs.getBotConfig().isBotChannelDebug());
+            UserLevel ul = packagedMessage.userLevel;
+            ProcessedMessage processedMsg = MessageProcessor.process(db, packagedMessage.message, channelName, user, ul, Configs.getBotConfig().isBotChannelDebug());
             if (processedMsg.isScript || !processedMsg.response.isEmpty()) {
-                doResponse(db, processedMsg, channelName, destChannelName, destChannel, user, ul, packagedMessage.getMessagePriority(), internal);
+                doResponse(db, processedMsg, channelName, destChannelName, destChannel, user, ul, packagedMessage.messagePriority, internal);
                 // Don't process response as regular channel if done as bot channel
                 return;
             }
@@ -70,18 +70,18 @@ public class ChannelMessageProcessor {
 
         // Process commands not as bot channel
         DatabaseWrapper db = channel.getMainDatabaseWrapper();
-        UserLevel ul = packagedMessage.getUserLevel();
+        UserLevel ul = packagedMessage.userLevel;
         boolean debug = channel.getConfig().isDebug();
         if (inBotChannel) {
             debug = (debug || Configs.getBotConfig().isBotChannelDebug());
         }
-        ProcessedMessage processedMsg = MessageProcessor.process(db, packagedMessage.getMessage(), channelName, user, ul, debug);
+        ProcessedMessage processedMsg = MessageProcessor.process(db, packagedMessage.message, channelName, user, ul, debug);
 
         // Check if bot is enabled
         if (channel.getConfig().isEnabled() || GeneralConfigHelper.isPermanentlyEnabled(Configs.getGeneralConfig(), processedMsg.commandName)) {
             // Check if empty message, and then if command is on cooldown (skip cooldown check if internal)
             if ((processedMsg.isScript || !processedMsg.response.isEmpty()) && (internal || !destChannel.isCommandCooldown(processedMsg.commandName))) {
-                doResponse(db, processedMsg, channelName, destChannelName, destChannel, user, ul, packagedMessage.getMessagePriority(), internal);
+                doResponse(db, processedMsg, channelName, destChannelName, destChannel, user, ul, packagedMessage.messagePriority, internal);
             }
         }
     }
@@ -101,14 +101,14 @@ public class ChannelMessageProcessor {
             }
             // Send message
             else {
-                MessageOut messageOut = new MessageOut(message, priority);
                 lock.lock();
                 if (internal) {
-                    InternalMessageSender.send(destChannelName.replace(InternalMessageSender.DESTINATION_PREFIX, ""), messageOut.getMessage(), "CmdExec");
+                    InternalMessageSender.send(destChannelName.replace(InternalMessageSender.DESTINATION_PREFIX, ""), message, "CmdExec");
                     return;
                 }
                 // If queue rejects message because it's too full, return
                 else {
+                    MessageOut messageOut = new MessageOut(message, priority);
                     success = destChanel.sendMessage(messageOut);
                 }
             }
