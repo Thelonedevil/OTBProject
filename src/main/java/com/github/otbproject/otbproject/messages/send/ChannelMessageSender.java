@@ -6,7 +6,6 @@ import com.github.otbproject.otbproject.channel.Channel;
 import com.github.otbproject.otbproject.config.Configs;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
-import java.util.Comparator;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -19,7 +18,7 @@ public class ChannelMessageSender {
 
     private final Channel channel;
     private final PriorityBlockingQueue<MessageOut> queue = new PriorityBlockingQueue<>(11,
-            (o1, o2) -> Integer.compare(o1.getPriority().getValue(), o2.getPriority().getValue())
+            (o1, o2) -> Integer.compare(o1.priority.value, o2.priority.value)
     );
     private Future<?> future;
     private boolean active = false;
@@ -64,7 +63,7 @@ public class ChannelMessageSender {
             return false;
         }
 
-        MessagePriority priority = message.getPriority();
+        MessagePriority priority = message.priority;
         // Defaults to no limit
         int limit = -1;
 
@@ -97,7 +96,7 @@ public class ChannelMessageSender {
 
             while (true) {
                 message = queue.take();
-                Bot.getBot().sendMessage(channel.getName(), message.getMessage());
+                Bot.getBot().sendMessage(channel.getName(), message.message);
                 Thread.sleep(sleepTime);
             }
         } catch (InterruptedException e) {

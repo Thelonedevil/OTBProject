@@ -180,6 +180,7 @@ public class BeamChatChannel {
         if (set == null) {
             return;
         }
+        App.logger.debug("Attempting to delete " + set.size() + " messages from user: " + user);
         set.forEach(id -> {
             IncomingMessageData data = messageCache.asMap().get(id);
             if (data != null) {

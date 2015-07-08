@@ -101,14 +101,14 @@ public class ChannelMessageProcessor {
             }
             // Send message
             else {
-                MessageOut messageOut = new MessageOut(message, priority);
                 lock.lock();
                 if (internal) {
-                    InternalMessageSender.send(destChannelName.replace(InternalMessageSender.DESTINATION_PREFIX, ""), messageOut.getMessage(), "CmdExec");
+                    InternalMessageSender.send(destChannelName.replace(InternalMessageSender.DESTINATION_PREFIX, ""), message, "CmdExec");
                     return;
                 }
                 // If queue rejects message because it's too full, return
                 else {
+                    MessageOut messageOut = new MessageOut(message, priority);
                     success = destChanel.sendMessage(messageOut);
                 }
             }
