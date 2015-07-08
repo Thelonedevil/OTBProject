@@ -32,6 +32,10 @@ public class Version implements Comparable<Version> {
     }
 
     public static Version parseVersion(String versionString) throws ParseException {
+        if (versionString == null) {
+            throw new ParseException(null);
+        }
+
         String[] split = versionString.split("\\.");
         if ((split.length != 2) && (split.length != 3)) {
             throw new ParseException(versionString);
