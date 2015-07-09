@@ -202,10 +202,10 @@ public class Version implements Comparable<Version> {
         }
 
         public boolean isVersion() {
-            return  (   (major >= 0) && (major == version.major)    ) &&
-                    (   (minor >= 0) && (minor == version.minor)    ) &&
-                    (   (patch >= 0) && (patch == version.patch)    ) &&
-                    (   (type != null) && (type == version.type)    );
+            return  (   (major < 0) || (major == version.major)     ) &&
+                    (   (minor < 0) || (minor == version.minor)     ) &&
+                    (   (patch < 0) || (patch == version.patch)     ) &&
+                    (   (type == null) || (type == version.type)    );
         }
     }
 }
