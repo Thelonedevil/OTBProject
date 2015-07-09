@@ -79,6 +79,13 @@ public class ArgParser {
         OptionBuilder.withDescription("Runs the bot without a GUI");
         options.addOption(OptionBuilder.create());
 
+        // --web=
+        OptionBuilder.withLongOpt(Opts.WEB);
+        OptionBuilder.withDescription("Whether or not to run the web interface");
+        OptionBuilder.hasArg();
+        OptionBuilder.withArgName("True/False");
+        options.addOption(OptionBuilder.create());
+
         return options;
     }
 
@@ -100,5 +107,6 @@ public class ArgParser {
         public static final String VERSION = "version";
         public static final String VERSION_SHORT = "v";
         public static final String NO_GUI = "no-gui";
+        public static final String WEB = "web";
     }
 }
