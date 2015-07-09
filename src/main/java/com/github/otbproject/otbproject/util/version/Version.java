@@ -1,4 +1,4 @@
-package com.github.otbproject.otbproject.util;
+package com.github.otbproject.otbproject.util.version;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;

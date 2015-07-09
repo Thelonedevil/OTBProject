@@ -1,4 +1,5 @@
-package com.github.otbproject.otbproject.util;
+package com.github.otbproject.otbproject.util.version;
+
 
 public class AppVersion {
 

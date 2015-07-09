@@ -11,12 +11,13 @@ import com.github.otbproject.otbproject.fs.groups.Base;
 import com.github.otbproject.otbproject.fs.groups.Chan;
 import com.github.otbproject.otbproject.fs.groups.Load;
 import com.github.otbproject.otbproject.gui.GuiApplication;
-import com.github.otbproject.otbproject.util.AppVersion;
+import com.github.otbproject.otbproject.util.version.AppVersion;
 import com.github.otbproject.otbproject.util.UnPacker;
 import com.github.otbproject.otbproject.util.Util;
-import com.github.otbproject.otbproject.util.Version;
+import com.github.otbproject.otbproject.util.version.Version;
 import com.github.otbproject.otbproject.util.compat.VersionCompatHelper;
 import com.github.otbproject.otbproject.util.preload.LoadStrategy;
+import com.github.otbproject.otbproject.util.version.Versions;
 import com.github.otbproject.otbproject.web.WarDownload;
 import com.github.otbproject.otbproject.web.WebStart;
 import com.github.otbproject.otbproject.web.WebVersion;
@@ -106,23 +107,7 @@ public class App {
 
 
         File versionFile = new File(FSUtil.configDir() + File.separator + "VERSION");
-        try {
-            if (!versionFile.exists() && !versionFile.createNewFile()) {
-                throw new IOException("Failed to create version file");
-            }
-        } catch (IOException e) {
-            logger.catching(e);
-        }
-        Version version;
-        try {
-            BufferedReader fileReader = new BufferedReader(new FileReader(versionFile));
-            String versionStr = fileReader.readLine();
-            fileReader.close();
-            version = Version.parseVersion(versionStr);
-        } catch (IOException | Version.ParseException e) {
-            logger.catching(e);
-            version = null; // TODO maybe change?
-        }
+        Version version = Versions.readFromFile(versionFile).orElse(null); // TODO possibly not or else null?
 
         if (cmd.hasOption(ArgParser.Opts.UNPACK) || (VERSION.type != Version.Type.SNAPSHOT) && !VERSION.equals(version) && !cmd.hasOption(ArgParser.Opts.NO_UNPACK)) {
             if (!VERSION.equals(version)) {
@@ -135,13 +120,7 @@ public class App {
             UnPacker.unPack("preloads/groovy/scripts/commands/", FSUtil.commandScriptDir());
             Bot.Control.loadPreloads(LoadStrategy.UPDATE);
         }
-        try {
-            PrintStream ps = new PrintStream(versionFile);
-            ps.println(VERSION);
-            ps.close();
-        } catch (IOException e) {
-            logger.catching(e);
-        }
+        Versions.writeToFile(versionFile, VERSION);
 
         // Perform various startup actions
         Bot.Control.startup(cmd);

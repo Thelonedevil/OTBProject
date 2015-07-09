@@ -5,8 +5,7 @@ import com.github.otbproject.otbproject.config.Account;
 import com.github.otbproject.otbproject.config.GeneralConfig;
 import com.github.otbproject.otbproject.fs.FSUtil;
 import com.github.otbproject.otbproject.util.JsonHandler;
-import com.github.otbproject.otbproject.util.Version;
-import org.apache.commons.io.FileUtils;
+import com.github.otbproject.otbproject.util.version.Version;
 
 import java.io.File;
 import java.util.Optional;
