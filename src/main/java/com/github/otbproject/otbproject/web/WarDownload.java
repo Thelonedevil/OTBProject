@@ -1,14 +1,36 @@
 package com.github.otbproject.otbproject.web;
 
 import com.github.otbproject.otbproject.App;
+import com.github.otbproject.otbproject.util.Util;
 import org.apache.commons.codec.digest.DigestUtils;
 
 import java.io.*;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
 
-public class WarDownload implements Runnable {
+class WarDownload implements Runnable {
+
+    public static void downloadLatest() {
+        ExecutorService executor = Util.getSingleThreadExecutor("War Download");
+        App.logger.info("Downloading web interface");
+        try {
+            executor.submit(new WarDownload());
+            executor.shutdown();
+            executor.awaitTermination(1, TimeUnit.MINUTES);
+            if (!executor.isTerminated()) {
+                executor.shutdownNow();
+                throw new WarDownloadException("Download took too long");
+            }
+        } catch (InterruptedException | WarDownloadException e) {
+            App.logger.error("Error downloading web interface");
+            App.logger.catching(e);
+            App.logger.error("Please download the web interface manually");
+            // TODO clean up failed download
+        }
+    }
 
     @Override
     public void run() {
@@ -17,13 +39,13 @@ public class WarDownload implements Runnable {
         try {
             website = new URL(war);
             ReadableByteChannel rbc = Channels.newChannel(website.openStream());
-            FileOutputStream fos = new FileOutputStream(WebStart.WAR_PATH);
+            FileOutputStream fos = new FileOutputStream(WebInterface.WAR_PATH);
             fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
             URL md5Original = new URL(war+".md5");
             BufferedReader in = new BufferedReader(new InputStreamReader(md5Original.openStream()));
             String inputLine = in.readLine();
             in.close();
-            FileInputStream fis = new FileInputStream(new File(WebStart.WAR_PATH));
+            FileInputStream fis = new FileInputStream(new File(WebInterface.WAR_PATH));
             String md5 = DigestUtils.md5Hex(fis);
             fis.close();
             if(!slowEquals(fromHex(md5), fromHex(inputLine))){
