@@ -128,10 +128,11 @@ public class Version implements Comparable<Version> {
     // x.x sorts less than x.x.0
     @Override
     public int compareTo(Version o) {
-        return (major != o.major) ? Integer.compare(major, o.major)
-                : ((minor != o.minor) ? Integer.compare(minor, o.minor)
-                : ((patch != o.patch) ? Integer.compare(patch, o.patch)
-                : Boolean.compare(hasPatch, o.hasPatch)  ));
+        return  (major != o.major)          ? Integer.compare(major, o.major)
+                : ((minor != o.minor)       ? Integer.compare(minor, o.minor)
+                : ((patch != o.patch)       ? Integer.compare(patch, o.patch)
+                : ((hasPatch != o.hasPatch) ? Boolean.compare(hasPatch, o.hasPatch)
+                : type.compareTo(o.type)                                        )));
     }
 
     public Checker checker() {
@@ -153,7 +154,7 @@ public class Version implements Comparable<Version> {
     }
 
     public enum Type {
-        RELEASE, SNAPSHOT, UNSTABLE
+        SNAPSHOT, UNSTABLE, RELEASE
     }
 
     public static class ParseException extends IllegalArgumentException {
