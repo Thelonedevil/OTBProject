@@ -12,21 +12,24 @@ public class Version implements Comparable<Version> {
     private final boolean hasPatch;
     public final Type type;
 
-    public Version(int major, int minor, Type type) {
-        this(major, minor, 0, false, type);
-    }
-
-    public Version(int major, int minor, int patch, Type type) {
-        this(major, minor, patch, true, type);
-    }
-
     private Version(int major, int minor, int patch, boolean hasPatch, Type type) {
-        typeCheck(type);
         this.major = major;
         this.minor = minor;
         this.patch = patch;
         this.hasPatch = hasPatch;
         this.type = type;
+    }
+
+    public static Version create(int major, int minor, Type type) throws IllegalArgumentException {
+        valueCheck(major, minor);
+        typeCheck(type);
+        return new Version(major, minor, 0, false, type);
+    }
+
+    public static Version create(int major, int minor, int patch, Type type) throws IllegalArgumentException {
+        valueCheck(major, minor, patch);
+        typeCheck(type);
+        return new Version(major, minor, patch, true, type);
     }
 
     public boolean hasPatch() {
@@ -135,6 +138,14 @@ public class Version implements Comparable<Version> {
         return new Checker(this);
     }
 
+    private static void valueCheck(int... values) throws IllegalArgumentException {
+        for (int value : values) {
+            if (value < 0) {
+                throw new IllegalArgumentException("Versions cannot have negative values");
+            }
+        }
+    }
+
     private static void typeCheck(Type type) throws IllegalArgumentException {
         if (type == null) {
             throw new IllegalArgumentException("Version type cannot be null");
@@ -182,12 +193,6 @@ public class Version implements Comparable<Version> {
             valueCheck(value);
             patch = value;
             return this;
-        }
-
-        private static void valueCheck(int value) throws IllegalArgumentException {
-            if (value < 0) {
-                throw new IllegalArgumentException("Versions cannot have negative values");
-            }
         }
 
         public Checker type(Type type) {

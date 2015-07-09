@@ -38,7 +38,7 @@ public class WebVersion {
 
     private static synchronized void getCurrent() {
         if (CURRENT == null) {
-            CURRENT = Versions.readFromFile(CURRENT_VERSION_PATH).orElse(new Version(0, 0, Version.Type.RELEASE));
+            CURRENT = Versions.readFromFile(CURRENT_VERSION_PATH).orElse(Version.create(0, 0, Version.Type.RELEASE));
         }
     }
 
@@ -51,7 +51,7 @@ public class WebVersion {
 
     private static synchronized void getLatest() {
         if (LATEST == null) {
-            LATEST = Version.parseAsOptional(lookupLatest()).orElse(new Version(0, 0, Version.Type.RELEASE));
+            LATEST = Version.parseAsOptional(lookupLatest()).orElse(Version.create(0, 0, Version.Type.RELEASE));
         }
     }
 

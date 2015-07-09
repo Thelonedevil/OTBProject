@@ -13,7 +13,7 @@ public class AppVersion {
             version = Version.parseVersion(getVersionString());
         } catch (Version.ParseException e) {
             e.printStackTrace(); // because logger not initialized, and should also never fail in actual execution
-            version = new Version(0, 0, 0, Version.Type.RELEASE);
+            version = Version.create(0, 0, 0, Version.Type.RELEASE);
         }
         return version;
     }
