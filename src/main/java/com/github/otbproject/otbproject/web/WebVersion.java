@@ -22,7 +22,7 @@ public class WebVersion {
     private static Version LATEST;
     private static Version CURRENT;
     private static final String RATE_LIMIT_INFO_PATH = FSUtil.webDir() + File.separator + "rate-limit-info.json";
-    public static final String CURRENT_VERSION_PATH = FSUtil.webDir() + File.separator + "VERSION";
+    private static final String CURRENT_VERSION_PATH = FSUtil.webDir() + File.separator + "VERSION";
 
     static void updateCurrentToLatest() {
         CURRENT = LATEST;
