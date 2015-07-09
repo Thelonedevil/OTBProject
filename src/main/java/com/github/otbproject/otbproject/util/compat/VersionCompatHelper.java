@@ -5,20 +5,20 @@ import com.github.otbproject.otbproject.config.Account;
 import com.github.otbproject.otbproject.config.GeneralConfig;
 import com.github.otbproject.otbproject.fs.FSUtil;
 import com.github.otbproject.otbproject.util.JsonHandler;
-import org.apache.commons.io.FileUtils;
+import com.github.otbproject.otbproject.util.version.Version;
 
 import java.io.File;
 import java.util.Optional;
 import java.util.stream.Stream;
 
 public class VersionCompatHelper {
-    public static void fixCompatIssues(String oldVersion) {
+    public static void fixCompatIssues(Version oldVersion) {
         if (oldVersion == null) {
             return;
         }
-        if (App.VERSION.startsWith("1.1") && oldVersion.startsWith("1.0")) {
+        if (App.VERSION.checker().major(1).minor(1).isVersion() && oldVersion.checker().major(1).minor(0).isVersion()) {
             fix1_0To1_1();
-        } else if (App.VERSION.startsWith("2.0") && oldVersion.startsWith("1.1")) {
+        } else if (App.VERSION.checker().major(2).minor(0).isVersion() && oldVersion.checker().major(1).minor(1).isVersion()) {
             fix1_1To2_0();
         }
     }

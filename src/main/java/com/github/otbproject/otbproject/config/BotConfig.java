@@ -1,12 +1,13 @@
 package com.github.otbproject.otbproject.config;
 
-import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class BotConfig {
     private ChannelJoinSetting channelJoinSetting = ChannelJoinSetting.NONE;
-    public ArrayList<String> whitelist = new ArrayList<>();
-    public ArrayList<String> blacklist = new ArrayList<>();
-    public ArrayList<String> currentChannels = new ArrayList<>();
+    public List<String> whitelist = new CopyOnWriteArrayList<>();
+    public List<String> blacklist = new CopyOnWriteArrayList<>();
+    public List<String> currentChannels = new CopyOnWriteArrayList<>();
     private Integer messageSendDelayInMilliseconds = 1600;
     private boolean botChannelDebug = true;
 

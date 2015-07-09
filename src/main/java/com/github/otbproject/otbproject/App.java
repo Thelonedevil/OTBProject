@@ -3,7 +3,7 @@ package com.github.otbproject.otbproject;
 import com.github.otbproject.otbproject.bot.Bot;
 import com.github.otbproject.otbproject.cli.ArgParser;
 import com.github.otbproject.otbproject.cli.commands.CmdParser;
-import com.github.otbproject.otbproject.config.*;
+import com.github.otbproject.otbproject.config.ConfigManager;
 import com.github.otbproject.otbproject.fs.FSUtil;
 import com.github.otbproject.otbproject.fs.PathBuilder;
 import com.github.otbproject.otbproject.fs.Setup;
@@ -11,11 +11,13 @@ import com.github.otbproject.otbproject.fs.groups.Base;
 import com.github.otbproject.otbproject.fs.groups.Chan;
 import com.github.otbproject.otbproject.fs.groups.Load;
 import com.github.otbproject.otbproject.gui.GuiApplication;
+import com.github.otbproject.otbproject.util.version.AppVersion;
 import com.github.otbproject.otbproject.util.UnPacker;
 import com.github.otbproject.otbproject.util.Util;
-import com.github.otbproject.otbproject.util.VersionClass;
+import com.github.otbproject.otbproject.util.version.Version;
 import com.github.otbproject.otbproject.util.compat.VersionCompatHelper;
 import com.github.otbproject.otbproject.util.preload.LoadStrategy;
+import com.github.otbproject.otbproject.util.version.Versions;
 import com.github.otbproject.otbproject.web.WarDownload;
 import com.github.otbproject.otbproject.web.WebStart;
 import com.github.otbproject.otbproject.web.WebVersion;
@@ -35,7 +37,7 @@ import java.util.Scanner;
 public class App {
     public static final String PID = ManagementFactory.getRuntimeMXBean().getName().split("@")[0];
     public static final Logger logger = LogManager.getLogger();
-    public static final String VERSION = new VersionClass().getVersion();
+    public static final Version VERSION = new AppVersion().getVersion();
     public static final ConfigManager configManager = new ConfigManager();
 
     public static void main(String[] args) {
@@ -103,24 +105,12 @@ public class App {
             System.exit(1);
         }
 
+
         File versionFile = new File(FSUtil.configDir() + File.separator + "VERSION");
-        try {
-            if (!versionFile.exists() && !versionFile.createNewFile()) {
-                throw new IOException("Failed to create version file");
-            }
-        } catch (IOException e) {
-            logger.catching(e);
-        }
-        String version = "";
-        try {
-            BufferedReader fileReader = new BufferedReader(new FileReader(versionFile));
-            version = fileReader.readLine();
-            fileReader.close();
-        } catch (IOException e) {
-            logger.catching(e);
-        }
-        if (cmd.hasOption(ArgParser.Opts.UNPACK) || (!VERSION.contains("SNAPSHOT") && !VERSION.equalsIgnoreCase(version) && !cmd.hasOption(ArgParser.Opts.NO_UNPACK))) {
-            if (!VERSION.equalsIgnoreCase(version)) {
+        Version version = Versions.readFromFile(versionFile).orElse(null); // TODO possibly not or else null?
+
+        if (cmd.hasOption(ArgParser.Opts.UNPACK) || (VERSION.type != Version.Type.SNAPSHOT) && !VERSION.equals(version) && !cmd.hasOption(ArgParser.Opts.NO_UNPACK)) {
+            if (!VERSION.equals(version)) {
                 VersionCompatHelper.fixCompatIssues(version);
             }
             PathBuilder builder = new PathBuilder();
@@ -130,32 +120,26 @@ public class App {
             UnPacker.unPack("preloads/groovy/scripts/commands/", FSUtil.commandScriptDir());
             Bot.Control.loadPreloads(LoadStrategy.UPDATE);
         }
-        try {
-            PrintStream ps = new PrintStream(versionFile);
-            ps.println(VERSION);
-            ps.close();
-        } catch (IOException e) {
-            logger.catching(e);
-        }
+        Versions.writeToFile(versionFile, VERSION);
 
         // Perform various startup actions
         Bot.Control.startup(cmd);
-/*
-        try{
-            if(new File(WebStart.WAR_PATH).exists()){
+
+        try {
+            if (new File(WebStart.WAR_PATH).exists()) {
                 WebStart.main(args);
-            }else if(!VERSION.contains("-SNAPSHOT")){
+            } else if (VERSION.type != Version.Type.SNAPSHOT) {
                 Thread thread = new Thread(new WarDownload());
                 thread.start();
                 thread.join();
                 WebStart.main(args);
-            }else{
-                logger.warn("You are running a dev build of OTBProject, please also grab the latest build of the web interface and place in \""+FSUtil.webDir()+File.separator+"\" as \"web-interface-"+WebVersion.get()+".war\". Releases will automatically download this for you");
+            } else {
+                logger.warn("You are running a dev build of OTBProject, please also grab the latest build of the web interface and place in \"" + FSUtil.webDir() + File.separator + "\" as \"web-interface-" + WebVersion.latest() + ".war\". Releases will automatically download this for you");
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.catching(e);
         }
-        */
+
         if (Bot.Graphics.present()) {
             GuiApplication.setInputActive();
         }
