@@ -61,7 +61,11 @@ public class Version implements Comparable<Version> {
                 patch = Integer.parseInt(split[0]);
                 hasPatch = true;
             }
-            type = Type.valueOf(split[1].toUpperCase());
+            if (split.length == 1) {
+                type = Type.RELEASE;
+            } else {
+                type = Type.valueOf(split[1].toUpperCase());
+            }
 
             if ((major < 0) || (minor < 0) || (patch < 0)) {
                 throw new ParseException(versionString);
