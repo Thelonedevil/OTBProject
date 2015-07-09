@@ -12,11 +12,8 @@ import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.logging.log4j.Level;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URL;
 import java.time.Instant;
 import java.util.Optional;
 
@@ -38,15 +35,7 @@ public class WebVersion {
         }
     }
 
-    // Temporary wrapper method to make it easy to switch between this and other lookups
-    //  while testing out other methods
-    // TODO remove
     private static String lookupLatest() {
-        return githubLookup();
-        //return tldNexusLookup();
-    }
-
-    private static String githubLookup() {
         if (tooFewRequestsRemaining()) {
             return null;
         }
@@ -95,35 +84,5 @@ public class WebVersion {
         long resetTime = info[1];
 
         return (remaining < 10) && (resetTime > Instant.now().getEpochSecond());
-    }
-
-    private static String tldNexusLookup() {
-        String xmlPath = "http://ts.tldcode.uk:8081/nexus/content/repositories/releases/com/github/otbproject/web-interface/maven-metadata.xml";
-        URL xmlURL;
-        BufferedReader in = null;
-        try {
-            xmlURL = new URL(xmlPath);
-            in = new BufferedReader(new InputStreamReader(xmlURL.openStream()));
-
-            Optional<String> stringOptional = in.lines()
-                    .filter(line -> line != null)
-                    .filter(line -> line.trim().startsWith("<release>"))
-                    .map(line -> line.replace("<release>","").replace("</release>","").trim())
-                    .findAny();
-            if (stringOptional.isPresent()) {
-                return stringOptional.get();
-            }
-        } catch (IOException e) {
-            App.logger.catching(e);
-        } finally {
-            if(in != null) {
-                try {
-                    in.close();
-                } catch (IOException e) {
-                    App.logger.catching(e);
-                }
-            }
-        }
-        return "0.0.1";
     }
 }
