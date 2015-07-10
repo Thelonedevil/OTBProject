@@ -5,7 +5,6 @@ import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.fs.FSUtil;
 import com.github.otbproject.otbproject.util.JsonHandler;
 import com.github.otbproject.otbproject.util.version.Version;
-import com.github.otbproject.otbproject.util.version.Versions;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -17,16 +16,15 @@ import java.io.File;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 public class WebVersion {
     private static Version LATEST;
     private static Version CURRENT;
     private static final String RATE_LIMIT_INFO_PATH = FSUtil.webDir() + File.separator + "rate-limit-info.json";
-    private static final String CURRENT_VERSION_PATH = FSUtil.webDir() + File.separator + "VERSION";
 
     static void updateCurrentToLatest() {
         CURRENT = LATEST;
-        Versions.writeToFile(CURRENT_VERSION_PATH, CURRENT);
     }
 
     public static Version current() {
@@ -38,7 +36,7 @@ public class WebVersion {
 
     private static synchronized void getCurrent() {
         if (CURRENT == null) {
-            CURRENT = Versions.readFromFile(CURRENT_VERSION_PATH).orElse(Version.create(0, 0, Version.Type.RELEASE));
+            CURRENT = lookupCurrent().orElse(Version.create(0, 0, Version.Type.RELEASE));
         }
     }
 
@@ -104,5 +102,25 @@ public class WebVersion {
         long resetTime = info[1];
 
         return (remaining < 10) && (resetTime > Instant.now().getEpochSecond());
+    }
+
+    private static Optional<Version> lookupCurrent() {
+        File dir = new File(FSUtil.webDir());
+        File[] files = dir.listFiles();
+        if (files == null) {
+            return Optional.empty();
+        }
+
+        return Stream.of(files)
+                .filter(File::isFile)
+                .map(File::getName)
+                .filter(s -> s.startsWith(WarDownload.WAR_PREFIX))
+                .filter(s -> s.endsWith(WarDownload.WAR_EXT))
+                .map(s -> {
+                    String versionStr = s.substring(WarDownload.WAR_PREFIX.length(), (s.length() - WarDownload.WAR_EXT.length()));
+                    return Version.parseAsOptional(versionStr).orElse(null);
+                })
+                .filter(version -> version != null)
+                .max(Version::compareTo);
     }
 }

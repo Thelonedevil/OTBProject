@@ -11,11 +11,8 @@ import org.eclipse.jetty.webapp.WebAppContext;
 import java.io.File;
 
 public class WebInterface {
-
-    // Resource path pointing to where the WEBROOT is
-    public static final String WAR_PATH = FSUtil.webDir()+ File.separator+"web-interface.war";
     public static void start() {
-        File path = new File(WAR_PATH);
+        File path = new File(warPath());
         if (App.VERSION.type == Version.Type.SNAPSHOT) {
             App.logger.warn("You are running a dev build of OTBProject, please also grab the latest build of the web interface and place in \"" +
                     FSUtil.webDir() + File.separator + "\" as \"web-interface-" + WebVersion.latest() +
@@ -34,7 +31,7 @@ public class WebInterface {
         server.addConnector(http);
         WebAppContext webapp = new WebAppContext();
         webapp.setContextPath("/");
-        webapp.setWar(WAR_PATH);
+        webapp.setWar(warPath());
         server.setHandler(webapp);
         try {
             server.start();
@@ -43,4 +40,7 @@ public class WebInterface {
         }
     }
 
+    static String warPath() {
+        return FSUtil.webDir() + File.separator + "web-interface-" + WebVersion.current() + ".war";
+    }
 }
