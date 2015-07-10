@@ -24,6 +24,7 @@ public class WebInterface {
     }
 
     private static void startInterface(int port, String address) {
+        App.logger.info("Starting web interface version " + WebVersion.current());
         Server server = new Server();
         ServerConnector http = new ServerConnector(server);
         http.setHost(address);
