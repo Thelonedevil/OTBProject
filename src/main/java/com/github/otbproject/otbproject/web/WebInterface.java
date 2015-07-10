@@ -17,7 +17,7 @@ public class WebInterface {
             App.logger.warn("You are running a dev build of OTBProject, please also grab the latest build of the web interface and place in \"" +
                     FSUtil.webDir() + File.separator + "\" as \"web-interface-" + WebVersion.latest() +
                     ".war\". Releases will automatically download this for you");
-        } else if (!path.exists() || (WebVersion.current().compareTo(WebVersion.latest()) < 0)) {
+        } else if (!path.exists() || (Configs.getWebConfig().isAutoUpdate() && (WebVersion.current().compareTo(WebVersion.latest()) < 0))) {
             WarDownload.downloadLatest();
         }
         startInterface(Configs.getWebConfig().getPortNumber(), Configs.getWebConfig().getIp_binding());

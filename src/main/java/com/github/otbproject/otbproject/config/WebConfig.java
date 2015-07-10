@@ -6,6 +6,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public class WebConfig {
     private boolean enabled = true;
+    private boolean autoUpdate = true;
     private int portNumber = 22222;
     private String ip_binding = "0.0.0.0";
     public List<String> whitelistedIPAddressesWithSubnettingPrefix;
@@ -20,6 +21,14 @@ public class WebConfig {
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+
+    public boolean isAutoUpdate() {
+        return autoUpdate;
+    }
+
+    public void setAutoUpdate(boolean autoUpdate) {
+        this.autoUpdate = autoUpdate;
     }
 
     public int getPortNumber() {
