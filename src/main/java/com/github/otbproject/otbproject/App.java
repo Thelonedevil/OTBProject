@@ -4,6 +4,7 @@ import com.github.otbproject.otbproject.bot.Bot;
 import com.github.otbproject.otbproject.cli.ArgParser;
 import com.github.otbproject.otbproject.cli.commands.CmdParser;
 import com.github.otbproject.otbproject.config.ConfigManager;
+import com.github.otbproject.otbproject.config.Configs;
 import com.github.otbproject.otbproject.fs.FSUtil;
 import com.github.otbproject.otbproject.fs.PathBuilder;
 import com.github.otbproject.otbproject.fs.Setup;
@@ -18,9 +19,7 @@ import com.github.otbproject.otbproject.util.version.Version;
 import com.github.otbproject.otbproject.util.compat.VersionCompatHelper;
 import com.github.otbproject.otbproject.util.preload.LoadStrategy;
 import com.github.otbproject.otbproject.util.version.Versions;
-import com.github.otbproject.otbproject.web.WarDownload;
-import com.github.otbproject.otbproject.web.WebStart;
-import com.github.otbproject.otbproject.web.WebVersion;
+import com.github.otbproject.otbproject.web.WebInterface;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.ParseException;
 import org.apache.logging.log4j.LogManager;
@@ -125,19 +124,9 @@ public class App {
         // Perform various startup actions
         Bot.Control.startup(cmd);
 
-        try {
-            if (new File(WebStart.WAR_PATH).exists()) {
-                WebStart.main(args);
-            } else if (VERSION.type != Version.Type.SNAPSHOT) {
-                Thread thread = new Thread(new WarDownload());
-                thread.start();
-                thread.join();
-                WebStart.main(args);
-            } else {
-                logger.warn("You are running a dev build of OTBProject, please also grab the latest build of the web interface and place in \"" + FSUtil.webDir() + File.separator + "\" as \"web-interface-" + WebVersion.latest() + ".war\". Releases will automatically download this for you");
-            }
-        } catch (Exception e) {
-            logger.catching(e);
+        // Start web interface
+        if (Configs.getWebConfig().isEnabled()) {
+            WebInterface.start();
         }
 
         if (Bot.Graphics.present()) {

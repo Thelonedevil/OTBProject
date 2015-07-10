@@ -181,13 +181,11 @@ public class Bot {
             Account account = Configs.readAccount();
             App.configManager.setAccount(account);
 
-            // Bot config
-            BotConfig botConfig = Configs.readBotConfig();
-            App.configManager.setBotConfig(botConfig);
-
             // Web Config
             WebConfig webConfig = Configs.readWebConfig();
             App.configManager.setWebConfig(webConfig);
+
+            loadOtherConfigs();
         }
 
         private static void loadConfigs(CommandLine cmd) {
@@ -220,13 +218,21 @@ public class Bot {
             App.configManager.setAccount(account);
             Configs.writeAccount();
 
-            // Bot config
-            BotConfig botConfig = Configs.readBotConfig();
-            App.configManager.setBotConfig(botConfig);
-
             // Web Config
             WebConfig webConfig = Configs.readWebConfig();
             App.configManager.setWebConfig(webConfig);
+            if (cmd.hasOption(ArgParser.Opts.WEB)) {
+                webConfig.setEnabled(Boolean.parseBoolean(cmd.getOptionValue(ArgParser.Opts.WEB)));
+                Configs.writeWebConfig();
+            }
+
+            loadOtherConfigs();
+        }
+
+        private static void loadOtherConfigs() {
+            // Bot config
+            BotConfig botConfig = Configs.readBotConfig();
+            App.configManager.setBotConfig(botConfig);
         }
     }
 
