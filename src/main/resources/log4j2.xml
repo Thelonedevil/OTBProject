@@ -49,6 +49,7 @@
 
     </Appenders>
     <Loggers>
+        <Logger name="org.eclipse.jetty" level="INFO"/>
         <Root level="trace">
             <AppenderRef ref="Console-info" level="info"/>
             <AppenderRef ref="Console-debug" level="debug"/>
