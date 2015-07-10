@@ -11,7 +11,7 @@ import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.util.concurrent.*;
 
-class WarDownload implements Callable<Boolean> {
+class WarDownload {
     private static final int ATTEMPTS = 2;
 
     public static void downloadLatest() {
@@ -23,7 +23,7 @@ class WarDownload implements Callable<Boolean> {
         for (int i = 1; i <= ATTEMPTS; i++) {
             App.logger.info("Attempting to download web interface (" + i + "/" + ATTEMPTS + ")");
             try {
-                Future<Boolean> future = executor.submit(new WarDownload());
+                Future<Boolean> future = executor.submit(WarDownload::doDownload);
                 future.get(1, TimeUnit.MINUTES);
                 moveTempDownload();
                 success = true;
@@ -54,8 +54,7 @@ class WarDownload implements Callable<Boolean> {
         // TODO write
     }
 
-    @Override
-    public Boolean call() throws WarDownloadException {
+    private static Boolean doDownload() throws WarDownloadException {
         String warURL = "https://github.com/OTBProject/OTBWebInterface/releases/download/" + WebVersion.latest() + "/web-interface.war";
         URL website = null;
         try {
