@@ -20,7 +20,7 @@ class WarDownload {
 
     public static void downloadLatest() {
         ExecutorService executor = Util.getSingleThreadExecutor("War Download");
-        App.logger.info("Downloading web interface");
+        App.logger.info("Downloading web interface version " + WebVersion.latest());
 
         boolean success = false;
 
@@ -61,7 +61,9 @@ class WarDownload {
     }
 
     private static boolean moveTempDownload() {
-        return new File(dlPath()).renameTo(new File(dlPath().substring(0, DL_EXT.length())));
+        String dlPath = dlPath();
+        String finalPath = dlPath.substring(0, dlPath.length() - DL_EXT.length());
+        return new File(dlPath).renameTo(new File(finalPath));
     }
 
     private static void cleanupOldVersions() {
