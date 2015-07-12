@@ -4,7 +4,7 @@ import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.bot.Bot;
 import com.github.otbproject.otbproject.bot.BotUtil;
 import com.github.otbproject.otbproject.channel.Channel;
-import com.github.otbproject.otbproject.channel.ChannelGetException;
+import com.github.otbproject.otbproject.channel.ChannelNotFoundException;
 import com.github.otbproject.otbproject.channel.Channels;
 import com.github.otbproject.otbproject.messages.receive.PackagedMessage;
 import com.github.otbproject.otbproject.messages.send.MessagePriority;
@@ -63,7 +63,7 @@ public class MessageHandler implements EventHandler<IncomingMessageEvent> {
                         App.logger.info("Deleted message in channel <" + channelName + "> from user: " + data.user_name);
                         return;
                     }
-                } catch (ChannelGetException e) {
+                } catch (ChannelNotFoundException e) {
                     App.logger.error("Channel '" + channelName + "' did not exist in which to check if user was mod before deleting message");
                     App.logger.catching(e);
                 }
