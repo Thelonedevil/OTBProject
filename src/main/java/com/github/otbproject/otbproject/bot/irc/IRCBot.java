@@ -4,13 +4,13 @@ import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.bot.BotUtil;
 import com.github.otbproject.otbproject.bot.IBot;
 import com.github.otbproject.otbproject.channel.Channel;
-import com.github.otbproject.otbproject.channel.ChannelGetException;
 import com.github.otbproject.otbproject.channel.ChannelNotFoundException;
-import com.github.otbproject.otbproject.channel.Channels;
 import com.github.otbproject.otbproject.config.Configs;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.database.Databases;
 import com.github.otbproject.otbproject.serviceapi.ApiRequest;
+import com.google.common.collect.Multimaps;
+import com.google.common.collect.SetMultimap;
 import org.isomorphism.util.TokenBucket;
 import org.isomorphism.util.TokenBuckets;
 import org.pircbotx.Configuration;
@@ -20,7 +20,6 @@ import org.pircbotx.output.OutputRaw;
 import java.io.InterruptedIOException;
 import java.net.SocketException;
 import java.nio.charset.Charset;
-import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
@@ -31,6 +30,8 @@ public class IRCBot extends PircBotX implements IBot{
     // Should take slightly more than 30 seconds to refill 99 tokens adding 1
     // token every 304 milliseconds
     private final TokenBucket tokenBucket = TokenBuckets.builder().withCapacity(99).withFixedIntervalRefillStrategy(1, 304, TimeUnit.MILLISECONDS).build();
+
+    public final SetMultimap<String, String> subscriberStorage = Multimaps.newSetMultimap(new ConcurrentHashMap<>(), ConcurrentHashMap::newKeySet);
 
     @SuppressWarnings("unchecked")
     public IRCBot() {
@@ -149,8 +150,7 @@ public class IRCBot extends PircBotX implements IBot{
 
     @Override
     public boolean isUserSubscriber(String channelName, String user) {
-        Optional<Channel> optional = Channels.get(channelName);
-        return optional.isPresent() && optional.get().subscriberStorage.remove(user);
+        return subscriberStorage.remove(channelName, user);
     }
 
     @Override
@@ -173,7 +173,7 @@ public class IRCBot extends PircBotX implements IBot{
             if (BotUtil.isModOrHigher(channelName, user)) {
                 return false;
             }
-        } catch (ChannelGetException e) {
+        } catch (ChannelNotFoundException e) {
             App.logger.error("Channel '" + channelName + "' did not exist in which to timeout user");
             App.logger.catching(e);
         }
@@ -194,7 +194,7 @@ public class IRCBot extends PircBotX implements IBot{
             if (BotUtil.isModOrHigher(channelName, user)) {
                 return false;
             }
-        } catch (ChannelGetException e) {
+        } catch (ChannelNotFoundException e) {
             App.logger.error("Channel '" + channelName + "' did not exist in which to timeout user");
             App.logger.catching(e);
         }

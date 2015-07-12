@@ -7,6 +7,8 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.RemovalListener;
 import com.google.common.cache.RemovalNotification;
+import com.google.common.collect.Multimaps;
+import com.google.common.collect.SetMultimap;
 import net.jodah.expiringmap.ExpiringMap;
 import pro.beam.api.BeamAPI;
 import pro.beam.api.resource.BeamUser;
@@ -42,7 +44,7 @@ public class BeamChatChannel {
 
     private static final int CACHE_EXPIRATION_MIN = 5;
     private static final int CACHE_MAX_SIZE = 200;
-    private final ConcurrentHashMap<String, Set<String>> cacheLookup = new ConcurrentHashMap<>();
+    private final SetMultimap<String, String> cacheLookup = Multimaps.newSetMultimap(new ConcurrentHashMap<>(), ConcurrentHashMap::newKeySet);
     private final Cache<String, IncomingMessageData> messageCache;
 
 
@@ -61,7 +63,7 @@ public class BeamChatChannel {
                     public void onRemoval(RemovalNotification<String, IncomingMessageData> notification) {
                         IncomingMessageData data = notification.getValue();
                         if (data != null) {
-                            removeFromCacheLookup(notification.getValue().user_name.toLowerCase(), notification.getKey());
+                            cacheLookup.remove(notification.getValue().user_name.toLowerCase(), notification.getKey());
                         }
                     }
                 })
@@ -128,38 +130,11 @@ public class BeamChatChannel {
         return channel;
     }
 
-    private void addToCacheLookup(String user, String messageId) {
-        Set<String> set = cacheLookup.get(user);
-        if (set != null) {
-            set.add(messageId);
-        } else {
-            Set<String> newSet = ConcurrentHashMap.newKeySet();
-            newSet.add(messageId);
-            set = cacheLookup.putIfAbsent(user, newSet);
-            if (set != null) {
-                set.addAll(newSet);
-            }
-        }
-    }
-
-    private boolean removeFromCacheLookup(String user, String messageId) {
-        Set<String> set = cacheLookup.get(user);
-        if (set != null) {
-            boolean success = set.remove(messageId);
-            // Only do more expensive concurrent call if it actually seems empty
-            if (set.isEmpty()) {
-                cacheLookup.compute(user, (s, strings) -> strings.isEmpty() ? null : strings);
-            }
-            return success;
-        }
-        return false;
-    }
-
     public void cacheMessage(IncomingMessageData data) {
         if (data == null) {
             return;
         }
-        addToCacheLookup(data.user_name.toLowerCase(), data.id);
+        cacheLookup.put(data.user_name.toLowerCase(), data.id);
         messageCache.put(data.id, data);
     }
 

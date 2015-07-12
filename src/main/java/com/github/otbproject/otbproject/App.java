@@ -13,7 +13,7 @@ import com.github.otbproject.otbproject.fs.groups.Chan;
 import com.github.otbproject.otbproject.fs.groups.Load;
 import com.github.otbproject.otbproject.gui.GuiApplication;
 import com.github.otbproject.otbproject.util.version.AppVersion;
-import com.github.otbproject.otbproject.util.UnPacker;
+import com.github.otbproject.otbproject.util.Unpacker;
 import com.github.otbproject.otbproject.util.Util;
 import com.github.otbproject.otbproject.util.version.Version;
 import com.github.otbproject.otbproject.util.compat.VersionCompatHelper;
@@ -113,10 +113,10 @@ public class App {
                 VersionCompatHelper.fixCompatIssues(version);
             }
             PathBuilder builder = new PathBuilder();
-            UnPacker.unPack("preloads/json/commands/", builder.base(Base.CMD).channels(Chan.ALL).load(Load.TO).create());
-            UnPacker.unPack("preloads/json/aliases/", builder.base(Base.ALIAS).channels(Chan.ALL).load(Load.TO).create());
-            UnPacker.unPack("preloads/json/bot-channel/commands/", builder.base(Base.CMD).channels(Chan.BOT).load(Load.TO).create());
-            UnPacker.unPack("preloads/groovy/scripts/commands/", FSUtil.commandScriptDir());
+            Unpacker.unpack("preloads/json/commands/", builder.base(Base.CMD).channels(Chan.ALL).load(Load.TO).create());
+            Unpacker.unpack("preloads/json/aliases/", builder.base(Base.ALIAS).channels(Chan.ALL).load(Load.TO).create());
+            Unpacker.unpack("preloads/json/bot-channel/commands/", builder.base(Base.CMD).channels(Chan.BOT).load(Load.TO).create());
+            Unpacker.unpack("preloads/groovy/scripts/", FSUtil.scriptDir());
             Bot.Control.loadPreloads(LoadStrategy.UPDATE);
         }
         Versions.writeToFile(versionFile, VERSION);

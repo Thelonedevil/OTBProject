@@ -35,7 +35,7 @@ public class IrcListener extends ListenerAdapter {
                 String name = messageSplit[0];
                 String userType = messageSplit[1];
                 if (userType.equalsIgnoreCase("subscriber")) {
-                    channel.subscriberStorage.add(name);
+                    ((IRCBot) Bot.getBot()).subscriberStorage.put(channelName, user);
                 }
             }
         } else {

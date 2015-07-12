@@ -14,13 +14,13 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 public class ScriptHelper {
-    public static void runCommand(String message, String user, String channelName, String destinationChannel, MessagePriority priority) {
+    public static void runCommand(String message, String user, String channelName, String destinationChannel, MessagePriority priority) throws ChannelNotFoundException {
         App.logger.debug("Processing message as command: " + message);
         PackagedMessage packagedMessage = new PackagedMessage(message, user, channelName, destinationChannel, UserLevel.INTERNAL, priority);
         Channels.getOrThrow(channelName).receiveMessage(packagedMessage);
     }
 
-    public static void sendMessage(String channelName, String message, MessagePriority priority) {
+    public static void sendMessage(String channelName, String message, MessagePriority priority) throws ChannelNotFoundException {
         if (channelName.startsWith(InternalMessageSender.DESTINATION_PREFIX)) {
             InternalMessageSender.send(channelName.replace(InternalMessageSender.DESTINATION_PREFIX, ""), message, "CmdExec");
         } else {
