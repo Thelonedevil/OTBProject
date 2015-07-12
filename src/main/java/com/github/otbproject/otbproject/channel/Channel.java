@@ -13,7 +13,6 @@ import com.github.otbproject.otbproject.messages.send.ChannelMessageSender;
 import com.github.otbproject.otbproject.messages.send.MessageOut;
 import net.jodah.expiringmap.ExpiringMap;
 
-import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.*;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -22,7 +21,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class Channel {
     private final ExpiringMap<String, Boolean> commandCooldownSet;
     private final ExpiringMap<String, Boolean> userCooldownSet;
-    public final Set<String> subscriberStorage = Collections.newSetFromMap(new ConcurrentHashMap<>());
     private final String name;
     private final ChannelConfig config;
     private final DatabaseWrapper mainDb;
@@ -109,7 +107,6 @@ public class Channel {
 
             commandCooldownSet.clear();
             userCooldownSet.clear();
-            subscriberStorage.clear();
 
             return true;
         } finally {
