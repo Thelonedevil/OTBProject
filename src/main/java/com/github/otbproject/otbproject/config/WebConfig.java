@@ -8,7 +8,7 @@ public class WebConfig {
     private boolean enabled = true;
     private boolean autoUpdate = true;
     private int portNumber = 22222;
-    private String ip_binding = "0.0.0.0";
+    private String ipBinding = "0.0.0.0";
     public List<String> whitelistedIPAddressesWithSubnettingPrefix;
 
     public WebConfig() {
@@ -39,11 +39,11 @@ public class WebConfig {
         this.portNumber = portNumber;
     }
 
-    public String getIp_binding() {
-        return ip_binding;
+    public String getIpBinding() {
+        return ipBinding;
     }
 
-    public void setIp_binding(String ip_binding) {
-        this.ip_binding = ip_binding;
+    public void setIpBinding(String ipBinding) {
+        this.ipBinding = ipBinding;
     }
 }

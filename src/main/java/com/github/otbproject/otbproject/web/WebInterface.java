@@ -20,7 +20,7 @@ public class WebInterface {
         } else if (!path.exists() || (Configs.getWebConfig().isAutoUpdate() && (WebVersion.current().compareTo(WebVersion.latest()) < 0))) {
             WarDownload.downloadLatest();
         }
-        startInterface(Configs.getWebConfig().getPortNumber(), Configs.getWebConfig().getIp_binding());
+        startInterface(Configs.getWebConfig().getPortNumber(), Configs.getWebConfig().getIpBinding());
     }
 
     private static void startInterface(int port, String address) {
