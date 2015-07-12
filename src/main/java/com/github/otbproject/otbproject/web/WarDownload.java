@@ -10,13 +10,17 @@ import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.util.concurrent.*;
+import java.util.stream.Stream;
 
 class WarDownload {
     private static final int ATTEMPTS = 2;
+    static final String WAR_PREFIX = "web-interface-";
+    static final String WAR_EXT = ".war";
+    private static final String DL_EXT = ".download";
 
     public static void downloadLatest() {
         ExecutorService executor = Util.getSingleThreadExecutor("War Download");
-        App.logger.info("Downloading web interface");
+        App.logger.info("Downloading web interface version " + WebVersion.latest());
 
         boolean success = false;
 
@@ -25,7 +29,9 @@ class WarDownload {
             try {
                 Future<Boolean> future = executor.submit(WarDownload::doDownload);
                 future.get(1, TimeUnit.MINUTES);
-                moveTempDownload();
+                if (!moveTempDownload()) {
+                    throw new WarDownloadException("Failed to rename download file to final file name");
+                }
                 success = true;
                 break;
             } catch (Exception e) {
@@ -38,6 +44,8 @@ class WarDownload {
 
         if (success) {
             App.logger.info("Successfully downloaded web interface");
+            WebVersion.updateCurrentToLatest();
+            cleanupOldVersions();
         } else {
             App.logger.error("Failed to download web interface.");
             App.logger.warn("Please download the web interface yourself from 'https://github.com/OTBProject/OTBWebInterface/releases/latest'," +
@@ -47,26 +55,46 @@ class WarDownload {
     }
 
     private static void cleanupTempDownload() {
-        // TODO write
+        if (!new File(dlPath()).delete()) {
+            App.logger.error("Failed to cleanup files from failed download");
+        }
     }
 
-    private static void moveTempDownload() {
-        // TODO write
+    private static boolean moveTempDownload() {
+        String dlPath = dlPath();
+        String finalPath = dlPath.substring(0, dlPath.length() - DL_EXT.length());
+        return new File(dlPath).renameTo(new File(finalPath));
+    }
+
+    private static void cleanupOldVersions() {
+        File dir = new File(FSUtil.webDir());
+        File[] files = dir.listFiles();
+        if (files == null) {
+            return;
+        }
+
+        Stream.of(files)
+                .filter(File::isFile)
+                .filter(file -> file.getName().startsWith(WarDownload.WAR_PREFIX))
+                .filter(file -> file.getName().endsWith(WarDownload.WAR_EXT))
+                .filter(file -> !file.getName().equals(WAR_PREFIX + WebVersion.current() + WAR_EXT))
+                .forEach(File::delete);
     }
 
     private static Boolean doDownload() throws WarDownloadException {
-        String warURL = "https://github.com/OTBProject/OTBWebInterface/releases/download/" + WebVersion.latest() + "/web-interface.war";
-        URL website = null;
+        String latestVersion = WebVersion.latest().toString();
+        String warURL = "https://github.com/OTBProject/OTBWebInterface/releases/download/" + latestVersion + "/web-interface-" + latestVersion + ".war";
+        String dlPath = dlPath();
         try {
-            website = new URL(warURL);
+            URL website = new URL(warURL);
             ReadableByteChannel rbc = Channels.newChannel(website.openStream());
-            FileOutputStream fos = new FileOutputStream(WebInterface.WAR_PATH + ".download");
+            FileOutputStream fos = new FileOutputStream(dlPath);
             fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
             URL md5Original = new URL(warURL+".md5");
             BufferedReader in = new BufferedReader(new InputStreamReader(md5Original.openStream()));
             String inputLine = in.readLine();
             in.close();
-            FileInputStream fis = new FileInputStream(new File(WebInterface.WAR_PATH));
+            FileInputStream fis = new FileInputStream(dlPath);
             String md5 = DigestUtils.md5Hex(fis);
             fis.close();
             if(!md5.equals(inputLine)){
@@ -76,5 +104,9 @@ class WarDownload {
            throw new WarDownloadException(e);
         }
         return Boolean.TRUE;
+    }
+
+    private static String dlPath() {
+        return FSUtil.webDir() + File.separator + WAR_PREFIX + WebVersion.latest() + WAR_EXT + DL_EXT;
     }
 }
