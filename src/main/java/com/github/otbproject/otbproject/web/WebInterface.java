@@ -8,7 +8,10 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.webapp.WebAppContext;
 
+import java.awt.*;
 import java.io.File;
+import java.io.IOException;
+import java.net.URI;
 
 public class WebInterface {
     public static void start() {
@@ -43,5 +46,15 @@ public class WebInterface {
 
     static String warPath() {
         return FSUtil.webDir() + File.separator + "web-interface-" + WebVersion.current() + ".war";
+    }
+
+    public static void openInBrowser() {
+        if (Desktop.isDesktopSupported()) {
+            try {
+                Desktop.getDesktop().browse(URI.create("http://localhost:" + Configs.getWebConfig().getPortNumber()));
+            } catch (IOException e) {
+                App.logger.catching(e);
+            }
+        }
     }
 }
