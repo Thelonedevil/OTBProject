@@ -2,12 +2,23 @@ package com.github.otbproject.otbproject.util.version;
 
 public class AppVersion {
     private static Version LATEST;
+    private static final Version CURRENT;
+    private static final AppVersion dummyInstance;
 
-    public String getVersionString() {
-        return getClass().getPackage().getImplementationVersion();
+    static {
+        dummyInstance = new AppVersion();
+        CURRENT = getCurrentVersion();
     }
 
-    public Version getCurrentVersion() {
+    private static String getVersionString() {
+        return dummyInstance.getClass().getPackage().getImplementationVersion();
+    }
+
+    public static Version current() {
+        return CURRENT;
+    }
+
+    private static Version getCurrentVersion() {
         Version version;
         try {
             version = Version.parseVersion(getVersionString());
@@ -18,14 +29,14 @@ public class AppVersion {
         return version;
     }
 
-    public Version latest() {
+    public static Version latest() {
         if (LATEST == null) {
             getLatest();
         }
         return LATEST;
     }
 
-    private synchronized void getLatest() {
+    private static synchronized void getLatest() {
         if (LATEST == null) {
             LATEST = Version.parseAsOptional(Versions.lookupLatestGithubVersion("otbproject"))
                     .orElse(Version.create(0, 0, 0, Version.Type.RELEASE));

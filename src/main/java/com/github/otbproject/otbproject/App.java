@@ -36,7 +36,7 @@ import java.util.Scanner;
 public class App {
     public static final String PID = ManagementFactory.getRuntimeMXBean().getName().split("@")[0];
     public static final Logger logger = LogManager.getLogger();
-    public static final Version VERSION = new AppVersion().getCurrentVersion();
+    public static final Version VERSION = AppVersion.current();
     public static final ConfigManager configManager = new ConfigManager();
 
     public static void main(String[] args) {
