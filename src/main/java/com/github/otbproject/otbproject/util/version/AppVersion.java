@@ -2,16 +2,10 @@ package com.github.otbproject.otbproject.util.version;
 
 public class AppVersion {
     private static Version LATEST;
-    private static final Version CURRENT;
-    private static final AppVersion dummyInstance;
-
-    static {
-        dummyInstance = new AppVersion();
-        CURRENT = getCurrentVersion();
-    }
+    private static final Version CURRENT = getCurrentVersion();
 
     private static String getVersionString() {
-        return dummyInstance.getClass().getPackage().getImplementationVersion();
+        return AppVersion.class.getPackage().getImplementationVersion();
     }
 
     public static Version current() {
