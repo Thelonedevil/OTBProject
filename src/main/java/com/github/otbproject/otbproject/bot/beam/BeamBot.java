@@ -111,7 +111,7 @@ public class BeamBot extends AbstractBot {
     @Override
     public void startBot() {
         Channels.join(getUserName(), false);
-        Configs.getBotConfig().currentChannels.forEach(channel -> Channels.join(channel, false));
+        Configs.getBotConfig().getCurrentChannels().forEach(channel -> Channels.join(channel, false));
         while(!beamChannels.isEmpty()){
             try {
                 Thread.sleep(200);

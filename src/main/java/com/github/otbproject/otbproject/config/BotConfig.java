@@ -1,13 +1,14 @@
 package com.github.otbproject.otbproject.config;
 
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class BotConfig {
     private ChannelJoinSetting channelJoinSetting = ChannelJoinSetting.NONE;
-    public List<String> whitelist = new CopyOnWriteArrayList<>();
-    public List<String> blacklist = new CopyOnWriteArrayList<>();
-    public List<String> currentChannels = new CopyOnWriteArrayList<>();
+    private Set<String> whitelist = ConcurrentHashMap.newKeySet();
+    private Set<String> blacklist = ConcurrentHashMap.newKeySet();
+    private Set<String> currentChannels = ConcurrentHashMap.newKeySet();
     private Integer messageSendDelayInMilliseconds = 1600;
     private boolean botChannelDebug = true;
 
@@ -19,12 +20,28 @@ public class BotConfig {
         this.channelJoinSetting = channelJoinSetting;
     }
 
-    public boolean isBotChannelDebug() {
-        return botChannelDebug;
+    public Set<String> getWhitelist() {
+        return whitelist;
     }
 
-    public void setBotChannelDebug(boolean botChannelDebug) {
-        this.botChannelDebug = botChannelDebug;
+    public void setWhitelist(List<String> whitelist) {
+        this.whitelist.addAll(whitelist);
+    }
+
+    public Set<String> getBlacklist() {
+        return blacklist;
+    }
+
+    public void setBlacklist(List<String> blacklist) {
+        this.blacklist.addAll(blacklist);
+    }
+
+    public Set<String> getCurrentChannels() {
+        return currentChannels;
+    }
+
+    public void setCurrentChannels(List<String> currentChannels) {
+        this.currentChannels.addAll(currentChannels);
     }
 
     public Integer getMessageSendDelayInMilliseconds() {
@@ -33,5 +50,13 @@ public class BotConfig {
 
     public void setMessageSendDelayInMilliseconds(Integer messageSendDelayInMilliseconds) {
         this.messageSendDelayInMilliseconds = messageSendDelayInMilliseconds;
+    }
+
+    public boolean isBotChannelDebug() {
+        return botChannelDebug;
+    }
+
+    public void setBotChannelDebug(boolean botChannelDebug) {
+        this.botChannelDebug = botChannelDebug;
     }
 }

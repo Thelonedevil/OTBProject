@@ -64,7 +64,7 @@ public class IrcListener extends ListenerAdapter {
         // Join bot channel
         Channels.join(Bot.getBot().getUserName(), false);
         // Join channels
-        Configs.getBotConfig().currentChannels.forEach(channel -> Channels.join(channel, false));
+        Configs.getBotConfig().getCurrentChannels().forEach(channel -> Channels.join(channel, false));
     }
 
 }

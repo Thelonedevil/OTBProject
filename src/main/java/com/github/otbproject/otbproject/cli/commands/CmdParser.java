@@ -13,7 +13,7 @@ import com.github.otbproject.otbproject.messages.send.MessagePriority;
 import com.github.otbproject.otbproject.user.UserLevel;
 import com.github.otbproject.otbproject.util.preload.LoadStrategy;
 import com.github.otbproject.otbproject.util.preload.PreloadLoader;
-import com.google.common.collect.ImmutableSet;
+import com.github.otbproject.otbproject.web.WebInterface;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -24,6 +24,7 @@ public class CmdParser {
     public static final String EXEC = "exec";
     public static final String JOINCHANNEL = "join";
     public static final String LEAVECHANNEL = "leave";
+    public static final String OPEN_WEB = "open-web";
     public static final String QUIT = "quit";
     public static final String RESET = "reset";
     public static final String RESTART = "restart";
@@ -62,6 +63,7 @@ public class CmdParser {
         initExec();
         initJoinChannel();
         initLeaveChannel();
+        initOpenWeb();
         initQuit();
         initReset();
         initRestart();
@@ -70,8 +72,8 @@ public class CmdParser {
         initHelp();
     }
 
-    public static ImmutableSet<String> getCommands() {
-        return ImmutableSet.copyOf(map.keySet());
+    public static Set<String> getCommands() {
+        return Collections.unmodifiableSet(map.keySet());
     }
 
     public static void from(String source) {
@@ -218,6 +220,29 @@ public class CmdParser {
         map.put(LEAVECHANNEL, commandBuilder.create());
     }
 
+    private static void initOpenWeb() {
+        commandBuilder.withShortHelp("open-web")
+                .withLongHelp("Opens the web interface in the default browser")
+                .withAction(() -> {
+                    WebInterface.openInBrowser();
+                    return "";
+                });
+        map.put(OPEN_WEB, commandBuilder.create());
+    }
+
+    private static void initQuit() {
+        commandBuilder.withShortHelp("quit")
+                .withLongHelp("Stops the bot and exits")
+                .withAction(() -> {
+                    App.logger.info("Stopping the process");
+                    Bot.Control.shutdown(false);
+                    App.logger.info("Process Stopped, Goodbye");
+                    System.exit(0);
+                    return "";
+                });
+        map.put(QUIT, commandBuilder.create());
+    }
+
     private static void initReset() {
         commandBuilder.withShortHelp("reset [CHANNEL]")
                 .withLongHelp("Resets all commands and aliases to their defaults. Either for CHANNEL, or if not specified, all channels.")
@@ -249,19 +274,6 @@ public class CmdParser {
                     }
                 });
         map.put(RESTART, commandBuilder.create());
-    }
-
-    private static void initQuit() {
-        commandBuilder.withShortHelp("quit")
-                .withLongHelp("Stops the bot and exits")
-                .withAction(() -> {
-                    App.logger.info("Stopping the process");
-                    Bot.Control.shutdown(false);
-                    App.logger.info("Process Stopped, Goodbye");
-                    System.exit(0);
-                    return "";
-                });
-        map.put(QUIT, commandBuilder.create());
     }
 
     private static void initStart() {
