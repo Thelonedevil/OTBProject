@@ -52,12 +52,12 @@ public class Channels {
             ChannelJoinSetting channelJoinSetting = botConfig.getChannelJoinSetting();
             if (!isBotChannel) {
                 if (channelJoinSetting == ChannelJoinSetting.WHITELIST) {
-                    if (!BotConfigHelper.isWhitelisted(botConfig, channelName)) {
+                    if (!botConfig.getWhitelist().contains(channelName)) {
                         App.logger.info("Failed to join channel: " + channelName + ". Not whitelisted.");
                         return false;
                     }
                 } else if (channelJoinSetting == ChannelJoinSetting.BLACKLIST) {
-                    if (BotConfigHelper.isBlacklisted(botConfig, channelName)) {
+                    if (botConfig.getBlacklist().contains(channelName)) {
                         App.logger.info("Failed to join channel: " + channelName + ". Blacklisted.");
                         return false;
                     }
@@ -107,7 +107,7 @@ public class Channels {
             channel.join();
 
             if (!isBotChannel) {
-                BotConfigHelper.addToCurrentChannels(botConfig, channelName);
+                botConfig.getCurrentChannels().add(channelName);
                 Configs.writeBotConfig();
             }
         } finally {
@@ -130,7 +130,7 @@ public class Channels {
             }
             App.logger.info("Leaving channel: " + channelName);
             get(channelName).ifPresent(Channel::leave);
-            BotConfigHelper.removeFromCurrentChannels(Configs.getBotConfig(), channelName);
+            Configs.getBotConfig().getCurrentChannels().remove(channelName);
             Configs.writeBotConfig();
             Bot.getBot().leave(channelName);
         } finally {
