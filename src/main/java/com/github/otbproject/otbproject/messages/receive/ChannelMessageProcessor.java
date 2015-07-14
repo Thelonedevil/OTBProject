@@ -7,7 +7,6 @@ import com.github.otbproject.otbproject.channel.Channels;
 import com.github.otbproject.otbproject.command.Commands;
 import com.github.otbproject.otbproject.config.ChannelConfigHelper;
 import com.github.otbproject.otbproject.config.Configs;
-import com.github.otbproject.otbproject.config.GeneralConfigHelper;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.messages.internal.InternalMessageSender;
 import com.github.otbproject.otbproject.messages.send.MessageOut;
@@ -78,7 +77,7 @@ public class ChannelMessageProcessor {
         ProcessedMessage processedMsg = MessageProcessor.process(db, packagedMessage.message, channelName, user, ul, debug);
 
         // Check if bot is enabled
-        if (channel.getConfig().isEnabled() || GeneralConfigHelper.isPermanentlyEnabled(Configs.getGeneralConfig(), processedMsg.commandName)) {
+        if (channel.getConfig().isEnabled() || Configs.getGeneralConfig().getPermanentlyEnabledCommands().contains(processedMsg.commandName)) {
             // Check if empty message, and then if command is on cooldown (skip cooldown check if internal)
             if ((processedMsg.isScript || !processedMsg.response.isEmpty()) && (internal || !destChannel.isCommandCooldown(processedMsg.commandName))) {
                 doResponse(db, processedMsg, channelName, destChannelName, destChannel, user, ul, packagedMessage.messagePriority, internal);
