@@ -3,6 +3,7 @@ package com.github.otbproject.otbproject.gui;
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.bot.Bot;
 import com.github.otbproject.otbproject.fs.FSUtil;
+import com.github.otbproject.otbproject.web.WebInterface;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -42,8 +43,8 @@ public class GuiApplication extends Application {
      */
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Font.loadFont(getClass().getClassLoader().getResourceAsStream("UbuntuMono-R.ttf"),12);
-        Font.loadFont(getClass().getClassLoader().getResourceAsStream("Ubuntu-R.ttf"),12);
+        Font.loadFont(getClass().getClassLoader().getResourceAsStream("UbuntuMono-R.ttf"), 12);
+        Font.loadFont(getClass().getClassLoader().getResourceAsStream("Ubuntu-R.ttf"), 12);
         FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("console.fxml"));
         Parent start = loader.load();
         primaryStage.setScene(new Scene(start, 1200, 500));
@@ -81,6 +82,10 @@ public class GuiApplication extends Application {
 
         });
         controller = loader.<GuiController>getController();
+        controller.webOpen.setOnAction(event -> {
+            WebInterface.openInBrowser();
+            event.consume();
+        });
         controller.cliOutput.appendText(">  ");
         controller.commandsInput.setEditable(false);
         controller.commandsOutput.appendText("Type \"help\" for a list of commands.\nThe PID of the bot is probably " + App.PID + ", if you are using an Oracle JVM, but it may be different, especially if you are using a different JVM. Be careful stopping the bot using this PID.");

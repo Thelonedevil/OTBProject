@@ -11,6 +11,7 @@ import com.github.otbproject.otbproject.messages.internal.InternalMessageSender;
 import com.github.otbproject.otbproject.util.JsonHandler;
 import com.github.otbproject.otbproject.util.Util;
 import javafx.fxml.FXML;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
@@ -33,6 +34,8 @@ public class GuiController {
     public TextField commandsInput;
     @FXML
     public TextArea cliOutput;
+    @FXML
+    public MenuItem webOpen;
 
     protected final List<String> history = new ArrayList<>();
     protected int historyPointer = 0;
@@ -153,6 +156,7 @@ public class GuiController {
                 notTabCompleting();
         }
     }
+
 
     private void tabComplete(List<String> parts, int index, Collection<String> completions) {
         tabComplete(parts, index, completions, s -> true);
