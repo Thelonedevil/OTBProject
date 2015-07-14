@@ -6,7 +6,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class GeneralConfig {
     private Service service = Service.TWITCH;
-    //private boolean checkForUpdates = true;
+    private boolean updateChecking = true;
     private Set<String> permanentlyEnabledCommands;
 
     public GeneralConfig() {
@@ -20,6 +20,14 @@ public class GeneralConfig {
 
     public void setService(Service service) {
         this.service = service;
+    }
+
+    public boolean isUpdateChecking() {
+        return updateChecking;
+    }
+
+    public void setUpdateChecking(boolean updateChecking) {
+        this.updateChecking = updateChecking;
     }
 
     public Set<String> getPermanentlyEnabledCommands() {

@@ -7,7 +7,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class WebConfig {
     private boolean enabled = true;
-    private boolean autoUpdate = true;
+    private boolean autoUpdating = true;
     private int portNumber = 22222;
     private String ipBinding = "0.0.0.0";
     private Set<String> whitelistedIPAddressesWithSubnettingPrefix = ConcurrentHashMap.newKeySet();
@@ -24,12 +24,12 @@ public class WebConfig {
         this.enabled = enabled;
     }
 
-    public boolean isAutoUpdate() {
-        return autoUpdate;
+    public boolean isAutoUpdating() {
+        return autoUpdating;
     }
 
-    public void setAutoUpdate(boolean autoUpdate) {
-        this.autoUpdate = autoUpdate;
+    public void setAutoUpdating(boolean autoUpdating) {
+        this.autoUpdating = autoUpdating;
     }
 
     public int getPortNumber() {
