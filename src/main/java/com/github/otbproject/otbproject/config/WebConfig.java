@@ -2,17 +2,18 @@ package com.github.otbproject.otbproject.config;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class WebConfig {
     private boolean enabled = true;
     private boolean autoUpdate = true;
     private int portNumber = 22222;
     private String ipBinding = "0.0.0.0";
-    public List<String> whitelistedIPAddressesWithSubnettingPrefix;
+    private Set<String> whitelistedIPAddressesWithSubnettingPrefix = ConcurrentHashMap.newKeySet();
 
     public WebConfig() {
-        whitelistedIPAddressesWithSubnettingPrefix = new CopyOnWriteArrayList<>(Arrays.asList("127.0.0.0/8", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"));
+        whitelistedIPAddressesWithSubnettingPrefix.addAll(Arrays.asList("127.0.0.0/8", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"));
     }
 
     public boolean isEnabled() {
@@ -45,5 +46,13 @@ public class WebConfig {
 
     public void setIpBinding(String ipBinding) {
         this.ipBinding = ipBinding;
+    }
+
+    public Set<String> getWhitelistedIPAddressesWithSubnettingPrefix() {
+        return whitelistedIPAddressesWithSubnettingPrefix;
+    }
+
+    public void setWhitelistedIPAddressesWithSubnettingPrefix(List<String> whitelistedIPAddressesWithSubnettingPrefix) {
+        this.whitelistedIPAddressesWithSubnettingPrefix.addAll(whitelistedIPAddressesWithSubnettingPrefix);
     }
 }
