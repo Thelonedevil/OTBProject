@@ -66,6 +66,13 @@
                      <MenuItem fx:id="openBaseDir" mnemonicParsing="false" text="Open Installation Directory" />
                  </items>
              </Menu>
+             <Menu mnemonicParsing="false" text="Bot">
+                 <items>
+                     <MenuItem fx:id="botStart" mnemonicParsing="false" text="Start" />
+                     <MenuItem fx:id="botStop" mnemonicParsing="false" text="Stop" />
+                     <MenuItem fx:id="botRestart" mnemonicParsing="false" text="Restart" />
+                 </items>
+             </Menu>
             <Menu mnemonicParsing="false" text="Web">
               <items>
                   <MenuItem fx:id="webOpen" mnemonicParsing="false" text="Open Interface in Browser" />

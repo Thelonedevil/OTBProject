@@ -37,6 +37,12 @@ public class GuiController {
     @FXML
     public MenuItem openBaseDir;
     @FXML
+    public MenuItem botStart;
+    @FXML
+    public MenuItem botStop;
+    @FXML
+    public MenuItem botRestart;
+    @FXML
     public MenuItem webOpen;
 
     protected final List<String> history = new ArrayList<>();

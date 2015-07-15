@@ -152,6 +152,22 @@ public class GuiApplication extends Application {
             });
             event.consume();
         });
+        controller.botStart.setOnAction(event -> {
+            try {
+                addInfo(Bot.Control.startup() ? "Started bot" : "Failed to start bot");
+            } catch (Bot.StartupException ignored) {
+                addInfo("Did not start bot - bot already running");
+            }
+            event.consume();
+        });
+        controller.botStop.setOnAction(event -> {
+            addInfo(Bot.Control.shutdown(true) ? "Bot stopped" : "Did not stop bot - bot not running");
+            event.consume();
+        });
+        controller.botRestart.setOnAction(event -> {
+            addInfo(Bot.Control.restart() ? "Restarted bot" : "Failed to restart bot");
+            event.consume();
+        });
         controller.webOpen.setOnAction(event -> {
             openWebInterfaceInBrowser();
             event.consume();
