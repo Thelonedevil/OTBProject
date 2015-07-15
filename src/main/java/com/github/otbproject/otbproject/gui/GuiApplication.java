@@ -162,11 +162,11 @@ public class GuiApplication extends Application {
                     "\n\nPress \"Get New Release\" or go to" +
                     "\nhttps://github.com/OTBProject/OTBProject/releases/latest" +
                     "\nto get the new release." +
-                    "\n\nPressing \"Never Ask Again\" will prevent notifications " +
+                    "\n\nPressing \"Don't Ask Again\" will prevent notifications " +
                     "\nfor all future releases of OTB Project.");
             DialogPane dialogPane = alert.getDialogPane();
             setDialogPaneStyle(dialogPane);
-            ButtonType buttonTypeDontAskAgain = new ButtonType("Never Ask Again", ButtonBar.ButtonData.LEFT);
+            ButtonType buttonTypeDontAskAgain = new ButtonType("Don't Ask Again", ButtonBar.ButtonData.LEFT);
             ButtonType buttonTypeGetRelease = new ButtonType("Get New Release", ButtonBar.ButtonData.FINISH);
             ButtonType buttonTypeIgnoreOnce = new ButtonType("Ignore Once", ButtonBar.ButtonData.FINISH);
             alert.getButtonTypes().setAll(buttonTypeDontAskAgain, buttonTypeGetRelease, buttonTypeIgnoreOnce);
