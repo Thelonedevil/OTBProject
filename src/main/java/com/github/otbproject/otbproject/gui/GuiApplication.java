@@ -202,10 +202,6 @@ public class GuiApplication extends Application {
         this.getHostServices().showDocument("http://127.0.0.1:" + Configs.getWebConfig().getPortNumber());
     }
 
-    private void exitPrompt() {
-
-    }
-
     private void checkForNewRelease() {
         if (Configs.getGeneralConfig().isUpdateChecking()
                 && (AppVersion.latest().compareTo(App.VERSION) > 0)
