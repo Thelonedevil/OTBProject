@@ -21,6 +21,7 @@ import org.apache.commons.io.input.Tailer;
 import org.apache.commons.io.input.TailerListenerAdapter;
 
 import java.io.File;
+import java.net.URL;
 
 public class GuiApplication extends Application {
 
@@ -58,7 +59,7 @@ public class GuiApplication extends Application {
             alert.setHeaderText("WARNING: \"Close Window\" DOES NOT STOP THE BOT.");
             alert.setContentText("Closing this window without exiting may make it difficult to stop the bot.\nPress \"Exit\" to stop the bot and exit.\nPress \"Cancel\" to keep the window open.");
             DialogPane dialogPane = alert.getDialogPane();
-            dialogPane.getStylesheets().add(getClass().getClassLoader().getResource("style.css").toExternalForm());
+            setDialogPaneStyle(dialogPane);
             ButtonType buttonTypeCloseNoExit = new ButtonType("Close Window", ButtonBar.ButtonData.LEFT);
             ButtonType buttonTypeExit = new ButtonType("Exit", ButtonBar.ButtonData.FINISH);
             ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonBar.ButtonData.FINISH);
@@ -139,6 +140,15 @@ public class GuiApplication extends Application {
         }
     }
 
+    private void setDialogPaneStyle(DialogPane dialogPane) {
+        URL resource = getClass().getClassLoader().getResource("style.css");
+        if (resource != null) {
+            dialogPane.getStylesheets().add(resource.toExternalForm());
+        } else {
+            App.logger.error("Unable to get style sheet for alerts.");
+        }
+    }
+
     private void openWebInterfaceInBrowser() {
         this.getHostServices().showDocument("http://127.0.0.1:" + Configs.getWebConfig().getPortNumber());
     }
@@ -155,7 +165,7 @@ public class GuiApplication extends Application {
                     "\n\nPressing \"Never Ask Again\" will prevent notifications " +
                     "\nfor all future releases of OTB Project.");
             DialogPane dialogPane = alert.getDialogPane();
-            dialogPane.getStylesheets().add(getClass().getClassLoader().getResource("style.css").toExternalForm());
+            setDialogPaneStyle(dialogPane);
             ButtonType buttonTypeDontAskAgain = new ButtonType("Never Ask Again", ButtonBar.ButtonData.LEFT);
             ButtonType buttonTypeGetRelease = new ButtonType("Get New Release", ButtonBar.ButtonData.FINISH);
             ButtonType buttonTypeIgnoreOnce = new ButtonType("Ignore Once", ButtonBar.ButtonData.FINISH);
