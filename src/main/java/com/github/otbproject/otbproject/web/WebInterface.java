@@ -51,10 +51,12 @@ public class WebInterface {
     public static void openInBrowser() {
         if (Desktop.isDesktopSupported()) {
             try {
-                Desktop.getDesktop().browse(URI.create("http://localhost:" + Configs.getWebConfig().getPortNumber()));
+                Desktop.getDesktop().browse(URI.create("http://127.0.0.1:" + Configs.getWebConfig().getPortNumber()));
             } catch (IOException e) {
                 App.logger.catching(e);
             }
+        }else{
+            App.logger.warn("Unable to open web interface in browser - desktop not supported");
         }
     }
 }
