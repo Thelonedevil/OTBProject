@@ -82,6 +82,6 @@ public class CommandProcessor {
                 return new ProcessedCommand(response, cmdName, false, args);
             }
         }
-        return new ProcessedCommand("", "", false, args);
+        return ProcessedCommand.empty();
     }
 }
