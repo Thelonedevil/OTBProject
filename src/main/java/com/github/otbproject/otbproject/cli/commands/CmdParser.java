@@ -281,11 +281,7 @@ public class CmdParser {
                 .withLongHelp("Starts the bot")
                 .withAction(() -> {
                     try {
-                        if (Bot.Control.startup()) {
-                            return "Started bot";
-                        } else {
-                            return "Failed to start bot";
-                        }
+                        return  (Bot.Control.startup() ? "Started bot" : "Failed to start bot");
                     } catch (Bot.StartupException ignored) {
                         return "Unable to start bot: bot already running";
                     }
@@ -296,10 +292,7 @@ public class CmdParser {
     private static void initStop() {
         commandBuilder.withShortHelp("stop")
                 .withLongHelp("Stops the bot")
-                .withAction(() -> {
-                    Bot.Control.shutdown(true);
-                    return "Stopped bot";
-                });
+                .withAction(() -> (Bot.Control.shutdown(true) ? "Stopped bot" : "Bot not running"));
         map.put(STOP, commandBuilder.create());
     }
 
