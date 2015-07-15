@@ -34,8 +34,11 @@ public class GuiController {
     public TextField commandsInput;
     @FXML
     public TextArea cliOutput;
+
     @FXML
     public MenuItem openBaseDir;
+    @FXML
+    public MenuItem quit;
     @FXML
     public MenuItem botStart;
     @FXML

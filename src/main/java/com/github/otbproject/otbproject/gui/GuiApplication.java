@@ -150,6 +150,25 @@ public class GuiApplication extends Application {
             });
             event.consume();
         });
+        controller.quit.setOnAction(event -> {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Confirm Quit");
+            alert.setHeaderText("Are you sure you want to quit?");
+            DialogPane dialogPane = alert.getDialogPane();
+            setDialogPaneStyle(dialogPane);
+            ButtonType buttonTypeYes = new ButtonType("Yes", ButtonBar.ButtonData.FINISH);
+            ButtonType buttonTypeNo = new ButtonType("No", ButtonBar.ButtonData.FINISH);
+            alert.getButtonTypes().setAll(buttonTypeYes, buttonTypeNo);
+            GuiUtils.setDefaultButton(alert, buttonTypeYes);
+            alert.initStyle(StageStyle.UNDECORATED);
+            alert.showAndWait().ifPresent(buttonType -> {
+                if (buttonType == buttonTypeYes) {
+                    Bot.Control.shutdown(false);
+                    System.exit(0);
+                }
+            });
+            event.consume();
+        });
         controller.botStart.setOnAction(event -> {
             try {
                 addInfo(Bot.Control.startup() ? "Started bot" : "Failed to start bot");

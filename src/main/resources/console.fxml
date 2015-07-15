@@ -64,6 +64,7 @@
              <Menu mnemonicParsing="false" text="File">
                  <items>
                      <MenuItem fx:id="openBaseDir" mnemonicParsing="false" text="Open Installation Directory" />
+                     <MenuItem fx:id="quit" mnemonicParsing="false" text="Quit" />
                  </items>
              </Menu>
              <Menu mnemonicParsing="false" text="Bot">
