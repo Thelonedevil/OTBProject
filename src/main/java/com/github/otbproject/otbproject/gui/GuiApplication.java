@@ -4,7 +4,7 @@ import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.bot.Bot;
 import com.github.otbproject.otbproject.config.Configs;
 import com.github.otbproject.otbproject.fs.FSUtil;
-import com.github.otbproject.otbproject.web.WebInterface;
+import com.github.otbproject.otbproject.util.version.AppVersion;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -94,6 +94,7 @@ public class GuiApplication extends Application {
         tailer = Tailer.create(logFile, new CustomTailer(), 250);
         controller.readHistory();
         primaryStage.show();
+        checkForNewRelease();
     }
 
     public static void start(String[] args) {
@@ -140,5 +141,35 @@ public class GuiApplication extends Application {
 
     private void openWebInterfaceInBrowser() {
         this.getHostServices().showDocument("http://127.0.0.1:" + Configs.getWebConfig().getPortNumber());
+    }
+
+    private void checkForNewRelease() {
+        if (Configs.getGeneralConfig().isUpdateChecking() && (AppVersion.latest().compareTo(App.VERSION) > 0)) {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("New Release Available");
+            alert.setHeaderText("New Release Available: OTB Project " + AppVersion.latest());
+            alert.setContentText("Version " + AppVersion.latest() + " of OTB Project is now available!" +
+                    "\n\nPress \"Get New Release\" or go to" +
+                    "\nhttps://github.com/OTBProject/OTBProject/releases/latest" +
+                    "\nto get the new release." +
+                    "\n\nPressing \"Never Ask Again\" will prevent notifications " +
+                    "\nfor all future releases of OTB Project.");
+            DialogPane dialogPane = alert.getDialogPane();
+            dialogPane.getStylesheets().add(getClass().getClassLoader().getResource("style.css").toExternalForm());
+            ButtonType buttonTypeDontAskAgain = new ButtonType("Never Ask Again", ButtonBar.ButtonData.LEFT);
+            ButtonType buttonTypeGetRelease = new ButtonType("Get New Release", ButtonBar.ButtonData.FINISH);
+            ButtonType buttonTypeIgnoreOnce = new ButtonType("Ignore Once", ButtonBar.ButtonData.FINISH);
+            alert.getButtonTypes().setAll(buttonTypeDontAskAgain, buttonTypeGetRelease, buttonTypeIgnoreOnce);
+            GuiUtils.setDefaultButton(alert, buttonTypeGetRelease);
+            alert.initStyle(StageStyle.UNDECORATED);
+            alert.showAndWait().ifPresent(buttonType -> {
+                if (buttonType == buttonTypeDontAskAgain) {
+                    Configs.getGeneralConfig().setUpdateChecking(false);
+                    Configs.writeGeneralConfig();
+                } else if (buttonType == buttonTypeGetRelease) {
+                    this.getHostServices().showDocument("https://github.com/OTBProject/OTBProject/releases/latest");
+                }
+            });
+        }
     }
 }
