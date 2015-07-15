@@ -57,7 +57,7 @@ public class GuiApplication extends Application {
         primaryStage.setResizable(false);
         primaryStage.setTitle("OTBProject");
         primaryStage.getIcons().add(new Image("http://otbproject.github.io/images/logo.png"));
-        primaryStage.setOnCloseRequest(t -> {
+        primaryStage.setOnCloseRequest(event -> {
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setTitle("Confirm Close");
             alert.setHeaderText("WARNING: \"Close Window\" DOES NOT STOP THE BOT.");
@@ -81,11 +81,9 @@ public class GuiApplication extends Application {
                     }
                     App.logger.info("Process Stopped, Goodbye");
                     System.exit(0);
-                } else {
-                    t.consume();
                 }
             });
-
+            event.consume();
         });
         controller = loader.<GuiController>getController();
         setUpMenus();
@@ -185,6 +183,10 @@ public class GuiApplication extends Application {
 
     private void openWebInterfaceInBrowser() {
         this.getHostServices().showDocument("http://127.0.0.1:" + Configs.getWebConfig().getPortNumber());
+    }
+
+    private void exitPrompt() {
+
     }
 
     private void checkForNewRelease() {
