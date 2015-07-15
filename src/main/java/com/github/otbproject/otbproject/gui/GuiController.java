@@ -66,8 +66,7 @@ public class GuiController {
                 commandsInput.setEditable(false);
                 commandsInput.setPromptText("Command executing, please wait...");
                 executorService.execute(() -> {
-                    CmdParser.from(InternalMessageSender.CLI);
-                    String output = CmdParser.processLine(input);
+                    String output = CmdParser.processLine(input, InternalMessageSender.CLI);
                     GuiUtils.runSafe(() -> cliOutput.appendText((output.isEmpty() ? "" : (output + "\n")) + ">  "));
                     GuiApplication.setInputActive();
                 });

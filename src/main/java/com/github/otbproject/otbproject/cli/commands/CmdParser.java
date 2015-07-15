@@ -76,11 +76,8 @@ public class CmdParser {
         return Collections.unmodifiableSet(map.keySet());
     }
 
-    public static void from(String source) {
+    public static synchronized String processLine(String line, String source) {
         CmdParser.source = source;
-    }
-
-    public static synchronized String processLine(String line) {
         String response = doLine(line);
         if (!response.isEmpty()) {
             App.logger.debug(response);
@@ -116,7 +113,6 @@ public class CmdParser {
         } finally {
             scanner.close();
             args.clear();
-            source = "";
         }
         return "";
     }

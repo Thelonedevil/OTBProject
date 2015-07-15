@@ -12,6 +12,7 @@ import com.github.otbproject.otbproject.fs.groups.Base;
 import com.github.otbproject.otbproject.fs.groups.Chan;
 import com.github.otbproject.otbproject.fs.groups.Load;
 import com.github.otbproject.otbproject.gui.GuiApplication;
+import com.github.otbproject.otbproject.messages.internal.InternalMessageSender;
 import com.github.otbproject.otbproject.util.version.AppVersion;
 import com.github.otbproject.otbproject.util.Unpacker;
 import com.github.otbproject.otbproject.util.Util;
@@ -139,7 +140,7 @@ public class App {
         while (scanner.hasNext()) {
             String in = scanner.next();
             if (!in.equals(""))
-                CmdParser.processLine(in);
+                CmdParser.processLine(in, InternalMessageSender.TERMINAL);
         }
         scanner.close();
     }
