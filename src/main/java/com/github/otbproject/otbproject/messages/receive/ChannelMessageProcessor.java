@@ -85,7 +85,7 @@ public class ChannelMessageProcessor {
         }
     }
 
-    private void doResponse(DatabaseWrapper db, ProcessedMessage processedMsg, String channelName, String destChannelName, Channel destChanel, String user, UserLevel ul, MessagePriority priority, boolean internal) {
+    private void doResponse(DatabaseWrapper db, ProcessedMessage processedMsg, String channelName, String destChannelName, Channel destChannel, String user, UserLevel ul, MessagePriority priority, boolean internal) {
         String message = processedMsg.response;
         String command = processedMsg.commandName;
 
@@ -93,48 +93,59 @@ public class ChannelMessageProcessor {
         // There is a slight chance that a cooldown will have been set for the script command since the method was called,
         //  and that it will be run even though it's not supposed to, but processing a script takes too long to lock
         boolean success;
-        try {
-            if (processedMsg.isScript) {
-                success = CommandScriptProcessor.process(message, db, command, processedMsg.args, channelName, destChannelName, user, ul);
-                lock.lock();
+        boolean doIncrement;
+
+        if (processedMsg.isScript) {
+            success = CommandScriptProcessor.process(message, db, command, processedMsg.args, channelName, destChannelName, user, ul);
+            lock.lock();
+            try {
+                doIncrement = postResponse(destChannelName, destChannel, command, user, ul, internal, success);
+            } finally {
+                lock.unlock();
             }
-            // Send message
-            else {
-                lock.lock();
-                if (internal) {
-                    InternalMessageSender.send(destChannelName.replace(InternalMessageSender.DESTINATION_PREFIX, ""), message, "CmdExec");
-                    return;
-                }
-                // If queue rejects message because it's too full, return
-                else {
-                    MessageOut messageOut = new MessageOut(message, priority);
-                    success = destChanel.sendMessage(messageOut);
-                }
-            }
-            if (!success) {
+        }
+        // Send message
+        else {
+            if (internal) {
+                InternalMessageSender.send(destChannelName.replace(InternalMessageSender.DESTINATION_PREFIX, ""), message, "CmdExec");
                 return;
             }
-
-            // Skip cooldowns if in or sending to bot channel, or internal
-            if (inBotChannel || destChannelName.equals(Bot.getBot().getUserName()) || internal) {
-                return;
+            lock.lock();
+            try {
+                success = destChannel.sendMessage(new MessageOut(message, priority));
+                doIncrement = postResponse(destChannelName, destChannel, command, user, ul, false, success);
+            } finally {
+                lock.unlock();
             }
-
-            // Handles command cooldowns
-            int commandCooldown = channel.getConfig().getCommandCooldown();
-            if (commandCooldown > 0) {
-                destChanel.addCommandCooldown(command, commandCooldown);
-            }
-            // Handles user cooldowns
-            int userCooldown = ChannelConfigHelper.getCooldown(channel.getConfig(), ul);
-            if (userCooldown > 0) {
-                destChanel.addUserCooldown(user, userCooldown);
-            }
-        } finally {
-            lock.unlock();
         }
 
         // Increment count (not essential to lock)
-        Commands.incrementCount(db, command);
+        if (doIncrement) {
+            Commands.incrementCount(db, command);
+        }
+    }
+
+    private boolean postResponse(String destChannelName, Channel destChannel, String command, String user, UserLevel ul, boolean internal, boolean success) {
+        if (!success) {
+            return false;
+        }
+
+        // Skip cooldowns if in or sending to bot channel, or internal
+        if (inBotChannel || destChannelName.equals(Bot.getBot().getUserName()) || internal) {
+            return false;
+        }
+
+        // Handles command cooldowns
+        int commandCooldown = channel.getConfig().getCommandCooldown();
+        if (commandCooldown > 0) {
+            destChannel.addCommandCooldown(command, commandCooldown);
+        }
+        // Handles user cooldowns
+        int userCooldown = ChannelConfigHelper.getCooldown(channel.getConfig(), ul);
+        if (userCooldown > 0) {
+            destChannel.addUserCooldown(user, userCooldown);
+        }
+
+        return true;
     }
 }
