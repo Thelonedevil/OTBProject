@@ -2,6 +2,7 @@ package com.github.otbproject.otbproject.gui;
 
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.bot.Bot;
+import com.github.otbproject.otbproject.config.Configs;
 import com.github.otbproject.otbproject.fs.FSUtil;
 import com.github.otbproject.otbproject.web.WebInterface;
 import javafx.application.Application;
@@ -83,7 +84,7 @@ public class GuiApplication extends Application {
         });
         controller = loader.<GuiController>getController();
         controller.webOpen.setOnAction(event -> {
-            WebInterface.openInBrowser();
+            openWebInterfaceInBrowser();
             event.consume();
         });
         controller.cliOutput.appendText(">  ");
@@ -135,5 +136,9 @@ public class GuiApplication extends Application {
         public void handle(String line) {
             GuiUtils.runSafe(() -> controller.logOutput.appendText(line + "\n"));
         }
+    }
+
+    private void openWebInterfaceInBrowser() {
+        this.getHostServices().showDocument("http://127.0.0.1:" + Configs.getWebConfig().getPortNumber());
     }
 }

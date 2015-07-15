@@ -63,7 +63,7 @@
          <menus>
             <Menu mnemonicParsing="false" text="Web">
               <items>
-                  <MenuItem fx:id="webOpen" mnemonicParsing="false" text="Open in browser" />
+                  <MenuItem fx:id="webOpen" mnemonicParsing="false" text="Open Interface in Browser" />
               </items>
             </Menu>
          </menus>
