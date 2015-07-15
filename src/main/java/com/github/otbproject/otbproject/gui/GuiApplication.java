@@ -4,7 +4,9 @@ import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.bot.Bot;
 import com.github.otbproject.otbproject.config.Configs;
 import com.github.otbproject.otbproject.fs.FSUtil;
-import com.github.otbproject.otbproject.web.WebInterface;
+import com.github.otbproject.otbproject.util.Util;
+import com.github.otbproject.otbproject.util.version.AppVersion;
+import com.github.otbproject.otbproject.util.version.Version;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -20,7 +22,10 @@ import javafx.stage.StageStyle;
 import org.apache.commons.io.input.Tailer;
 import org.apache.commons.io.input.TailerListenerAdapter;
 
+import java.awt.*;
 import java.io.File;
+import java.io.IOException;
+import java.net.URL;
 
 public class GuiApplication extends Application {
 
@@ -58,7 +63,7 @@ public class GuiApplication extends Application {
             alert.setHeaderText("WARNING: \"Close Window\" DOES NOT STOP THE BOT.");
             alert.setContentText("Closing this window without exiting may make it difficult to stop the bot.\nPress \"Exit\" to stop the bot and exit.\nPress \"Cancel\" to keep the window open.");
             DialogPane dialogPane = alert.getDialogPane();
-            dialogPane.getStylesheets().add(getClass().getClassLoader().getResource("style.css").toExternalForm());
+            setDialogPaneStyle(dialogPane);
             ButtonType buttonTypeCloseNoExit = new ButtonType("Close Window", ButtonBar.ButtonData.LEFT);
             ButtonType buttonTypeExit = new ButtonType("Exit", ButtonBar.ButtonData.FINISH);
             ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonBar.ButtonData.FINISH);
@@ -83,10 +88,7 @@ public class GuiApplication extends Application {
 
         });
         controller = loader.<GuiController>getController();
-        controller.webOpen.setOnAction(event -> {
-            openWebInterfaceInBrowser();
-            event.consume();
-        });
+        setUpMenus();
         controller.cliOutput.appendText(">  ");
         controller.commandsInput.setEditable(false);
         controller.commandsOutput.appendText("Type \"help\" for a list of commands.\nThe PID of the bot is probably " + App.PID + ", if you are using an Oracle JVM, but it may be different, especially if you are using a different JVM. Be careful stopping the bot using this PID.");
@@ -94,6 +96,7 @@ public class GuiApplication extends Application {
         tailer = Tailer.create(logFile, new CustomTailer(), 250);
         controller.readHistory();
         primaryStage.show();
+        checkForNewRelease();
     }
 
     public static void start(String[] args) {
@@ -138,7 +141,65 @@ public class GuiApplication extends Application {
         }
     }
 
+    private void setUpMenus() {
+        controller.openBaseDir.setOnAction(event -> {
+            Util.getSingleThreadExecutor("file-explorer-%d").execute(() -> {
+                try {
+                    Desktop.getDesktop().open(new File(FSUtil.getBaseDir()));
+                } catch (IOException e) {
+                    App.logger.catching(e);
+                }
+            });
+            event.consume();
+        });
+        controller.webOpen.setOnAction(event -> {
+            openWebInterfaceInBrowser();
+            event.consume();
+        });
+    }
+
+    private void setDialogPaneStyle(DialogPane dialogPane) {
+        URL resource = getClass().getClassLoader().getResource("style.css");
+        if (resource != null) {
+            dialogPane.getStylesheets().add(resource.toExternalForm());
+        } else {
+            App.logger.error("Unable to get style sheet for alerts.");
+        }
+    }
+
     private void openWebInterfaceInBrowser() {
         this.getHostServices().showDocument("http://127.0.0.1:" + Configs.getWebConfig().getPortNumber());
+    }
+
+    private void checkForNewRelease() {
+        if (Configs.getGeneralConfig().isUpdateChecking()
+                && (AppVersion.latest().compareTo(App.VERSION) > 0)
+                && (AppVersion.latest().type == Version.Type.RELEASE)) {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("New Release Available");
+            alert.setHeaderText("New Release Available: OTB Project " + AppVersion.latest());
+            alert.setContentText("Version " + AppVersion.latest() + " of OTB Project is now available!" +
+                    "\n\nPress \"Get New Release\" or go to" +
+                    "\nhttps://github.com/OTBProject/OTBProject/releases/latest" +
+                    "\nto get the new release." +
+                    "\n\nPressing \"Don't Ask Again\" will prevent notifications " +
+                    "\nfor all future releases of OTB Project.");
+            DialogPane dialogPane = alert.getDialogPane();
+            setDialogPaneStyle(dialogPane);
+            ButtonType buttonTypeDontAskAgain = new ButtonType("Don't Ask Again", ButtonBar.ButtonData.LEFT);
+            ButtonType buttonTypeGetRelease = new ButtonType("Get New Release", ButtonBar.ButtonData.FINISH);
+            ButtonType buttonTypeIgnoreOnce = new ButtonType("Ignore Once", ButtonBar.ButtonData.FINISH);
+            alert.getButtonTypes().setAll(buttonTypeDontAskAgain, buttonTypeGetRelease, buttonTypeIgnoreOnce);
+            GuiUtils.setDefaultButton(alert, buttonTypeGetRelease);
+            alert.initStyle(StageStyle.UNDECORATED);
+            alert.showAndWait().ifPresent(buttonType -> {
+                if (buttonType == buttonTypeDontAskAgain) {
+                    Configs.getGeneralConfig().setUpdateChecking(false);
+                    Configs.writeGeneralConfig();
+                } else if (buttonType == buttonTypeGetRelease) {
+                    this.getHostServices().showDocument("https://github.com/OTBProject/OTBProject/releases/latest");
+                }
+            });
+        }
     }
 }
