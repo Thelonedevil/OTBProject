@@ -106,16 +106,14 @@ public class ChannelMessageProcessor {
         }
         // Send message
         else {
+            if (internal) {
+                InternalMessageSender.send(destChannelName.replace(InternalMessageSender.DESTINATION_PREFIX, ""), message, "CmdExec");
+                return;
+            }
             lock.lock();
             try {
-                if (internal) {
-                    InternalMessageSender.send(destChannelName.replace(InternalMessageSender.DESTINATION_PREFIX, ""), message, "CmdExec");
-                    return;
-                }
-                else {
-                    success = destChannel.sendMessage(new MessageOut(message, priority));
-                    doIncrement = postResponse(destChannelName, destChannel, command, user, ul, false, success);
-                }
+                success = destChannel.sendMessage(new MessageOut(message, priority));
+                doIncrement = postResponse(destChannelName, destChannel, command, user, ul, false, success);
             } finally {
                 lock.unlock();
             }
