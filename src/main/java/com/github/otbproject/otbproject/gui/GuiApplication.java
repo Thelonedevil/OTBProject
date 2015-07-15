@@ -6,6 +6,7 @@ import com.github.otbproject.otbproject.config.Configs;
 import com.github.otbproject.otbproject.fs.FSUtil;
 import com.github.otbproject.otbproject.util.Util;
 import com.github.otbproject.otbproject.util.version.AppVersion;
+import com.github.otbproject.otbproject.util.version.Version;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -171,7 +172,9 @@ public class GuiApplication extends Application {
     }
 
     private void checkForNewRelease() {
-        if (Configs.getGeneralConfig().isUpdateChecking() && (AppVersion.latest().compareTo(App.VERSION) > 0)) {
+        if (Configs.getGeneralConfig().isUpdateChecking()
+                && (AppVersion.latest().compareTo(App.VERSION) > 0)
+                && (AppVersion.latest().type == Version.Type.RELEASE)) {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("New Release Available");
             alert.setHeaderText("New Release Available: OTB Project " + AppVersion.latest());
