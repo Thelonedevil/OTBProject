@@ -140,7 +140,7 @@ public class App {
         while (scanner.hasNext()) {
             String in = scanner.next();
             if (!in.equals(""))
-                CmdParser.processLine(in, InternalMessageSender.TERMINAL);
+                System.out.println(CmdParser.processLine(in, InternalMessageSender.TERMINAL));
         }
         scanner.close();
     }
