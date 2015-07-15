@@ -76,9 +76,7 @@ public class GuiApplication extends Application {
                     tailer.stop();
                 } else if (buttonType == buttonTypeExit) {
                     App.logger.info("Stopping the process");
-                    if (Bot.getBot() != null && Bot.getBot().isConnected()) {
-                        Bot.getBot().shutdown();
-                    }
+                    Bot.Control.shutdown(false);
                     App.logger.info("Process Stopped, Goodbye");
                     System.exit(0);
                 }
