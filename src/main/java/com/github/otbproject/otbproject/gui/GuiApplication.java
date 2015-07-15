@@ -4,6 +4,7 @@ import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.bot.Bot;
 import com.github.otbproject.otbproject.config.Configs;
 import com.github.otbproject.otbproject.fs.FSUtil;
+import com.github.otbproject.otbproject.util.Util;
 import com.github.otbproject.otbproject.util.version.AppVersion;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -20,7 +21,9 @@ import javafx.stage.StageStyle;
 import org.apache.commons.io.input.Tailer;
 import org.apache.commons.io.input.TailerListenerAdapter;
 
+import java.awt.*;
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 
 public class GuiApplication extends Application {
@@ -84,10 +87,7 @@ public class GuiApplication extends Application {
 
         });
         controller = loader.<GuiController>getController();
-        controller.webOpen.setOnAction(event -> {
-            openWebInterfaceInBrowser();
-            event.consume();
-        });
+        setUpMenus();
         controller.cliOutput.appendText(">  ");
         controller.commandsInput.setEditable(false);
         controller.commandsOutput.appendText("Type \"help\" for a list of commands.\nThe PID of the bot is probably " + App.PID + ", if you are using an Oracle JVM, but it may be different, especially if you are using a different JVM. Be careful stopping the bot using this PID.");
@@ -138,6 +138,23 @@ public class GuiApplication extends Application {
         public void handle(String line) {
             GuiUtils.runSafe(() -> controller.logOutput.appendText(line + "\n"));
         }
+    }
+
+    private void setUpMenus() {
+        controller.openBaseDir.setOnAction(event -> {
+            Util.getSingleThreadExecutor("file-explorer-%d").execute(() -> {
+                try {
+                    Desktop.getDesktop().open(new File(FSUtil.getBaseDir()));
+                } catch (IOException e) {
+                    App.logger.catching(e);
+                }
+            });
+            event.consume();
+        });
+        controller.webOpen.setOnAction(event -> {
+            openWebInterfaceInBrowser();
+            event.consume();
+        });
     }
 
     private void setDialogPaneStyle(DialogPane dialogPane) {

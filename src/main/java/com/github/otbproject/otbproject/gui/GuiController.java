@@ -35,6 +35,8 @@ public class GuiController {
     @FXML
     public TextArea cliOutput;
     @FXML
+    public MenuItem openBaseDir;
+    @FXML
     public MenuItem webOpen;
 
     protected final List<String> history = new ArrayList<>();
