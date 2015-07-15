@@ -48,7 +48,7 @@ public class GuiApplication extends Application {
         Font.loadFont(getClass().getClassLoader().getResourceAsStream("Ubuntu-R.ttf"), 12);
         FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("console.fxml"));
         Parent start = loader.load();
-        primaryStage.setScene(new Scene(start, 1200, 500));
+        primaryStage.setScene(new Scene(start, 1200, 515));
         primaryStage.setResizable(false);
         primaryStage.setTitle("OTBProject");
         primaryStage.getIcons().add(new Image("http://otbproject.github.io/images/logo.png"));
