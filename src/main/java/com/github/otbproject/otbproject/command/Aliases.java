@@ -11,8 +11,8 @@ import java.util.stream.Collectors;
 
 public class Aliases {
 
-    public static Alias get(DatabaseWrapper db, String aliasName) {
-        Optional<Alias> optional = db.getRecord(AliasFields.TABLE_NAME, aliasName, AliasFields.NAME,
+    public static Optional<Alias> get(DatabaseWrapper db, String aliasName) {
+        return db.getRecord(AliasFields.TABLE_NAME, aliasName, AliasFields.NAME,
                 rs -> {
                     if (rs.isAfterLast()) {
                         return null;
@@ -24,7 +24,6 @@ public class Aliases {
                     alias.setEnabled(Boolean.valueOf(rs.getString(AliasFields.ENABLED)));
                     return alias;
                 });
-        return optional.orElse(null); // TODO return an optional and update references
     }
 
     public static List<String> getAliases(DatabaseWrapper db) {

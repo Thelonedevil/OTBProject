@@ -10,16 +10,19 @@ import com.github.otbproject.otbproject.filter.FilterGroup;
 import com.github.otbproject.otbproject.filter.FilterGroups;
 import com.github.otbproject.otbproject.filter.Filters;
 
+import java.util.Optional;
+
 class PreloadComparator {
     static Alias generateAliasHybrid(DatabaseWrapper db, Alias newAlias, Alias oldAlias) {
         if ((oldAlias == null) || (newAlias == null) || !oldAlias.getName().equals(newAlias.getName())) {
             return newAlias;
         }
 
-        Alias dbAlias = Aliases.get(db, newAlias.getName());
-        if (dbAlias == null) {
+        Optional<Alias> optional = Aliases.get(db, newAlias.getName());
+        if (!optional.isPresent()) {
             return newAlias;
         }
+        Alias dbAlias = optional.get();
 
         // Check all alias fields
         if (!oldAlias.getCommand().equals(dbAlias.getCommand())) {

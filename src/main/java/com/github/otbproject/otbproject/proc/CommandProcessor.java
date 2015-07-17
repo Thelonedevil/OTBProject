@@ -32,8 +32,9 @@ public class CommandProcessor {
         } else {
             usedAliases.add(aliasName);
         }
-        Alias alias = Aliases.get(db, aliasName);
-        if ((alias != null) && alias.isEnabled()) {
+        Optional<Alias> optional = Aliases.get(db, aliasName);
+        if (optional.isPresent() && optional.get().isEnabled()) {
+            Alias alias = optional.get();
             if (splitMsg.length == 1) {
                 return checkAlias(db, alias.getCommand(), usedAliases);
             }
