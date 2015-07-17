@@ -80,7 +80,11 @@ public class Bot {
          * @param cleanup whether or not to cleanup various data with the
          *                expectation that the bot will be started again
          */
-        public static synchronized void shutdown(boolean cleanup) {
+        public static synchronized boolean shutdown(boolean cleanup) {
+            if (!running) {
+                return false;
+            }
+
             IBot bot = getBot();
             if (bot != null) {
                 bot.shutdown();
@@ -89,6 +93,7 @@ public class Bot {
                 shutdownCleanup();
             }
             running = false;
+            return true;
         }
 
         private static void shutdownCleanup() {

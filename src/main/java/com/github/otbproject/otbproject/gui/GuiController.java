@@ -34,8 +34,17 @@ public class GuiController {
     public TextField commandsInput;
     @FXML
     public TextArea cliOutput;
+
     @FXML
     public MenuItem openBaseDir;
+    @FXML
+    public MenuItem quit;
+    @FXML
+    public MenuItem botStart;
+    @FXML
+    public MenuItem botStop;
+    @FXML
+    public MenuItem botRestart;
     @FXML
     public MenuItem webOpen;
 
@@ -60,8 +69,7 @@ public class GuiController {
                 commandsInput.setEditable(false);
                 commandsInput.setPromptText("Command executing, please wait...");
                 executorService.execute(() -> {
-                    CmdParser.from(InternalMessageSender.CLI);
-                    String output = CmdParser.processLine(input);
+                    String output = CmdParser.processLine(input, InternalMessageSender.CLI);
                     GuiUtils.runSafe(() -> cliOutput.appendText((output.isEmpty() ? "" : (output + "\n")) + ">  "));
                     GuiApplication.setInputActive();
                 });

@@ -57,7 +57,7 @@ public class GuiApplication extends Application {
         primaryStage.setResizable(false);
         primaryStage.setTitle("OTBProject");
         primaryStage.getIcons().add(new Image("http://otbproject.github.io/images/logo.png"));
-        primaryStage.setOnCloseRequest(t -> {
+        primaryStage.setOnCloseRequest(event -> {
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setTitle("Confirm Close");
             alert.setHeaderText("WARNING: \"Close Window\" DOES NOT STOP THE BOT.");
@@ -76,16 +76,12 @@ public class GuiApplication extends Application {
                     tailer.stop();
                 } else if (buttonType == buttonTypeExit) {
                     App.logger.info("Stopping the process");
-                    if (Bot.getBot() != null && Bot.getBot().isConnected()) {
-                        Bot.getBot().shutdown();
-                    }
+                    Bot.Control.shutdown(false);
                     App.logger.info("Process Stopped, Goodbye");
                     System.exit(0);
-                } else {
-                    t.consume();
                 }
             });
-
+            event.consume();
         });
         controller = loader.<GuiController>getController();
         setUpMenus();
@@ -150,6 +146,41 @@ public class GuiApplication extends Application {
                     App.logger.catching(e);
                 }
             });
+            event.consume();
+        });
+        controller.quit.setOnAction(event -> {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Confirm Quit");
+            alert.setHeaderText("Are you sure you want to quit?");
+            DialogPane dialogPane = alert.getDialogPane();
+            setDialogPaneStyle(dialogPane);
+            ButtonType buttonTypeYes = new ButtonType("Yes", ButtonBar.ButtonData.FINISH);
+            ButtonType buttonTypeNo = new ButtonType("No", ButtonBar.ButtonData.FINISH);
+            alert.getButtonTypes().setAll(buttonTypeYes, buttonTypeNo);
+            GuiUtils.setDefaultButton(alert, buttonTypeYes);
+            alert.initStyle(StageStyle.UNDECORATED);
+            alert.showAndWait().ifPresent(buttonType -> {
+                if (buttonType == buttonTypeYes) {
+                    Bot.Control.shutdown(false);
+                    System.exit(0);
+                }
+            });
+            event.consume();
+        });
+        controller.botStart.setOnAction(event -> {
+            try {
+                addInfo(Bot.Control.startup() ? "Started bot" : "Failed to start bot");
+            } catch (Bot.StartupException ignored) {
+                addInfo("Did not start bot - bot already running");
+            }
+            event.consume();
+        });
+        controller.botStop.setOnAction(event -> {
+            addInfo(Bot.Control.shutdown(true) ? "Bot stopped" : "Did not stop bot - bot not running");
+            event.consume();
+        });
+        controller.botRestart.setOnAction(event -> {
+            addInfo(Bot.Control.restart() ? "Restarted bot" : "Failed to restart bot");
             event.consume();
         });
         controller.webOpen.setOnAction(event -> {
