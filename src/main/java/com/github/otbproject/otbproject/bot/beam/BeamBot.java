@@ -214,7 +214,7 @@ public class BeamBot extends AbstractBot {
             }
         } else {
             timeoutSet.put(user, Boolean.TRUE, timeInSeconds, TimeUnit.SECONDS);
-            //beamChatChannel.deleteMessages(user); // TODO uncomment when major responsiveness issue is fixed
+            beamChatChannel.deleteMessages(user);
         }
         App.logger.info("Timed out '" + user + "' in channel '" + channelName + "' for " + timeInSeconds + " seconds");
         return true;
