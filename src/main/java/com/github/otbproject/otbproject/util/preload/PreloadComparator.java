@@ -43,10 +43,11 @@ class PreloadComparator {
             return newCommand;
         }
 
-        Command dbCommand = Commands.get(db, newCommand.getName());
-        if (dbCommand == null) {
+        Optional<Command> optional = Commands.get(db, newCommand.getName());
+        if (!optional.isPresent()) {
             return newCommand;
         }
+        Command dbCommand = optional.get();
 
         // Check all command fields
         if (!oldCommand.getResponse().equals(dbCommand.getResponse())) {

@@ -68,8 +68,13 @@ public class CommandProcessor {
             }
         }
 
-        Command command = Commands.get(db, cmdName);
-        if ((command != null) && command.isEnabled() && userLevel.getValue() >= command.getExecUserLevel().getValue() && args.length >= command.getMinArgs()) {
+        Optional<Command> optional = Commands.get(db, cmdName);
+        if (!optional.isPresent()) {
+            return ProcessedCommand.empty();
+        }
+        Command command = optional.get();
+
+        if (command.isEnabled() && userLevel.getValue() >= command.getExecUserLevel().getValue() && args.length >= command.getMinArgs()) {
             App.logger.debug("Processing command: " + cmdName);
             String scriptPath = command.getScript();
             // Return script path
