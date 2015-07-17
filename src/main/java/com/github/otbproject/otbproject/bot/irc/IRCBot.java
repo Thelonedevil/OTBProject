@@ -10,7 +10,7 @@ import java.io.InterruptedIOException;
 import java.net.SocketException;
 import java.nio.charset.Charset;
 
-public class IRCBot extends PircBotX {
+class IRCBot extends PircBotX {
     private final OutputRaw newOutputRaw;
 
     @SuppressWarnings("unchecked")

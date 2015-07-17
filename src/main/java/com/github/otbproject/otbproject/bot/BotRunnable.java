@@ -12,7 +12,7 @@ public class BotRunnable implements Runnable {
             App.logger.info("Bot Started");
             Bot.getBot().startBot();
             App.logger.info("Bot Stopped");
-        } catch (IOException | IrcException e) {
+        } catch (BotInitException e) {
             App.logger.catching(e);
         }
     }

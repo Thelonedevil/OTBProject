@@ -26,23 +26,25 @@ public class IrcListener extends ListenerAdapter {
         }
         Channel channel = optional.get();
 
-        String user = event.getUser().getNick();
+        String user = event.getUser().getNick().toLowerCase();
 
         String message = event.getMessage();
+        TwitchBot bot = (TwitchBot) Bot.getBot();
         if (user.equalsIgnoreCase("jtv")) {
             if (message.contains(":SPECIALUSER")) {
                 String[] messageSplit = message.split(":SPECIALUSER")[1].split(" ");
                 String name = messageSplit[0];
                 String userType = messageSplit[1];
                 if (userType.equalsIgnoreCase("subscriber")) {
-                    ((IRCBot) Bot.getBot()).subscriberStorage.put(channelName, user);
+                    bot.subscriberStorage.put(channelName, user);
                 }
             }
         } else {
             UserLevel userLevel = UserLevels.getUserLevel(channel.getMainDatabaseWrapper(), channelName, user);
-            channel.receiveMessage(new PackagedMessage(message, user, channelName, userLevel, MessagePriority.DEFAULT));
+            PackagedMessage packagedMessage = new PackagedMessage(message, user, channelName, userLevel, MessagePriority.DEFAULT);
+            channel.receiveMessage(packagedMessage);
+            bot.invokeMessageHandlers(packagedMessage);
         }
-
     }
 
     @Override
