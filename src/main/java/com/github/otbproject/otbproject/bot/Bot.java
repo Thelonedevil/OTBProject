@@ -2,8 +2,7 @@ package com.github.otbproject.otbproject.bot;
 
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.bot.beam.BeamBot;
-import com.github.otbproject.otbproject.bot.irc.IRCBot;
-import com.github.otbproject.otbproject.bot.irc.InputParserImproved;
+import com.github.otbproject.otbproject.bot.irc.TwitchBot;
 import com.github.otbproject.otbproject.cli.ArgParser;
 import com.github.otbproject.otbproject.command.parser.CommandResponseParser;
 import com.github.otbproject.otbproject.command.parser.TermLoader;
@@ -19,7 +18,6 @@ import com.github.otbproject.otbproject.util.preload.PreloadLoader;
 import org.apache.commons.cli.CommandLine;
 
 import java.awt.*;
-import java.lang.reflect.Field;
 import java.util.concurrent.Future;
 
 public class Bot {
@@ -130,19 +128,15 @@ public class Bot {
         private static boolean createBot() {
             // Connect to service
             try {
-                switch (Configs.getGeneralConfig().getService()){
+                switch (Configs.getGeneralConfig().getService()) {
                     case TWITCH:
-                        setBot(new IRCBot());
-                        Class c = getBot().getClass().getSuperclass();
-                        Field input = c.getDeclaredField("inputParser");
-                        input.setAccessible(true);
-                        input.set(getBot(), new InputParserImproved((IRCBot) getBot()));
+                        setBot(new TwitchBot());
                         break;
                     case BEAM:
                         setBot(new BeamBot());
                         break;
                 }
-            } catch (BotInitException | NoSuchFieldException | IllegalAccessException e) {
+            } catch (BotInitException e) {
                 App.logger.catching(e);
             }
             if (getBot() == null) {

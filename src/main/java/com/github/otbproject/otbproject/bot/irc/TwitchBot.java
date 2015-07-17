@@ -13,6 +13,7 @@ import org.isomorphism.util.TokenBuckets;
 import org.pircbotx.exception.IrcException;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
@@ -24,6 +25,18 @@ public class TwitchBot extends AbstractBot {
     private final TokenBucket tokenBucket = TokenBuckets.builder().withCapacity(99).withFixedIntervalRefillStrategy(1, 304, TimeUnit.MILLISECONDS).build();
 
     public final SetMultimap<String, String> subscriberStorage = Multimaps.newSetMultimap(new ConcurrentHashMap<>(), ConcurrentHashMap::newKeySet);
+
+    public TwitchBot() throws BotInitException {
+        Class c = ircBot.getClass().getSuperclass();
+        Field input;
+        try {
+            input = c.getDeclaredField("inputParser");
+            input.setAccessible(true);
+            input.set(ircBot, new InputParserImproved(ircBot));
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            throw new BotInitException(e);
+        }
+    }
 
     @Override
     public boolean isConnected(String channelName) {
