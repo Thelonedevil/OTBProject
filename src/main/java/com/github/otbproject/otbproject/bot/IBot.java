@@ -32,7 +32,7 @@ public interface IBot {
 
     void sendMessage(String channel, String message);
 
-    void startBot() throws IOException, IrcException;
+    void startBot() throws BotInitException;
 
     boolean join(String channelName);
 

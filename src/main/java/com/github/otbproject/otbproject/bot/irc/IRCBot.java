@@ -1,18 +1,7 @@
 package com.github.otbproject.otbproject.bot.irc;
 
 import com.github.otbproject.otbproject.App;
-import com.github.otbproject.otbproject.bot.BotUtil;
-import com.github.otbproject.otbproject.bot.IBot;
-import com.github.otbproject.otbproject.channel.Channel;
-import com.github.otbproject.otbproject.channel.ChannelNotFoundException;
 import com.github.otbproject.otbproject.config.Configs;
-import com.github.otbproject.otbproject.database.DatabaseWrapper;
-import com.github.otbproject.otbproject.database.Databases;
-import com.github.otbproject.otbproject.serviceapi.ApiRequest;
-import com.google.common.collect.Multimaps;
-import com.google.common.collect.SetMultimap;
-import org.isomorphism.util.TokenBucket;
-import org.isomorphism.util.TokenBuckets;
 import org.pircbotx.Configuration;
 import org.pircbotx.PircBotX;
 import org.pircbotx.output.OutputRaw;
@@ -20,18 +9,9 @@ import org.pircbotx.output.OutputRaw;
 import java.io.InterruptedIOException;
 import java.net.SocketException;
 import java.nio.charset.Charset;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
 
-public class IRCBot extends PircBotX implements IBot{
-    private final ConcurrentHashMap<String, Channel> channels = new ConcurrentHashMap<>();
-    private final DatabaseWrapper botDB = Databases.createBotDbWrapper();
+public class IRCBot extends PircBotX {
     private final OutputRaw newOutputRaw;
-    // Should take slightly more than 30 seconds to refill 99 tokens adding 1
-    // token every 304 milliseconds
-    private final TokenBucket tokenBucket = TokenBuckets.builder().withCapacity(99).withFixedIntervalRefillStrategy(1, 304, TimeUnit.MILLISECONDS).build();
-
-    public final SetMultimap<String, String> subscriberStorage = Multimaps.newSetMultimap(new ConcurrentHashMap<>(), ConcurrentHashMap::newKeySet);
 
     @SuppressWarnings("unchecked")
     public IRCBot() {
@@ -42,31 +22,10 @@ public class IRCBot extends PircBotX implements IBot{
     }
 
     @Override
-    public boolean isConnected(String channelName) {
-        return userChannelDao.getAllChannels().contains(userChannelDao.getChannel(channelName));
-    }
-
-    @Override
-    public ConcurrentHashMap<String, Channel> getChannels() {
-        return channels;
-    }
-
-    @Override
-    public boolean isChannel(String channelName) {
-        return ApiRequest.attemptRequest("channels/" + channelName, 3, 500) != null;
-    }
-
-    @Override
     public synchronized void shutdown() {
         if (isConnected()) {
             super.shutdown(true);
         }
-        IBot.super.shutdown();
-    }
-
-    @Override
-    public String getUserName() {
-        return getNick();
     }
 
     @Override
@@ -138,92 +97,6 @@ public class IRCBot extends PircBotX implements IBot{
         //Now that the socket is definatly closed call event, log, and kill the OutputThread
         shutdown();
     }
-
-    public DatabaseWrapper getBotDB() {
-        return botDB;
-    }
-
-    @Override
-    public boolean isUserMod(String channel, String user) {
-        return getUserChannelDao().getChannel(getIrcChannelName(channel)).isOp(getUserChannelDao().getUser(user));
-    }
-
-    @Override
-    public boolean isUserSubscriber(String channelName, String user) {
-        return subscriberStorage.remove(channelName, user);
-    }
-
-    @Override
-    public void sendMessage(String channel, String message) {
-        tokenBucket.consume();
-        getUserChannelDao().getChannel(getIrcChannelName(channel)).send().message(message);
-    }
-
-    @Override
-    public boolean leave(String channel) {
-        tokenBucket.consume();
-        getUserChannelDao().getChannel(getIrcChannelName(channel)).send().part();
-        return !getUserChannelDao().getAllChannels().contains(getUserChannelDao().getChannel(channel));
-    }
-
-    @Override
-    public boolean ban(String channelName, String user) {
-        // Check if user has user level mod or higher
-        try {
-            if (BotUtil.isModOrHigher(channelName, user)) {
-                return false;
-            }
-        } catch (ChannelNotFoundException e) {
-            App.logger.error("Channel '" + channelName + "' did not exist in which to timeout user");
-            App.logger.catching(e);
-        }
-
-        sendMessage(channelName, ".ban " + user);
-        return true;
-    }
-
-    @Override
-    public boolean timeout(String channelName, String user, int timeInSeconds) {
-        if (timeInSeconds <= 0) {
-            App.logger.warn("Cannot time out user for non-positive amount of time");
-            return false;
-        }
-
-        // Check if user has user level mod or higher
-        try {
-            if (BotUtil.isModOrHigher(channelName, user)) {
-                return false;
-            }
-        } catch (ChannelNotFoundException e) {
-            App.logger.error("Channel '" + channelName + "' did not exist in which to timeout user");
-            App.logger.catching(e);
-        }
-
-        sendMessage(channelName, ".timeout " + user + " " + timeInSeconds);
-        return true;
-    }
-
-    @Override
-    public boolean removeTimeout(String channelName, String user) {
-        sendMessage(channelName, ".unban " + user);
-        return true;
-    }
-
-    @Override
-    public boolean join(String channel) {
-        tokenBucket.consume();
-        sendIRC().joinChannel(getIrcChannelName(channel));
-        return getUserChannelDao().getAllChannels().contains(getUserChannelDao().getChannel(channel));
-    }
-
-    public static String getIrcChannelName(String channel) {
-        return "#" + channel;
-    }
-
-    public static String getInternalChannelName(String channel) {
-        return channel.replace("#", "");
-    }
-
 
     public boolean notLoggedIn(){
         return !loggedIn;

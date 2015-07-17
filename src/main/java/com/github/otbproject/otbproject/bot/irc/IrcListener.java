@@ -18,7 +18,7 @@ public class IrcListener extends ListenerAdapter {
 
     @Override
     public void onMessage(MessageEvent event) throws Exception {
-        String channelName = IRCBot.getInternalChannelName(event.getChannel().getName());
+        String channelName = IRCHelper.getInternalChannelName(event.getChannel().getName());
         Optional<Channel> optional = Channels.get(channelName);
         if (!optional.isPresent()) {
             App.logger.error("The channel '" + channelName + "' really shouldn't be null here. Something has gone terribly wrong.");
