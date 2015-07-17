@@ -68,7 +68,6 @@ public class FSUtil {
         return baseDir + File.separator + LOGS_DIR_NAME;
     }
 
-    // TODO make private after 2.0 release?
     public static String scriptDir() {
         return baseDir + File.separator + SCRIPT_DIR_NAME;
     }

@@ -218,7 +218,7 @@ public class GuiController {
     }
 
     void writeHistory() {
-        JsonHandler.writeValue(HISTORY_PATH, history); // TODO fix path
+        JsonHandler.writeValue(HISTORY_PATH, history);
     }
 
     void readHistory() {
