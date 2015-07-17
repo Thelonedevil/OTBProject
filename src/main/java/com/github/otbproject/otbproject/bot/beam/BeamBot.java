@@ -203,10 +203,7 @@ public class BeamBot extends AbstractBot {
 
         ExpiringMap<String, Boolean> timeoutSet = beamChatChannel.timeoutSet;
         if (timeoutSet.containsKey(user)) {
-            long waitTime = timeoutSet.getExpectedExpiration(user) / 1000;
-            // Not perfect because it's based on the original timeout time, not the time left
-            //  but there's no way to get the time left
-            if (waitTime > timeInSeconds) {
+            if (TimeUnit.MILLISECONDS.toSeconds(timeoutSet.getExpectedExpiration(user)) > timeInSeconds) {
                 App.logger.info("Did not timeout user '" + user + "' because they were already timed out for longer than that.");
                 return false;
             } else {
@@ -214,7 +211,7 @@ public class BeamBot extends AbstractBot {
             }
         } else {
             timeoutSet.put(user, Boolean.TRUE, timeInSeconds, TimeUnit.SECONDS);
-            //beamChatChannel.deleteMessages(user); // TODO uncomment when major responsiveness issue is fixed
+            beamChatChannel.deleteMessages(user);
         }
         App.logger.info("Timed out '" + user + "' in channel '" + channelName + "' for " + timeInSeconds + " seconds");
         return true;
