@@ -10,8 +10,8 @@ import java.util.stream.Collectors;
 
 public class Users {
 
-    public static User get(DatabaseWrapper db, String userNick) {
-        Optional<User> optional = db.getRecord(UserFields.TABLE_NAME, userNick, UserFields.NICK,
+    public static Optional<User> get(DatabaseWrapper db, String userNick) {
+        return db.getRecord(UserFields.TABLE_NAME, userNick, UserFields.NICK,
                 rs -> {
                     if (rs.isAfterLast()) {
                         return null;
@@ -21,7 +21,6 @@ public class Users {
                     user.setUserLevel(UserLevel.valueOf(rs.getString(UserFields.USER_LEVEL)));
                     return user;
                 });
-        return optional.orElse(null); // TODO return an optional and update references
     }
 
     public static List<String> getUsers(DatabaseWrapper db) {
