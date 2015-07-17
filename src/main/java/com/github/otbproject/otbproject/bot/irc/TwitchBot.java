@@ -10,6 +10,9 @@ import com.google.common.collect.Multimaps;
 import com.google.common.collect.SetMultimap;
 import org.isomorphism.util.TokenBucket;
 import org.isomorphism.util.TokenBuckets;
+import org.pircbotx.Channel;
+import org.pircbotx.User;
+import org.pircbotx.UserChannelDao;
 import org.pircbotx.exception.IrcException;
 
 import java.io.IOException;
@@ -40,7 +43,8 @@ public class TwitchBot extends AbstractBot {
 
     @Override
     public boolean isConnected(String channelName) {
-        return ircBot.getUserChannelDao().getAllChannels().contains(ircBot.getUserChannelDao().getChannel(channelName));
+        UserChannelDao<User, Channel> userChannelDao = ircBot.getUserChannelDao();
+        return userChannelDao.getAllChannels().contains(userChannelDao.getChannel(channelName));
     }
 
     @Override
@@ -66,7 +70,8 @@ public class TwitchBot extends AbstractBot {
 
     @Override
     public boolean isUserMod(String channel, String user) {
-        return ircBot.getUserChannelDao().getChannel(IRCHelper.getIrcChannelName(channel)).isOp(ircBot.getUserChannelDao().getUser(user));
+        UserChannelDao<User, Channel> userChannelDao = ircBot.getUserChannelDao();
+        return userChannelDao.getChannel(IRCHelper.getIrcChannelName(channel)).isOp(userChannelDao.getUser(user));
     }
 
     @Override
@@ -93,14 +98,16 @@ public class TwitchBot extends AbstractBot {
     public boolean join(String channelName) {
         tokenBucket.consume();
         ircBot.sendIRC().joinChannel(IRCHelper.getIrcChannelName(channelName));
-        return ircBot.getUserChannelDao().getAllChannels().contains(ircBot.getUserChannelDao().getChannel(channelName));
+        UserChannelDao<User, Channel> userChannelDao = ircBot.getUserChannelDao();
+        return userChannelDao.getAllChannels().contains(userChannelDao.getChannel(channelName));
     }
 
     @Override
     public boolean leave(String channelName) {
         tokenBucket.consume();
-        ircBot.getUserChannelDao().getChannel(IRCHelper.getIrcChannelName(channelName)).send().part();
-        return !ircBot.getUserChannelDao().getAllChannels().contains(ircBot.getUserChannelDao().getChannel(channelName));
+        UserChannelDao<User, Channel> userChannelDao = ircBot.getUserChannelDao();
+        userChannelDao.getChannel(IRCHelper.getIrcChannelName(channelName)).send().part();
+        return !userChannelDao.getAllChannels().contains(userChannelDao.getChannel(channelName));
     }
 
     @Override
