@@ -11,19 +11,16 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class Quotes {
-    public static Quote get(SQLiteQuoteWrapper db, Integer id) {
-        Optional<Quote> optional = db.getRecord(QuoteFields.TABLE_NAME, id, QuoteFields.ID, Quotes::getQuoteFromResultSet);
-        return optional.orElse(null); // TODO return an optional and update references
+    public static Optional<Quote> get(SQLiteQuoteWrapper db, Integer id) {
+        return db.getRecord(QuoteFields.TABLE_NAME, id, QuoteFields.ID, Quotes::getQuoteFromResultSet);
     }
 
-    public static Quote get(SQLiteQuoteWrapper db, String text) {
-        Optional<Quote> optional = db.getRecord(QuoteFields.TABLE_NAME, text, QuoteFields.TEXT, Quotes::getQuoteFromResultSet);
-        return optional.orElse(null); // TODO return an optional and update references
+    public static Optional<Quote> get(SQLiteQuoteWrapper db, String text) {
+        return db.getRecord(QuoteFields.TABLE_NAME, text, QuoteFields.TEXT, Quotes::getQuoteFromResultSet);
     }
 
-    public static Quote getRandomQuote(SQLiteQuoteWrapper db) {
-        Optional<Quote> optional = db.getRandomRecord(QuoteFields.TABLE_NAME, Quotes::getQuoteFromResultSet);
-        return optional.orElse(null); // TODO return an optional and update references
+    public static Optional<Quote> getRandomQuote(SQLiteQuoteWrapper db) {
+        return db.getRandomRecord(QuoteFields.TABLE_NAME, Quotes::getQuoteFromResultSet);
     }
 
     private static Quote getQuoteFromResultSet(ResultSet rs) throws SQLException {
@@ -33,6 +30,9 @@ public class Quotes {
         Quote quote = new Quote();
         quote.setId(rs.getInt(QuoteFields.ID));
         quote.setText(rs.getString(QuoteFields.TEXT));
+        if ((quote.getText() == null) || quote.getText().isEmpty()) {
+            return null;
+        }
         return quote;
     }
 
@@ -53,17 +53,12 @@ public class Quotes {
         return db.updateRecord(QuoteFields.TABLE_NAME, map.get(QuoteFields.ID), QuoteFields.ID, map);
     }
 
-    // Tells you if the id is in the database, but not if it's associated with non-null quote text
-    private static boolean exists(SQLiteQuoteWrapper db, Integer id) {
-        return db.exists(QuoteFields.TABLE_NAME, id, QuoteFields.ID);
-    }
-
     public static boolean exists(SQLiteQuoteWrapper db, String quoteText) {
         return db.exists(QuoteFields.TABLE_NAME, quoteText, QuoteFields.TEXT);
     }
 
-    public static boolean existsAndNotRemoved(SQLiteQuoteWrapper db, Integer id) {
-        return (get(db, id) != null);
+    public static boolean exists(SQLiteQuoteWrapper db, Integer id) {
+        return get(db, id).isPresent();
     }
 
     public static boolean add(SQLiteQuoteWrapper db, HashMap<String, Object> map) {
@@ -76,13 +71,7 @@ public class Quotes {
 
     public static boolean addQuoteFromObj(SQLiteQuoteWrapper db, Quote quote) {
         HashMap<String, Object> map = new HashMap<>();
-
         map.put(QuoteFields.TEXT, quote.getText());
-
-        if (exists(db, quote.getId())) {
-            return update(db, map);
-        } else {
-            return add(db, map);
-        }
+        return add(db, map);
     }
 }

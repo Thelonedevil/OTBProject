@@ -47,29 +47,29 @@ public class CommandResponseParser {
         // [[quote.modifier]] - can have a modifier, but it's unclear why you want one
         registerTerm("quote", (userNick, channel, count, args, term) -> {
             String quoteNumStr = getEmbeddedString(term, 1);
-            Quote quote = null;
             Optional<Channel> channelOptional = Channels.get(channel);
+            Optional<Quote> quoteOptional = Optional.empty();
             if (quoteNumStr.isEmpty()) {
                 if (channelOptional.isPresent()) {
-                    quote = Quotes.getRandomQuote(channelOptional.get().getQuoteDatabaseWrapper());
+                    quoteOptional = Quotes.getRandomQuote(channelOptional.get().getQuoteDatabaseWrapper());
                 }
-                if (quote == null) {
+                if (!quoteOptional.isPresent()) {
                     return "[Error getting random quote]";
                 }
             } else {
                 try {
                     int quoteNum = Integer.valueOf(quoteNumStr);
                     if (channelOptional.isPresent()) {
-                        quote = Quotes.get(channelOptional.get().getQuoteDatabaseWrapper(), quoteNum);
+                        quoteOptional = Quotes.get(channelOptional.get().getQuoteDatabaseWrapper(), quoteNum);
                     }
-                    if (quote == null) {
+                    if (!quoteOptional.isPresent()) {
                         return "";
                     }
                 } catch (NumberFormatException e) {
                     return "";
                 }
             }
-            return quote.getText();
+            return quoteOptional.get().getText();
         });
 
         // [[game.modifier]]
