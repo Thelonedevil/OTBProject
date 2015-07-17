@@ -111,10 +111,11 @@ class PreloadComparator {
             return newGroup;
         }
 
-        FilterGroup dbGroup = FilterGroups.get(db, newGroup.getName());
-        if (dbGroup == null) {
+        Optional<FilterGroup> optional = FilterGroups.get(db, newGroup.getName());
+        if (!optional.isPresent()) {
             return newGroup;
         }
+        FilterGroup dbGroup = optional.get();
 
         // Check all filter group fields
         if (!oldGroup.getResponseCommand().equals(dbGroup.getResponseCommand())) {
