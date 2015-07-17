@@ -81,6 +81,7 @@ public class MessageHandler implements EventHandler<IncomingMessageEvent> {
                 Channel channel = optional.get();
                 PackagedMessage packagedMessage = new PackagedMessage(getMessage(data),data.user_name.toLowerCase(), channelName, UserLevels.getUserLevel(channel.getMainDatabaseWrapper(), channelName, data.user_name.toLowerCase()), MessagePriority.DEFAULT);
                 channel.receiveMessage(packagedMessage);
+                bot.invokeMessageHandlers(packagedMessage);
             } else {
                 App.logger.error("Channel: " + channelName + " appears not to exist");
             }
