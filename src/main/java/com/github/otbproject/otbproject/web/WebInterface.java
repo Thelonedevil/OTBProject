@@ -17,9 +17,9 @@ public class WebInterface {
     public static void start() {
         File path = new File(warPath());
         if (App.VERSION.type == Version.Type.SNAPSHOT) {
-            App.logger.warn("You are running a dev build of OTBProject, please also grab the latest build of the web interface and place in \"" +
+            App.logger.warn("You are running a dev build of OTB. Please grab the latest build of the web interface and place in \"" +
                     FSUtil.webDir() + File.separator + "\" as \"web-interface-" + WebVersion.latest() +
-                    ".war\". Releases will automatically download this for you");
+                    ".war\". Releases will automatically download the latest version of the web interface for you");
         } else if (!path.exists() || (Configs.getWebConfig().isAutoUpdating() && (WebVersion.current().compareTo(WebVersion.latest()) < 0))) {
             WarDownload.downloadLatest();
         }

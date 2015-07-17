@@ -55,7 +55,7 @@ public class GuiApplication extends Application {
         Parent start = loader.load();
         primaryStage.setScene(new Scene(start, 1200, 515));
         primaryStage.setResizable(false);
-        primaryStage.setTitle("OTBProject");
+        primaryStage.setTitle("OTB");
         primaryStage.getIcons().add(new Image("http://otbproject.github.io/images/logo.png"));
         primaryStage.setOnCloseRequest(event -> {
             Alert alert = new Alert(Alert.AlertType.WARNING);
@@ -206,15 +206,16 @@ public class GuiApplication extends Application {
         if (Configs.getGeneralConfig().isUpdateChecking()
                 && (AppVersion.latest().compareTo(App.VERSION) > 0)
                 && (AppVersion.latest().type == Version.Type.RELEASE)) {
+            String url = "https://github.com/OTBProject/OTBProject/releases/latest";
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("New Release Available");
-            alert.setHeaderText("New Release Available: OTB Project " + AppVersion.latest());
-            alert.setContentText("Version " + AppVersion.latest() + " of OTB Project is now available!" +
+            alert.setHeaderText("New Release Available: OTB Version " + AppVersion.latest());
+            alert.setContentText("Version " + AppVersion.latest() + " of OTB is now available!" +
                     "\n\nPress \"Get New Release\" or go to" +
-                    "\nhttps://github.com/OTBProject/OTBProject/releases/latest" +
+                    "\n" + url +
                     "\nto get the new release." +
                     "\n\nPressing \"Don't Ask Again\" will prevent notifications " +
-                    "\nfor all future releases of OTB Project.");
+                    "\nfor all future releases of OTB.");
             DialogPane dialogPane = alert.getDialogPane();
             setDialogPaneStyle(dialogPane);
             ButtonType buttonTypeDontAskAgain = new ButtonType("Don't Ask Again", ButtonBar.ButtonData.LEFT);
@@ -228,7 +229,7 @@ public class GuiApplication extends Application {
                     Configs.getGeneralConfig().setUpdateChecking(false);
                     Configs.writeGeneralConfig();
                 } else if (buttonType == buttonTypeGetRelease) {
-                    this.getHostServices().showDocument("https://github.com/OTBProject/OTBProject/releases/latest");
+                    this.getHostServices().showDocument(url);
                 }
             });
         }
