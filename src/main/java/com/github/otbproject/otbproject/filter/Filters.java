@@ -9,12 +9,11 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Filters {
-    public static BasicFilter get(DatabaseWrapper db, String data, FilterType type) {
+    public static Optional<BasicFilter> get(DatabaseWrapper db, String data, FilterType type) {
         List<Map.Entry<String, Object>> list = new ArrayList<>();
         list.add(new AbstractMap.SimpleEntry<>(FilterFields.DATA, data));
         list.add(new AbstractMap.SimpleEntry<>(FilterFields.TYPE, type.name()));
-        Optional<BasicFilter> optional = db.getRecord(FilterFields.TABLE_NAME, list, Filters::getFilterFromResultSet);
-        return optional.orElse(null); // TODO return an optional and update references
+        return db.getRecord(FilterFields.TABLE_NAME, list, Filters::getFilterFromResultSet);
     }
 
     public static List<BasicFilter> getBasicFilters(DatabaseWrapper db) {

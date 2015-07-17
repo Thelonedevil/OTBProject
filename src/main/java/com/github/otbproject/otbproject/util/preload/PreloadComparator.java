@@ -90,10 +90,11 @@ class PreloadComparator {
             return newFilter;
         }
 
-        BasicFilter dbFilter = Filters.get(db, newFilter.getData(), newFilter.getType());
-        if (dbFilter == null) {
+        Optional<BasicFilter> optional = Filters.get(db, newFilter.getData(), newFilter.getType());
+        if (!optional.isPresent()) {
             return newFilter;
         }
+        BasicFilter dbFilter = optional.get();
 
         // Check all filter fields
         if (!oldFilter.getGroup().equals(dbFilter.getGroup())) {
