@@ -2,10 +2,12 @@ package com.github.otbproject.otbproject.bot;
 
 import com.github.otbproject.otbproject.channel.Channel;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
+import com.github.otbproject.otbproject.messages.receive.PackagedMessage;
 import org.pircbotx.exception.IrcException;
 
 import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 
 public interface IBot {
     boolean isConnected(String channelName);
@@ -30,7 +32,7 @@ public interface IBot {
 
     void sendMessage(String channel, String message);
 
-    void startBot() throws IOException, IrcException;
+    void startBot() throws BotInitException;
 
     boolean join(String channelName);
 
@@ -41,4 +43,8 @@ public interface IBot {
     boolean timeout(String channelName, String user, int timeInSeconds);
 
     boolean removeTimeout(String channelName, String user);
+
+    void onMessage(Consumer<PackagedMessage> messageHandler);
+
+    void invokeMessageHandlers(PackagedMessage message);
 }
