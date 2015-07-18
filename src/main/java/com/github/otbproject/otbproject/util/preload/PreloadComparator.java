@@ -10,16 +10,19 @@ import com.github.otbproject.otbproject.filter.FilterGroup;
 import com.github.otbproject.otbproject.filter.FilterGroups;
 import com.github.otbproject.otbproject.filter.Filters;
 
+import java.util.Optional;
+
 class PreloadComparator {
     static Alias generateAliasHybrid(DatabaseWrapper db, Alias newAlias, Alias oldAlias) {
         if ((oldAlias == null) || (newAlias == null) || !oldAlias.getName().equals(newAlias.getName())) {
             return newAlias;
         }
 
-        Alias dbAlias = Aliases.get(db, newAlias.getName());
-        if (dbAlias == null) {
+        Optional<Alias> optional = Aliases.get(db, newAlias.getName());
+        if (!optional.isPresent()) {
             return newAlias;
         }
+        Alias dbAlias = optional.get();
 
         // Check all alias fields
         if (!oldAlias.getCommand().equals(dbAlias.getCommand())) {
@@ -40,10 +43,11 @@ class PreloadComparator {
             return newCommand;
         }
 
-        Command dbCommand = Commands.get(db, newCommand.getName());
-        if (dbCommand == null) {
+        Optional<Command> optional = Commands.get(db, newCommand.getName());
+        if (!optional.isPresent()) {
             return newCommand;
         }
+        Command dbCommand = optional.get();
 
         // Check all command fields
         if (!oldCommand.getResponse().equals(dbCommand.getResponse())) {
@@ -86,10 +90,11 @@ class PreloadComparator {
             return newFilter;
         }
 
-        BasicFilter dbFilter = Filters.get(db, newFilter.getData(), newFilter.getType());
-        if (dbFilter == null) {
+        Optional<BasicFilter> optional = Filters.get(db, newFilter.getData(), newFilter.getType());
+        if (!optional.isPresent()) {
             return newFilter;
         }
+        BasicFilter dbFilter = optional.get();
 
         // Check all filter fields
         if (!oldFilter.getGroup().equals(dbFilter.getGroup())) {
@@ -107,10 +112,11 @@ class PreloadComparator {
             return newGroup;
         }
 
-        FilterGroup dbGroup = FilterGroups.get(db, newGroup.getName());
-        if (dbGroup == null) {
+        Optional<FilterGroup> optional = FilterGroups.get(db, newGroup.getName());
+        if (!optional.isPresent()) {
             return newGroup;
         }
+        FilterGroup dbGroup = optional.get();
 
         // Check all filter group fields
         if (!oldGroup.getResponseCommand().equals(dbGroup.getResponseCommand())) {

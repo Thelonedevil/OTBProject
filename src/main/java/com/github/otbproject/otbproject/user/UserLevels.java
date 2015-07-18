@@ -5,6 +5,8 @@ import com.github.otbproject.otbproject.bot.Bot;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.messages.internal.InternalMessageSender;
 
+import java.util.Optional;
+
 public class UserLevels {
 
     public static UserLevel getUserLevel(DatabaseWrapper db, String channel, String user) {
@@ -17,9 +19,9 @@ public class UserLevels {
         }
 
         UserLevel ul = null;
-        User userObj = Users.get(db, user);
-        if (userObj != null) {
-            ul = userObj.getUserLevel();
+        Optional<User> optional = Users.get(db, user);
+        if (optional.isPresent()) {
+            ul = optional.get().getUserLevel();
         }
 
         if (ul == UserLevel.SUPER_MODERATOR) {

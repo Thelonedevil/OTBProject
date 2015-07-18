@@ -10,10 +10,9 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
 
 public class FilterGroups {
-    public static FilterGroup get(DatabaseWrapper db, String groupName) {
-        Optional<FilterGroup> optional = db.getRecord(FilterGroupFields.TABLE_NAME, groupName,
+    public static Optional<FilterGroup> get(DatabaseWrapper db, String groupName) {
+        return db.getRecord(FilterGroupFields.TABLE_NAME, groupName,
                 FilterGroupFields.NAME, FilterGroups::getFilterGroupFromResultSet);
-        return optional.orElse(null); // TODO return an optional and update references
     }
 
     public static List<FilterGroup> getFilterGroups(DatabaseWrapper db) {

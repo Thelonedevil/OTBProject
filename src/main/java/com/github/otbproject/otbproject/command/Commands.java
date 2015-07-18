@@ -12,8 +12,8 @@ import java.util.stream.Collectors;
 
 public class Commands {
 
-    public static Command get(DatabaseWrapper db, String commandName) {
-        Optional<Command> optional = db.getRecord(CommandFields.TABLE_NAME, commandName, CommandFields.NAME,
+    public static Optional<Command> get(DatabaseWrapper db, String commandName) {
+        return db.getRecord(CommandFields.TABLE_NAME, commandName, CommandFields.NAME,
                 rs -> {
                     if (rs.isAfterLast()) {
                         return null;
@@ -32,7 +32,6 @@ public class Commands {
                     command.modifyingUserLevels.setUserLevelModifyingUL(UserLevel.valueOf(rs.getString(CommandFields.USER_LEVEL_MODIFYING_UL)));
                     return command;
                 });
-        return optional.orElse(null); // TODO return an optional and update references
     }
 
     public static List<String> getCommands(DatabaseWrapper db) {
@@ -65,19 +64,21 @@ public class Commands {
     }
 
     public static void incrementCount(DatabaseWrapper db, String commandName) {
-        Command command = get(db, commandName);
-        if (command == null) {
+        Optional<Command> optional = get(db, commandName);
+        if (!optional.isPresent()) {
             return;
         }
+        Command command = optional.get();
         command.setCount(command.getCount() + 1);
         addCommandFromLoadedCommand(db, command);
     }
 
     public static void resetCount(DatabaseWrapper db, String commandName) {
-        Command command = get(db, commandName);
-        if (command == null) {
+        Optional<Command> optional = get(db, commandName);
+        if (!optional.isPresent()) {
             return;
         }
+        Command command = optional.get();
         command.setCount(0);
         addCommandFromLoadedCommand(db, command);
     }
