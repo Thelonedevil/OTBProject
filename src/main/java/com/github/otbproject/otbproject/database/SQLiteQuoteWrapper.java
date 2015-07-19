@@ -95,7 +95,6 @@ public class SQLiteQuoteWrapper extends DatabaseWrapper {
         lock.lock();
         try {
             rs = connection.createStatement().executeQuery(sql);
-            connection.commit();
             return Optional.ofNullable(function.apply(rs));
         } catch (SQLException e) {
             App.logger.error("SQL: " + sql);
