@@ -56,11 +56,9 @@ public class BeamBot extends AbstractBot {
     @Override
     public boolean isChannel(String channelName) {
         try {
-            for (BeamUser user : beam.use(UsersService.class).search(channelName).get()) {
-                if (user.username.equalsIgnoreCase(channelName)) {
-                    return true;
-                }
-            }
+            return beam.use(UsersService.class).search(channelName).get().stream()
+                    .filter(user -> user.username.equalsIgnoreCase(channelName))
+                    .findAny().isPresent();
         } catch (InterruptedException | ExecutionException e) {
             App.logger.catching(e);
         }

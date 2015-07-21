@@ -10,6 +10,7 @@ import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.user.UserLevel;
 
 import java.util.*;
+import java.util.stream.Stream;
 
 public class CommandProcessor {
     public static ProcessedCommand process(DatabaseWrapper db, String message, String channel, String user, UserLevel userLevel, boolean debug) {
@@ -53,19 +54,9 @@ public class CommandProcessor {
         if ((splitMsg.length == 1) || splitMsg[1].equals("")) {
             args = new String[0];
         } else {
-            args = splitMsg[1].split(" ");
-            List<String> tempArrayList = new ArrayList<>(Arrays.asList(args));
-            for (Iterator<String> i = tempArrayList.iterator(); i.hasNext(); ) {
-                if (i.next().isEmpty()) {
-                    i.remove();
-                }
-            }
-
-            if (tempArrayList.size() == 0) {
-                args = new String[0];
-            } else {
-                args = tempArrayList.toArray(new String[tempArrayList.size()]);
-            }
+            args = Stream.of(splitMsg[1].split(" "))
+                    .filter(s -> !s.isEmpty())
+                    .toArray(String[]::new);
         }
 
         Optional<Command> optional = Commands.get(db, cmdName);
