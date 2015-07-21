@@ -72,9 +72,9 @@ public class BeamChatChannel {
         beamBot = ((BeamBot) Bot.getBot());
         try {
             channel = beamBot.beamUser.channel;
-            for(BeamUser user : beamBot.beam.use(UsersService.class).search(channelName).get()){
-                if (user.username.equalsIgnoreCase(channelName)){
-                     channel = beamBot.beam.use(UsersService.class).findOne(user.id).get().channel;
+            for (BeamUser user : beamBot.beam.use(UsersService.class).search(channelName).get()) {
+                if (user.username.equalsIgnoreCase(channelName)) {
+                    channel = beamBot.beam.use(UsersService.class).findOne(user.id).get().channel;
                     break;
                 }
             }

@@ -126,6 +126,7 @@ public class Schedules {
         }
         loadFromDatabase(optional.get());
     }
+
     public static void loadFromDatabase(Channel channel) {
         DatabaseWrapper db = channel.getMainDatabaseWrapper();
         db.tableDump(SchedulerFields.TABLE_NAME,
@@ -135,16 +136,16 @@ public class Schedules {
                         long delay = rs.getLong(SchedulerFields.OFFSET);
                         long period = rs.getLong(SchedulerFields.PERIOD);
                         boolean hourReset = Boolean.parseBoolean(rs.getString(SchedulerFields.RESET));
-                        TimeUnit timeUnit =  TimeUnit.valueOf(rs.getString(SchedulerFields.TYPE));
+                        TimeUnit timeUnit = TimeUnit.valueOf(rs.getString(SchedulerFields.TYPE));
                         doScheduleCommand(channel, command, delay, period, hourReset, timeUnit);
                     }
                     return null;
                 });
     }
 
-    private static boolean removeFromDatabase(Channel channel, String command){
+    private static boolean removeFromDatabase(Channel channel, String command) {
         DatabaseWrapper db = channel.getMainDatabaseWrapper();
-        return db.removeRecord(SchedulerFields.TABLE_NAME,command, SchedulerFields.COMMAND);
+        return db.removeRecord(SchedulerFields.TABLE_NAME, command, SchedulerFields.COMMAND);
     }
 
     public static Set<String> getScheduledCommands(String channelName) {

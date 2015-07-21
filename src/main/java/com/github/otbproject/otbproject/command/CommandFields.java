@@ -28,7 +28,7 @@ public class CommandFields {
     }
 
     public static TableFields getTableFields() {
-        HashMap<String,String> commandFields = new HashMap<>();
+        HashMap<String, String> commandFields = new HashMap<>();
         commandFields.put(NAME, DataTypes.STRING);
         commandFields.put(RESPONSE, DataTypes.STRING);
         commandFields.put(EXEC_USER_LEVEL, DataTypes.STRING);

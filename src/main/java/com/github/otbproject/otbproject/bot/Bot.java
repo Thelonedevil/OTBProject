@@ -82,7 +82,7 @@ public class Bot {
 
         /**
          * Stops the bot and cleans up anything which needs to be cleaned up
-         *  before the bot is started again
+         * before the bot is started again
          *
          * @param cleanup whether or not to cleanup various data with the
          *                expectation that the bot will be started again
@@ -112,9 +112,9 @@ public class Bot {
 
         /**
          * Should NOT be used for initial startup. Does not handle command line
-         *  args. The function startup(CommandLine) should instead be used to
-         *  start the bot the first time.
-         *
+         * args. The function startup(CommandLine) should instead be used to
+         * start the bot the first time.
+         * <p>
          * Should be run to start the bot after shutdown() has been called
          *
          * @return true if bot started successfully

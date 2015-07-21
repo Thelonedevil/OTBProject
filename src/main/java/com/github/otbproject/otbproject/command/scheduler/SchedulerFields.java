@@ -23,10 +23,10 @@ public class SchedulerFields {
     public static TableFields getTableFields() {
         HashMap<String, String> fields = new HashMap<>();
         fields.put(COMMAND, DataTypes.STRING);
-        fields.put(TYPE,DataTypes.STRING);
-        fields.put(OFFSET,DataTypes.INTEGER);
-        fields.put(PERIOD,DataTypes.INTEGER);
-        fields.put(RESET,DataTypes.STRING);
+        fields.put(TYPE, DataTypes.STRING);
+        fields.put(OFFSET, DataTypes.INTEGER);
+        fields.put(PERIOD, DataTypes.INTEGER);
+        fields.put(RESET, DataTypes.STRING);
         return new TableFields(fields, PRIMARY_KEYS);
     }
 }

@@ -55,7 +55,7 @@ public class CommandProcessor {
         } else {
             args = splitMsg[1].split(" ");
             List<String> tempArrayList = new ArrayList<>(Arrays.asList(args));
-            for (Iterator<String> i = tempArrayList.iterator(); i.hasNext();) {
+            for (Iterator<String> i = tempArrayList.iterator(); i.hasNext(); ) {
                 if (i.next().isEmpty()) {
                     i.remove();
                 }

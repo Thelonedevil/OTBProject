@@ -37,7 +37,8 @@ public class MessageHandler implements EventHandler<IncomingMessageEvent> {
 
     private final String channelName;
     private final BeamChatChannel beamChatChannel;
-    public MessageHandler(String channel, BeamChatChannel beamChatChannel){
+
+    public MessageHandler(String channel, BeamChatChannel beamChatChannel) {
         this.channelName = channel;
         this.beamChatChannel = beamChatChannel;
     }
@@ -46,7 +47,7 @@ public class MessageHandler implements EventHandler<IncomingMessageEvent> {
     public void onEvent(IncomingMessageEvent event) {
         EXECUTOR_SERVICE.execute(() -> {
             IncomingMessageData data = event.data;
-            App.logger.info("<"+ channelName +"> "+ data.user_name + ": " + getMessage(data));
+            App.logger.info("<" + channelName + "> " + data.user_name + ": " + getMessage(data));
             beamChatChannel.userRoles.put(data.user_name.toLowerCase(), Collections.unmodifiableList(data.user_roles));
 
             BeamBot bot = (BeamBot) Bot.getBot();
@@ -77,9 +78,9 @@ public class MessageHandler implements EventHandler<IncomingMessageEvent> {
             }
 
             Optional<Channel> optional = Channels.get(channelName);
-            if(optional.isPresent()){
+            if (optional.isPresent()) {
                 Channel channel = optional.get();
-                PackagedMessage packagedMessage = new PackagedMessage(getMessage(data),data.user_name.toLowerCase(), channelName, UserLevels.getUserLevel(channel.getMainDatabaseWrapper(), channelName, data.user_name.toLowerCase()), MessagePriority.DEFAULT);
+                PackagedMessage packagedMessage = new PackagedMessage(getMessage(data), data.user_name.toLowerCase(), channelName, UserLevels.getUserLevel(channel.getMainDatabaseWrapper(), channelName, data.user_name.toLowerCase()), MessagePriority.DEFAULT);
                 channel.receiveMessage(packagedMessage);
                 bot.invokeMessageHandlers(packagedMessage);
             } else {

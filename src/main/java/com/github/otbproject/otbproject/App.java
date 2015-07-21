@@ -53,8 +53,8 @@ public class App {
                 // log throwable
                 DateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd-HH.mm.ss");
                 Date date = new Date();
-                File file = new File("OTBProjectFatal-"+dateFormat.format(date)+".log");
-                if  (!file.createNewFile()) {
+                File file = new File("OTBProjectFatal-" + dateFormat.format(date) + ".log");
+                if (!file.createNewFile()) {
                     throw new IOException("Failed to create fatal log file for some reason.");
                 }
                 PrintStream ps = new PrintStream(file);
@@ -66,7 +66,6 @@ public class App {
             }
         }
     }
-
 
 
     private static void doMain(String[] args) {

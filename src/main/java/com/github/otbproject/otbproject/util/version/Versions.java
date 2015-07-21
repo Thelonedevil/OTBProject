@@ -71,7 +71,7 @@ public class Versions {
             try {
                 int xRateLimitRemaining = Integer.parseInt(infoString.split("X-RateLimit-Remaining: ")[1].split(",")[0]);
                 long xRateLimitReset = Integer.parseInt(infoString.split("X-RateLimit-Reset: ")[1].split(",")[0]);
-                JsonHandler.writeValue(RATE_LIMIT_INFO_PATH, new long[] { xRateLimitRemaining, xRateLimitReset });
+                JsonHandler.writeValue(RATE_LIMIT_INFO_PATH, new long[]{xRateLimitRemaining, xRateLimitReset});
             } catch (ArrayIndexOutOfBoundsException | NumberFormatException e) {
                 App.logger.error("Error getting GitHub rate limit information");
                 App.logger.catching(e);

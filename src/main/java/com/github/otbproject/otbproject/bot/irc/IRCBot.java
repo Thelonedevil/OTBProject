@@ -98,7 +98,7 @@ class IRCBot extends PircBotX {
         shutdown();
     }
 
-    public boolean notLoggedIn(){
+    public boolean notLoggedIn() {
         return !loggedIn;
     }
 }

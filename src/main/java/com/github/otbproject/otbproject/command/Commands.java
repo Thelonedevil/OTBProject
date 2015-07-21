@@ -35,7 +35,7 @@ public class Commands {
     }
 
     public static List<String> getCommands(DatabaseWrapper db) {
-        List<Object> list =  db.getRecordsList(CommandFields.TABLE_NAME, CommandFields.NAME);
+        List<Object> list = db.getRecordsList(CommandFields.TABLE_NAME, CommandFields.NAME);
         if (list == null) {
             return null;
         }

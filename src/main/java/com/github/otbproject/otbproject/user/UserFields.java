@@ -18,7 +18,7 @@ public class UserFields {
     }
 
     public static TableFields getTableFields() {
-        HashMap<String,String> userFields = new HashMap<>();
+        HashMap<String, String> userFields = new HashMap<>();
         userFields.put(NICK, DataTypes.STRING);
         userFields.put(USER_LEVEL, DataTypes.STRING);
         return new TableFields(userFields, PRIMARY_KEYS);

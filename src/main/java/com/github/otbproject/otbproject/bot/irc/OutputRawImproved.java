@@ -16,7 +16,8 @@ public class OutputRawImproved extends OutputRaw {
 
     /**
      * Sends a raw line to the IRC server as soon as possible
-     * @param line The raw line to send to the IRC server
+     *
+     * @param line       The raw line to send to the IRC server
      * @param resetDelay If true, pending messages will reset their delay.
      */
     public void rawLineNow(String line, boolean resetDelay) {
@@ -25,7 +26,7 @@ public class OutputRawImproved extends OutputRaw {
             throw new RuntimeException("Not connected to server");
         writeLock.lock();
         try {
-            if(!line.contains("PASS ")){
+            if (!line.contains("PASS ")) {
                 App.logger.info(line);
             }
             Utils.sendRawLineToServer(bot, line);
@@ -37,6 +38,7 @@ public class OutputRawImproved extends OutputRaw {
             writeLock.unlock();
         }
     }
+
     /**
      * Sends a raw line through the outgoing message queue.
      *
@@ -54,7 +56,7 @@ public class OutputRawImproved extends OutputRaw {
                 writeNowCondition.await(lastSentLine + delayNanos - curNanos, TimeUnit.NANOSECONDS);
                 curNanos = System.nanoTime();
             }
-            if(!line.startsWith("PONG")) {
+            if (!line.startsWith("PONG")) {
                 App.logger.info(line);
             }
             Utils.sendRawLineToServer(bot, line);
@@ -64,4 +66,5 @@ public class OutputRawImproved extends OutputRaw {
         } finally {
             writeLock.unlock();
         }
-    }}
+    }
+}

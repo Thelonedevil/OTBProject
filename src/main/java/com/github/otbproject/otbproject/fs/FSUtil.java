@@ -76,7 +76,7 @@ public class FSUtil {
         return scriptDir() + File.separator + COMMANDS_DIR_NAME;
     }
 
-    public static String scriptLibsDir(){
+    public static String scriptLibsDir() {
         return scriptDir() + File.separator + LIBS_DIR_NAME;
     }
 
