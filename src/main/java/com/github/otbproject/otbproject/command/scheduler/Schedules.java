@@ -5,8 +5,6 @@ import com.github.otbproject.otbproject.channel.Channel;
 import com.github.otbproject.otbproject.channel.Channels;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
