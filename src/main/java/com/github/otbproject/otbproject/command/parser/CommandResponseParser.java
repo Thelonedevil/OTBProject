@@ -291,7 +291,7 @@ public class CommandResponseParser {
 
     static int getArgNum(String term, String prefix) throws InvalidTermException {
         // Gets arg number
-        String argNumStr = term.replaceFirst(prefix, "").split(EMBED_START, 2)[0].split(MODIFIER_DELIM, 2)[0];
+        String argNumStr = term.substring(prefix.length()).split(EMBED_START, 2)[0].split(MODIFIER_DELIM, 2)[0];
         int argNum;
         try {
             argNum = Integer.parseInt(argNumStr);

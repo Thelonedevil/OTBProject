@@ -18,7 +18,7 @@ public class ScriptHelper {
 
     public static void sendMessage(String channelName, String message, MessagePriority priority) throws ChannelNotFoundException {
         if (channelName.startsWith(InternalMessageSender.DESTINATION_PREFIX)) {
-            InternalMessageSender.send(channelName.replace(InternalMessageSender.DESTINATION_PREFIX, ""), message, "CmdExec");
+            InternalMessageSender.send(channelName.substring(InternalMessageSender.DESTINATION_PREFIX.length()), message, "CmdExec");
         } else {
             MessageOut messageOut = new MessageOut(message, priority);
             Channels.getOrThrow(channelName).sendMessage(messageOut);
