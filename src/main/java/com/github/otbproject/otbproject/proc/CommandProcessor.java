@@ -9,7 +9,8 @@ import com.github.otbproject.otbproject.command.parser.CommandResponseParser;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.user.UserLevel;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 public class CommandProcessor {
