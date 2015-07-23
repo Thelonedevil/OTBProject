@@ -52,8 +52,7 @@ public class Bot {
     public static class Control {
         private static boolean running = false;
 
-        public static synchronized boolean startup(CommandLine cmd) {
-            loadConfigs(cmd);
+        public static synchronized boolean firstStartup() {
             LibsLoader.load();
             init();
             running = createBot();
@@ -197,7 +196,7 @@ public class Bot {
             loadOtherConfigs();
         }
 
-        private static void loadConfigs(CommandLine cmd) {
+        public static void loadConfigs(CommandLine cmd) {
             // General config
             GeneralConfig generalConfig = Configs.readGeneralConfig(); // Must be read first for service info
             App.configManager.setGeneralConfig(generalConfig);

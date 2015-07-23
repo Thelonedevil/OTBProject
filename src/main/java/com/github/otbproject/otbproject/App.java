@@ -93,6 +93,11 @@ public class App {
 
         // Log version
         logger.info("OTBProject version " + VERSION);
+
+        // Read configs
+        Bot.Control.loadConfigs(cmd);
+
+        // Start GUI if applicable
         if (Bot.Graphics.present()) {
             Util.getSingleThreadExecutor().execute(() -> GuiApplication.start(args));
         }
@@ -124,7 +129,7 @@ public class App {
         Versions.writeToFile(versionFile, VERSION);
 
         // Perform various startup actions
-        Bot.Control.startup(cmd);
+        Bot.Control.firstStartup();
 
         // Start web interface
         if (Configs.getWebConfig().isEnabled()) {
