@@ -29,7 +29,7 @@ class WarDownload {
         for (int i = 1; i <= ATTEMPTS; i++) {
             App.logger.info("Attempting to download web interface (" + i + "/" + ATTEMPTS + ")");
             try {
-                Future<Boolean> future = executor.submit(WarDownload::doDownload);
+                Future<Void> future = executor.submit(WarDownload::doDownload);
                 future.get(1, TimeUnit.MINUTES);
                 if (!moveTempDownload()) {
                     throw new WarDownloadException("Failed to rename download file to final file name");
@@ -83,7 +83,7 @@ class WarDownload {
                 .forEach(File::delete);
     }
 
-    private static Boolean doDownload() throws WarDownloadException {
+    private static Void doDownload() throws WarDownloadException {
         String latestVersion = WebVersion.latest().toString();
         String warURL = "https://github.com/OTBProject/OTBWebInterface/releases/download/" + latestVersion + "/web-interface-" + latestVersion + ".war";
         String dlPath = dlPath();
@@ -105,7 +105,7 @@ class WarDownload {
         } catch (IOException e) {
             throw new WarDownloadException(e);
         }
-        return Boolean.TRUE;
+        return null;
     }
 
     private static String dlPath() {
