@@ -72,14 +72,10 @@ public class BeamChatChannel {
 
         beamBot = ((BeamBot) Bot.getBot());
         try {
-            channel = beamBot.beamUser.channel;
-            for (BeamUser user : beamBot.beam.use(UsersService.class).search(channelName).get()) {
-                if (user.username.equalsIgnoreCase(channelName)) {
-                    channel = beamBot.beam.use(UsersService.class).findOne(user.id).get().channel;
-                    break;
-                }
-            }
-            beamChat = beamBot.beam.use(ChatService.class).findOne(channel.id).get();
+            BeamUser beamUser = beamBot.beam.use(UsersService.class).search(channelName).get().stream()
+                    .filter(user -> user.username.equalsIgnoreCase(channelName))
+                    .findAny().orElseThrow(() -> new ChannelInitException(channelName, ERR_MSG));
+            channel = beamBot.beam.use(UsersService.class).findOne(beamUser.id).get().channel;
         } catch (InterruptedException | ExecutionException e) {
             throw new ChannelInitException(channelName, ERR_MSG, e);
         }
