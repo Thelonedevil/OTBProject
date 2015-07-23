@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class BeamChatChannel {
+    private static final String ERR_MSG = "Failed to connect to Beam channel";
     final BeamBot beamBot;
     BeamChat beamChat;
     final BeamChatConnectable beamChatConnectable;
@@ -80,7 +81,7 @@ public class BeamChatChannel {
             }
             beamChat = beamBot.beam.use(ChatService.class).findOne(channel.id).get();
         } catch (InterruptedException | ExecutionException e) {
-            App.logger.catching(e);
+            throw new ChannelInitException(channelName, ERR_MSG, e);
         }
         beamChatConnectable = beamChat.makeConnectable(beamBot.beam);
         boolean connected;
@@ -88,10 +89,10 @@ public class BeamChatChannel {
             connected = beamChatConnectable.connectBlocking();
         } catch (InterruptedException e) {
             App.logger.catching(e);
-            throw new ChannelInitException("Failed to connect to Beam channel: " + channelName);
+            throw new ChannelInitException(channelName, ERR_MSG, e);
         }
         if (!connected) {
-            throw new ChannelInitException("Failed to connect to Beam channel: " + channelName);
+            throw new ChannelInitException(channelName, ERR_MSG);
         }
 
         beamChatConnectable.send(AuthenticateMessage.from(channel, beamBot.beamUser, beamChat.authkey));
