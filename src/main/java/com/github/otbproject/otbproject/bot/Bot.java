@@ -52,8 +52,7 @@ public class Bot {
     public static class Control {
         private static boolean running = false;
 
-        public static synchronized boolean startup(CommandLine cmd) {
-            loadConfigs(cmd);
+        public static synchronized boolean firstStartup() {
             LibsLoader.load();
             init();
             running = createBot();
@@ -82,7 +81,7 @@ public class Bot {
 
         /**
          * Stops the bot and cleans up anything which needs to be cleaned up
-         *  before the bot is started again
+         * before the bot is started again
          *
          * @param cleanup whether or not to cleanup various data with the
          *                expectation that the bot will be started again
@@ -112,9 +111,9 @@ public class Bot {
 
         /**
          * Should NOT be used for initial startup. Does not handle command line
-         *  args. The function startup(CommandLine) should instead be used to
-         *  start the bot the first time.
-         *
+         * args. The function startup(CommandLine) should instead be used to
+         * start the bot the first time.
+         * <p>
          * Should be run to start the bot after shutdown() has been called
          *
          * @return true if bot started successfully
@@ -197,7 +196,7 @@ public class Bot {
             loadOtherConfigs();
         }
 
-        private static void loadConfigs(CommandLine cmd) {
+        public static void loadConfigs(CommandLine cmd) {
             // General config
             GeneralConfig generalConfig = Configs.readGeneralConfig(); // Must be read first for service info
             App.configManager.setGeneralConfig(generalConfig);

@@ -3,9 +3,7 @@ package com.github.otbproject.otbproject.bot;
 import com.github.otbproject.otbproject.channel.Channel;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.messages.receive.PackagedMessage;
-import org.pircbotx.exception.IrcException;
 
-import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 

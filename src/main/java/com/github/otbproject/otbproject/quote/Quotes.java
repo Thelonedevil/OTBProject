@@ -37,7 +37,7 @@ public class Quotes {
     }
 
     public static List<Integer> getQuoteIds(SQLiteQuoteWrapper db) {
-        List<Object> list =  db.getNonRemovedRecordsList(QuoteFields.TABLE_NAME, QuoteFields.ID);
+        List<Object> list = db.getNonRemovedRecordsList(QuoteFields.TABLE_NAME, QuoteFields.ID);
         if (list == null) {
             return null;
         }

@@ -90,9 +90,8 @@ public class Version implements Comparable<Version> {
 
     @Override
     public String toString() {
-        return major + "." + minor +
-                (hasPatch ? ("." + patch) : "") +
-                (type == Type.RELEASE ? "" : ("-" + type.name()) );
+        return major + "." + minor + (hasPatch ? ("." + patch) : "")
+                + ((type == Type.RELEASE) ? "" : ("-" + type.name()));
     }
 
     @Override
@@ -128,11 +127,11 @@ public class Version implements Comparable<Version> {
     // x.x sorts less than x.x.0
     @Override
     public int compareTo(Version o) {
-        return  (major != o.major)          ? Integer.compare(major, o.major)
-                : ((minor != o.minor)       ? Integer.compare(minor, o.minor)
-                : ((patch != o.patch)       ? Integer.compare(patch, o.patch)
+        return (major != o.major) ? Integer.compare(major, o.major)
+                : ((minor != o.minor) ? Integer.compare(minor, o.minor)
+                : ((patch != o.patch) ? Integer.compare(patch, o.patch)
                 : ((hasPatch != o.hasPatch) ? Boolean.compare(hasPatch, o.hasPatch)
-                : type.compareTo(o.type)                                        )));
+                : type.compareTo(o.type))));
     }
 
     public Checker checker() {
@@ -203,10 +202,10 @@ public class Version implements Comparable<Version> {
         }
 
         public boolean isVersion() {
-            return  (   (major < 0) || (major == version.major)     ) &&
-                    (   (minor < 0) || (minor == version.minor)     ) &&
-                    (   (patch < 0) || (patch == version.patch)     ) &&
-                    (   (type == null) || (type == version.type)    );
+            return ((major < 0) || (major == version.major))
+                    && ((minor < 0) || (minor == version.minor))
+                    && ((patch < 0) || (patch == version.patch))
+                    && ((type == null) || (type == version.type));
         }
     }
 }

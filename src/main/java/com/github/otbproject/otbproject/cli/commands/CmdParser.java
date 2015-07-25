@@ -84,6 +84,7 @@ public class CmdParser {
         }
         return response;
     }
+
     private static String doLine(String line) {
         //use a second Scanner to parse the content of each line
         line = line.trim();
@@ -149,7 +150,7 @@ public class CmdParser {
                             GuiApplication.clearHistory();
                             break;
                         default:
-                            return  "Invalid target to clear: " + args.get(0) + "\nValid targets are: " + ClearTargets.targets.stream().sorted().collect(Collectors.joining(", "));
+                            return "Invalid target to clear: " + args.get(0) + "\nValid targets are: " + ClearTargets.targets.stream().sorted().collect(Collectors.joining(", "));
                     }
                     return "";
                 });
@@ -274,7 +275,7 @@ public class CmdParser {
                 .withLongHelp("Starts the bot")
                 .withAction(() -> {
                     try {
-                        return  (Bot.Control.startup() ? "Started bot" : "Failed to start bot");
+                        return (Bot.Control.startup() ? "Started bot" : "Failed to start bot");
                     } catch (Bot.StartupException ignored) {
                         return "Unable to start bot: bot already running";
                     }

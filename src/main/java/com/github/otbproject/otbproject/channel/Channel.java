@@ -14,7 +14,10 @@ import com.github.otbproject.otbproject.messages.send.MessageOut;
 import net.jodah.expiringmap.ExpiringMap;
 
 import java.util.Set;
-import java.util.concurrent.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -135,17 +138,17 @@ public class Channel {
     /**
      * Not concurrent.
      * Cannot read-lock because:
-     *  * It may execute a script and may consequently take an extended time to execute
-     *  * It may execute a script which requires a write-lock (such as one to leave
-     *      the channel), which will cause it to lock up.
-     *
+     * * It may execute a script and may consequently take an extended time to execute
+     * * It may execute a script which requires a write-lock (such as one to leave
+     * the channel), which will cause it to lock up.
+     * <p>
      * Checks if in the channel only initially, and then attempts to process the
-     *  message. Some calls from within messageProcessor.process() may fail if
-     *  the bot leaves the channel while it is still executing.
+     * message. Some calls from within messageProcessor.process() may fail if
+     * the bot leaves the channel while it is still executing.
      *
      * @param packagedMessage a message to receive and process
      * @return A boolean stating whether it is likely that the message was processed
-     *  successfully. Should not be relied upon to be accurate
+     * successfully. Should not be relied upon to be accurate
      */
     public boolean receiveMessage(PackagedMessage packagedMessage) {
         if (inChannel) {

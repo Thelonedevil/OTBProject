@@ -12,7 +12,7 @@ public class ResetTask implements Runnable {
     private final long period;
     private final TimeUnit timeUnit;
 
-    public ResetTask(Channel channel, String command, long delay,long period,TimeUnit timeUnit){
+    public ResetTask(Channel channel, String command, long delay, long period, TimeUnit timeUnit) {
         this.channel = channel;
         this.command = command;
         this.delay = delay;

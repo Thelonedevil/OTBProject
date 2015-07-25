@@ -13,12 +13,12 @@ import com.github.otbproject.otbproject.fs.groups.Chan;
 import com.github.otbproject.otbproject.fs.groups.Load;
 import com.github.otbproject.otbproject.gui.GuiApplication;
 import com.github.otbproject.otbproject.messages.internal.InternalMessageSender;
-import com.github.otbproject.otbproject.util.version.AppVersion;
 import com.github.otbproject.otbproject.util.Unpacker;
 import com.github.otbproject.otbproject.util.Util;
-import com.github.otbproject.otbproject.util.version.Version;
 import com.github.otbproject.otbproject.util.compat.VersionCompatHelper;
 import com.github.otbproject.otbproject.util.preload.LoadStrategy;
+import com.github.otbproject.otbproject.util.version.AppVersion;
+import com.github.otbproject.otbproject.util.version.Version;
 import com.github.otbproject.otbproject.util.version.Versions;
 import com.github.otbproject.otbproject.web.WebInterface;
 import org.apache.commons.cli.CommandLine;
@@ -27,7 +27,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintStream;
 import java.lang.management.ManagementFactory;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -51,8 +53,8 @@ public class App {
                 // log throwable
                 DateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd-HH.mm.ss");
                 Date date = new Date();
-                File file = new File("OTBProjectFatal-"+dateFormat.format(date)+".log");
-                if  (!file.createNewFile()) {
+                File file = new File("OTBProjectFatal-" + dateFormat.format(date) + ".log");
+                if (!file.createNewFile()) {
                     throw new IOException("Failed to create fatal log file for some reason.");
                 }
                 PrintStream ps = new PrintStream(file);
@@ -64,7 +66,6 @@ public class App {
             }
         }
     }
-
 
 
     private static void doMain(String[] args) {
@@ -92,6 +93,11 @@ public class App {
 
         // Log version
         logger.info("OTBProject version " + VERSION);
+
+        // Read configs
+        Bot.Control.loadConfigs(cmd);
+
+        // Start GUI if applicable
         if (Bot.Graphics.present()) {
             Util.getSingleThreadExecutor().execute(() -> GuiApplication.start(args));
         }
@@ -123,7 +129,7 @@ public class App {
         Versions.writeToFile(versionFile, VERSION);
 
         // Perform various startup actions
-        Bot.Control.startup(cmd);
+        Bot.Control.firstStartup();
 
         // Start web interface
         if (Configs.getWebConfig().isEnabled()) {

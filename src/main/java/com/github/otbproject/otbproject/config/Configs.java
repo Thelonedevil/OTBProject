@@ -21,8 +21,8 @@ public class Configs {
         writeAccount(account);
         return account;
     }
-    
-    public static WebConfig readWebConfig(){
+
+    public static WebConfig readWebConfig() {
         WebConfig config = JsonHandler.readValue(WEB_CONFIG_PATH, WebConfig.class).orElse(new WebConfig());
         writeWebConfig(config);
         return config;
@@ -58,12 +58,15 @@ public class Configs {
     private static void writeGeneralConfig(GeneralConfig config) {
         JsonHandler.writeValue(GENERAL_CONFIG_PATH, config);
     }
+
     private static void writeWebConfig(WebConfig config) {
         JsonHandler.writeValue(WEB_CONFIG_PATH, config);
     }
+
     public static void writeWebConfig() {
         writeWebConfig(getWebConfig());
     }
+
     public static void writeGeneralConfig() {
         writeGeneralConfig(getGeneralConfig());
     }
@@ -92,9 +95,11 @@ public class Configs {
     public static GeneralConfig getGeneralConfig() {
         return App.configManager.getGeneralConfig();
     }
+
     public static WebConfig getWebConfig() {
         return App.configManager.getWebConfig();
     }
+
     public static BotConfig getBotConfig() {
         return App.configManager.getBotConfig();
     }

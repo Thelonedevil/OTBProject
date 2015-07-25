@@ -12,7 +12,7 @@ public class ScheduledCommand implements Runnable {
     private final Channel channel;
     private final PackagedMessage packagedMessage;
 
-    public ScheduledCommand(Channel channel, String command){
+    public ScheduledCommand(Channel channel, String command) {
         this.channel = channel;
         packagedMessage = new PackagedMessage(command, Bot.getBot().getUserName(), channel.getName(), channel.getName(), UserLevel.INTERNAL, MessagePriority.DEFAULT);
     }

@@ -24,7 +24,7 @@ public class Users {
     }
 
     public static List<String> getUsers(DatabaseWrapper db) {
-        List<Object> list =  db.getRecordsList(UserFields.TABLE_NAME, UserFields.NICK);
+        List<Object> list = db.getRecordsList(UserFields.TABLE_NAME, UserFields.NICK);
         if (list == null) {
             return null;
         }

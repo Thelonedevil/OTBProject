@@ -40,23 +40,21 @@ public class FilterProcessor {
     }
 
     // Returns the FilterGroup of a Filter which matches the message, or null if no Filter matches
-    public static FilterGroup process(ConcurrentMap<String, GroupFilterSet> groupFilterSets, String message, UserLevel userLevel) {
+    public static Optional<FilterGroup> process(ConcurrentMap<String, GroupFilterSet> groupFilterSets, String message, UserLevel userLevel) {
         if (userLevel.getValue() < UserLevel.MODERATOR.getValue()) {
             return null;
         }
-        Optional<FilterGroup> entryOptional = groupFilterSets.entrySet().stream()
+        return groupFilterSets.entrySet().stream()
                 .map(Map.Entry::getValue)
                 .filter(groupFilterSet -> groupFilterSet.group.isEnabled())
                 .filter(groupFilterSet -> groupFilterSet.group.getUserLevel().getValue() >= userLevel.getValue())
                 .filter(groupFilterSet -> groupFilterSet.filterSet.stream()
-                        .filter(Filter::isEnabled)
-                        .filter(filter -> filter.matches(message))
-                        .findAny().isPresent()
+                                .filter(Filter::isEnabled)
+                                .anyMatch(filter -> filter.matches(message))
                 )
                 .map(set -> set.group)
                 .sorted(COMPARATOR)
                 .findFirst();
-        return entryOptional.isPresent() ? entryOptional.get() : null;
     }
 
     public static void clearScriptCache() {

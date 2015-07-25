@@ -20,7 +20,7 @@ public class AliasFields {
     }
 
     public static TableFields getTableFields() {
-        HashMap<String,String> aliasFields = new HashMap<>();
+        HashMap<String, String> aliasFields = new HashMap<>();
         aliasFields.put(NAME, DataTypes.STRING);
         aliasFields.put(COMMAND, DataTypes.STRING);
         aliasFields.put(MODIFYING_UL, DataTypes.STRING);

@@ -28,7 +28,7 @@ public class BeamBot extends AbstractBot {
 
     final BeamAPI beam = new BeamAPI();
     BeamUser beamUser;
-    final ConcurrentHashMap<String,BeamChatChannel> beamChannels = new ConcurrentHashMap<>();
+    final ConcurrentHashMap<String, BeamChatChannel> beamChannels = new ConcurrentHashMap<>();
 
     public BeamBot() throws BotInitException {
         sentMessageCache = ExpiringMap.builder()
@@ -56,11 +56,8 @@ public class BeamBot extends AbstractBot {
     @Override
     public boolean isChannel(String channelName) {
         try {
-            for(BeamUser user : beam.use(UsersService.class).search(channelName).get()){
-                if (user.username.equalsIgnoreCase(channelName)){
-                   return true;
-                }
-            }
+            return beam.use(UsersService.class).search(channelName).get().stream()
+                    .anyMatch(user -> user.username.equalsIgnoreCase(channelName));
         } catch (InterruptedException | ExecutionException e) {
             App.logger.catching(e);
         }
@@ -112,7 +109,7 @@ public class BeamBot extends AbstractBot {
     public void startBot() {
         Channels.join(getUserName(), false);
         Configs.getBotConfig().getCurrentChannels().forEach(channel -> Channels.join(channel, false));
-        while(!beamChannels.isEmpty()){
+        while (!beamChannels.isEmpty()) {
             try {
                 Thread.sleep(200);
             } catch (InterruptedException ignored) {

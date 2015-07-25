@@ -107,7 +107,7 @@ public class ChannelMessageProcessor {
         // Send message
         else {
             if (internal) {
-                InternalMessageSender.send(destChannelName.replace(InternalMessageSender.DESTINATION_PREFIX, ""), message, "CmdExec");
+                InternalMessageSender.send(destChannelName.substring(InternalMessageSender.DESTINATION_PREFIX.length()), message, "CmdExec");
                 return;
             }
             lock.lock();

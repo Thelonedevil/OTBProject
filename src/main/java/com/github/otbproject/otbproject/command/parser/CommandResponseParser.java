@@ -190,19 +190,15 @@ public class CommandResponseParser {
     }
 
     private static String parseTerm(String userNick, String channel, int count, String[] args, String term) throws InvalidTermException {
-        Optional<ParserTermAction> actionOptional = TERMS.entrySet().stream()
+        ParserTermAction action = TERMS.entrySet().stream()
                 .filter(entry -> entry.getKey().matcher(term).matches())
                 .map(Map.Entry::getValue)
-                .findAny();
-        if (actionOptional.isPresent()) {
-            String parsed = actionOptional.get().apply(userNick, channel, count, args, term);
-            if (parsed == null) {
-                throw new InvalidTermException();
-            }
-            return parsed;
-        } else {
+                .findAny().orElseThrow(InvalidTermException::new);
+        String parsed = action.apply(userNick, channel, count, args, term);
+        if (parsed == null) {
             throw new InvalidTermException();
         }
+        return parsed;
     }
 
     static boolean registerTerm(ParserTerm term) {
@@ -295,7 +291,7 @@ public class CommandResponseParser {
 
     static int getArgNum(String term, String prefix) throws InvalidTermException {
         // Gets arg number
-        String argNumStr = term.replaceFirst(prefix, "").split(EMBED_START, 2)[0].split(MODIFIER_DELIM, 2)[0];
+        String argNumStr = term.substring(prefix.length()).split(EMBED_START, 2)[0].split(MODIFIER_DELIM, 2)[0];
         int argNum;
         try {
             argNum = Integer.parseInt(argNumStr);

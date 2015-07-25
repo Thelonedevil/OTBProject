@@ -18,7 +18,7 @@ public class DatabaseWrapper {
      *
      * @param path   The path to the database file, should already exist.
      * @param tables A HashMap of Table name to a HashSet of the field names.
-     * @throws SQLException if a SQLException occurs in the construction of the object
+     * @throws SQLException           if a SQLException occurs in the construction of the object
      * @throws ClassNotFoundException if the SQLite JDBC class is not available at runtime
      */
     protected DatabaseWrapper(String path, HashMap<String, TableFields> tables) throws SQLException, ClassNotFoundException {
@@ -57,8 +57,8 @@ public class DatabaseWrapper {
     /**
      * Creates a table in the database with a primary key.
      *
-     * @param name       The name of the table to create.
-     * @param table      A HashSet of field names for the table.
+     * @param name        The name of the table to create.
+     * @param table       A HashSet of field names for the table.
      * @param primaryKeys The field name for the primary key.
      * @return False if an <code>SQLException</code> is thrown, else it returns true.
      */
@@ -177,7 +177,7 @@ public class DatabaseWrapper {
                 index++;
             }
             rs = preparedStatement.executeQuery();
-            return  (rs.getInt(1) > 0);
+            return (rs.getInt(1) > 0);
         } catch (SQLException e) {
             App.logger.catching(e);
         } finally {
@@ -236,7 +236,7 @@ public class DatabaseWrapper {
                 preparedStatement.setInt(index, (Integer) identifier);
             }
             int i = preparedStatement.executeUpdate();
-            return  (i > 0);
+            return (i > 0);
         } catch (SQLException e) {
             App.logger.error("SQL: " + sql);
             App.logger.catching(e);
@@ -277,7 +277,7 @@ public class DatabaseWrapper {
                 index++;
             }
             int i = preparedStatement.executeUpdate();
-            return  (i > 0);
+            return (i > 0);
         } catch (SQLException e) {
             App.logger.error("SQL: " + sql);
             App.logger.catching(e);
@@ -382,7 +382,7 @@ public class DatabaseWrapper {
         try {
             List<Object> set = new ArrayList<>();
             sql = "SELECT " + key + " FROM " + table;
-             rs = connection.createStatement().executeQuery(sql);
+            rs = connection.createStatement().executeQuery(sql);
             while (rs.next()) {
                 set.add(rs.getString(key));
             }

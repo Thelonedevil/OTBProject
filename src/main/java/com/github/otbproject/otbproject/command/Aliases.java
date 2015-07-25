@@ -27,7 +27,7 @@ public class Aliases {
     }
 
     public static List<String> getAliases(DatabaseWrapper db) {
-        List<Object> list =  db.getRecordsList(AliasFields.TABLE_NAME, AliasFields.NAME);
+        List<Object> list = db.getRecordsList(AliasFields.TABLE_NAME, AliasFields.NAME);
         if (list == null) {
             return null;
         }

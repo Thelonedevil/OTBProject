@@ -2,10 +2,6 @@ package com.github.otbproject.otbproject.messages.internal;
 
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.gui.GuiApplication;
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
-
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class InternalMessageSender {
     public static final String DESTINATION_PREFIX = "internal:";

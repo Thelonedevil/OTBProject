@@ -1,9 +1,6 @@
 package com.github.otbproject.otbproject.bot;
 
 import com.github.otbproject.otbproject.App;
-import org.pircbotx.exception.IrcException;
-
-import java.io.IOException;
 
 public class BotRunnable implements Runnable {
     @Override

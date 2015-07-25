@@ -9,7 +9,9 @@ import java.io.*;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 class WarDownload {
@@ -90,18 +92,18 @@ class WarDownload {
             ReadableByteChannel rbc = Channels.newChannel(website.openStream());
             FileOutputStream fos = new FileOutputStream(dlPath);
             fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
-            URL md5Original = new URL(warURL+".md5");
+            URL md5Original = new URL(warURL + ".md5");
             BufferedReader in = new BufferedReader(new InputStreamReader(md5Original.openStream()));
             String inputLine = in.readLine();
             in.close();
             FileInputStream fis = new FileInputStream(dlPath);
             String md5 = DigestUtils.md5Hex(fis);
             fis.close();
-            if(!md5.equals(inputLine)){
+            if (!md5.equals(inputLine)) {
                 throw new WarDownloadException("Download of War file either corrupted or some 3rd party has changed the file");
             }
         } catch (IOException e) {
-           throw new WarDownloadException(e);
+            throw new WarDownloadException(e);
         }
         return Boolean.TRUE;
     }

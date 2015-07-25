@@ -3,7 +3,10 @@ package com.github.otbproject.otbproject.channel;
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.bot.Bot;
 import com.github.otbproject.otbproject.command.parser.ResponseParserUtil;
-import com.github.otbproject.otbproject.config.*;
+import com.github.otbproject.otbproject.config.BotConfig;
+import com.github.otbproject.otbproject.config.ChannelConfig;
+import com.github.otbproject.otbproject.config.ChannelJoinSetting;
+import com.github.otbproject.otbproject.config.Configs;
 import com.github.otbproject.otbproject.fs.Setup;
 
 import java.io.IOException;
@@ -19,7 +22,7 @@ public class Channels {
         Optional<Channel> optional = get(channelName);
         return optional.isPresent() && optional.get().isInChannel();
     }
-    
+
     public static Optional<Channel> get(String channel) {
         return Optional.ofNullable(Bot.getBot().getChannels().get(channel));
     }
@@ -40,7 +43,7 @@ public class Channels {
 
         lock.lock();
         try {
-            if(in(channelName)){
+            if (in(channelName)) {
                 App.logger.info("Failed to join channel: " + channelName + ". Already in channel");
                 return false;
             }
@@ -65,8 +68,8 @@ public class Channels {
             }
 
             if (checkValidChannel && !Bot.getBot().isChannel(channelName)) {
-               App.logger.info("Failed to join channel: " + channelName + ". Channel does not exist.");
-               return false;
+                App.logger.info("Failed to join channel: " + channelName + ". Channel does not exist.");
+                return false;
 
             }
 
@@ -77,16 +80,16 @@ public class Channels {
                 App.logger.catching(e);
                 return false;
             }
-            if(Bot.getBot().isConnected()) {
-                if(!Bot.getBot().isConnected(channelName)) {
+            if (Bot.getBot().isConnected()) {
+                if (!Bot.getBot().isConnected(channelName)) {
                     if (!Bot.getBot().join(channelName)) {
                         App.logger.warn("Failed to join channel: " + channelName);
                         return false;
                     }
-                }else{
-                    App.logger.error("Already in the channel: "+ channelName);
+                } else {
+                    App.logger.error("Already in the channel: " + channelName);
                 }
-            } else{
+            } else {
                 App.logger.error("Not connected to " + ResponseParserUtil.wordCap(Configs.getGeneralConfig().getService().toString(), true));
                 return false;
             }
@@ -113,7 +116,7 @@ public class Channels {
         } finally {
             lock.unlock();
         }
-        App.logger.info("Successfully joined channel: "+channelName);
+        App.logger.info("Successfully joined channel: " + channelName);
         return true;
     }
 

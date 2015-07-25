@@ -55,7 +55,7 @@ public class WebInterface {
             } catch (IOException e) {
                 App.logger.catching(e);
             }
-        }else{
+        } else {
             App.logger.warn("Unable to open web interface in browser - desktop not supported");
         }
     }
