@@ -269,7 +269,7 @@ public class CmdParser {
                 .withLongHelp("Starts the bot")
                 .withAction(() -> {
                     try {
-                        return (Bot.Control.startup() ? "Started bot" : "Unable to start bot - bot already running");
+                        return (Bot.Control.startup() ? "Started bot" : "Did not start bot - bot already running");
                     } catch (Bot.StartupException ignored) {
                         return "Failed to start bot";
                     }
