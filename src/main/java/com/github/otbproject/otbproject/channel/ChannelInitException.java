@@ -6,6 +6,10 @@ public class ChannelInitException extends Exception {
     }
 
     public ChannelInitException(String channel, String errMsg) {
-        super("Unable to properly initialize channel '" + channel + "'. Error: " + errMsg);
+        super("Unable to properly initialize channel: " + channel + ". Error: " + errMsg);
+    }
+
+    public ChannelInitException(String channel, String errMsg, Throwable cause) {
+        super("Unable to properly initialize channel: " + channel + ". Error: " + errMsg, cause);
     }
 }

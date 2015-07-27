@@ -65,7 +65,6 @@ public class Bot {
                 return startup();
             } catch (StartupException e) {
                 App.logger.catching(e);
-                App.logger.error("Unknown error restarting bot");
                 return false;
             }
         }
@@ -116,12 +115,12 @@ public class Bot {
          * <p>
          * Should be run to start the bot after shutdown() has been called
          *
-         * @return true if bot started successfully
-         * @throws StartupException if bot is already running
+         * @return true if bot started successfully, false if bot was already running
+         * @throws StartupException if failed to create bot properly
          */
         public static synchronized boolean startup() throws StartupException {
             if (running) {
-                throw new StartupException("Unable to start bot: bot already running");
+                return false;
             }
 
             loadConfigs();
@@ -130,8 +129,9 @@ public class Bot {
             running = createBot();
             if (!running) {
                 shutdown(true);
+                throw new StartupException("Failed to start bot");
             }
-            return running;
+            return true;
         }
 
         private static void clearCaches() {
