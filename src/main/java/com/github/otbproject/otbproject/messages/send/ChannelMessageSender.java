@@ -26,7 +26,7 @@ public class ChannelMessageSender {
     static {
         EXECUTOR_SERVICE = Executors.newCachedThreadPool(
                 new ThreadFactoryBuilder()
-                        .setUncaughtExceptionHandler(ThreadUtil.getUncaughtExceptionHandler())
+                        .setUncaughtExceptionHandler(ThreadUtil.UNCAUGHT_EXCEPTION_HANDLER)
                         .build()
         );
     }

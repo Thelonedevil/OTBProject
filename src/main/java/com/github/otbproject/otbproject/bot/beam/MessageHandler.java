@@ -28,7 +28,7 @@ public class MessageHandler implements EventHandler<IncomingMessageEvent> {
         EXECUTOR_SERVICE = Executors.newCachedThreadPool(
                 new ThreadFactoryBuilder()
                         .setNameFormat("Beam-in-%d")
-                        .setUncaughtExceptionHandler(ThreadUtil.getUncaughtExceptionHandler())
+                        .setUncaughtExceptionHandler(ThreadUtil.UNCAUGHT_EXCEPTION_HANDLER)
                         .build()
         );
     }
