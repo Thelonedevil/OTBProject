@@ -10,10 +10,7 @@ public class Util {
     public static ExecutorService getSingleThreadExecutor() {
         return Executors.newSingleThreadExecutor(
                 new ThreadFactoryBuilder()
-                        .setUncaughtExceptionHandler((t, e) -> {
-                            App.logger.error("Thread crashed: " + t.getName());
-                            App.logger.catching(e);
-                        })
+                        .setUncaughtExceptionHandler(getUncaughtExceptionHandler())
                         .build()
         );
     }
@@ -22,11 +19,16 @@ public class Util {
         return Executors.newSingleThreadExecutor(
                 new ThreadFactoryBuilder()
                         .setNameFormat(nameFormat)
-                        .setUncaughtExceptionHandler((t, e) -> {
-                            App.logger.error("Thread crashed: " + t.getName());
-                            App.logger.catching(e);
-                        })
+                        .setUncaughtExceptionHandler(getUncaughtExceptionHandler())
                         .build()
         );
+    }
+
+    public static Thread.UncaughtExceptionHandler getUncaughtExceptionHandler() {
+        return (t, e) -> {
+            App.logger.error("Thread crashed: " + t.getName());
+            App.logger.catching(e);
+            Watcher.logThreadCrash();
+        };
     }
 }

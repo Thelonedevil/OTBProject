@@ -4,6 +4,7 @@ import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.bot.Bot;
 import com.github.otbproject.otbproject.channel.Channel;
 import com.github.otbproject.otbproject.config.Configs;
+import com.github.otbproject.otbproject.util.Util;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 import java.util.concurrent.ExecutorService;
@@ -25,10 +26,7 @@ public class ChannelMessageSender {
     static {
         EXECUTOR_SERVICE = Executors.newCachedThreadPool(
                 new ThreadFactoryBuilder()
-                        .setUncaughtExceptionHandler((t, e) -> {
-                            App.logger.error("Thread crashed: " + t.getName());
-                            App.logger.catching(e);
-                        })
+                        .setUncaughtExceptionHandler(Util.getUncaughtExceptionHandler())
                         .build()
         );
     }

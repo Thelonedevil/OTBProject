@@ -11,11 +11,10 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonBar;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.DialogPane;
+import javafx.scene.control.*;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -25,7 +24,8 @@ import org.apache.commons.io.input.TailerListenerAdapter;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 public class GuiApplication extends Application {
 
@@ -63,7 +63,7 @@ public class GuiApplication extends Application {
             alert.setHeaderText("WARNING: \"Close Window\" DOES NOT STOP THE BOT.");
             alert.setContentText("Closing this window without exiting may make it difficult to stop the bot.\nPress \"Exit\" to stop the bot and exit.\nPress \"Cancel\" to keep the window open.");
             DialogPane dialogPane = alert.getDialogPane();
-            setDialogPaneStyle(dialogPane);
+            GuiUtils.setDialogPaneStyle(dialogPane);
             ButtonType buttonTypeCloseNoExit = new ButtonType("Close Window", ButtonBar.ButtonData.LEFT);
             ButtonType buttonTypeExit = new ButtonType("Exit", ButtonBar.ButtonData.FINISH);
             ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonBar.ButtonData.FINISH);
@@ -151,7 +151,7 @@ public class GuiApplication extends Application {
             alert.setTitle("Confirm Quit");
             alert.setHeaderText("Are you sure you want to quit?");
             DialogPane dialogPane = alert.getDialogPane();
-            setDialogPaneStyle(dialogPane);
+            GuiUtils.setDialogPaneStyle(dialogPane);
             ButtonType buttonTypeYes = new ButtonType("Yes", ButtonBar.ButtonData.FINISH);
             ButtonType buttonTypeNo = new ButtonType("No", ButtonBar.ButtonData.FINISH);
             alert.getButtonTypes().setAll(buttonTypeYes, buttonTypeNo);
@@ -186,15 +186,6 @@ public class GuiApplication extends Application {
         });
     }
 
-    private void setDialogPaneStyle(DialogPane dialogPane) {
-        URL resource = getClass().getClassLoader().getResource("style.css");
-        if (resource != null) {
-            dialogPane.getStylesheets().add(resource.toExternalForm());
-        } else {
-            App.logger.error("Unable to get style sheet for alerts.");
-        }
-    }
-
     private void openWebInterfaceInBrowser() {
         this.getHostServices().showDocument("http://127.0.0.1:" + Configs.getWebConfig().getPortNumber());
     }
@@ -214,7 +205,7 @@ public class GuiApplication extends Application {
                     "\n\nPressing \"Don't Ask Again\" will prevent notifications " +
                     "\nfor all future releases of OTB.");
             DialogPane dialogPane = alert.getDialogPane();
-            setDialogPaneStyle(dialogPane);
+            GuiUtils.setDialogPaneStyle(dialogPane);
             ButtonType buttonTypeDontAskAgain = new ButtonType("Don't Ask Again", ButtonBar.ButtonData.LEFT);
             ButtonType buttonTypeGetRelease = new ButtonType("Get New Release", ButtonBar.ButtonData.FINISH);
             ButtonType buttonTypeIgnoreOnce = new ButtonType("Ignore Once", ButtonBar.ButtonData.FINISH);
@@ -230,5 +221,64 @@ public class GuiApplication extends Application {
                 }
             });
         }
+    }
+
+    public static void errorAlert(String title, String header) {
+        GuiUtils.runSafe(() -> {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle(title);
+            alert.setHeaderText(header);
+            String url = "https://github.com/OTBProject/OTBProject/issues";
+
+            FlowPane outer = new FlowPane();
+            FlowPane inner = new FlowPane();
+            Hyperlink link = new Hyperlink("here");
+            link.setOnAction((evt) -> Util.getSingleThreadExecutor("open-log-dir").execute(() -> {
+                try {
+                    Desktop.getDesktop().open(new File(FSUtil.logsDir()));
+                } catch (IOException e) {
+                    App.logger.catching(e);
+                }
+            }));
+            outer.getChildren().addAll(new Label("Please report this problem to the developers at"), new Label('"' + url + '"'), inner,
+                    new Label("(in the \"logs\" folder in your installation directory)"));
+            inner.getChildren().addAll(new Label("and give them the log file \"app.log\" found"), link);
+            alert.getDialogPane().contentProperty().set(outer);
+
+            showErrorAlert(alert, url);
+        });
+    }
+
+    // TODO fix
+    public static void fatalErrorAlert(String fileName) {
+        GuiUtils.runSafe(() -> {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Fatal Error");
+            alert.setHeaderText("OTB has experienced a fatal error");
+            String url = "https://github.com/OTBProject/OTBProject/issues";
+            alert.setContentText("Please report this problem to the developers at\n\"" + url + "\"\nand provide them with the file: " + fileName);
+            showErrorAlert(alert, url);
+        });
+    }
+
+    private static void showErrorAlert(Alert alert, String url) {
+        DialogPane dialogPane = alert.getDialogPane();
+        GuiUtils.setDialogPaneStyle(dialogPane);
+        ButtonType buttonTypeReportIssue = new ButtonType("Report Problem", ButtonBar.ButtonData.FINISH);
+        ButtonType buttonTypeClose = new ButtonType("OK", ButtonBar.ButtonData.FINISH);
+        alert.getButtonTypes().setAll(buttonTypeReportIssue, buttonTypeClose);
+        GuiUtils.setDefaultButton(alert, buttonTypeReportIssue);
+        alert.initStyle(StageStyle.UNDECORATED);
+        alert.showAndWait().ifPresent(buttonType -> {
+            if (buttonType == buttonTypeReportIssue && Desktop.isDesktopSupported()) {
+                Util.getSingleThreadExecutor("report-issue").execute(() -> {
+                    try {
+                        Desktop.getDesktop().browse(new URI(url));
+                    } catch (IOException | URISyntaxException e) {
+                        App.logger.catching(e);
+                    }
+                });
+            }
+        });
     }
 }

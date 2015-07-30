@@ -1,11 +1,13 @@
 package com.github.otbproject.otbproject.gui;
 
+import com.github.otbproject.otbproject.App;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.DialogPane;
 
+import java.net.URL;
 import java.util.Objects;
 
 public class GuiUtils {
@@ -21,5 +23,14 @@ public class GuiUtils {
     public static void setDefaultButton(Alert alert, ButtonType defBtn) {
         DialogPane pane = alert.getDialogPane();
         alert.getButtonTypes().forEach(t -> ((Button) pane.lookupButton(t)).setDefaultButton(t == defBtn));
+    }
+
+    public static void setDialogPaneStyle(DialogPane dialogPane) {
+        URL resource = GuiApplication.class.getClassLoader().getResource("style.css");
+        if (resource != null) {
+            dialogPane.getStylesheets().add(resource.toExternalForm());
+        } else {
+            App.logger.error("Unable to get style sheet for alerts.");
+        }
     }
 }
