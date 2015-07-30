@@ -9,7 +9,7 @@ import com.github.otbproject.otbproject.channel.Channels;
 import com.github.otbproject.otbproject.messages.receive.PackagedMessage;
 import com.github.otbproject.otbproject.messages.send.MessagePriority;
 import com.github.otbproject.otbproject.user.UserLevels;
-import com.github.otbproject.otbproject.util.Util;
+import com.github.otbproject.otbproject.util.ThreadUtil;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import pro.beam.api.resource.chat.events.EventHandler;
 import pro.beam.api.resource.chat.events.IncomingMessageEvent;
@@ -28,7 +28,7 @@ public class MessageHandler implements EventHandler<IncomingMessageEvent> {
         EXECUTOR_SERVICE = Executors.newCachedThreadPool(
                 new ThreadFactoryBuilder()
                         .setNameFormat("Beam-in-%d")
-                        .setUncaughtExceptionHandler(Util.getUncaughtExceptionHandler())
+                        .setUncaughtExceptionHandler(ThreadUtil.getUncaughtExceptionHandler())
                         .build()
         );
     }

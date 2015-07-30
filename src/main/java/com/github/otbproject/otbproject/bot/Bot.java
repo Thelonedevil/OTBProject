@@ -12,7 +12,7 @@ import com.github.otbproject.otbproject.fs.groups.Base;
 import com.github.otbproject.otbproject.fs.groups.Chan;
 import com.github.otbproject.otbproject.proc.CommandScriptProcessor;
 import com.github.otbproject.otbproject.util.LibsLoader;
-import com.github.otbproject.otbproject.util.Util;
+import com.github.otbproject.otbproject.util.ThreadUtil;
 import com.github.otbproject.otbproject.util.preload.LoadStrategy;
 import com.github.otbproject.otbproject.util.preload.PreloadLoader;
 import org.apache.commons.cli.CommandLine;
@@ -158,7 +158,7 @@ public class Bot {
                 return false;
             } else {
                 setBotRunnable(new BotRunnable());
-                setBotFuture(Util.getSingleThreadExecutor("Bot").submit(getBotRunnable()));
+                setBotFuture(ThreadUtil.getSingleThreadExecutor("Bot").submit(getBotRunnable()));
                 return true;
             }
         }

@@ -6,7 +6,7 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class Util {
+public class ThreadUtil {
     public static ExecutorService getSingleThreadExecutor() {
         return Executors.newSingleThreadExecutor(
                 new ThreadFactoryBuilder()

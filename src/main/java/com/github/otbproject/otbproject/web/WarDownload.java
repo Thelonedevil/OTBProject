@@ -2,7 +2,7 @@ package com.github.otbproject.otbproject.web;
 
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.fs.FSUtil;
-import com.github.otbproject.otbproject.util.Util;
+import com.github.otbproject.otbproject.util.ThreadUtil;
 import org.apache.commons.codec.digest.DigestUtils;
 
 import java.io.*;
@@ -21,7 +21,7 @@ class WarDownload {
     private static final String DL_EXT = ".download";
 
     public static void downloadLatest() {
-        ExecutorService executor = Util.getSingleThreadExecutor("War Download");
+        ExecutorService executor = ThreadUtil.getSingleThreadExecutor("War Download");
         App.logger.info("Downloading web interface version " + WebVersion.latest());
 
         boolean success = false;

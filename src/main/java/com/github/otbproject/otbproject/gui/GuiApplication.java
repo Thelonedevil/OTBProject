@@ -4,7 +4,7 @@ import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.bot.Bot;
 import com.github.otbproject.otbproject.config.Configs;
 import com.github.otbproject.otbproject.fs.FSUtil;
-import com.github.otbproject.otbproject.util.Util;
+import com.github.otbproject.otbproject.util.ThreadUtil;
 import com.github.otbproject.otbproject.util.version.AppVersion;
 import com.github.otbproject.otbproject.util.version.Version;
 import javafx.application.Application;
@@ -137,7 +137,7 @@ public class GuiApplication extends Application {
 
     private void setUpMenus() {
         controller.openBaseDir.setOnAction(event -> {
-            Util.getSingleThreadExecutor("file-explorer-%d").execute(() -> {
+            ThreadUtil.getSingleThreadExecutor("file-explorer-%d").execute(() -> {
                 try {
                     Desktop.getDesktop().open(new File(FSUtil.getBaseDir()));
                 } catch (IOException e) {
@@ -233,7 +233,7 @@ public class GuiApplication extends Application {
             FlowPane outer = new FlowPane();
             FlowPane inner = new FlowPane();
             Hyperlink link = new Hyperlink("here");
-            link.setOnAction((evt) -> Util.getSingleThreadExecutor("open-log-dir").execute(() -> {
+            link.setOnAction((evt) -> ThreadUtil.getSingleThreadExecutor("open-log-dir").execute(() -> {
                 try {
                     Desktop.getDesktop().open(new File(FSUtil.logsDir()));
                 } catch (IOException e) {
@@ -271,7 +271,7 @@ public class GuiApplication extends Application {
         alert.initStyle(StageStyle.UNDECORATED);
         alert.showAndWait().ifPresent(buttonType -> {
             if (buttonType == buttonTypeReportIssue && Desktop.isDesktopSupported()) {
-                Util.getSingleThreadExecutor("report-issue").execute(() -> {
+                ThreadUtil.getSingleThreadExecutor("report-issue").execute(() -> {
                     try {
                         Desktop.getDesktop().browse(new URI(url));
                     } catch (IOException | URISyntaxException e) {
