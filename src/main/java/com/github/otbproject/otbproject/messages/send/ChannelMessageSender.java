@@ -21,7 +21,7 @@ public class ChannelMessageSender {
     private final PriorityBlockingQueue<MessageOut> queue =
             new PriorityBlockingQueue<>(11, MessageOut.PRIORITY_COMPARATOR);
     private Future<?> future;
-    private boolean active = false;
+    private volatile boolean active = false;
 
     static {
         EXECUTOR_SERVICE = Executors.newCachedThreadPool(

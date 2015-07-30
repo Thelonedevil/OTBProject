@@ -50,7 +50,7 @@ public class Bot {
     }
 
     public static class Control {
-        private static boolean running = false;
+        private static volatile boolean running = false;
 
         public static synchronized boolean firstStartup() {
             LibsLoader.load();
