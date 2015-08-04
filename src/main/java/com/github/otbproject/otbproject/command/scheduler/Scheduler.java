@@ -11,7 +11,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class Scheduler {
     private ScheduledExecutorService scheduledExecutorService;
-    private boolean running;
+    private volatile boolean running;
     private final ReadWriteLock lock = new ReentrantReadWriteLock(true);
     private final String channel;
 

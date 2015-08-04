@@ -9,7 +9,7 @@ import com.github.otbproject.otbproject.command.Commands;
 import com.github.otbproject.otbproject.fs.FSUtil;
 import com.github.otbproject.otbproject.messages.internal.InternalMessageSender;
 import com.github.otbproject.otbproject.util.JsonHandler;
-import com.github.otbproject.otbproject.util.Util;
+import com.github.otbproject.otbproject.util.ThreadUtil;
 import javafx.fxml.FXML;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextArea;
@@ -50,7 +50,7 @@ public class GuiController {
 
     protected final List<String> history = new ArrayList<>();
     protected int historyPointer = 0;
-    private final ExecutorService executorService = Util.getSingleThreadExecutor("CLI Command Processor");
+    private final ExecutorService executorService = ThreadUtil.getSingleThreadExecutor("CLI Command Processor");
     private List<String> tabCompleteList = Collections.emptyList();
     private int tabCompleteIndex = 0;
     private static final int MAX_HISTORY_SIZE = 100;

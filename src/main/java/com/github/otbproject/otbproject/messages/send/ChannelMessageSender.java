@@ -4,6 +4,7 @@ import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.bot.Bot;
 import com.github.otbproject.otbproject.channel.Channel;
 import com.github.otbproject.otbproject.config.Configs;
+import com.github.otbproject.otbproject.util.ThreadUtil;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 import java.util.concurrent.ExecutorService;
@@ -20,15 +21,12 @@ public class ChannelMessageSender {
     private final PriorityBlockingQueue<MessageOut> queue =
             new PriorityBlockingQueue<>(11, MessageOut.PRIORITY_COMPARATOR);
     private Future<?> future;
-    private boolean active = false;
+    private volatile boolean active = false;
 
     static {
         EXECUTOR_SERVICE = Executors.newCachedThreadPool(
                 new ThreadFactoryBuilder()
-                        .setUncaughtExceptionHandler((t, e) -> {
-                            App.logger.error("Thread crashed: " + t.getName());
-                            App.logger.catching(e);
-                        })
+                        .setUncaughtExceptionHandler(ThreadUtil.UNCAUGHT_EXCEPTION_HANDLER)
                         .build()
         );
     }

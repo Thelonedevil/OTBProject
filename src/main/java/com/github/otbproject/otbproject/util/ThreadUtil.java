@@ -6,14 +6,22 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class Util {
+public class ThreadUtil {
+    public static final Thread.UncaughtExceptionHandler UNCAUGHT_EXCEPTION_HANDLER;
+
+    static {
+        UNCAUGHT_EXCEPTION_HANDLER = (t, e) -> {
+            App.logger.error("Thread crashed: " + t.getName());
+            App.logger.catching(e);
+            Watcher.logThreadCrash();
+        };
+        Thread.setDefaultUncaughtExceptionHandler(UNCAUGHT_EXCEPTION_HANDLER);
+    }
+
     public static ExecutorService getSingleThreadExecutor() {
         return Executors.newSingleThreadExecutor(
                 new ThreadFactoryBuilder()
-                        .setUncaughtExceptionHandler((t, e) -> {
-                            App.logger.error("Thread crashed: " + t.getName());
-                            App.logger.catching(e);
-                        })
+                        .setUncaughtExceptionHandler(UNCAUGHT_EXCEPTION_HANDLER)
                         .build()
         );
     }
@@ -22,10 +30,7 @@ public class Util {
         return Executors.newSingleThreadExecutor(
                 new ThreadFactoryBuilder()
                         .setNameFormat(nameFormat)
-                        .setUncaughtExceptionHandler((t, e) -> {
-                            App.logger.error("Thread crashed: " + t.getName());
-                            App.logger.catching(e);
-                        })
+                        .setUncaughtExceptionHandler(UNCAUGHT_EXCEPTION_HANDLER)
                         .build()
         );
     }
