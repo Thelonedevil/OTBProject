@@ -63,9 +63,8 @@ public class App {
                 // TODO attempt to create popup
             } catch (IOException e) {
                 e.printStackTrace();
-            } finally {
-                System.exit(-10);
             }
+            throw t;
         }
     }
 
