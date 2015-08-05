@@ -6,9 +6,8 @@ import com.github.otbproject.otbproject.quote.QuoteFields;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class SQLiteQuoteWrapper extends DatabaseWrapper {
 
@@ -26,14 +25,19 @@ public class SQLiteQuoteWrapper extends DatabaseWrapper {
     }
 
     @Override
-    public boolean removeRecord(String table, Object identifier, String fieldName) {
+    public boolean removeRecord(String table, List<Map.Entry<String, Object>> entryList) {
         PreparedStatement preparedStatement = null;
-        String sql = "UPDATE " + table + " SET " + QuoteFields.TEXT + "= NULL WHERE " + fieldName + "=?";
+        String sql = "UPDATE " + table + " SET " + QuoteFields.TEXT + "= NULL WHERE ";
+        sql += entryList.stream().map(entry -> (entry.getKey() + "=?")).collect(Collectors.joining(", "));
         boolean bool = false;
         lock.lock();
         try {
             preparedStatement = connection.prepareStatement(sql);
-            setValue(preparedStatement, 1, identifier);
+            int index = 1;
+            for (Map.Entry entry : entryList) {
+                setValue(preparedStatement, index, entry.getValue());
+                index++;
+            }
             int i = preparedStatement.executeUpdate();
             if (i > 0) {
                 bool = true;
