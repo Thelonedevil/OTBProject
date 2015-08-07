@@ -53,6 +53,7 @@ public class WebConfig {
     }
 
     public void setWhitelistedIPAddressesWithSubnettingPrefix(List<String> whitelistedIPAddressesWithSubnettingPrefix) {
+        this.whitelistedIPAddressesWithSubnettingPrefix.clear();
         this.whitelistedIPAddressesWithSubnettingPrefix.addAll(whitelistedIPAddressesWithSubnettingPrefix);
     }
 }

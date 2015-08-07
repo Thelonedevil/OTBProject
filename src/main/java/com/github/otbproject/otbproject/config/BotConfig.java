@@ -25,6 +25,7 @@ public class BotConfig {
     }
 
     public void setWhitelist(List<String> whitelist) {
+        this.whitelist.clear();
         this.whitelist.addAll(whitelist);
     }
 
@@ -33,6 +34,7 @@ public class BotConfig {
     }
 
     public void setBlacklist(List<String> blacklist) {
+        this.blacklist.clear();
         this.blacklist.addAll(blacklist);
     }
 
@@ -41,6 +43,7 @@ public class BotConfig {
     }
 
     public void setCurrentChannels(List<String> currentChannels) {
+        this.currentChannels.clear();
         this.currentChannels.addAll(currentChannels);
     }
 

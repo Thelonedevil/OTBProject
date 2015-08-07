@@ -44,6 +44,7 @@ public class GeneralConfig {
     }
 
     public void setPermanentlyEnabledCommands(List<String> permanentlyEnabledCommands) {
+        this.permanentlyEnabledCommands.clear();
         this.permanentlyEnabledCommands.addAll(permanentlyEnabledCommands);
     }
 }
