@@ -13,7 +13,7 @@ import java.util.stream.Stream;
 
 public class VersionCompatHelper {
     public static void fixCompatIssues(Version oldVersion) {
-        if (oldVersion == null) {
+        if ((oldVersion == null) || App.VERSION.equals(oldVersion)) {
             return;
         }
         if (App.VERSION.checker().major(1).minor(1).isVersion() && oldVersion.checker().major(1).minor(0).isVersion()) {
