@@ -127,6 +127,12 @@ public class TwitchBot extends AbstractBot {
     }
 
     @Override
+    public boolean unBan(String channelName, String user) {
+        sendMessage(channelName, ".unban " + user);
+        return true;
+    }
+
+    @Override
     public boolean timeout(String channelName, String user, int timeInSeconds) {
         if (timeInSeconds <= 0) {
             App.logger.warn("Cannot time out user for non-positive amount of time");

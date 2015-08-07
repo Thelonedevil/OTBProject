@@ -38,6 +38,8 @@ public interface IBot {
 
     boolean ban(String channelName, String user);
 
+    boolean unBan(String channelName, String user);
+
     boolean timeout(String channelName, String user, int timeInSeconds);
 
     boolean removeTimeout(String channelName, String user);
