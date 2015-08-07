@@ -73,7 +73,7 @@ public class VersionCompatHelper {
         GeneralConfig configNew = new GeneralConfig();
 
         configNew.setService(configOld.getServiceName());
-        configNew.getPermanentlyEnabledCommands().addAll(configOld.permanently_enabled_commands);
+        configNew.setPermanentlyEnabledCommands(configOld.permanently_enabled_commands);
         JsonHandler.writeValue((FSUtil.configDir() + File.separator + FSUtil.ConfigFileNames.GENERAL_CONFIG), configNew);
     }
 }
