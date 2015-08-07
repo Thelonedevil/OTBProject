@@ -25,6 +25,11 @@ public abstract class AbstractBot implements IBot {
     }
 
     @Override
+    public void shutdown() {
+        channels.values().forEach(Channel::leave);
+    }
+
+    @Override
     public void onMessage(Consumer<PackagedMessage> messageHandler) {
         messageListeners.add(messageHandler);
     }
