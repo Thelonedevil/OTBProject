@@ -63,9 +63,8 @@ public class App {
                 // TODO attempt to create popup
             } catch (IOException e) {
                 e.printStackTrace();
-            } finally {
-                System.exit(-10);
             }
+            throw t;
         }
     }
 
@@ -96,14 +95,6 @@ public class App {
         // Log version
         logger.info("OTBProject version " + VERSION);
 
-        // Read configs
-        Bot.Control.loadConfigs(cmd);
-
-        // Start GUI if applicable
-        if (Bot.Graphics.present()) {
-            ThreadUtil.getSingleThreadExecutor().execute(() -> GuiApplication.start(args));
-        }
-
         // Ensure directory tree is setup
         try {
             Setup.setup();
@@ -113,14 +104,28 @@ public class App {
             System.exit(1);
         }
 
-
         File versionFile = new File(FSUtil.configDir() + File.separator + "VERSION");
         Version version = Versions.readFromFile(versionFile).orElse(null); // TODO possibly not or else null?
+        Versions.writeToFile(versionFile, VERSION);
 
-        if (cmd.hasOption(ArgParser.Opts.UNPACK) || (VERSION.type != Version.Type.SNAPSHOT) && !VERSION.equals(version) && !cmd.hasOption(ArgParser.Opts.NO_UNPACK)) {
-            if (!VERSION.equals(version)) {
-                VersionCompatHelper.fixCompatIssues(version);
-            }
+        boolean unpack = cmd.hasOption(ArgParser.Opts.UNPACK)
+                || ((VERSION.type != Version.Type.SNAPSHOT) && !VERSION.equals(version) && !cmd.hasOption(ArgParser.Opts.NO_UNPACK));
+
+        // Fix compatibility issues
+        if (unpack) {
+            VersionCompatHelper.fixCompatIssues(version);
+        }
+
+        // Read configs
+        Bot.Control.loadConfigs(cmd);
+
+        // Start GUI if applicable
+        if (Bot.Graphics.present()) {
+            ThreadUtil.getSingleThreadExecutor().execute(() -> GuiApplication.start(args));
+        }
+
+        // Unpack
+        if (unpack) {
             PathBuilder builder = new PathBuilder();
             Unpacker.unpack("preloads/json/commands/", builder.base(Base.CMD).channels(Chan.ALL).load(Load.TO).create());
             Unpacker.unpack("preloads/json/aliases/", builder.base(Base.ALIAS).channels(Chan.ALL).load(Load.TO).create());
@@ -128,7 +133,6 @@ public class App {
             Unpacker.unpack("preloads/groovy/scripts/", FSUtil.scriptDir());
             Bot.Control.loadPreloads(LoadStrategy.UPDATE);
         }
-        Versions.writeToFile(versionFile, VERSION);
 
         // Perform various startup actions
         Bot.Control.firstStartup();

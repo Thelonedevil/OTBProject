@@ -28,8 +28,9 @@ class WarDownload {
 
         for (int i = 1; i <= ATTEMPTS; i++) {
             App.logger.info("Attempting to download web interface (" + i + "/" + ATTEMPTS + ")");
+            Future<Void> future = null;
             try {
-                Future<Void> future = executor.submit(WarDownload::doDownload);
+                future = executor.submit(WarDownload::doDownload);
                 future.get(1, TimeUnit.MINUTES);
                 if (!moveTempDownload()) {
                     throw new WarDownloadException("Failed to rename download file to final file name");
@@ -40,6 +41,9 @@ class WarDownload {
                 App.logger.error("Error downloading web interface");
                 App.logger.catching(e);
                 App.logger.error("Failed attempt to download web interface (" + i + "/" + ATTEMPTS + ")");
+                if (future != null) {
+                    future.cancel(true);
+                }
                 cleanupTempDownload();
             }
         }
