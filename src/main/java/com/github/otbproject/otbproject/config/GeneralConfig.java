@@ -13,6 +13,7 @@ public class GeneralConfig {
     public GeneralConfig() {
         permanentlyEnabledCommands = ConcurrentHashMap.newKeySet();
         permanentlyEnabledCommands.add("!bot-enable-meta");
+        permanentlyEnabledCommands.add("!leave");
     }
 
     public Service getService() {
