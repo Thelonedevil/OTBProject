@@ -13,7 +13,7 @@ public class ThreadUtil {
         UNCAUGHT_EXCEPTION_HANDLER = (t, e) -> {
             App.logger.error("Thread crashed: " + t.getName());
             App.logger.catching(e);
-            Watcher.logThreadCrash();
+            Watcher.logException();
         };
         Thread.setDefaultUncaughtExceptionHandler(UNCAUGHT_EXCEPTION_HANDLER);
     }

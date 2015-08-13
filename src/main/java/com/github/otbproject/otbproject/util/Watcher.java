@@ -9,7 +9,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class Watcher {
-    private static final int CRASH_LIMIT = 5;
+    private static final int EXCEPTION_LIMIT = 5;
     private static final int DUPLICATE_LIMIT = 3;
 
     private static final ExecutorService EXECUTOR_SERVICE = Executors.newSingleThreadExecutor(
@@ -26,12 +26,12 @@ public class Watcher {
                     .build()
     );
 
-    private static int threadCrashes = 0;
+    private static int exceptions = 0;
 
-    public static void logThreadCrash() {
+    public static void logException() {
         EXECUTOR_SERVICE.execute(() -> {
-            threadCrashes++;
-            if ((threadCrashes >= CRASH_LIMIT) && (threadCrashes < CRASH_LIMIT + DUPLICATE_LIMIT)) {
+            exceptions++;
+            if ((exceptions >= EXCEPTION_LIMIT) && (exceptions < EXCEPTION_LIMIT + DUPLICATE_LIMIT)) {
                 App.logger.error("OTB has experienced multiple internal errors");
                 App.logger.error("Please report this problem to the developers");
                 if (Bot.Graphics.present()) {
