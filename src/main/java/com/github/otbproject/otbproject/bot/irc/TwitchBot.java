@@ -6,6 +6,7 @@ import com.github.otbproject.otbproject.bot.BotInitException;
 import com.github.otbproject.otbproject.bot.BotUtil;
 import com.github.otbproject.otbproject.channel.ChannelNotFoundException;
 import com.github.otbproject.otbproject.serviceapi.ApiRequest;
+import com.github.otbproject.otbproject.util.Watcher;
 import com.google.common.collect.Multimaps;
 import com.google.common.collect.SetMultimap;
 import org.isomorphism.util.TokenBucket;
@@ -37,6 +38,7 @@ public class TwitchBot extends AbstractBot {
             input.setAccessible(true);
             input.set(ircBot, new InputParserImproved(ircBot));
         } catch (NoSuchFieldException | IllegalAccessException e) {
+            Watcher.logException();
             throw new BotInitException(e);
         }
     }
