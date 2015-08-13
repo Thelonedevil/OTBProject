@@ -17,6 +17,7 @@ import com.github.otbproject.otbproject.fs.groups.Base;
 import com.github.otbproject.otbproject.fs.groups.Chan;
 import com.github.otbproject.otbproject.fs.groups.Load;
 import com.github.otbproject.otbproject.util.JsonHandler;
+import com.github.otbproject.otbproject.util.Watcher;
 
 import java.io.File;
 import java.util.List;
@@ -137,6 +138,7 @@ public class PreloadLoader {
             }
         } catch (ClassCastException e) {
             App.logger.catching(e);
+            Watcher.logException();
         }
     }
 

@@ -2,6 +2,7 @@ package com.github.otbproject.otbproject.quote;
 
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.database.SQLiteQuoteWrapper;
+import com.github.otbproject.otbproject.util.Watcher;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -45,6 +46,7 @@ public class Quotes {
             return list.stream().map(key -> Integer.valueOf((String) key)).collect(Collectors.toList());
         } catch (ClassCastException e) {
             App.logger.catching(e);
+            Watcher.logException();
             return null;
         }
     }

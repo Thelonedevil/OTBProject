@@ -2,6 +2,7 @@ package com.github.otbproject.otbproject.user;
 
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
+import com.github.otbproject.otbproject.util.Watcher;
 
 import java.util.HashMap;
 import java.util.List;
@@ -32,6 +33,7 @@ public class Users {
             return list.stream().map(key -> (String) key).collect(Collectors.toList());
         } catch (ClassCastException e) {
             App.logger.catching(e);
+            Watcher.logException();
             return null;
         }
     }
