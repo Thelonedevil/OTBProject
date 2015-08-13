@@ -11,8 +11,8 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Filters {
     public static Optional<BasicFilter> get(DatabaseWrapper db, String data, FilterType type) {
         List<Map.Entry<String, Object>> list = new ArrayList<>();
-        list.add(new AbstractMap.SimpleEntry<>(FilterFields.DATA, data));
-        list.add(new AbstractMap.SimpleEntry<>(FilterFields.TYPE, type.name()));
+        list.add(new AbstractMap.SimpleImmutableEntry<>(FilterFields.DATA, data));
+        list.add(new AbstractMap.SimpleImmutableEntry<>(FilterFields.TYPE, type.name()));
         return db.getRecord(FilterFields.TABLE_NAME, list, Filters::getFilterFromResultSet);
     }
 
@@ -47,8 +47,8 @@ public class Filters {
 
     public static boolean exists(DatabaseWrapper db, String data, FilterType type) {
         List<Map.Entry<String, Object>> list = new ArrayList<>();
-        list.add(new AbstractMap.SimpleEntry<>(FilterFields.DATA, data));
-        list.add(new AbstractMap.SimpleEntry<>(FilterFields.TYPE, type.name()));
+        list.add(new AbstractMap.SimpleImmutableEntry<>(FilterFields.DATA, data));
+        list.add(new AbstractMap.SimpleImmutableEntry<>(FilterFields.TYPE, type.name()));
         return db.exists(FilterFields.TABLE_NAME, list);
     }
 
@@ -58,8 +58,8 @@ public class Filters {
 
     public static boolean remove(DatabaseWrapper db, String data, FilterType type) {
         List<Map.Entry<String, Object>> list = new ArrayList<>();
-        list.add(new AbstractMap.SimpleEntry<>(FilterFields.DATA, data));
-        list.add(new AbstractMap.SimpleEntry<>(FilterFields.TYPE, type.name()));
+        list.add(new AbstractMap.SimpleImmutableEntry<>(FilterFields.DATA, data));
+        list.add(new AbstractMap.SimpleImmutableEntry<>(FilterFields.TYPE, type.name()));
         return db.removeRecord(FilterFields.TABLE_NAME, list);
     }
 
