@@ -23,6 +23,7 @@ import com.github.otbproject.otbproject.util.version.Versions;
 import com.github.otbproject.otbproject.web.WebInterface;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.ParseException;
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
@@ -99,8 +100,8 @@ public class App {
         try {
             Setup.setup();
         } catch (IOException e) {
-            logger.error("Unable to setup main directory tree at:\t" + FSUtil.getBaseDir());
-            logger.catching(e);
+            logger.fatal("Unable to setup main directory tree at:\t" + FSUtil.getBaseDir());
+            logger.catching(Level.FATAL, e);
             System.exit(1);
         }
 
