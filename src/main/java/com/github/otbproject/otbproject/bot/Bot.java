@@ -205,7 +205,7 @@ public class Bot {
                 try {
                     Configs.getGeneralConfig().setService(Service.valueOf(serviceName));
                 } catch (IllegalArgumentException e) {
-                    App.logger.error("Invalid service name: " + serviceName);
+                    App.logger.fatal("Invalid service name: " + serviceName);
                     ArgParser.printHelp();
                     System.exit(1);
                 }
