@@ -84,6 +84,11 @@ public class ParserTest {
             }
 
             @Override
+            public boolean unBan(String channelName, String user) {
+                return false;
+            }
+
+            @Override
             public boolean timeout(String channelName, String user, int timeInSeconds) {
                 return false;
             }

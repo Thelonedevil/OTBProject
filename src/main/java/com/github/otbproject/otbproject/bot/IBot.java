@@ -16,9 +16,7 @@ public interface IBot {
 
     boolean isChannel(String channelName);
 
-    default void shutdown() {
-        getChannels().values().forEach(Channel::leave);
-    }
+    void shutdown();
 
     String getUserName();
 
@@ -37,6 +35,8 @@ public interface IBot {
     boolean leave(String channelName);
 
     boolean ban(String channelName, String user);
+
+    boolean unBan(String channelName, String user);
 
     boolean timeout(String channelName, String user, int timeInSeconds);
 
