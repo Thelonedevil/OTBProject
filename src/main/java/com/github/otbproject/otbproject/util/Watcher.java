@@ -29,8 +29,11 @@ public class Watcher {
     private static int exceptions = 0;
 
     public static void logException() {
+        StackTraceElement[] stackTrace = new Throwable().getStackTrace();
+        final String stackTraceElement = (stackTrace.length > 1) ? stackTrace[1].toString() : "unknown location";
         EXECUTOR_SERVICE.execute(() -> {
             exceptions++;
+            App.logger.error("Unexpected exception number " + exceptions + " at " + stackTraceElement);
             if ((exceptions >= EXCEPTION_LIMIT) && (exceptions < EXCEPTION_LIMIT + DUPLICATE_LIMIT)) {
                 App.logger.error("OTB has experienced multiple internal errors");
                 App.logger.error("Please report this problem to the developers");
