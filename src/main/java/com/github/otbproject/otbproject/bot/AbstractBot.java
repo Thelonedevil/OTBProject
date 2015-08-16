@@ -7,12 +7,15 @@ import com.github.otbproject.otbproject.messages.receive.PackagedMessage;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 public abstract class AbstractBot implements IBot {
     protected final ConcurrentHashMap<String, Channel> channels = new ConcurrentHashMap<>();
     protected final DatabaseWrapper botDB = Databases.createBotDbWrapper();
-    protected BiConsumer<Channel, PackagedMessage> messageHandlers = (channel, packagedMessage) -> {};
+    protected BiConsumer<Channel, PackagedMessage> messageHandlers;
+
+    public AbstractBot() {
+        messageHandlers = Channel::receiveMessage;
+    }
 
     @Override
     public ConcurrentHashMap<String, Channel> getChannels() {
