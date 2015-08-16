@@ -4,7 +4,7 @@ import com.github.otbproject.otbproject.channel.Channel;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.messages.receive.PackagedMessage;
 
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.function.BiConsumer;
 
 public interface IBot {
@@ -12,7 +12,7 @@ public interface IBot {
 
     boolean isConnected();
 
-    ConcurrentHashMap<String, Channel> getChannels();
+    ConcurrentMap<String, Channel> getChannels();
 
     boolean isChannel(String channelName);
 
