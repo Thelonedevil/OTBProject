@@ -6,12 +6,13 @@ import com.github.otbproject.otbproject.database.Databases;
 import com.github.otbproject.otbproject.messages.receive.PackagedMessage;
 
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public abstract class AbstractBot implements IBot {
     protected final ConcurrentHashMap<String, Channel> channels = new ConcurrentHashMap<>();
     protected final DatabaseWrapper botDB = Databases.createBotDbWrapper();
-    protected Consumer<PackagedMessage> messageHandlers = packagedMessage -> {};
+    protected BiConsumer<Channel, PackagedMessage> messageHandlers = (channel, packagedMessage) -> {};
 
     @Override
     public ConcurrentHashMap<String, Channel> getChannels() {
@@ -24,12 +25,12 @@ public abstract class AbstractBot implements IBot {
     }
 
     @Override
-    public void onMessage(Consumer<PackagedMessage> messageHandler) {
+    public void onMessage(BiConsumer<Channel, PackagedMessage> messageHandler) {
         messageHandlers = messageHandlers.andThen(messageHandler);
     }
 
     @Override
-    public void invokeMessageHandlers(PackagedMessage message) {
-        messageHandlers.accept(message);
+    public void invokeMessageHandlers(Channel channel, PackagedMessage message) {
+        messageHandlers.accept(channel, message);
     }
 }
