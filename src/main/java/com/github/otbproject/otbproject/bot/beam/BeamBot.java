@@ -139,36 +139,12 @@ public class BeamBot extends AbstractBot {
 
     @Override
     public boolean ban(String channelName, String user) {
-        // Check if user has user level mod or higher
-        try {
-            if (BotUtil.isModOrHigher(channelName, user)) {
-                return false;
-            }
-        } catch (ChannelNotFoundException e) {
-            App.logger.error("Unable to get channel '" + channelName + "' to ban user");
-            App.logger.catching(e);
-        }
+        return banOrUnBan(channelName, user, true);
+    }
 
-        // Get channel info
-        BeamChatChannel beamChatChannel = beamChannels.get(channelName);
-        if (beamChatChannel == null) {
-            return false;
-        }
-
-        String path = BeamAPI.BASE_PATH.resolve("channels/" + beamChatChannel.channel.id + "/users/" + user.toLowerCase()).toString();
-        HashMap<String, Object> map = new HashMap<>();
-        map.put("add", new String[]{"Banned"});
-        try {
-            Object result = beam.http.patch(path, Object.class, map).get(4, TimeUnit.SECONDS);
-            if ((result != null) && result.toString().contains("username")) {
-                return true;
-            }
-        } catch (InterruptedException | TimeoutException e) {
-            App.logger.catching(e);
-        } catch (ExecutionException e) {
-            App.logger.catching(Level.DEBUG, e);
-        }
-        return false;
+    @Override
+    public boolean unBan(String channelName, String user) {
+        return banOrUnBan(channelName, user, false);
     }
 
     @Override
@@ -232,5 +208,42 @@ public class BeamBot extends AbstractBot {
         }
         beamChatChannel.clearCache();
         return true;
+    }
+
+    private boolean banOrUnBan(String channelName, String user, boolean ban) {
+        String param = ban? "add" : "remove";
+
+        // Check if user has user level mod or higher
+        if (ban) {
+            try {
+                if (BotUtil.isModOrHigher(channelName, user)) {
+                    return false;
+                }
+            } catch (ChannelNotFoundException e) {
+                App.logger.error("Unable to get channel '" + channelName + "' to ban user");
+                App.logger.catching(e);
+            }
+        }
+
+        // Get channel info
+        BeamChatChannel beamChatChannel = beamChannels.get(channelName);
+        if (beamChatChannel == null) {
+            return false;
+        }
+
+        String path = BeamAPI.BASE_PATH.resolve("channels/" + beamChatChannel.channel.id + "/users/" + user.toLowerCase()).toString();
+        HashMap<String, Object> map = new HashMap<>();
+        map.put(param, new String[]{"Banned"});
+        try {
+            Object result = beam.http.patch(path, Object.class, map).get(4, TimeUnit.SECONDS);
+            if ((result != null) && result.toString().contains("username")) {
+                return true;
+            }
+        } catch (InterruptedException | TimeoutException e) {
+            App.logger.catching(e);
+        } catch (ExecutionException e) {
+            App.logger.catching(Level.DEBUG, e);
+        }
+        return false;
     }
 }

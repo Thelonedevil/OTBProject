@@ -3,6 +3,7 @@ package com.github.otbproject.otbproject.command;
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.user.UserLevel;
+import com.github.otbproject.otbproject.util.Watcher;
 
 import java.util.HashMap;
 import java.util.List;
@@ -35,6 +36,7 @@ public class Aliases {
             return list.stream().map(key -> (String) key).collect(Collectors.toList());
         } catch (ClassCastException e) {
             App.logger.catching(e);
+            Watcher.logException();
             return null;
         }
     }
