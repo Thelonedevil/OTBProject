@@ -9,6 +9,7 @@ import com.github.otbproject.otbproject.channel.Channels;
 import com.github.otbproject.otbproject.messages.receive.PackagedMessage;
 import com.github.otbproject.otbproject.messages.send.MessagePriority;
 import com.github.otbproject.otbproject.proc.TimeoutProcessor;
+import com.github.otbproject.otbproject.user.UserLevel;
 import com.github.otbproject.otbproject.user.UserLevels;
 import com.github.otbproject.otbproject.util.ThreadUtil;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
@@ -79,7 +80,8 @@ public class BeamMessageHandler implements EventHandler<IncomingMessageEvent> {
             Optional<Channel> optional = Channels.get(channelName);
             if (optional.isPresent()) {
                 Channel channel = optional.get();
-                PackagedMessage packagedMessage = new PackagedMessage(getMessage(data), data.user_name.toLowerCase(), channelName, UserLevels.getUserLevel(channel.getMainDatabaseWrapper(), channelName, data.user_name.toLowerCase()), MessagePriority.DEFAULT);
+                UserLevel userLevel = UserLevels.getUserLevel(channel.getMainDatabaseWrapper(), channelName, data.user_name.toLowerCase());
+                PackagedMessage packagedMessage = new PackagedMessage(getMessage(data), data.user_name.toLowerCase(), channelName, userLevel, MessagePriority.DEFAULT);
                 bot.invokeMessageHandlers(channel, packagedMessage, TimeoutProcessor.doTimeouts(packagedMessage));
             } else {
                 App.logger.error("Channel: " + channelName + " appears not to exist");
