@@ -82,7 +82,7 @@ public class BeamMessageHandler implements EventHandler<IncomingMessageEvent> {
                 Channel channel = optional.get();
                 UserLevel userLevel = UserLevels.getUserLevel(channel.getMainDatabaseWrapper(), channelName, data.user_name.toLowerCase());
                 PackagedMessage packagedMessage = new PackagedMessage(getMessage(data), data.user_name.toLowerCase(), channelName, userLevel, MessagePriority.DEFAULT);
-                bot.invokeMessageHandlers(channel, packagedMessage, TimeoutProcessor.doTimeouts(packagedMessage));
+                bot.invokeMessageHandlers(channel, packagedMessage, TimeoutProcessor.doTimeouts(channel, packagedMessage));
             } else {
                 App.logger.error("Channel: " + channelName + " appears not to exist");
             }
