@@ -29,7 +29,11 @@ public class LibsLoader {
             }
             return false;
         };
-        for (File jar : libsdir.listFiles(fileNameFilter)) {
+        File[] files = libsdir.listFiles(fileNameFilter);
+        if (files == null) {
+            return;
+        }
+        for (File jar : files) {
             try {
                 addSoftwareLibrary(jar);
             } catch (NoSuchMethodException | MalformedURLException | InvocationTargetException | IllegalAccessException e) {
