@@ -42,7 +42,7 @@ public class FilterProcessor {
     // Returns the FilterGroup of a Filter which matches the message, or null if no Filter matches
     public static Optional<FilterGroup> process(ConcurrentMap<String, GroupFilterSet> groupFilterSets, String message, UserLevel userLevel) {
         if (userLevel.getValue() < UserLevel.MODERATOR.getValue()) {
-            return null;
+            return Optional.empty();
         }
         return groupFilterSets.entrySet().stream()
                 .map(Map.Entry::getValue)
