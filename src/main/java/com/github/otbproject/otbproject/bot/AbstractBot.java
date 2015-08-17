@@ -4,11 +4,10 @@ import com.github.otbproject.otbproject.channel.Channel;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.database.Databases;
 import com.github.otbproject.otbproject.messages.receive.PackagedMessage;
-import com.github.otbproject.otbproject.proc.MessageHandler;
+import com.github.otbproject.otbproject.messages.receive.MessageHandler;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.function.BiConsumer;
 
 public abstract class AbstractBot implements IBot {
     protected final ConcurrentMap<String, Channel> channels = new ConcurrentHashMap<>();

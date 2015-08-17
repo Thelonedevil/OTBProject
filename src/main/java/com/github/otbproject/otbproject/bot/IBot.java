@@ -3,10 +3,9 @@ package com.github.otbproject.otbproject.bot;
 import com.github.otbproject.otbproject.channel.Channel;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.messages.receive.PackagedMessage;
-import com.github.otbproject.otbproject.proc.MessageHandler;
+import com.github.otbproject.otbproject.messages.receive.MessageHandler;
 
 import java.util.concurrent.ConcurrentMap;
-import java.util.function.BiConsumer;
 
 public interface IBot {
     boolean isConnected(String channelName);
