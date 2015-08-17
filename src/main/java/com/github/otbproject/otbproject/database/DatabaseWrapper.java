@@ -136,7 +136,7 @@ public class DatabaseWrapper {
      */
     public <R> Optional<R> getRecord(String table, Object identifier, String fieldName, SQLFunction<R> function) {
         List<Map.Entry<String, Object>> list = new ArrayList<>();
-        list.add(new AbstractMap.SimpleEntry<>(fieldName, identifier));
+        list.add(new AbstractMap.SimpleImmutableEntry<>(fieldName, identifier));
         return getRecord(table, list, function);
     }
 
@@ -203,7 +203,7 @@ public class DatabaseWrapper {
      */
     public boolean exists(String table, Object identifier, String fieldName) {
         List<Map.Entry<String, Object>> list = new ArrayList<>();
-        list.add(new AbstractMap.SimpleEntry<>(fieldName, identifier));
+        list.add(new AbstractMap.SimpleImmutableEntry<>(fieldName, identifier));
         return exists(table, list);
     }
 
@@ -334,7 +334,7 @@ public class DatabaseWrapper {
      */
     public boolean removeRecord(String table, Object identifier, String fieldName) {
         List<Map.Entry<String, Object>> list = new ArrayList<>();
-        list.add(new AbstractMap.SimpleEntry<>(fieldName, identifier));
+        list.add(new AbstractMap.SimpleImmutableEntry<>(fieldName, identifier));
         return removeRecord(table, list);
     }
 

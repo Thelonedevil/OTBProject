@@ -31,6 +31,7 @@ public class BeamBot extends AbstractBot {
     final ConcurrentHashMap<String, BeamChatChannel> beamChannels = new ConcurrentHashMap<>();
 
     public BeamBot() throws BotInitException {
+        super();
         sentMessageCache = ExpiringMap.builder()
                 .expiration(CACHE_TIME, TimeUnit.SECONDS)
                 .expirationPolicy(ExpiringMap.ExpirationPolicy.CREATED)

@@ -4,15 +4,15 @@ import com.github.otbproject.otbproject.channel.Channel;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.messages.receive.PackagedMessage;
 
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Consumer;
+import java.util.concurrent.ConcurrentMap;
+import java.util.function.BiConsumer;
 
 public interface IBot {
     boolean isConnected(String channelName);
 
     boolean isConnected();
 
-    ConcurrentHashMap<String, Channel> getChannels();
+    ConcurrentMap<String, Channel> getChannels();
 
     boolean isChannel(String channelName);
 
@@ -42,7 +42,7 @@ public interface IBot {
 
     boolean removeTimeout(String channelName, String user);
 
-    void onMessage(Consumer<PackagedMessage> messageHandler);
+    void onMessage(BiConsumer<Channel, PackagedMessage> messageHandler);
 
-    void invokeMessageHandlers(PackagedMessage message);
+    void invokeMessageHandlers(Channel channel, PackagedMessage message);
 }

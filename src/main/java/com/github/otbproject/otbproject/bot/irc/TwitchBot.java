@@ -31,6 +31,7 @@ public class TwitchBot extends AbstractBot {
     public final SetMultimap<String, String> subscriberStorage = Multimaps.newSetMultimap(new ConcurrentHashMap<>(), ConcurrentHashMap::newKeySet);
 
     public TwitchBot() throws BotInitException {
+        super();
         Class c = ircBot.getClass().getSuperclass();
         Field input;
         try {

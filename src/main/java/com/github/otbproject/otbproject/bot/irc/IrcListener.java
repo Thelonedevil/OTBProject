@@ -42,8 +42,7 @@ public class IrcListener extends ListenerAdapter {
         } else {
             UserLevel userLevel = UserLevels.getUserLevel(channel.getMainDatabaseWrapper(), channelName, user);
             PackagedMessage packagedMessage = new PackagedMessage(message, user, channelName, userLevel, MessagePriority.DEFAULT);
-            channel.receiveMessage(packagedMessage);
-            bot.invokeMessageHandlers(packagedMessage);
+            bot.invokeMessageHandlers(channel, packagedMessage);
         }
     }
 

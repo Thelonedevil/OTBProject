@@ -5,17 +5,21 @@ import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.database.Databases;
 import com.github.otbproject.otbproject.messages.receive.PackagedMessage;
 
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Consumer;
+import java.util.concurrent.ConcurrentMap;
+import java.util.function.BiConsumer;
 
 public abstract class AbstractBot implements IBot {
-    protected final ConcurrentHashMap<String, Channel> channels = new ConcurrentHashMap<>();
+    protected final ConcurrentMap<String, Channel> channels = new ConcurrentHashMap<>();
     protected final DatabaseWrapper botDB = Databases.createBotDbWrapper();
-    protected final Set<Consumer<PackagedMessage>> messageListeners = ConcurrentHashMap.newKeySet();
+    protected BiConsumer<Channel, PackagedMessage> messageHandlers;
+
+    public AbstractBot() {
+        messageHandlers = Channel::receiveMessage;
+    }
 
     @Override
-    public ConcurrentHashMap<String, Channel> getChannels() {
+    public ConcurrentMap<String, Channel> getChannels() {
         return channels;
     }
 
@@ -30,12 +34,12 @@ public abstract class AbstractBot implements IBot {
     }
 
     @Override
-    public void onMessage(Consumer<PackagedMessage> messageHandler) {
-        messageListeners.add(messageHandler);
+    public void onMessage(BiConsumer<Channel, PackagedMessage> messageHandler) {
+        messageHandlers = messageHandlers.andThen(messageHandler);
     }
 
     @Override
-    public void invokeMessageHandlers(PackagedMessage message) {
-        messageListeners.forEach(consumer -> consumer.accept(message));
+    public void invokeMessageHandlers(Channel channel, PackagedMessage message) {
+        messageHandlers.accept(channel, message);
     }
 }
