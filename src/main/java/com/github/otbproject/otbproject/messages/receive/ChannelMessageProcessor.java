@@ -11,9 +11,7 @@ import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.messages.internal.InternalMessageSender;
 import com.github.otbproject.otbproject.messages.send.MessageOut;
 import com.github.otbproject.otbproject.messages.send.MessagePriority;
-import com.github.otbproject.otbproject.proc.CommandScriptProcessor;
-import com.github.otbproject.otbproject.proc.MessageProcessor;
-import com.github.otbproject.otbproject.proc.ProcessedMessage;
+import com.github.otbproject.otbproject.proc.*;
 import com.github.otbproject.otbproject.user.UserLevel;
 
 import java.util.Optional;
@@ -54,9 +52,9 @@ public class ChannelMessageProcessor {
         if (inBotChannel) {
             DatabaseWrapper db = Bot.getBot().getBotDB();
             UserLevel ul = packagedMessage.userLevel;
-            ProcessedMessage processedMsg = MessageProcessor.process(db, packagedMessage.message, channelName, user, ul, Configs.getBotConfig().isBotChannelDebug());
-            if (processedMsg.isScript || !processedMsg.response.isEmpty()) {
-                doResponse(db, processedMsg, channelName, destChannelName, destChannel, user, ul, packagedMessage.messagePriority, internal);
+            ProcessedCommand processedCmd = CommandProcessor.process(db, packagedMessage.message, channelName, user, ul, Configs.getBotConfig().isBotChannelDebug());
+            if (processedCmd.isScript || !processedCmd.response.isEmpty()) {
+                doResponse(db, processedCmd, channelName, destChannelName, destChannel, user, ul, packagedMessage.messagePriority, internal);
                 // Don't process response as regular channel if done as bot channel
                 return;
             }
@@ -74,20 +72,20 @@ public class ChannelMessageProcessor {
         if (inBotChannel) {
             debug = (debug || Configs.getBotConfig().isBotChannelDebug());
         }
-        ProcessedMessage processedMsg = MessageProcessor.process(db, packagedMessage.message, channelName, user, ul, debug);
+        ProcessedCommand processedCmd = CommandProcessor.process(db, packagedMessage.message, channelName, user, ul, debug);
 
         // Check if bot is enabled
-        if (channel.getConfig().isEnabled() || Configs.getGeneralConfig().getPermanentlyEnabledCommands().contains(processedMsg.commandName)) {
+        if (channel.getConfig().isEnabled() || Configs.getGeneralConfig().getPermanentlyEnabledCommands().contains(processedCmd.commandName)) {
             // Check if empty message, and then if command is on cooldown (skip cooldown check if internal)
-            if ((processedMsg.isScript || !processedMsg.response.isEmpty()) && (internal || !destChannel.isCommandCooldown(processedMsg.commandName))) {
-                doResponse(db, processedMsg, channelName, destChannelName, destChannel, user, ul, packagedMessage.messagePriority, internal);
+            if ((processedCmd.isScript || !processedCmd.response.isEmpty()) && (internal || !destChannel.isCommandCooldown(processedCmd.commandName))) {
+                doResponse(db, processedCmd, channelName, destChannelName, destChannel, user, ul, packagedMessage.messagePriority, internal);
             }
         }
     }
 
-    private void doResponse(DatabaseWrapper db, ProcessedMessage processedMsg, String channelName, String destChannelName, Channel destChannel, String user, UserLevel ul, MessagePriority priority, boolean internal) {
-        String message = processedMsg.response;
-        String command = processedMsg.commandName;
+    private void doResponse(DatabaseWrapper db, ProcessedCommand processedCmd, String channelName, String destChannelName, Channel destChannel, String user, UserLevel ul, MessagePriority priority, boolean internal) {
+        String message = processedCmd.response;
+        String command = processedCmd.commandName;
 
         // Do script (processedMsg.response is the script path)
         // There is a slight chance that a cooldown will have been set for the script command since the method was called,
@@ -95,8 +93,8 @@ public class ChannelMessageProcessor {
         boolean success;
         boolean doIncrement;
 
-        if (processedMsg.isScript) {
-            success = CommandScriptProcessor.process(message, db, command, processedMsg.args, channelName, destChannelName, user, ul);
+        if (processedCmd.isScript) {
+            success = CommandScriptProcessor.process(message, db, command, processedCmd.args, channelName, destChannelName, user, ul);
             lock.lock();
             try {
                 doIncrement = postResponse(destChannelName, destChannel, command, user, ul, internal, success);

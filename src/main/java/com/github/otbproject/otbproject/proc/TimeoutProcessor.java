@@ -1,16 +1,13 @@
 package com.github.otbproject.otbproject.proc;
 
-import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.messages.receive.PackagedMessage;
-import com.github.otbproject.otbproject.user.UserLevel;
 
 public class TimeoutProcessor {
     public static boolean doTimeouts(PackagedMessage packagedMessage) {
-        return false; // TODO implement
-    }
+        // TODO implement and then remove if statement
+        if (false) { // So I can work on an implementation without changing behaviour
 
-    public static ProcessedMessage doTimeouts(DatabaseWrapper db, String message, String channel, String user, UserLevel userLevel) {
-        return ProcessedMessage.empty(); // TODO implement timeouts
-        // Returns empty ProcessedMessage until timeouts are implemented
+        }
+        return false;
     }
 }
