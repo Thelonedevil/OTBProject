@@ -4,13 +4,10 @@ import com.github.otbproject.otbproject.App;
 
 import java.sql.*;
 import java.util.*;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 public class DatabaseWrapper {
     final Connection connection;
-    protected final Lock lock = new ReentrantLock();
 
     /**
      * Private constructor, should never be used directly. <br>
@@ -22,17 +19,12 @@ public class DatabaseWrapper {
      * @throws ClassNotFoundException if the SQLite JDBC class is not available at runtime
      */
     protected DatabaseWrapper(String path, HashMap<String, TableFields> tables) throws SQLException, ClassNotFoundException {
-        lock.lock();
-        try {
-            Class.forName("org.sqlite.JDBC");
-            connection = DriverManager.getConnection("jdbc:sqlite:" + path);
-            for (Map.Entry<String, TableFields> entry : tables.entrySet()) {
-                if (!createTable(entry.getKey(), entry.getValue().map, entry.getValue().primaryKeys)) {
-                    throw new SQLException("Failed to create table: " + entry.getKey());
-                }
+        Class.forName("org.sqlite.JDBC");
+        connection = DriverManager.getConnection("jdbc:sqlite:" + path);
+        for (Map.Entry<String, TableFields> entry : tables.entrySet()) {
+            if (!createTable(entry.getKey(), entry.getValue().map, entry.getValue().primaryKeys)) {
+                throw new SQLException("Failed to create table: " + entry.getKey());
             }
-        } finally {
-            lock.unlock();
         }
     }
 
@@ -97,7 +89,6 @@ public class DatabaseWrapper {
         String sql = "SELECT * FROM " + table + " WHERE ";
         sql += entryList.stream().map(entry -> (entry.getKey() + "= ?")).collect(Collectors.joining(", "));
         ResultSet rs;
-        lock.lock();
         try {
             preparedStatement = connection.prepareStatement(sql);
             int index = 1;
@@ -117,7 +108,6 @@ public class DatabaseWrapper {
             } catch (SQLException e) {
                 App.logger.catching(e);
             }
-            lock.unlock();
         }
         return Optional.empty();
     }
@@ -143,7 +133,6 @@ public class DatabaseWrapper {
     public <R> Optional<R> getRandomRecord(String table, SQLFunction<R> function) {
         String sql = "SELECT * FROM " + table + " ORDER BY RANDOM() LIMIT 1";
         ResultSet rs = null;
-        lock.lock();
         try {
             rs = connection.createStatement().executeQuery(sql);
             return Optional.ofNullable(function.apply(rs));
@@ -158,7 +147,6 @@ public class DatabaseWrapper {
             } catch (SQLException e) {
                 App.logger.catching(e);
             }
-            lock.unlock();
         }
         return Optional.empty();
     }
@@ -168,7 +156,6 @@ public class DatabaseWrapper {
         String sql = "SELECT COUNT() FROM " + table + " WHERE ";
         sql += entryList.stream().map(entry -> (entry.getKey() + "= ?")).collect(Collectors.joining(", "));
         ResultSet rs;
-        lock.lock();
         try {
             preparedStatement = connection.prepareStatement(sql);
             int index = 1;
@@ -188,7 +175,6 @@ public class DatabaseWrapper {
             } catch (SQLException e) {
                 App.logger.catching(e);
             }
-            lock.unlock();
         }
         return false;
     }
@@ -222,7 +208,6 @@ public class DatabaseWrapper {
         List<Map.Entry<String, Object>> entryList = new ArrayList<>(map.entrySet()); // Guarantee ordering
         sql += entryList.stream().map(entry -> (entry.getKey() + "=?")).collect(Collectors.joining(", "));
         sql += " WHERE " + fieldName + "= ?";
-        lock.lock();
         try {
             preparedStatement = connection.prepareStatement(sql);
             int index = 1;
@@ -248,7 +233,6 @@ public class DatabaseWrapper {
             } catch (SQLException e) {
                 App.logger.catching(e);
             }
-            lock.unlock();
         }
         return false;
     }
@@ -268,7 +252,6 @@ public class DatabaseWrapper {
         sql += ") VALUES (";
         sql += Collections.nCopies(map.keySet().size(), "?").stream().collect(Collectors.joining(", "));
         sql += ")";
-        lock.lock();
         try {
             preparedStatement = connection.prepareStatement(sql);
             int index = 1;
@@ -289,7 +272,6 @@ public class DatabaseWrapper {
             } catch (SQLException e) {
                 App.logger.catching(e);
             }
-            lock.unlock();
         }
         return false;
     }
@@ -298,7 +280,6 @@ public class DatabaseWrapper {
         PreparedStatement preparedStatement = null;
         String sql = "DELETE FROM " + table + " WHERE ";
         sql += entryList.stream().map(entry -> (entry.getKey() + "=?")).collect(Collectors.joining(", "));
-        lock.lock();
         try {
             preparedStatement = connection.prepareStatement(sql);
             int index = 1;
@@ -319,7 +300,6 @@ public class DatabaseWrapper {
             } catch (SQLException e) {
                 App.logger.catching(e);
             }
-            lock.unlock();
         }
         return false;
     }
@@ -347,7 +327,6 @@ public class DatabaseWrapper {
     public <R> Optional<R> tableDump(String table, SQLFunction<R> function) {
         String sql = "SELECT * FROM " + table;
         ResultSet rs = null;
-        lock.lock();
         try {
             rs = connection.createStatement().executeQuery(sql);
             return Optional.ofNullable(function.apply(rs));
@@ -362,7 +341,6 @@ public class DatabaseWrapper {
             } catch (SQLException e) {
                 App.logger.catching(e);
             }
-            lock.unlock();
         }
         return Optional.empty();
     }
@@ -378,7 +356,6 @@ public class DatabaseWrapper {
     public List<Object> getRecordsList(String table, String key) {
         String sql = "";
         ResultSet rs = null;
-        lock.lock();
         try {
             List<Object> set = new ArrayList<>();
             sql = "SELECT " + key + " FROM " + table;
@@ -399,7 +376,6 @@ public class DatabaseWrapper {
             } catch (SQLException e) {
                 App.logger.catching(e);
             }
-            lock.unlock();
         }
     }
 

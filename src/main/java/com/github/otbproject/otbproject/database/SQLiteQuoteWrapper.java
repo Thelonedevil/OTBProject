@@ -30,7 +30,6 @@ public class SQLiteQuoteWrapper extends DatabaseWrapper {
         String sql = "UPDATE " + table + " SET " + QuoteFields.TEXT + "= NULL WHERE ";
         sql += entryList.stream().map(entry -> (entry.getKey() + "=?")).collect(Collectors.joining(", "));
         boolean bool = false;
-        lock.lock();
         try {
             preparedStatement = connection.prepareStatement(sql);
             int index = 1;
@@ -55,7 +54,6 @@ public class SQLiteQuoteWrapper extends DatabaseWrapper {
                 App.logger.catching(e);
                 bool = false;
             }
-            lock.unlock();
         }
         return bool;
     }
@@ -65,7 +63,6 @@ public class SQLiteQuoteWrapper extends DatabaseWrapper {
         // Try to fill empty slot
         String sql = "SELECT " + QuoteFields.ID + " FROM " + table + " WHERE " + QuoteFields.TEXT + " IS NULL ORDER BY " + QuoteFields.ID + " ASC LIMIT 1";
         ResultSet rs = null;
-        lock.lock();
         try {
             rs = connection.createStatement().executeQuery(sql);
             if (rs.next()) {
@@ -85,7 +82,6 @@ public class SQLiteQuoteWrapper extends DatabaseWrapper {
             } catch (SQLException e) {
                 App.logger.catching(e);
             }
-            lock.unlock();
         }
 
         // Create new record otherwise
@@ -96,7 +92,6 @@ public class SQLiteQuoteWrapper extends DatabaseWrapper {
     public <R> Optional<R> getRandomRecord(String table, SQLFunction<R> function) {
         String sql = "SELECT * FROM " + table + " WHERE " + QuoteFields.TEXT + " IS NOT NULL ORDER BY RANDOM() LIMIT 1";
         ResultSet rs = null;
-        lock.lock();
         try {
             rs = connection.createStatement().executeQuery(sql);
             return Optional.ofNullable(function.apply(rs));
@@ -111,7 +106,6 @@ public class SQLiteQuoteWrapper extends DatabaseWrapper {
             } catch (SQLException e) {
                 App.logger.catching(e);
             }
-            lock.unlock();
         }
         return Optional.empty();
     }
@@ -119,7 +113,6 @@ public class SQLiteQuoteWrapper extends DatabaseWrapper {
     public ArrayList<Object> getNonRemovedRecordsList(String table, String key) {
         String sql = "";
         ResultSet rs = null;
-        lock.lock();
         try {
             ArrayList<Object> set = new ArrayList<>();
             sql = "SELECT " + key + " FROM " + table + " WHERE " + QuoteFields.TEXT + " IS NOT NULL";
@@ -140,7 +133,6 @@ public class SQLiteQuoteWrapper extends DatabaseWrapper {
             } catch (SQLException e) {
                 App.logger.catching(e);
             }
-            lock.unlock();
         }
     }
 }
