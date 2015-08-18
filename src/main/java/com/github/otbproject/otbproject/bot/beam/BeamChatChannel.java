@@ -15,9 +15,11 @@ import pro.beam.api.resource.BeamUser;
 import pro.beam.api.resource.channel.BeamChannel;
 import pro.beam.api.resource.chat.BeamChat;
 import pro.beam.api.resource.chat.BeamChatConnectable;
+import pro.beam.api.resource.chat.events.DeleteMessageEvent;
 import pro.beam.api.resource.chat.events.IncomingMessageEvent;
 import pro.beam.api.resource.chat.events.UserJoinEvent;
 import pro.beam.api.resource.chat.events.UserLeaveEvent;
+import pro.beam.api.resource.chat.events.data.DeleteMessageData;
 import pro.beam.api.resource.chat.events.data.IncomingMessageData;
 import pro.beam.api.resource.chat.methods.AuthenticateMessage;
 import pro.beam.api.services.impl.ChatService;
@@ -46,7 +48,7 @@ public class BeamChatChannel {
     private static final int CACHE_EXPIRATION_MIN = 5;
     private static final int CACHE_MAX_SIZE = 200;
     private final SetMultimap<String, String> cacheLookup = Multimaps.newSetMultimap(new ConcurrentHashMap<>(), ConcurrentHashMap::newKeySet);
-    private final Cache<String, IncomingMessageData> messageCache;
+    final Cache<String, IncomingMessageData> messageCache;
 
 
     private BeamChatChannel(String channelName) throws ChannelInitException {
@@ -120,6 +122,7 @@ public class BeamChatChannel {
         beamChatConnectable.on(IncomingMessageEvent.class, new MessageHandler(channelName, this));
         beamChatConnectable.on(UserJoinEvent.class, new UserJoinHandler(this));
         beamChatConnectable.on(UserLeaveEvent.class, new UserLeaveHandler(this));
+        beamChatConnectable.on(DeleteMessageEvent.class, new DeletedMessageHandler(this));
     }
 
     public static BeamChatChannel create(String channelName) throws ChannelInitException {
