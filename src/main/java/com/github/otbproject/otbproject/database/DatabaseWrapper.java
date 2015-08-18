@@ -61,33 +61,31 @@ public class DatabaseWrapper {
             sql += ", PRIMARY KEY (" + primaryKeys.stream().collect(Collectors.joining(", ")) + ")";
         }
         sql += ")";
-        boolean bool = true;
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.executeUpdate();
+            return true;
         } catch (SQLException e) {
             App.logger.error("SQL: " + sql);
             App.logger.catching(e);
-            bool = false;
+            return false;
         }
-        return bool;
     }
 
     public <R> Optional<R> getRecord(String table, List<Map.Entry<String, Object>> entryList, SQLFunction<R> function) {
         String sql = "SELECT * FROM " + table + " WHERE ";
         sql += entryList.stream().map(entry -> (entry.getKey() + "= ?")).collect(Collectors.joining(", "));
-        ResultSet rs;
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             int index = 1;
             for (Map.Entry entry : entryList) {
                 setValue(preparedStatement, index, entry.getValue());
                 index++;
             }
-            rs = preparedStatement.executeQuery();
+            ResultSet rs = preparedStatement.executeQuery();
             return Optional.ofNullable(function.apply(rs));
         } catch (SQLException e) {
             App.logger.catching(e);
+            return Optional.empty();
         }
-        return Optional.empty();
     }
 
     /**
@@ -116,8 +114,8 @@ public class DatabaseWrapper {
         } catch (SQLException e) {
             App.logger.error("SQL: " + sql);
             App.logger.catching(e);
+            return Optional.empty();
         }
-        return Optional.empty();
     }
 
     public boolean exists(String table, List<Map.Entry<String, Object>> entryList) {
@@ -132,8 +130,8 @@ public class DatabaseWrapper {
             return (preparedStatement.executeQuery().getInt(1) > 0);
         } catch (SQLException e) {
             App.logger.catching(e);
+            return false;
         }
-        return false;
     }
 
     /**
@@ -170,17 +168,13 @@ public class DatabaseWrapper {
                 setValue(preparedStatement, index, entry.getValue());
                 index++;
             }
-            if (identifier instanceof String) {
-                preparedStatement.setString(index, (String) identifier);
-            } else if (identifier instanceof Integer) {
-                preparedStatement.setInt(index, (Integer) identifier);
-            }
+            setValue(preparedStatement, index, identifier);
             return (preparedStatement.executeUpdate() > 0);
         } catch (SQLException e) {
             App.logger.error("SQL: " + sql);
             App.logger.catching(e);
+            return false;
         }
-        return false;
     }
 
     /**
@@ -203,13 +197,12 @@ public class DatabaseWrapper {
                 setValue(preparedStatement, index, entry.getValue());
                 index++;
             }
-            int i = preparedStatement.executeUpdate();
-            return (i > 0);
+            return (preparedStatement.executeUpdate() > 0);
         } catch (SQLException e) {
             App.logger.error("SQL: " + sql);
             App.logger.catching(e);
+            return false;
         }
-        return false;
     }
 
     public boolean removeRecord(String table, List<Map.Entry<String, Object>> entryList) {
@@ -221,13 +214,12 @@ public class DatabaseWrapper {
                 setValue(preparedStatement, index, entry.getValue());
                 index++;
             }
-            int i = preparedStatement.executeUpdate();
-            return (i > 0);
+            return (preparedStatement.executeUpdate() > 0);
         } catch (SQLException e) {
             App.logger.error("SQL: " + sql);
             App.logger.catching(e);
+            return false;
         }
-        return false;
     }
 
     /**
@@ -258,8 +250,8 @@ public class DatabaseWrapper {
         } catch (SQLException e) {
             App.logger.error("SQL: " + sql);
             App.logger.catching(e);
+            return Optional.empty();
         }
-        return Optional.empty();
     }
 
     /**

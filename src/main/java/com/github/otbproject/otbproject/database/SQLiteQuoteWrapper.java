@@ -32,23 +32,18 @@ public class SQLiteQuoteWrapper extends DatabaseWrapper {
     public boolean removeRecord(String table, List<Map.Entry<String, Object>> entryList) {
         String sql = "UPDATE " + table + " SET " + QuoteFields.TEXT + "= NULL WHERE ";
         sql += entryList.stream().map(entry -> (entry.getKey() + "=?")).collect(Collectors.joining(", "));
-        boolean bool = false;
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             int index = 1;
             for (Map.Entry entry : entryList) {
                 setValue(preparedStatement, index, entry.getValue());
                 index++;
             }
-            int i = preparedStatement.executeUpdate();
-            if (i > 0) {
-                bool = true;
-            }
+            return (preparedStatement.executeUpdate() > 0);
         } catch (SQLException e) {
             App.logger.error("SQL: " + sql);
             App.logger.catching(e);
-            bool = false;
+            return false;
         }
-        return bool;
     }
 
     @Override
@@ -84,8 +79,8 @@ public class SQLiteQuoteWrapper extends DatabaseWrapper {
         } catch (SQLException e) {
             App.logger.error("SQL: " + sql);
             App.logger.catching(e);
+            return Optional.empty();
         }
-        return Optional.empty();
     }
 
     public ArrayList<Object> getNonRemovedRecordsList(String table, String key) {
