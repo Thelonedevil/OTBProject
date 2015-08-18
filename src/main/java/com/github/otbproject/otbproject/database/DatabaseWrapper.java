@@ -55,7 +55,6 @@ public class DatabaseWrapper {
      * @return False if an <code>SQLException</code> is thrown, else it returns true.
      */
     private boolean createTable(String name, HashMap<String, String> table, HashSet<String> primaryKeys) {
-        PreparedStatement preparedStatement = null;
         String sql = "CREATE TABLE IF NOT EXISTS " + name + " ("
                 + table.keySet().stream().map(key -> (key + " " + table.get(key))).collect(Collectors.joining(", "));
         if (!primaryKeys.isEmpty()) {
@@ -63,34 +62,21 @@ public class DatabaseWrapper {
         }
         sql += ")";
         boolean bool = true;
-        try {
-            preparedStatement = connection.prepareStatement(sql);
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             App.logger.error("SQL: " + sql);
             App.logger.catching(e);
             bool = false;
-        } finally {
-            try {
-                if (preparedStatement != null) {
-                    preparedStatement.close();
-                }
-            } catch (SQLException e) {
-                App.logger.catching(e);
-                bool = false;
-            }
-
         }
         return bool;
     }
 
     public <R> Optional<R> getRecord(String table, List<Map.Entry<String, Object>> entryList, SQLFunction<R> function) {
-        PreparedStatement preparedStatement = null;
         String sql = "SELECT * FROM " + table + " WHERE ";
         sql += entryList.stream().map(entry -> (entry.getKey() + "= ?")).collect(Collectors.joining(", "));
         ResultSet rs;
-        try {
-            preparedStatement = connection.prepareStatement(sql);
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             int index = 1;
             for (Map.Entry entry : entryList) {
                 setValue(preparedStatement, index, entry.getValue());
@@ -100,14 +86,6 @@ public class DatabaseWrapper {
             return Optional.ofNullable(function.apply(rs));
         } catch (SQLException e) {
             App.logger.catching(e);
-        } finally {
-            try {
-                if (preparedStatement != null) {
-                    preparedStatement.close();
-                }
-            } catch (SQLException e) {
-                App.logger.catching(e);
-            }
         }
         return Optional.empty();
     }
@@ -132,49 +110,28 @@ public class DatabaseWrapper {
 
     public <R> Optional<R> getRandomRecord(String table, SQLFunction<R> function) {
         String sql = "SELECT * FROM " + table + " ORDER BY RANDOM() LIMIT 1";
-        ResultSet rs = null;
-        try {
-            rs = connection.createStatement().executeQuery(sql);
+        try (Statement stmt = connection.createStatement()) {
+            ResultSet rs = stmt.executeQuery(sql);
             return Optional.ofNullable(function.apply(rs));
         } catch (SQLException e) {
             App.logger.error("SQL: " + sql);
             App.logger.catching(e);
-        } finally {
-            try {
-                if (rs != null) {
-                    rs.close();
-                }
-            } catch (SQLException e) {
-                App.logger.catching(e);
-            }
         }
         return Optional.empty();
     }
 
     public boolean exists(String table, List<Map.Entry<String, Object>> entryList) {
-        PreparedStatement preparedStatement = null;
         String sql = "SELECT COUNT() FROM " + table + " WHERE ";
         sql += entryList.stream().map(entry -> (entry.getKey() + "= ?")).collect(Collectors.joining(", "));
-        ResultSet rs;
-        try {
-            preparedStatement = connection.prepareStatement(sql);
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             int index = 1;
             for (Map.Entry entry : entryList) {
                 setValue(preparedStatement, index, entry.getValue());
                 index++;
             }
-            rs = preparedStatement.executeQuery();
-            return (rs.getInt(1) > 0);
+            return (preparedStatement.executeQuery().getInt(1) > 0);
         } catch (SQLException e) {
             App.logger.catching(e);
-        } finally {
-            try {
-                if (preparedStatement != null) {
-                    preparedStatement.close();
-                }
-            } catch (SQLException e) {
-                App.logger.catching(e);
-            }
         }
         return false;
     }
@@ -203,13 +160,11 @@ public class DatabaseWrapper {
      * @return True if one or more records were updated in the database.
      */
     public boolean updateRecord(String table, Object identifier, String fieldName, HashMap<String, Object> map) {
-        PreparedStatement preparedStatement = null;
         String sql = "UPDATE " + table + " SET ";
         List<Map.Entry<String, Object>> entryList = new ArrayList<>(map.entrySet()); // Guarantee ordering
         sql += entryList.stream().map(entry -> (entry.getKey() + "=?")).collect(Collectors.joining(", "));
         sql += " WHERE " + fieldName + "= ?";
-        try {
-            preparedStatement = connection.prepareStatement(sql);
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             int index = 1;
             for (Map.Entry entry : entryList) {
                 setValue(preparedStatement, index, entry.getValue());
@@ -220,19 +175,10 @@ public class DatabaseWrapper {
             } else if (identifier instanceof Integer) {
                 preparedStatement.setInt(index, (Integer) identifier);
             }
-            int i = preparedStatement.executeUpdate();
-            return (i > 0);
+            return (preparedStatement.executeUpdate() > 0);
         } catch (SQLException e) {
             App.logger.error("SQL: " + sql);
             App.logger.catching(e);
-        } finally {
-            try {
-                if (preparedStatement != null) {
-                    preparedStatement.close();
-                }
-            } catch (SQLException e) {
-                App.logger.catching(e);
-            }
         }
         return false;
     }
@@ -245,15 +191,13 @@ public class DatabaseWrapper {
      * @return True if the record was inserted into database.
      */
     public boolean insertRecord(String table, HashMap<String, Object> map) {
-        PreparedStatement preparedStatement = null;
         String sql = "INSERT OR IGNORE INTO " + table + " (";
         List<Map.Entry<String, Object>> entryList = new ArrayList<>(map.entrySet()); // Guarantee ordering
         sql += entryList.stream().map(Map.Entry::getKey).collect(Collectors.joining(", "));
         sql += ") VALUES (";
         sql += Collections.nCopies(map.keySet().size(), "?").stream().collect(Collectors.joining(", "));
         sql += ")";
-        try {
-            preparedStatement = connection.prepareStatement(sql);
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             int index = 1;
             for (Map.Entry entry : entryList) {
                 setValue(preparedStatement, index, entry.getValue());
@@ -264,24 +208,14 @@ public class DatabaseWrapper {
         } catch (SQLException e) {
             App.logger.error("SQL: " + sql);
             App.logger.catching(e);
-        } finally {
-            try {
-                if (preparedStatement != null) {
-                    preparedStatement.close();
-                }
-            } catch (SQLException e) {
-                App.logger.catching(e);
-            }
         }
         return false;
     }
 
     public boolean removeRecord(String table, List<Map.Entry<String, Object>> entryList) {
-        PreparedStatement preparedStatement = null;
         String sql = "DELETE FROM " + table + " WHERE ";
         sql += entryList.stream().map(entry -> (entry.getKey() + "=?")).collect(Collectors.joining(", "));
-        try {
-            preparedStatement = connection.prepareStatement(sql);
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             int index = 1;
             for (Map.Entry entry : entryList) {
                 setValue(preparedStatement, index, entry.getValue());
@@ -292,14 +226,6 @@ public class DatabaseWrapper {
         } catch (SQLException e) {
             App.logger.error("SQL: " + sql);
             App.logger.catching(e);
-        } finally {
-            try {
-                if (preparedStatement != null) {
-                    preparedStatement.close();
-                }
-            } catch (SQLException e) {
-                App.logger.catching(e);
-            }
         }
         return false;
     }
@@ -326,21 +252,12 @@ public class DatabaseWrapper {
      */
     public <R> Optional<R> tableDump(String table, SQLFunction<R> function) {
         String sql = "SELECT * FROM " + table;
-        ResultSet rs = null;
-        try {
-            rs = connection.createStatement().executeQuery(sql);
+        try (Statement stmt = connection.createStatement()) {
+            ResultSet rs = stmt.executeQuery(sql);
             return Optional.ofNullable(function.apply(rs));
         } catch (SQLException e) {
             App.logger.error("SQL: " + sql);
             App.logger.catching(e);
-        } finally {
-            try {
-                if (rs != null) {
-                    rs.close();
-                }
-            } catch (SQLException e) {
-                App.logger.catching(e);
-            }
         }
         return Optional.empty();
     }
@@ -354,12 +271,10 @@ public class DatabaseWrapper {
      * @return an <code>ArrayList&lt;String&gt;</code> that contains all entries in the table specified for the field key or <code>null</code> if an <code>SQLException</code> is thrown.
      */
     public List<Object> getRecordsList(String table, String key) {
-        String sql = "";
-        ResultSet rs = null;
-        try {
+        String sql = "SELECT " + key + " FROM " + table;
+        try (Statement stmt = connection.createStatement()) {
+            ResultSet rs = stmt.executeQuery(sql);
             List<Object> set = new ArrayList<>();
-            sql = "SELECT " + key + " FROM " + table;
-            rs = connection.createStatement().executeQuery(sql);
             while (rs.next()) {
                 set.add(rs.getString(key));
             }
@@ -368,14 +283,6 @@ public class DatabaseWrapper {
             App.logger.error("SQL: " + sql);
             App.logger.catching(e);
             return null;
-        } finally {
-            try {
-                if (rs != null) {
-                    rs.close();
-                }
-            } catch (SQLException e) {
-                App.logger.catching(e);
-            }
         }
     }
 
