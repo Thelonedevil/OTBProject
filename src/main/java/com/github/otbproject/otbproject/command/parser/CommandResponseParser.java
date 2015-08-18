@@ -3,6 +3,8 @@ package com.github.otbproject.otbproject.command.parser;
 import com.github.otbproject.otbproject.bot.Bot;
 import com.github.otbproject.otbproject.channel.Channel;
 import com.github.otbproject.otbproject.channel.Channels;
+import com.github.otbproject.otbproject.command.Command;
+import com.github.otbproject.otbproject.command.Commands;
 import com.github.otbproject.otbproject.config.Configs;
 import com.github.otbproject.otbproject.quote.Quote;
 import com.github.otbproject.otbproject.quote.Quotes;
@@ -43,6 +45,19 @@ public class CommandResponseParser {
 
         // [[count]] - ignores modifier (because no effect)
         registerTerm("count", (userNick, channel, count, args, term) -> Integer.toString(count));
+
+        // [[countof{{command}}]] - get count of another command without incrementing the other command's count
+        registerTerm("countof", ((userNick, channel, count, args, term) -> {
+            String commandName = getEmbeddedString(term, 1);
+            Optional<Channel> channelOptional = Channels.get(channel);
+            if (channelOptional.isPresent()) {
+                Optional<Command> commandOptional = Commands.get(channelOptional.get().getMainDatabaseWrapper(), commandName);
+                if (commandOptional.isPresent()) {
+                    return String.valueOf(commandOptional.get().getCount());
+                }
+            }
+            return "[Error getting count: command doesn't exist]";
+        }));
 
         // [[quote.modifier]] - can have a modifier, but it's unclear why you want one
         registerTerm("quote", (userNick, channel, count, args, term) -> {
