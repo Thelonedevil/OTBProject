@@ -12,6 +12,6 @@ public class DeletedMessageHandler implements EventHandler<DeleteMessageEvent> {
 
     @Override
     public void onEvent(DeleteMessageEvent event) {
-        beamChatChannel.messageCache.invalidate(event.data.id);
+        beamChatChannel.messageCache.invalidate(event.data.id.toString());
     }
 }
