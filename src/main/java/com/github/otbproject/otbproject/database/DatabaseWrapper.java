@@ -4,13 +4,10 @@ import com.github.otbproject.otbproject.App;
 
 import java.sql.*;
 import java.util.*;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 public class DatabaseWrapper {
     final Connection connection;
-    protected final Lock lock = new ReentrantLock();
 
     /**
      * Private constructor, should never be used directly. <br>
@@ -22,17 +19,12 @@ public class DatabaseWrapper {
      * @throws ClassNotFoundException if the SQLite JDBC class is not available at runtime
      */
     protected DatabaseWrapper(String path, HashMap<String, TableFields> tables) throws SQLException, ClassNotFoundException {
-        lock.lock();
-        try {
-            Class.forName("org.sqlite.JDBC");
-            connection = DriverManager.getConnection("jdbc:sqlite:" + path);
-            for (Map.Entry<String, TableFields> entry : tables.entrySet()) {
-                if (!createTable(entry.getKey(), entry.getValue().map, entry.getValue().primaryKeys)) {
-                    throw new SQLException("Failed to create table: " + entry.getKey());
-                }
+        Class.forName("org.sqlite.JDBC");
+        connection = DriverManager.getConnection("jdbc:sqlite:" + path);
+        for (Map.Entry<String, TableFields> entry : tables.entrySet()) {
+            if (!createTable(entry.getKey(), entry.getValue().map, entry.getValue().primaryKeys)) {
+                throw new SQLException("Failed to create table: " + entry.getKey());
             }
-        } finally {
-            lock.unlock();
         }
     }
 
@@ -63,63 +55,38 @@ public class DatabaseWrapper {
      * @return False if an <code>SQLException</code> is thrown, else it returns true.
      */
     private boolean createTable(String name, HashMap<String, String> table, HashSet<String> primaryKeys) {
-        PreparedStatement preparedStatement = null;
         String sql = "CREATE TABLE IF NOT EXISTS " + name + " ("
                 + table.keySet().stream().map(key -> (key + " " + table.get(key))).collect(Collectors.joining(", "));
         if (!primaryKeys.isEmpty()) {
             sql += ", PRIMARY KEY (" + primaryKeys.stream().collect(Collectors.joining(", ")) + ")";
         }
         sql += ")";
-        boolean bool = true;
-        try {
-            preparedStatement = connection.prepareStatement(sql);
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.executeUpdate();
+            return true;
         } catch (SQLException e) {
             App.logger.error("SQL: " + sql);
             App.logger.catching(e);
-            bool = false;
-        } finally {
-            try {
-                if (preparedStatement != null) {
-                    preparedStatement.close();
-                }
-            } catch (SQLException e) {
-                App.logger.catching(e);
-                bool = false;
-            }
-
+            return false;
         }
-        return bool;
     }
 
     public <R> Optional<R> getRecord(String table, List<Map.Entry<String, Object>> entryList, SQLFunction<R> function) {
-        PreparedStatement preparedStatement = null;
         String sql = "SELECT * FROM " + table + " WHERE ";
         sql += entryList.stream().map(entry -> (entry.getKey() + "= ?")).collect(Collectors.joining(", "));
-        ResultSet rs;
-        lock.lock();
-        try {
-            preparedStatement = connection.prepareStatement(sql);
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             int index = 1;
             for (Map.Entry entry : entryList) {
                 setValue(preparedStatement, index, entry.getValue());
                 index++;
             }
-            rs = preparedStatement.executeQuery();
-            return Optional.ofNullable(function.apply(rs));
+            try (ResultSet rs = preparedStatement.executeQuery()) {
+                return Optional.ofNullable(function.apply(rs));
+            }
         } catch (SQLException e) {
             App.logger.catching(e);
-        } finally {
-            try {
-                if (preparedStatement != null) {
-                    preparedStatement.close();
-                }
-            } catch (SQLException e) {
-                App.logger.catching(e);
-            }
-            lock.unlock();
+            return Optional.empty();
         }
-        return Optional.empty();
     }
 
     /**
@@ -142,55 +109,32 @@ public class DatabaseWrapper {
 
     public <R> Optional<R> getRandomRecord(String table, SQLFunction<R> function) {
         String sql = "SELECT * FROM " + table + " ORDER BY RANDOM() LIMIT 1";
-        ResultSet rs = null;
-        lock.lock();
-        try {
-            rs = connection.createStatement().executeQuery(sql);
+        try (Statement stmt = connection.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
             return Optional.ofNullable(function.apply(rs));
         } catch (SQLException e) {
             App.logger.error("SQL: " + sql);
             App.logger.catching(e);
-        } finally {
-            try {
-                if (rs != null) {
-                    rs.close();
-                }
-            } catch (SQLException e) {
-                App.logger.catching(e);
-            }
-            lock.unlock();
+            return Optional.empty();
         }
-        return Optional.empty();
     }
 
     public boolean exists(String table, List<Map.Entry<String, Object>> entryList) {
-        PreparedStatement preparedStatement = null;
         String sql = "SELECT COUNT() FROM " + table + " WHERE ";
         sql += entryList.stream().map(entry -> (entry.getKey() + "= ?")).collect(Collectors.joining(", "));
-        ResultSet rs;
-        lock.lock();
-        try {
-            preparedStatement = connection.prepareStatement(sql);
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             int index = 1;
             for (Map.Entry entry : entryList) {
                 setValue(preparedStatement, index, entry.getValue());
                 index++;
             }
-            rs = preparedStatement.executeQuery();
-            return (rs.getInt(1) > 0);
+            try (ResultSet rs = preparedStatement.executeQuery()) {
+                return (rs.getInt(1) > 0);
+            }
         } catch (SQLException e) {
             App.logger.catching(e);
-        } finally {
-            try {
-                if (preparedStatement != null) {
-                    preparedStatement.close();
-                }
-            } catch (SQLException e) {
-                App.logger.catching(e);
-            }
-            lock.unlock();
+            return false;
         }
-        return false;
     }
 
     /**
@@ -217,40 +161,23 @@ public class DatabaseWrapper {
      * @return True if one or more records were updated in the database.
      */
     public boolean updateRecord(String table, Object identifier, String fieldName, HashMap<String, Object> map) {
-        PreparedStatement preparedStatement = null;
         String sql = "UPDATE " + table + " SET ";
         List<Map.Entry<String, Object>> entryList = new ArrayList<>(map.entrySet()); // Guarantee ordering
         sql += entryList.stream().map(entry -> (entry.getKey() + "=?")).collect(Collectors.joining(", "));
         sql += " WHERE " + fieldName + "= ?";
-        lock.lock();
-        try {
-            preparedStatement = connection.prepareStatement(sql);
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             int index = 1;
             for (Map.Entry entry : entryList) {
                 setValue(preparedStatement, index, entry.getValue());
                 index++;
             }
-            if (identifier instanceof String) {
-                preparedStatement.setString(index, (String) identifier);
-            } else if (identifier instanceof Integer) {
-                preparedStatement.setInt(index, (Integer) identifier);
-            }
-            int i = preparedStatement.executeUpdate();
-            return (i > 0);
+            setValue(preparedStatement, index, identifier);
+            return (preparedStatement.executeUpdate() > 0);
         } catch (SQLException e) {
             App.logger.error("SQL: " + sql);
             App.logger.catching(e);
-        } finally {
-            try {
-                if (preparedStatement != null) {
-                    preparedStatement.close();
-                }
-            } catch (SQLException e) {
-                App.logger.catching(e);
-            }
-            lock.unlock();
+            return false;
         }
-        return false;
     }
 
     /**
@@ -261,67 +188,41 @@ public class DatabaseWrapper {
      * @return True if the record was inserted into database.
      */
     public boolean insertRecord(String table, HashMap<String, Object> map) {
-        PreparedStatement preparedStatement = null;
         String sql = "INSERT OR IGNORE INTO " + table + " (";
         List<Map.Entry<String, Object>> entryList = new ArrayList<>(map.entrySet()); // Guarantee ordering
         sql += entryList.stream().map(Map.Entry::getKey).collect(Collectors.joining(", "));
         sql += ") VALUES (";
         sql += Collections.nCopies(map.keySet().size(), "?").stream().collect(Collectors.joining(", "));
         sql += ")";
-        lock.lock();
-        try {
-            preparedStatement = connection.prepareStatement(sql);
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             int index = 1;
             for (Map.Entry entry : entryList) {
                 setValue(preparedStatement, index, entry.getValue());
                 index++;
             }
-            int i = preparedStatement.executeUpdate();
-            return (i > 0);
+            return (preparedStatement.executeUpdate() > 0);
         } catch (SQLException e) {
             App.logger.error("SQL: " + sql);
             App.logger.catching(e);
-        } finally {
-            try {
-                if (preparedStatement != null) {
-                    preparedStatement.close();
-                }
-            } catch (SQLException e) {
-                App.logger.catching(e);
-            }
-            lock.unlock();
+            return false;
         }
-        return false;
     }
 
     public boolean removeRecord(String table, List<Map.Entry<String, Object>> entryList) {
-        PreparedStatement preparedStatement = null;
         String sql = "DELETE FROM " + table + " WHERE ";
         sql += entryList.stream().map(entry -> (entry.getKey() + "=?")).collect(Collectors.joining(", "));
-        lock.lock();
-        try {
-            preparedStatement = connection.prepareStatement(sql);
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             int index = 1;
             for (Map.Entry entry : entryList) {
                 setValue(preparedStatement, index, entry.getValue());
                 index++;
             }
-            int i = preparedStatement.executeUpdate();
-            return (i > 0);
+            return (preparedStatement.executeUpdate() > 0);
         } catch (SQLException e) {
             App.logger.error("SQL: " + sql);
             App.logger.catching(e);
-        } finally {
-            try {
-                if (preparedStatement != null) {
-                    preparedStatement.close();
-                }
-            } catch (SQLException e) {
-                App.logger.catching(e);
-            }
-            lock.unlock();
+            return false;
         }
-        return false;
     }
 
     /**
@@ -346,25 +247,14 @@ public class DatabaseWrapper {
      */
     public <R> Optional<R> tableDump(String table, SQLFunction<R> function) {
         String sql = "SELECT * FROM " + table;
-        ResultSet rs = null;
-        lock.lock();
-        try {
-            rs = connection.createStatement().executeQuery(sql);
+        try (Statement stmt = connection.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
             return Optional.ofNullable(function.apply(rs));
         } catch (SQLException e) {
             App.logger.error("SQL: " + sql);
             App.logger.catching(e);
-        } finally {
-            try {
-                if (rs != null) {
-                    rs.close();
-                }
-            } catch (SQLException e) {
-                App.logger.catching(e);
-            }
-            lock.unlock();
+            return Optional.empty();
         }
-        return Optional.empty();
     }
 
     /**
@@ -376,13 +266,10 @@ public class DatabaseWrapper {
      * @return an <code>ArrayList&lt;String&gt;</code> that contains all entries in the table specified for the field key or <code>null</code> if an <code>SQLException</code> is thrown.
      */
     public List<Object> getRecordsList(String table, String key) {
-        String sql = "";
-        ResultSet rs = null;
-        lock.lock();
-        try {
+        String sql = "SELECT " + key + " FROM " + table;
+        try (Statement stmt = connection.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
             List<Object> set = new ArrayList<>();
-            sql = "SELECT " + key + " FROM " + table;
-            rs = connection.createStatement().executeQuery(sql);
             while (rs.next()) {
                 set.add(rs.getString(key));
             }
@@ -391,15 +278,6 @@ public class DatabaseWrapper {
             App.logger.error("SQL: " + sql);
             App.logger.catching(e);
             return null;
-        } finally {
-            try {
-                if (rs != null) {
-                    rs.close();
-                }
-            } catch (SQLException e) {
-                App.logger.catching(e);
-            }
-            lock.unlock();
         }
     }
 
