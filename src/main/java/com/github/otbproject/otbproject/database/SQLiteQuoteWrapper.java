@@ -6,10 +6,14 @@ import com.github.otbproject.otbproject.quote.QuoteFields;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.*;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 public class SQLiteQuoteWrapper extends DatabaseWrapper {
+    private final Lock lock = new ReentrantLock();
 
     private SQLiteQuoteWrapper(String path, HashMap<String, TableFields> tables) throws SQLException, ClassNotFoundException {
         super(path, tables);
@@ -26,12 +30,10 @@ public class SQLiteQuoteWrapper extends DatabaseWrapper {
 
     @Override
     public boolean removeRecord(String table, List<Map.Entry<String, Object>> entryList) {
-        PreparedStatement preparedStatement = null;
         String sql = "UPDATE " + table + " SET " + QuoteFields.TEXT + "= NULL WHERE ";
         sql += entryList.stream().map(entry -> (entry.getKey() + "=?")).collect(Collectors.joining(", "));
         boolean bool = false;
-        try {
-            preparedStatement = connection.prepareStatement(sql);
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             int index = 1;
             for (Map.Entry entry : entryList) {
                 setValue(preparedStatement, index, entry.getValue());
@@ -45,15 +47,6 @@ public class SQLiteQuoteWrapper extends DatabaseWrapper {
             App.logger.error("SQL: " + sql);
             App.logger.catching(e);
             bool = false;
-        } finally {
-            try {
-                if (preparedStatement != null) {
-                    preparedStatement.close();
-                }
-            } catch (SQLException e) {
-                App.logger.catching(e);
-                bool = false;
-            }
         }
         return bool;
     }
@@ -62,9 +55,9 @@ public class SQLiteQuoteWrapper extends DatabaseWrapper {
     public boolean insertRecord(String table, HashMap<String, Object> map) {
         // Try to fill empty slot
         String sql = "SELECT " + QuoteFields.ID + " FROM " + table + " WHERE " + QuoteFields.TEXT + " IS NULL ORDER BY " + QuoteFields.ID + " ASC LIMIT 1";
-        ResultSet rs = null;
-        try {
-            rs = connection.createStatement().executeQuery(sql);
+        lock.lock();
+        try (Statement stmt = connection.createStatement()) {
+            ResultSet rs = stmt.executeQuery(sql);
             if (rs.next()) {
                 Integer id = rs.getInt(QuoteFields.ID);
                 map.put(QuoteFields.ID, id);
@@ -75,13 +68,7 @@ public class SQLiteQuoteWrapper extends DatabaseWrapper {
             App.logger.catching(e);
             return false;
         } finally {
-            try {
-                if (rs != null) {
-                    rs.close();
-                }
-            } catch (SQLException e) {
-                App.logger.catching(e);
-            }
+            lock.unlock();
         }
 
         // Create new record otherwise
@@ -91,32 +78,21 @@ public class SQLiteQuoteWrapper extends DatabaseWrapper {
     @Override
     public <R> Optional<R> getRandomRecord(String table, SQLFunction<R> function) {
         String sql = "SELECT * FROM " + table + " WHERE " + QuoteFields.TEXT + " IS NOT NULL ORDER BY RANDOM() LIMIT 1";
-        ResultSet rs = null;
-        try {
-            rs = connection.createStatement().executeQuery(sql);
+        try (Statement stmt = connection.createStatement()) {
+            ResultSet rs = stmt.executeQuery(sql);
             return Optional.ofNullable(function.apply(rs));
         } catch (SQLException e) {
             App.logger.error("SQL: " + sql);
             App.logger.catching(e);
-        } finally {
-            try {
-                if (rs != null) {
-                    rs.close();
-                }
-            } catch (SQLException e) {
-                App.logger.catching(e);
-            }
         }
         return Optional.empty();
     }
 
     public ArrayList<Object> getNonRemovedRecordsList(String table, String key) {
-        String sql = "";
-        ResultSet rs = null;
-        try {
+        String sql = "SELECT " + key + " FROM " + table + " WHERE " + QuoteFields.TEXT + " IS NOT NULL";
+        try (Statement stmt = connection.createStatement()) {
             ArrayList<Object> set = new ArrayList<>();
-            sql = "SELECT " + key + " FROM " + table + " WHERE " + QuoteFields.TEXT + " IS NOT NULL";
-            rs = connection.createStatement().executeQuery(sql);
+            ResultSet rs = stmt.executeQuery(sql);
             while (rs.next()) {
                 set.add(rs.getString(key));
             }
@@ -125,14 +101,6 @@ public class SQLiteQuoteWrapper extends DatabaseWrapper {
             App.logger.error("SQL: " + sql);
             App.logger.catching(e);
             return null;
-        } finally {
-            try {
-                if (rs != null) {
-                    rs.close();
-                }
-            } catch (SQLException e) {
-                App.logger.catching(e);
-            }
         }
     }
 }
