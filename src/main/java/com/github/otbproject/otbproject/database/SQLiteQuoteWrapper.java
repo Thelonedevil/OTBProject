@@ -51,8 +51,8 @@ public class SQLiteQuoteWrapper extends DatabaseWrapper {
         // Try to fill empty slot
         String sql = "SELECT " + QuoteFields.ID + " FROM " + table + " WHERE " + QuoteFields.TEXT + " IS NULL ORDER BY " + QuoteFields.ID + " ASC LIMIT 1";
         lock.lock();
-        try (Statement stmt = connection.createStatement()) {
-            ResultSet rs = stmt.executeQuery(sql);
+        try (Statement stmt = connection.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
             if (rs.next()) {
                 Integer id = rs.getInt(QuoteFields.ID);
                 map.put(QuoteFields.ID, id);
@@ -73,8 +73,8 @@ public class SQLiteQuoteWrapper extends DatabaseWrapper {
     @Override
     public <R> Optional<R> getRandomRecord(String table, SQLFunction<R> function) {
         String sql = "SELECT * FROM " + table + " WHERE " + QuoteFields.TEXT + " IS NOT NULL ORDER BY RANDOM() LIMIT 1";
-        try (Statement stmt = connection.createStatement()) {
-            ResultSet rs = stmt.executeQuery(sql);
+        try (Statement stmt = connection.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
             return Optional.ofNullable(function.apply(rs));
         } catch (SQLException e) {
             App.logger.error("SQL: " + sql);
@@ -85,9 +85,9 @@ public class SQLiteQuoteWrapper extends DatabaseWrapper {
 
     public ArrayList<Object> getNonRemovedRecordsList(String table, String key) {
         String sql = "SELECT " + key + " FROM " + table + " WHERE " + QuoteFields.TEXT + " IS NOT NULL";
-        try (Statement stmt = connection.createStatement()) {
+        try (Statement stmt = connection.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
             ArrayList<Object> set = new ArrayList<>();
-            ResultSet rs = stmt.executeQuery(sql);
             while (rs.next()) {
                 set.add(rs.getString(key));
             }

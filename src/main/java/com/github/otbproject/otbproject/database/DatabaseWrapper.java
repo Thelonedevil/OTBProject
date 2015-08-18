@@ -80,8 +80,9 @@ public class DatabaseWrapper {
                 setValue(preparedStatement, index, entry.getValue());
                 index++;
             }
-            ResultSet rs = preparedStatement.executeQuery();
-            return Optional.ofNullable(function.apply(rs));
+            try (ResultSet rs = preparedStatement.executeQuery()) {
+                return Optional.ofNullable(function.apply(rs));
+            }
         } catch (SQLException e) {
             App.logger.catching(e);
             return Optional.empty();
@@ -108,8 +109,8 @@ public class DatabaseWrapper {
 
     public <R> Optional<R> getRandomRecord(String table, SQLFunction<R> function) {
         String sql = "SELECT * FROM " + table + " ORDER BY RANDOM() LIMIT 1";
-        try (Statement stmt = connection.createStatement()) {
-            ResultSet rs = stmt.executeQuery(sql);
+        try (Statement stmt = connection.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
             return Optional.ofNullable(function.apply(rs));
         } catch (SQLException e) {
             App.logger.error("SQL: " + sql);
@@ -127,7 +128,9 @@ public class DatabaseWrapper {
                 setValue(preparedStatement, index, entry.getValue());
                 index++;
             }
-            return (preparedStatement.executeQuery().getInt(1) > 0);
+            try (ResultSet rs = preparedStatement.executeQuery()) {
+                return (rs.getInt(1) > 0);
+            }
         } catch (SQLException e) {
             App.logger.catching(e);
             return false;
@@ -244,8 +247,8 @@ public class DatabaseWrapper {
      */
     public <R> Optional<R> tableDump(String table, SQLFunction<R> function) {
         String sql = "SELECT * FROM " + table;
-        try (Statement stmt = connection.createStatement()) {
-            ResultSet rs = stmt.executeQuery(sql);
+        try (Statement stmt = connection.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
             return Optional.ofNullable(function.apply(rs));
         } catch (SQLException e) {
             App.logger.error("SQL: " + sql);
@@ -264,8 +267,8 @@ public class DatabaseWrapper {
      */
     public List<Object> getRecordsList(String table, String key) {
         String sql = "SELECT " + key + " FROM " + table;
-        try (Statement stmt = connection.createStatement()) {
-            ResultSet rs = stmt.executeQuery(sql);
+        try (Statement stmt = connection.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
             List<Object> set = new ArrayList<>();
             while (rs.next()) {
                 set.add(rs.getString(key));
