@@ -20,6 +20,7 @@ public class TimeoutProcessor {
                 FilterGroup filterGroup = optional.get();
                 performFilterAction(packagedMessage, filterGroup.getAction());
                 sendFilterMessage(channel, packagedMessage, filterGroup);
+                return true;
             } else {
                 return false;
             }
@@ -44,7 +45,7 @@ public class TimeoutProcessor {
         }
     }
 
-    private static void sendFilterMessage(Channel channel, PackagedMessage packagedMessage, FilterGroup filterGroup) {
+    private static void sendFilterMessage(Channel channel, PackagedMessage incomingMessage, FilterGroup filterGroup) {
         // TODO handle message for timeout
         String responseCommand = "";
         switch (filterGroup.getAction()) {
@@ -58,7 +59,7 @@ public class TimeoutProcessor {
                 // TODO handle strike number
                 break;
         }
-        PackagedMessage responseMessage = new PackagedMessage(responseCommand, packagedMessage.user, packagedMessage.channel, packagedMessage.destinationChannel, UserLevel.INTERNAL, MessagePriority.LOW);
-        channel.receiveMessage(packagedMessage);
+        PackagedMessage responseMessage = new PackagedMessage(responseCommand, incomingMessage.user, incomingMessage.channel, incomingMessage.destinationChannel, UserLevel.INTERNAL, MessagePriority.LOW);
+        channel.receiveMessage(responseMessage);
     }
 }
