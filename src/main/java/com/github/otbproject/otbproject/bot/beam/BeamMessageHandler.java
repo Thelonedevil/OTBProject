@@ -8,6 +8,8 @@ import com.github.otbproject.otbproject.channel.ChannelNotFoundException;
 import com.github.otbproject.otbproject.channel.Channels;
 import com.github.otbproject.otbproject.messages.receive.PackagedMessage;
 import com.github.otbproject.otbproject.messages.send.MessagePriority;
+import com.github.otbproject.otbproject.proc.TimeoutProcessor;
+import com.github.otbproject.otbproject.user.UserLevel;
 import com.github.otbproject.otbproject.user.UserLevels;
 import com.github.otbproject.otbproject.util.ThreadUtil;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
@@ -21,7 +23,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
-public class MessageHandler implements EventHandler<IncomingMessageEvent> {
+public class BeamMessageHandler implements EventHandler<IncomingMessageEvent> {
     private static final ExecutorService EXECUTOR_SERVICE;
 
     static {
@@ -36,7 +38,7 @@ public class MessageHandler implements EventHandler<IncomingMessageEvent> {
     private final String channelName;
     private final BeamChatChannel beamChatChannel;
 
-    public MessageHandler(String channel, BeamChatChannel beamChatChannel) {
+    public BeamMessageHandler(String channel, BeamChatChannel beamChatChannel) {
         this.channelName = channel;
         this.beamChatChannel = beamChatChannel;
     }
@@ -69,8 +71,10 @@ public class MessageHandler implements EventHandler<IncomingMessageEvent> {
             }
             beamChatChannel.cacheMessage(data);
 
+            String message = getMessage(data);
+
             // Check if message is from bot and sent by bot
-            if (data.user_name.equalsIgnoreCase(Bot.getBot().getUserName()) && (bot.sentMessageCache.containsKey(data.getMessage()))) {
+            if (data.user_name.equalsIgnoreCase(Bot.getBot().getUserName()) && (bot.sentMessageCache.containsKey(message))) {
                 App.logger.debug("Ignoring message sent by bot");
                 return;
             }
@@ -78,8 +82,9 @@ public class MessageHandler implements EventHandler<IncomingMessageEvent> {
             Optional<Channel> optional = Channels.get(channelName);
             if (optional.isPresent()) {
                 Channel channel = optional.get();
-                PackagedMessage packagedMessage = new PackagedMessage(getMessage(data), data.user_name.toLowerCase(), channelName, UserLevels.getUserLevel(channel.getMainDatabaseWrapper(), channelName, data.user_name.toLowerCase()), MessagePriority.DEFAULT);
-                bot.invokeMessageHandlers(channel, packagedMessage);
+                UserLevel userLevel = UserLevels.getUserLevel(channel.getMainDatabaseWrapper(), channelName, data.user_name.toLowerCase());
+                PackagedMessage packagedMessage = new PackagedMessage(message, data.user_name.toLowerCase(), channelName, userLevel, MessagePriority.DEFAULT);
+                bot.invokeMessageHandlers(channel, packagedMessage, TimeoutProcessor.doTimeouts(channel, packagedMessage));
             } else {
                 App.logger.error("Channel: " + channelName + " appears not to exist");
             }

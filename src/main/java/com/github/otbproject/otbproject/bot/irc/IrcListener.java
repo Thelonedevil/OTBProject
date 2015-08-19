@@ -7,6 +7,7 @@ import com.github.otbproject.otbproject.channel.Channels;
 import com.github.otbproject.otbproject.config.Configs;
 import com.github.otbproject.otbproject.messages.receive.PackagedMessage;
 import com.github.otbproject.otbproject.messages.send.MessagePriority;
+import com.github.otbproject.otbproject.proc.TimeoutProcessor;
 import com.github.otbproject.otbproject.user.UserLevel;
 import com.github.otbproject.otbproject.user.UserLevels;
 import org.pircbotx.hooks.ListenerAdapter;
@@ -36,13 +37,13 @@ public class IrcListener extends ListenerAdapter {
                 String name = messageSplit[0];
                 String userType = messageSplit[1];
                 if (userType.equalsIgnoreCase("subscriber")) {
-                    bot.subscriberStorage.put(channelName, user);
+                    bot.subscriberStorage.put(channelName, name);
                 }
             }
         } else {
             UserLevel userLevel = UserLevels.getUserLevel(channel.getMainDatabaseWrapper(), channelName, user);
             PackagedMessage packagedMessage = new PackagedMessage(message, user, channelName, userLevel, MessagePriority.DEFAULT);
-            bot.invokeMessageHandlers(channel, packagedMessage);
+            bot.invokeMessageHandlers(channel, packagedMessage, TimeoutProcessor.doTimeouts(channel, packagedMessage));
         }
     }
 

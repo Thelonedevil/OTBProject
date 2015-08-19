@@ -3,9 +3,9 @@ package com.github.otbproject.otbproject.bot;
 import com.github.otbproject.otbproject.channel.Channel;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.messages.receive.PackagedMessage;
+import com.github.otbproject.otbproject.messages.receive.MessageHandler;
 
 import java.util.concurrent.ConcurrentMap;
-import java.util.function.BiConsumer;
 
 public interface IBot {
     boolean isConnected(String channelName);
@@ -42,7 +42,7 @@ public interface IBot {
 
     boolean removeTimeout(String channelName, String user);
 
-    void onMessage(BiConsumer<Channel, PackagedMessage> messageHandler);
+    void onMessage(MessageHandler messageHandler);
 
-    void invokeMessageHandlers(Channel channel, PackagedMessage message);
+    void invokeMessageHandlers(Channel channel, PackagedMessage message, boolean timedOut);
 }

@@ -2,6 +2,7 @@ package com.github.otbproject.otbproject.filter;
 
 import com.github.otbproject.otbproject.fs.FSUtil;
 import com.github.otbproject.otbproject.script.ScriptProcessor;
+import com.github.otbproject.otbproject.script.ScriptProcessorUtil;
 import com.github.otbproject.otbproject.user.UserLevel;
 
 import java.io.File;
@@ -42,7 +43,7 @@ public class FilterProcessor {
     // Returns the FilterGroup of a Filter which matches the message, or null if no Filter matches
     public static Optional<FilterGroup> process(ConcurrentMap<String, GroupFilterSet> groupFilterSets, String message, UserLevel userLevel) {
         if (userLevel.getValue() < UserLevel.MODERATOR.getValue()) {
-            return null;
+            return Optional.empty();
         }
         return groupFilterSets.entrySet().stream()
                 .map(Map.Entry::getValue)
@@ -62,10 +63,6 @@ public class FilterProcessor {
     }
 
     public static void cacheScripts() {
-        File[] files = new File(FSUtil.filterScriptDir()).listFiles();
-        if (files == null) {
-            return;
-        }
-        Stream.of(files).filter(File::isFile).forEach(file -> PROCESSOR.cache(file.getName(), file.getPath()));
+        ScriptProcessorUtil.cacheFromDirectory(PROCESSOR, FSUtil.filterScriptDir());
     }
 }

@@ -119,7 +119,7 @@ public class BeamChatChannel {
     }
 
     private void init(String channelName) {
-        beamChatConnectable.on(IncomingMessageEvent.class, new MessageHandler(channelName, this));
+        beamChatConnectable.on(IncomingMessageEvent.class, new BeamMessageHandler(channelName, this));
         beamChatConnectable.on(UserJoinEvent.class, new UserJoinHandler(this));
         beamChatConnectable.on(UserLeaveEvent.class, new UserLeaveHandler(this));
         beamChatConnectable.on(DeleteMessageEvent.class, new DeletedMessageHandler(this));

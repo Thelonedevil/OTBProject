@@ -4,18 +4,22 @@ import com.github.otbproject.otbproject.channel.Channel;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.database.Databases;
 import com.github.otbproject.otbproject.messages.receive.PackagedMessage;
+import com.github.otbproject.otbproject.messages.receive.MessageHandler;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.function.BiConsumer;
 
 public abstract class AbstractBot implements IBot {
     protected final ConcurrentMap<String, Channel> channels = new ConcurrentHashMap<>();
     protected final DatabaseWrapper botDB = Databases.createBotDbWrapper();
-    protected BiConsumer<Channel, PackagedMessage> messageHandlers;
+    protected MessageHandler messageHandlers;
 
     public AbstractBot() {
-        messageHandlers = Channel::receiveMessage;
+        messageHandlers = (channel, packagedMessage, timedOut) -> {
+            if (!timedOut) {
+                channel.receiveMessage(packagedMessage);
+            }
+        };
     }
 
     @Override
@@ -34,12 +38,12 @@ public abstract class AbstractBot implements IBot {
     }
 
     @Override
-    public void onMessage(BiConsumer<Channel, PackagedMessage> messageHandler) {
+    public void onMessage(MessageHandler messageHandler) {
         messageHandlers = messageHandlers.andThen(messageHandler);
     }
 
     @Override
-    public void invokeMessageHandlers(Channel channel, PackagedMessage message) {
-        messageHandlers.accept(channel, message);
+    public void invokeMessageHandlers(Channel channel, PackagedMessage message, boolean timedOut) {
+        messageHandlers.onMessage(channel, message, timedOut);
     }
 }
