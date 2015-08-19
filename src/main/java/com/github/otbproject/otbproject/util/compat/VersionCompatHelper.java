@@ -1,7 +1,6 @@
 package com.github.otbproject.otbproject.util.compat;
 
 import com.github.otbproject.otbproject.App;
-import com.github.otbproject.otbproject.config.Account;
 import com.github.otbproject.otbproject.config.GeneralConfig;
 import com.github.otbproject.otbproject.fs.FSUtil;
 import com.github.otbproject.otbproject.util.JsonHandler;
@@ -16,39 +15,15 @@ public class VersionCompatHelper {
         if ((oldVersion == null) || App.VERSION.equals(oldVersion)) {
             return;
         }
-        if (App.VERSION.checker().major(1).minor(1).isVersion() && oldVersion.checker().major(1).minor(0).isVersion()) {
-            fix1_0To1_1();
-        } else if (App.VERSION.checker().major(2).minor(0).isVersion() && oldVersion.checker().major(1).minor(1).isVersion()) {
+        if (App.VERSION.checker().major(2).minor(0).isVersion() && oldVersion.checker().major(1).minor(1).isVersion()) {
             fix1_1To2_0();
-        }
-    }
-
-    private static void fix1_0To1_1() {
-        String oldAccountFilePath = FSUtil.configDir() + File.separator + "account.json";
-        String twitchAccountFilePath = FSUtil.configDir() + File.separator + FSUtil.ConfigFileNames.ACCOUNT_TWITCH;
-        File oldAcctFile = new File(oldAccountFilePath);
-        File twitchAcctFile = new File(twitchAccountFilePath);
-
-        if (oldAcctFile.exists() && !twitchAcctFile.exists()) {
-            Optional<AccountOld> optional = JsonHandler.readValue(oldAccountFilePath, AccountOld.class);
-            if (!optional.isPresent()) {
-                return;
-            }
-            AccountOld accountOld = optional.get();
-            Account accountNew = new Account();
-            accountNew.setName(accountOld.getName());
-            accountNew.setPasskey(accountOld.getOauth());
-            JsonHandler.writeValue(twitchAccountFilePath, accountNew);
-            // Not sure if need to recreate File for this
-            if (new File(twitchAccountFilePath).exists() && !oldAcctFile.delete()) {
-                App.logger.warn("Failed to delete old account file: " + oldAccountFilePath);
-            }
         }
     }
 
     private static void fix1_1To2_0() {
         fixScripts();
         fixGeneralConfig();
+        removeOldPreloads();
     }
 
     private static void fixScripts() {
@@ -75,5 +50,9 @@ public class VersionCompatHelper {
         configNew.setService(configOld.getServiceName());
         configNew.setPermanentlyEnabledCommands(configOld.permanently_enabled_commands);
         JsonHandler.writeValue((FSUtil.configDir() + File.separator + FSUtil.ConfigFileNames.GENERAL_CONFIG), configNew);
+    }
+
+    private static void removeOldPreloads() {
+        // TODO
     }
 }
