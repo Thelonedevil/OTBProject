@@ -7,7 +7,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class DatabaseWrapper {
-    final Connection connection;
+    protected final Connection connection;
+    protected final Statement stmt;
 
     /**
      * Private constructor, should never be used directly. <br>
@@ -21,6 +22,7 @@ public class DatabaseWrapper {
     protected DatabaseWrapper(String path, HashMap<String, TableFields> tables) throws SQLException, ClassNotFoundException {
         Class.forName("org.sqlite.JDBC");
         connection = DriverManager.getConnection("jdbc:sqlite:" + path);
+        stmt = connection.createStatement();
         for (Map.Entry<String, TableFields> entry : tables.entrySet()) {
             if (!createTable(entry.getKey(), entry.getValue().map, entry.getValue().primaryKeys)) {
                 throw new SQLException("Failed to create table: " + entry.getKey());
@@ -109,8 +111,7 @@ public class DatabaseWrapper {
 
     public <R> Optional<R> getRandomRecord(String table, SQLFunction<R> function) {
         String sql = "SELECT * FROM " + table + " ORDER BY RANDOM() LIMIT 1";
-        try (Statement stmt = connection.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
+        try (ResultSet rs = stmt.executeQuery(sql)) {
             return Optional.ofNullable(function.apply(rs));
         } catch (SQLException e) {
             App.logger.error("SQL: " + sql);
@@ -247,8 +248,7 @@ public class DatabaseWrapper {
      */
     public <R> Optional<R> tableDump(String table, SQLFunction<R> function) {
         String sql = "SELECT * FROM " + table;
-        try (Statement stmt = connection.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
+        try (ResultSet rs = stmt.executeQuery(sql)) {
             return Optional.ofNullable(function.apply(rs));
         } catch (SQLException e) {
             App.logger.error("SQL: " + sql);
@@ -267,8 +267,7 @@ public class DatabaseWrapper {
      */
     public List<Object> getRecordsList(String table, String key) {
         String sql = "SELECT " + key + " FROM " + table;
-        try (Statement stmt = connection.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
+        try (ResultSet rs = stmt.executeQuery(sql)) {
             List<Object> set = new ArrayList<>();
             while (rs.next()) {
                 set.add(rs.getString(key));
