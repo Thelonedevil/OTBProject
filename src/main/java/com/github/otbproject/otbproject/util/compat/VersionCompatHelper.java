@@ -3,6 +3,10 @@ package com.github.otbproject.otbproject.util.compat;
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.config.GeneralConfig;
 import com.github.otbproject.otbproject.fs.FSUtil;
+import com.github.otbproject.otbproject.fs.PathBuilder;
+import com.github.otbproject.otbproject.fs.groups.Base;
+import com.github.otbproject.otbproject.fs.groups.Chan;
+import com.github.otbproject.otbproject.fs.groups.Load;
 import com.github.otbproject.otbproject.util.JsonHandler;
 import com.github.otbproject.otbproject.util.version.Version;
 
@@ -53,6 +57,16 @@ public class VersionCompatHelper {
     }
 
     private static void removeOldPreloads() {
-        // TODO
+        String basePath = new PathBuilder().base(Base.CMD).channels(Chan.ALL).load(Load.ED).create();
+        deleteFile(basePath + File.separator + "command.reset.count.success.json");
+        deleteFile(FSUtil.commandScriptDir() + File.separator + "ScriptResetCount.groovy");
+    }
+
+    private static void deleteFile(String path) {
+        if (new File(path).delete()) {
+            App.logger.info("Deleted " + path);
+        } else {
+            App.logger.error("Failed to delete " + path);
+        }
     }
 }
