@@ -57,7 +57,7 @@ public class Aliases {
         return db.removeRecord(AliasFields.TABLE_NAME, aliasName, AliasFields.NAME);
     }
 
-    public static boolean addAliasFromLoadedAlias(DatabaseWrapper db, Alias alias) {
+    public static boolean addAliasFromObj(DatabaseWrapper db, Alias alias) {
         HashMap<String, Object> map = new HashMap<>();
 
         map.put(AliasFields.NAME, alias.getName());

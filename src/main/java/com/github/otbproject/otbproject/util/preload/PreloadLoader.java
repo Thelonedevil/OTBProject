@@ -107,7 +107,7 @@ public class PreloadLoader {
                     if (alias == null) {
                         break;
                     }
-                    Aliases.addAliasFromLoadedAlias(db, alias);
+                    Aliases.addAliasFromObj(db, alias);
                     break;
                 case CMD:
                     Command command = (strategy == LoadStrategy.UPDATE) ?
@@ -115,7 +115,7 @@ public class PreloadLoader {
                     if (command == null) {
                         break;
                     }
-                    Commands.addCommandFromLoadedCommand(db, command);
+                    Commands.addCommandFromObj(db, command);
                     break;
                 case FILTER:
                     BasicFilter filter = (strategy == LoadStrategy.UPDATE) ?
