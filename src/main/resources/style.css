@@ -1,3 +1,9 @@
+#logOutput .content {
+    -fx-background-image: url("assets/logo-low-opacity.png");
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center bottom;
+    -fx-background-size: 61%;
+}
 
 .text-area:focused {
     -fx-padding: 0;
