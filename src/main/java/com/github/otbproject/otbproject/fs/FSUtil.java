@@ -6,6 +6,7 @@ public class FSUtil {
     public static final String ERROR_MSG = "Failed to create directory: ";
     private static final String BASE_DIR_NAME = ".otbproject";
     public static final String BASE_DIR_DEFAULT = System.getProperty("user.home") + File.separator + BASE_DIR_NAME;
+    private static final String ASSETS_DIR_NAME = "assets";
     private static final String ALIASES_DIR_NAME = "aliases";
     private static final String COMMANDS_DIR_NAME = "commands";
     private static final String CONFIG_DIR_NAME = "config";
@@ -32,6 +33,10 @@ public class FSUtil {
         baseDir = path + File.separator + BASE_DIR_NAME;
     }
 
+    public static String assetsDir() {
+        return baseDir + File.separator + ASSETS_DIR_NAME;
+    }
+
     public static String aliasesDir() {
         return baseDir + File.separator + ALIASES_DIR_NAME;
     }
@@ -46,10 +51,6 @@ public class FSUtil {
 
     public static String dataDir() {
         return baseDir + File.separator + DATA_DIR_NAME;
-    }
-
-    public static String defaultsDir() {
-        return baseDir + File.separator + DEFAULTS_DIR_NAME;
     }
 
     private static String filtersBaseDir() {
