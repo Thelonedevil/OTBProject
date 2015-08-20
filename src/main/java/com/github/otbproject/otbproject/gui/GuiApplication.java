@@ -50,38 +50,38 @@ public class GuiApplication extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         Thread.currentThread().setUncaughtExceptionHandler(ThreadUtil.UNCAUGHT_EXCEPTION_HANDLER);
-        Font.loadFont(getClass().getClassLoader().getResourceAsStream("UbuntuMono-R.ttf"), 12);
-        Font.loadFont(getClass().getClassLoader().getResourceAsStream("Ubuntu-R.ttf"), 12);
+        Font.loadFont(getClass().getClassLoader().getResourceAsStream("assets/fonts/UbuntuMono-R.ttf"), 12);
+        Font.loadFont(getClass().getClassLoader().getResourceAsStream("assets/fonts/Ubuntu-R.ttf"), 12);
         FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("console.fxml"));
         Parent start = loader.load();
         primaryStage.setScene(new Scene(start, 1200, 515));
         primaryStage.setResizable(false);
         primaryStage.setTitle("OTB");
-        primaryStage.getIcons().add(new Image("http://otbproject.github.io/images/logo.png"));
-        primaryStage.setOnCloseRequest(event -> {
-            Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setTitle("Confirm Close");
-            alert.setHeaderText("WARNING: \"Close Window\" DOES NOT STOP THE BOT.");
-            alert.setContentText("Closing this window without exiting may make it difficult to stop the bot.\nPress \"Exit\" to stop the bot and exit.\nPress \"Cancel\" to keep the window open.");
-            DialogPane dialogPane = alert.getDialogPane();
-            GuiUtils.setDialogPaneStyle(dialogPane);
-            ButtonType buttonTypeCloseNoExit = new ButtonType("Close Window", ButtonBar.ButtonData.LEFT);
-            ButtonType buttonTypeExit = new ButtonType("Exit", ButtonBar.ButtonData.FINISH);
-            ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonBar.ButtonData.FINISH);
-            alert.getButtonTypes().setAll(buttonTypeCloseNoExit, buttonTypeExit, buttonTypeCancel);
-            GuiUtils.setDefaultButton(alert, buttonTypeExit);
-            alert.initStyle(StageStyle.UNDECORATED);
-            alert.showAndWait().ifPresent(buttonType -> {
-                if (buttonType == buttonTypeCloseNoExit) {
-                    primaryStage.hide();
-                    tailer.stop();
-                } else if (buttonType == buttonTypeExit) {
-                    Bot.Control.shutdownAndExit();
-                    System.exit(0);
-                }
-            });
-            event.consume();
-        });
+        primaryStage.getIcons().add(new Image("file://" + FSUtil.assetsDir() + File.separator + FSUtil.Assets.LOGO));
+                primaryStage.setOnCloseRequest(event -> {
+                    Alert alert = new Alert(Alert.AlertType.WARNING);
+                    alert.setTitle("Confirm Close");
+                    alert.setHeaderText("WARNING: \"Close Window\" DOES NOT STOP THE BOT.");
+                    alert.setContentText("Closing this window without exiting may make it difficult to stop the bot.\nPress \"Exit\" to stop the bot and exit.\nPress \"Cancel\" to keep the window open.");
+                    DialogPane dialogPane = alert.getDialogPane();
+                    GuiUtils.setDialogPaneStyle(dialogPane);
+                    ButtonType buttonTypeCloseNoExit = new ButtonType("Close Window", ButtonBar.ButtonData.LEFT);
+                    ButtonType buttonTypeExit = new ButtonType("Exit", ButtonBar.ButtonData.FINISH);
+                    ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonBar.ButtonData.FINISH);
+                    alert.getButtonTypes().setAll(buttonTypeCloseNoExit, buttonTypeExit, buttonTypeCancel);
+                    GuiUtils.setDefaultButton(alert, buttonTypeExit);
+                    alert.initStyle(StageStyle.UNDECORATED);
+                    alert.showAndWait().ifPresent(buttonType -> {
+                        if (buttonType == buttonTypeCloseNoExit) {
+                            primaryStage.hide();
+                            tailer.stop();
+                        } else if (buttonType == buttonTypeExit) {
+                            Bot.Control.shutdownAndExit();
+                            System.exit(0);
+                        }
+                    });
+                    event.consume();
+                });
         controller = loader.<GuiController>getController();
         setUpMenus();
         controller.cliOutput.appendText(">  ");
