@@ -116,4 +116,8 @@ public class FSUtil {
         public static final String CHANNEL_CONFIG = "config.json";
         public static final String WEB_CONFIG = "web-config.json";
     }
+
+    public static class Assets {
+        public static final String LOGO = "logo.png";
+    }
 }
