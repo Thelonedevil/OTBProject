@@ -11,7 +11,6 @@ public class FSUtil {
     private static final String COMMANDS_DIR_NAME = "commands";
     private static final String CONFIG_DIR_NAME = "config";
     private static final String DATA_DIR_NAME = "data";
-    private static final String DEFAULTS_DIR_NAME = "defaults";
     private static final String FILTERS_DIR_NAME = "filters";
     private static final String FILTER_GROUPS_DIR_NAME = "filter-groups";
     private static final String LOGS_DIR_NAME = "logs";
