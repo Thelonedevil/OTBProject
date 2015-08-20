@@ -1,7 +1,7 @@
 package com.github.otbproject.otbproject.bot.beam;
 
 import com.github.otbproject.otbproject.App;
-import com.github.otbproject.otbproject.bot.Bot;
+import com.github.otbproject.otbproject.bot.Control;
 import com.github.otbproject.otbproject.channel.ChannelInitException;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -19,7 +19,6 @@ import pro.beam.api.resource.chat.events.DeleteMessageEvent;
 import pro.beam.api.resource.chat.events.IncomingMessageEvent;
 import pro.beam.api.resource.chat.events.UserJoinEvent;
 import pro.beam.api.resource.chat.events.UserLeaveEvent;
-import pro.beam.api.resource.chat.events.data.DeleteMessageData;
 import pro.beam.api.resource.chat.events.data.IncomingMessageData;
 import pro.beam.api.resource.chat.methods.AuthenticateMessage;
 import pro.beam.api.services.impl.ChatService;
@@ -72,7 +71,7 @@ public class BeamChatChannel {
                 })
                 .build();
 
-        beamBot = ((BeamBot) Bot.getBot());
+        beamBot = ((BeamBot) Control.getBot());
         try {
             BeamUser beamUser = beamBot.beam.use(UsersService.class).search(channelName).get().stream()
                     .filter(user -> user.username.equalsIgnoreCase(channelName))
@@ -106,7 +105,7 @@ public class BeamChatChannel {
         try {
             HashMap<String, Object> map = new HashMap<>();
             map.put("limit", USER_LIST_MAX_SIZE);
-            BeamChatUser[] users = ((BeamBot) Bot.getBot()).beam.http.get(path, BeamChatUser[].class, map).get(USER_LIST_TIMEOUT, TimeUnit.SECONDS);
+            BeamChatUser[] users = ((BeamBot) Control.getBot()).beam.http.get(path, BeamChatUser[].class, map).get(USER_LIST_TIMEOUT, TimeUnit.SECONDS);
             Map<String, List<BeamUser.Role>> roleMap =
                     Stream.of(users).collect(Collectors.toMap(user -> user.getUserName().toLowerCase(),
                             user -> Collections.unmodifiableList(user.getUserRoles())));

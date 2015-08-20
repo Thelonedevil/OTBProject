@@ -1,6 +1,6 @@
 package com.github.otbproject.otbproject.gui;
 
-import com.github.otbproject.otbproject.bot.Bot;
+import com.github.otbproject.otbproject.bot.Control;
 import com.github.otbproject.otbproject.channel.Channel;
 import com.github.otbproject.otbproject.channel.Channels;
 import com.github.otbproject.otbproject.cli.commands.CmdParser;
@@ -146,8 +146,8 @@ public class GuiController {
                         list = (list == null) ? new ArrayList<>() : list;
                         addIfNotNull(list, Aliases.getAliases(channel.getMainDatabaseWrapper()));
                         if (Channels.isBotChannel(channel)) {
-                            addIfNotNull(list, Commands.getCommands(Bot.getBot().getBotDB()));
-                            addIfNotNull(list, Aliases.getAliases(Bot.getBot().getBotDB()));
+                            addIfNotNull(list, Commands.getCommands(Control.getBot().getBotDB()));
+                            addIfNotNull(list, Aliases.getAliases(Control.getBot().getBotDB()));
                         }
                         tabComplete(parts, 2, list);
                     }

@@ -10,7 +10,7 @@ import com.github.otbproject.otbproject.messages.receive.MessageHandler;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-public abstract class AbstractBot implements IBot {
+public abstract class AbstractBot implements Bot {
     protected final ConcurrentMap<String, Channel> channels = new ConcurrentHashMap<>();
     protected final DatabaseWrapper botDB = Databases.createBotDbWrapper();
     protected MessageHandler messageHandlers = (channel, packagedMessage, timedOut) -> {};

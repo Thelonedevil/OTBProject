@@ -1,7 +1,7 @@
 package com.github.otbproject.otbproject.gui;
 
 import com.github.otbproject.otbproject.App;
-import com.github.otbproject.otbproject.bot.Bot;
+import com.github.otbproject.otbproject.bot.Control;
 import com.github.otbproject.otbproject.config.Configs;
 import com.github.otbproject.otbproject.fs.FSUtil;
 import com.github.otbproject.otbproject.util.ThreadUtil;
@@ -76,7 +76,7 @@ public class GuiApplication extends Application {
                     primaryStage.hide();
                     tailer.stop();
                 } else if (buttonType == buttonTypeExit) {
-                    Bot.Control.shutdownAndExit();
+                    com.github.otbproject.otbproject.bot.Control.shutdownAndExit();
                     System.exit(0);
                 }
             });
@@ -160,25 +160,25 @@ public class GuiApplication extends Application {
             alert.initStyle(StageStyle.UNDECORATED);
             alert.showAndWait().ifPresent(buttonType -> {
                 if (buttonType == buttonTypeYes) {
-                    Bot.Control.shutdownAndExit();
+                    Control.shutdownAndExit();
                 }
             });
             event.consume();
         });
         controller.botStart.setOnAction(event -> {
             try {
-                addInfo(Bot.Control.startup() ? "Started bot" : "Did not start bot - bot already running");
-            } catch (Bot.StartupException ignored) {
+                addInfo(Control.startup() ? "Started bot" : "Did not start bot - bot already running");
+            } catch (Control.StartupException ignored) {
                 addInfo("Failed to start bot");
             }
             event.consume();
         });
         controller.botStop.setOnAction(event -> {
-            addInfo(Bot.Control.shutdown(true) ? "Bot stopped" : "Did not stop bot - bot not running");
+            addInfo(Control.shutdown(true) ? "Bot stopped" : "Did not stop bot - bot not running");
             event.consume();
         });
         controller.botRestart.setOnAction(event -> {
-            addInfo(Bot.Control.restart() ? "Restarted bot" : "Failed to restart bot");
+            addInfo(Control.restart() ? "Restarted bot" : "Failed to restart bot");
             event.consume();
         });
         controller.webOpen.setOnAction(event -> {

@@ -1,6 +1,6 @@
 package com.github.otbproject.otbproject.command.parser;
 
-import com.github.otbproject.otbproject.bot.Bot;
+import com.github.otbproject.otbproject.bot.Control;
 import com.github.otbproject.otbproject.channel.Channel;
 import com.github.otbproject.otbproject.channel.Channels;
 import com.github.otbproject.otbproject.command.Command;
@@ -170,7 +170,7 @@ public class CommandResponseParser {
                 doModifier(ResponseParserUtil.firstCap(Configs.getGeneralConfig().getService().toString(), true), term));
 
         // [[bot]]
-        registerTerm("bot", (userNick, channel, count, args, term) -> doModifier(Bot.getBot().getUserName(), term));
+        registerTerm("bot", (userNick, channel, count, args, term) -> doModifier(Control.getBot().getUserName(), term));
     }
 
     public static String parse(String userNick, String channel, int count, String[] args, String rawResponse) {

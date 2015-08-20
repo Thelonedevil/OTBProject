@@ -1,8 +1,8 @@
 package com.github.otbproject.otbproject.channel;
 
 import com.github.otbproject.otbproject.App;
+import com.github.otbproject.otbproject.bot.Control;
 import com.github.otbproject.otbproject.bot.Bot;
-import com.github.otbproject.otbproject.bot.IBot;
 import com.github.otbproject.otbproject.command.parser.ResponseParserUtil;
 import com.github.otbproject.otbproject.config.BotConfig;
 import com.github.otbproject.otbproject.config.ChannelConfig;
@@ -25,7 +25,7 @@ public class Channels {
     }
 
     public static Optional<Channel> get(String channel) {
-        return Optional.ofNullable(Bot.getBot().getChannels().get(channel));
+        return Optional.ofNullable(Control.getBot().getChannels().get(channel));
     }
 
     public static Channel getOrThrow(String channel) throws ChannelNotFoundException {
@@ -47,7 +47,7 @@ public class Channels {
                 return false;
             }
 
-            IBot bot = Bot.getBot();
+            Bot bot = Control.getBot();
             boolean isBotChannel = channelName.equals(bot.getUserName());
 
             // Check whitelist/blacklist
@@ -135,7 +135,7 @@ public class Channels {
             if (!in(channelName)) {
                 App.logger.info("Not leaving channel '" + channelName + "' - not in channel");
                 return false;
-            } else if (channelName.equals(Bot.getBot().getUserName())) {
+            } else if (channelName.equals(Control.getBot().getUserName())) {
                 App.logger.info("Not leaving channel '" + channelName + "' - cannot leave bot channel");
                 return false;
             }
@@ -143,7 +143,7 @@ public class Channels {
             get(channelName).ifPresent(Channel::leave); // TODO possibly remove from channel list?
             Configs.getBotConfig().getCurrentChannels().remove(channelName);
             Configs.writeBotConfig();
-            Bot.getBot().leave(channelName);
+            Control.getBot().leave(channelName);
         } finally {
             lock.unlock();
         }
@@ -151,11 +151,11 @@ public class Channels {
     }
 
     public static Set<String> list() {
-        return Bot.getBot().getChannels().keySet();
+        return Control.getBot().getChannels().keySet();
     }
 
     public static boolean isBotChannel(String channel) {
-        return channel.equalsIgnoreCase(Bot.getBot().getUserName());
+        return channel.equalsIgnoreCase(Control.getBot().getUserName());
     }
 
     public static boolean isBotChannel(Channel channel) {
