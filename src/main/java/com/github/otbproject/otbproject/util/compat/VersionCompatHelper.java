@@ -1,7 +1,11 @@
 package com.github.otbproject.otbproject.util.compat;
 
 import com.github.otbproject.otbproject.App;
+import com.github.otbproject.otbproject.command.Command;
+import com.github.otbproject.otbproject.command.Commands;
 import com.github.otbproject.otbproject.config.GeneralConfig;
+import com.github.otbproject.otbproject.database.DatabaseHelper;
+import com.github.otbproject.otbproject.database.Databases;
 import com.github.otbproject.otbproject.fs.FSUtil;
 import com.github.otbproject.otbproject.fs.PathBuilder;
 import com.github.otbproject.otbproject.fs.groups.Base;
@@ -53,6 +57,10 @@ public class VersionCompatHelper {
         String basePath = new PathBuilder().base(Base.CMD).channels(Chan.ALL).load(Load.ED).create();
         deleteFile(basePath + File.separator + "command.reset.count.success.json");
         deleteFile(FSUtil.commandScriptDir() + File.separator + "ScriptResetCount.groovy");
+        FSUtil.streamDirectory(new File(FSUtil.dataDir() + File.separator + FSUtil.DirNames.CHANNELS))
+                .map(File::getName)
+                .map(Databases::createChannelMainDbWrapper)
+                .forEach(db -> Commands.remove(db, "~%command.reset.count.success"));
     }
 
     private static void deleteFile(String path) {
