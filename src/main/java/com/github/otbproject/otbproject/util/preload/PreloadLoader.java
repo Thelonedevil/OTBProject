@@ -20,10 +20,11 @@ import com.github.otbproject.otbproject.util.JsonHandler;
 import com.github.otbproject.otbproject.util.Watcher;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
+// TODO tweak logging
 public class PreloadLoader {
     public static void loadDirectoryForEachChannel(Base base, LoadStrategy strategy) {
         FSUtil.streamDirectory(new File(FSUtil.dataDir() + File.separator + FSUtil.DirNames.CHANNELS),
@@ -34,7 +35,7 @@ public class PreloadLoader {
 
     public static void loadDirectory(Base base, Chan chan, String channelName, LoadStrategy strategy) {
         List<PreloadPair<?>> list = loadDirectoryContents(base, chan, channelName, strategy);
-        if (list == null) {
+        if (list.isEmpty()) {
             return;
         }
 
@@ -137,7 +138,7 @@ public class PreloadLoader {
 
     private static List<PreloadPair<?>> loadDirectoryContents(Base base, Chan chan, String channelName, LoadStrategy strategy) {
         if ((chan == Chan.SPECIFIC) && (channelName == null)) {
-            return null;
+            return Collections.emptyList();
         }
         File dir;
         PathBuilder builder = new PathBuilder();
@@ -149,8 +150,8 @@ public class PreloadLoader {
 
         final Class<?> tClass = getClassFromBase(base);
         if (tClass == null) {
-            App.logger.warn("Unable to determine class to load as for base: " + base.toString());
-            return null;
+            App.logger.error("Unable to determine class to load as for base: " + base.toString());
+            return Collections.emptyList();
         }
 
         return FSUtil.streamDirectory(dir)
