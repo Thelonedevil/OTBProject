@@ -73,13 +73,7 @@ class WarDownload {
     }
 
     private static void cleanupOldVersions() {
-        File dir = new File(FSUtil.webDir());
-        File[] files = dir.listFiles();
-        if (files == null) {
-            return;
-        }
-
-        Stream.of(files)
+        FSUtil.streamDirectory(new File(FSUtil.webDir()))
                 .filter(File::isFile)
                 .filter(file -> file.getName().startsWith(WarDownload.WAR_PREFIX))
                 .filter(file -> file.getName().endsWith(WarDownload.WAR_EXT))

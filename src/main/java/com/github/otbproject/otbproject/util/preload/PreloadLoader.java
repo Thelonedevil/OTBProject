@@ -26,12 +26,9 @@ import java.util.stream.Stream;
 
 public class PreloadLoader {
     public static void loadDirectoryForEachChannel(Base base, LoadStrategy strategy) {
-        File[] files = new File(FSUtil.dataDir() + File.separator + FSUtil.DirNames.CHANNELS).listFiles();
-        if (files == null) {
-            App.logger.error("Failed to load objects of type '" + base.toString() + "' for all channels - unable to get list of channels");
-            return;
-        }
-        Stream.of(files).filter(File::isDirectory)
+        FSUtil.streamDirectory(new File(FSUtil.dataDir() + File.separator + FSUtil.DirNames.CHANNELS),
+                "Failed to load objects of type '" + base.toString() + "' for each channel - unable to get list of channels")
+                .filter(File::isDirectory)
                 .forEach(file -> loadDirectory(base, Chan.SPECIFIC, file.getName(), strategy));
     }
 
@@ -60,14 +57,10 @@ public class PreloadLoader {
             return;
         }
 
-        File[] files = new File(FSUtil.dataDir() + File.separator + FSUtil.DirNames.CHANNELS).listFiles();
-        if (files == null) {
-            App.logger.error("Failed to load objects of type '" + base.toString() + "' for all channels - unable to get list of channels");
-            return;
-        }
-
         App.logger.debug("Loading objects of type '" + base.toString() + "' for all channels");
-        Stream.of(files).filter(File::isDirectory)
+        FSUtil.streamDirectory(new File(FSUtil.dataDir() + File.separator + FSUtil.DirNames.CHANNELS),
+                "Failed to load objects of type '" + base.toString() + "' for each channel - unable to get list of channels")
+                .filter(File::isDirectory)
                 .forEach(file -> loadForChannel(list, file.getName(), base, strategy));
         App.logger.debug("Finished loading objects of type '" + base.toString() + "' for all channels");
     }
@@ -154,19 +147,13 @@ public class PreloadLoader {
             dir = builder.base(base).channels(chan).forChannel(channelName).load(Load.TO).asFile();
         }
 
-        File[] files = dir.listFiles();
-        if (files == null) {
-            App.logger.error("Unable to get list of files for directory: " + dir.toString());
-            return null;
-        }
-
         final Class<?> tClass = getClassFromBase(base);
         if (tClass == null) {
             App.logger.warn("Unable to determine class to load as for base: " + base.toString());
             return null;
         }
 
-        return Stream.of(files)
+        return FSUtil.streamDirectory(dir)
                 .map(file -> {
                     String name = file.getName();
                     String pathOld = builder.base(base).channels(chan).forChannel(channelName).load(Load.ED).create() + File.separator + name;

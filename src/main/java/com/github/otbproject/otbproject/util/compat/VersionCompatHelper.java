@@ -12,7 +12,6 @@ import com.github.otbproject.otbproject.util.version.Version;
 
 import java.io.File;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 public class VersionCompatHelper {
     public static void fixCompatIssues(Version oldVersion) {
@@ -31,16 +30,10 @@ public class VersionCompatHelper {
     }
 
     private static void fixScripts() {
-        // Delete scripts from base dir, because they will be unpacked into a subdirectory
-        File scriptsDir = new File(FSUtil.scriptDir());
-        File[] files = scriptsDir.listFiles();
-        if (files == null) {
-            return;
-        }
-        String newDir = FSUtil.commandScriptDir() + File.separator;
-        Stream.of(files)
+        // Move scripts from base dir into subdirectory
+        FSUtil.streamDirectory(new File(FSUtil.scriptDir()))
                 .filter(File::isFile)
-                .forEach(file -> file.renameTo(new File(newDir + file.getName())));
+                .forEach(file -> file.renameTo(new File(FSUtil.commandScriptDir() + File.separator + file.getName())));
     }
 
     private static void fixGeneralConfig() {
