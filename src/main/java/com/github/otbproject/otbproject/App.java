@@ -1,6 +1,6 @@
 package com.github.otbproject.otbproject;
 
-import com.github.otbproject.otbproject.bot.Bot;
+import com.github.otbproject.otbproject.bot.Control;
 import com.github.otbproject.otbproject.cli.ArgParser;
 import com.github.otbproject.otbproject.cli.commands.CmdParser;
 import com.github.otbproject.otbproject.config.ConfigManager;
@@ -118,10 +118,10 @@ public class App {
         }
 
         // Read configs
-        Bot.Control.loadConfigs(cmd);
+        Control.loadConfigs(cmd);
 
         // Start GUI if applicable
-        if (Bot.Graphics.present()) {
+        if (Control.Graphics.present()) {
             ThreadUtil.getSingleThreadExecutor().execute(() -> GuiApplication.start(args));
         }
 
@@ -133,18 +133,18 @@ public class App {
             Unpacker.unpack("preloads/json/bot-channel/commands/", builder.base(Base.CMD).channels(Chan.BOT).load(Load.TO).create());
             Unpacker.unpack("preloads/groovy/scripts/", FSUtil.scriptDir());
             Unpacker.unpack("assets/local/", FSUtil.assetsDir());
-            Bot.Control.loadPreloads(LoadStrategy.UPDATE);
+            Control.loadPreloads(LoadStrategy.UPDATE);
         }
 
         // Perform various startup actions
-        Bot.Control.firstStartup();
+        Control.firstStartup();
 
         // Start web interface
         if (Configs.getWebConfig().isEnabled()) {
             WebInterface.start();
         }
 
-        if (Bot.Graphics.present()) {
+        if (Control.Graphics.present()) {
             GuiApplication.setInputActive();
         }
 
@@ -197,7 +197,7 @@ public class App {
         }
 
         if (cmd.hasOption(ArgParser.Opts.NO_GUI)) {
-            Bot.Graphics.useGui(false);
+            Control.Graphics.useGui(false);
         }
 
         return cmd;

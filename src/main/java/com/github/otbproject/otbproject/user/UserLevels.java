@@ -1,7 +1,7 @@
 package com.github.otbproject.otbproject.user;
 
 
-import com.github.otbproject.otbproject.bot.Bot;
+import com.github.otbproject.otbproject.bot.Control;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.messages.internal.InternalMessageSender;
 
@@ -27,13 +27,13 @@ public class UserLevels {
         if (ul == UserLevel.SUPER_MODERATOR) {
             return ul;
         }
-        if (Bot.getBot().isUserMod(channel, user)) {
+        if (Control.getBot().isUserMod(channel, user)) {
             return UserLevel.MODERATOR;
         }
         if ((ul == UserLevel.REGULAR) || ul == UserLevel.IGNORED) {
             return ul;
         }
-        if (Bot.getBot().isUserSubscriber(channel, user)) {
+        if (Control.getBot().isUserSubscriber(channel, user)) {
             return UserLevel.SUBSCRIBER;
         }
 

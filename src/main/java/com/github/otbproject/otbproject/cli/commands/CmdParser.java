@@ -1,7 +1,7 @@
 package com.github.otbproject.otbproject.cli.commands;
 
 import com.github.otbproject.otbproject.App;
-import com.github.otbproject.otbproject.bot.Bot;
+import com.github.otbproject.otbproject.bot.Control;
 import com.github.otbproject.otbproject.channel.ChannelNotFoundException;
 import com.github.otbproject.otbproject.channel.Channels;
 import com.github.otbproject.otbproject.fs.groups.Base;
@@ -57,7 +57,7 @@ public class CmdParser {
 
     static {
         // Add CLI commands
-        if (Bot.Graphics.present()) {
+        if (Control.Graphics.present()) {
             initClear();
         }
         initExec();
@@ -231,7 +231,7 @@ public class CmdParser {
         commandBuilder.withShortHelp("quit")
                 .withLongHelp("Stops the bot and exits")
                 .withAction(() -> {
-                    Bot.Control.shutdownAndExit();
+                    Control.shutdownAndExit();
                     return "";
                 });
         map.put(QUIT, commandBuilder.create());
@@ -260,7 +260,7 @@ public class CmdParser {
     private static void initRestart() {
         commandBuilder.withShortHelp("restart")
                 .withLongHelp("Restarts the bot")
-                .withAction(() -> Bot.Control.restart() ? "Restarted bot" : "Failed to restart bot");
+                .withAction(() -> Control.restart() ? "Restarted bot" : "Failed to restart bot");
         map.put(RESTART, commandBuilder.create());
     }
 
@@ -269,8 +269,8 @@ public class CmdParser {
                 .withLongHelp("Starts the bot")
                 .withAction(() -> {
                     try {
-                        return (Bot.Control.startup() ? "Started bot" : "Did not start bot - bot already running");
-                    } catch (Bot.StartupException ignored) {
+                        return (Control.startup() ? "Started bot" : "Did not start bot - bot already running");
+                    } catch (Control.StartupException ignored) {
                         return "Failed to start bot";
                     }
                 });
@@ -280,7 +280,7 @@ public class CmdParser {
     private static void initStop() {
         commandBuilder.withShortHelp("stop")
                 .withLongHelp("Stops the bot")
-                .withAction(() -> (Bot.Control.shutdown(true) ? "Stopped bot" : "Bot not running"));
+                .withAction(() -> (Control.shutdown(true) ? "Stopped bot" : "Bot not running"));
         map.put(STOP, commandBuilder.create());
     }
 

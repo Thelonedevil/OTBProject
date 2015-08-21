@@ -1,8 +1,8 @@
 package com.github.otbproject.otbproject.bot.beam;
 
 import com.github.otbproject.otbproject.App;
-import com.github.otbproject.otbproject.bot.Bot;
 import com.github.otbproject.otbproject.bot.BotUtil;
+import com.github.otbproject.otbproject.bot.Control;
 import com.github.otbproject.otbproject.channel.Channel;
 import com.github.otbproject.otbproject.channel.ChannelNotFoundException;
 import com.github.otbproject.otbproject.channel.Channels;
@@ -50,7 +50,7 @@ public class BeamMessageHandler implements EventHandler<IncomingMessageEvent> {
             App.logger.info("<" + channelName + "> " + data.user_name + ": " + getMessage(data));
             beamChatChannel.userRoles.put(data.user_name.toLowerCase(), Collections.unmodifiableList(data.user_roles));
 
-            BeamBot bot = (BeamBot) Bot.getBot();
+            BeamBot bot = (BeamBot) Control.getBot();
 
             // Check if user is in timeout set
             if (beamChatChannel.timeoutSet.containsKey(data.user_name.toLowerCase())) {
@@ -74,7 +74,7 @@ public class BeamMessageHandler implements EventHandler<IncomingMessageEvent> {
             String message = getMessage(data);
 
             // Check if message is from bot and sent by bot
-            if (data.user_name.equalsIgnoreCase(Bot.getBot().getUserName()) && (bot.sentMessageCache.containsKey(message))) {
+            if (data.user_name.equalsIgnoreCase(Control.getBot().getUserName()) && (bot.sentMessageCache.containsKey(message))) {
                 App.logger.debug("Ignoring message sent by bot");
                 return;
             }

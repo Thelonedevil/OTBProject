@@ -2,8 +2,8 @@ package com.github.otbproject.otbproject.command.parser;
 
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.bot.AbstractBot;
-import com.github.otbproject.otbproject.bot.Bot;
 import com.github.otbproject.otbproject.bot.BotInitException;
+import com.github.otbproject.otbproject.bot.Control;
 import com.github.otbproject.otbproject.config.Configs;
 import com.github.otbproject.otbproject.config.GeneralConfig;
 import com.github.otbproject.otbproject.config.Service;
@@ -27,7 +27,7 @@ public class ParserTest {
 
     @BeforeClass
     public static void init() {
-        Bot.setBot(new AbstractBot() {
+        Control.setBot(new AbstractBot() {
             @Override
             public boolean isConnected(String channelName) {
                 return false;
@@ -104,7 +104,7 @@ public class ParserTest {
 
     @AfterClass
     public static void cleanup() {
-        Bot.setBot(null);
+        Control.setBot(null);
         App.configManager.setGeneralConfig(null);
     }
 
@@ -540,7 +540,7 @@ public class ParserTest {
     // [[bot]]
     public void botTest() {
         String parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, new String[0], "[[bot]]");
-        assertEquals(Bot.getBot().getUserName(), parsed);
+        assertEquals(Control.getBot().getUserName(), parsed);
     }
 
     @Test

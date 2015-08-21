@@ -1,6 +1,6 @@
 package com.github.otbproject.otbproject.proc;
 
-import com.github.otbproject.otbproject.bot.Bot;
+import com.github.otbproject.otbproject.bot.Control;
 import com.github.otbproject.otbproject.channel.Channel;
 import com.github.otbproject.otbproject.filter.FilterAction;
 import com.github.otbproject.otbproject.filter.FilterGroup;
@@ -31,16 +31,16 @@ public class TimeoutProcessor {
     private static void performFilterAction(PackagedMessage packagedMessage, FilterAction action) {
         switch (action) {
             case BAN:
-                Bot.getBot().ban(packagedMessage.channel, packagedMessage.user);
+                Control.getBot().ban(packagedMessage.channel, packagedMessage.user);
                 break;
             case TIMEOUT:
-                Bot.getBot().timeout(packagedMessage.channel, packagedMessage.user, 600); // TODO get actual time from somewhere (config?)
+                Control.getBot().timeout(packagedMessage.channel, packagedMessage.user, 600); // TODO get actual time from somewhere (config?)
                 break;
             case STRIKE:
                 // TODO handle strike number
                 break;
             case PURGE:
-                Bot.getBot().timeout(packagedMessage.channel, packagedMessage.user, 1);
+                Control.getBot().timeout(packagedMessage.channel, packagedMessage.user, 1);
                 break;
         }
     }

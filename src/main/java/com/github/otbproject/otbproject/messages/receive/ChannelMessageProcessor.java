@@ -1,7 +1,7 @@
 package com.github.otbproject.otbproject.messages.receive;
 
 import com.github.otbproject.otbproject.App;
-import com.github.otbproject.otbproject.bot.Bot;
+import com.github.otbproject.otbproject.bot.Control;
 import com.github.otbproject.otbproject.channel.Channel;
 import com.github.otbproject.otbproject.channel.Channels;
 import com.github.otbproject.otbproject.command.Commands;
@@ -27,7 +27,7 @@ public class ChannelMessageProcessor {
     public ChannelMessageProcessor(Channel channel) {
         this.channel = channel;
         channelName = channel.getName();
-        inBotChannel = this.channel.getName().equals(Bot.getBot().getUserName());
+        inBotChannel = this.channel.getName().equals(Control.getBot().getUserName());
     }
 
     public void process(PackagedMessage packagedMessage) {
@@ -50,7 +50,7 @@ public class ChannelMessageProcessor {
 
         // Process commands for bot channel
         if (inBotChannel) {
-            DatabaseWrapper db = Bot.getBot().getBotDB();
+            DatabaseWrapper db = Control.getBot().getBotDB();
             UserLevel ul = packagedMessage.userLevel;
             ProcessedCommand processedCmd = CommandProcessor.process(db, packagedMessage.message, channelName, user, ul, Configs.getBotConfig().isBotChannelDebug());
             if (processedCmd.isScript || !processedCmd.response.isEmpty()) {
@@ -129,7 +129,7 @@ public class ChannelMessageProcessor {
         }
 
         // Skip cooldowns if in or sending to bot channel, or internal
-        if (inBotChannel || destChannelName.equals(Bot.getBot().getUserName()) || internal) {
+        if (inBotChannel || destChannelName.equals(Control.getBot().getUserName()) || internal) {
             return false;
         }
 

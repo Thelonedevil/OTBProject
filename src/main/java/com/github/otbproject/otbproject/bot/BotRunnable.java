@@ -7,7 +7,7 @@ public class BotRunnable implements Runnable {
     public void run() {
         try {
             App.logger.info("Bot Started");
-            Bot.getBot().startBot();
+            Control.getBot().startBot();
             App.logger.info("Bot Stopped");
         } catch (BotInitException e) {
             App.logger.catching(e);

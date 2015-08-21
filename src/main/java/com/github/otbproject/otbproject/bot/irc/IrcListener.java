@@ -1,7 +1,7 @@
 package com.github.otbproject.otbproject.bot.irc;
 
 import com.github.otbproject.otbproject.App;
-import com.github.otbproject.otbproject.bot.Bot;
+import com.github.otbproject.otbproject.bot.Control;
 import com.github.otbproject.otbproject.channel.Channel;
 import com.github.otbproject.otbproject.channel.Channels;
 import com.github.otbproject.otbproject.config.Configs;
@@ -30,7 +30,7 @@ public class IrcListener extends ListenerAdapter {
         String user = event.getUser().getNick().toLowerCase();
 
         String message = event.getMessage();
-        TwitchBot bot = (TwitchBot) Bot.getBot();
+        TwitchBot bot = (TwitchBot) Control.getBot();
         if (user.equalsIgnoreCase("jtv")) {
             if (message.contains(":SPECIALUSER")) {
                 String[] messageSplit = message.split(":SPECIALUSER")[1].split(" ");
@@ -62,9 +62,9 @@ public class IrcListener extends ListenerAdapter {
 
     @Override
     public void onConnect(ConnectEvent event) {
-        ((IRCBot) Bot.getBot()).sendRaw().rawLine("TWITCHCLIENT 3");
+        ((IRCBot) Control.getBot()).sendRaw().rawLine("TWITCHCLIENT 3");
         // Join bot channel
-        Channels.join(Bot.getBot().getUserName(), false);
+        Channels.join(Control.getBot().getUserName(), false);
         // Join channels
         Configs.getBotConfig().getCurrentChannels().forEach(channel -> Channels.join(channel, false));
     }
