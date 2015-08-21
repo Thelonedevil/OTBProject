@@ -1,6 +1,7 @@
 package com.github.otbproject.otbproject.fs;
 
 import java.io.File;
+import java.util.stream.Stream;
 
 public class FSUtil {
     public static final String ERROR_MSG = "Failed to create directory: ";
@@ -90,6 +91,14 @@ public class FSUtil {
 
     public static String webDir() {
         return baseDir + File.separator + WEB_DIR_NAME;
+    }
+
+    public static Stream<File> streamDirectory(File directory) {
+        File[] files = directory.listFiles();
+        if (files == null) {
+            return Stream.empty();
+        }
+        return Stream.of(files);
     }
 
     public static class DirNames {
