@@ -34,6 +34,13 @@ public class Watcher {
         EXECUTOR_SERVICE.execute(() -> {
             numExceptions++;
             App.logger.error("Unexpected exception [" + numExceptions + "] caught at " + stackTraceElement);
+            if (numExceptions == 1) {
+                App.logger.error("OTB has experienced an internal error");
+                App.logger.error("Please report this problem to the developers");
+                if (Control.Graphics.present()) {
+                    GuiApplication.errorAlert("Internal Error", "OTB has experienced an internal error");
+                }
+            }
             if ((numExceptions >= EXCEPTION_LIMIT) && (numExceptions < EXCEPTION_LIMIT + DUPLICATE_LIMIT)) {
                 App.logger.error("OTB has experienced multiple internal errors");
                 App.logger.error("Please report this problem to the developers");
