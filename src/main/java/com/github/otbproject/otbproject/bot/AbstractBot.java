@@ -1,5 +1,6 @@
 package com.github.otbproject.otbproject.bot;
 
+import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.channel.Channel;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.database.Databases;
@@ -12,14 +13,14 @@ import java.util.concurrent.ConcurrentMap;
 public abstract class AbstractBot implements IBot {
     protected final ConcurrentMap<String, Channel> channels = new ConcurrentHashMap<>();
     protected final DatabaseWrapper botDB = Databases.createBotDbWrapper();
-    protected MessageHandler messageHandlers;
+    protected MessageHandler messageHandlers = (channel, packagedMessage, timedOut) -> {};
 
     public AbstractBot() {
-        messageHandlers = (channel, packagedMessage, timedOut) -> {
+        onMessage((channel, packagedMessage, timedOut) -> {
             if (!timedOut) {
                 channel.receiveMessage(packagedMessage);
             }
-        };
+        });
     }
 
     @Override
@@ -39,7 +40,14 @@ public abstract class AbstractBot implements IBot {
 
     @Override
     public void onMessage(MessageHandler messageHandler) {
-        messageHandlers = messageHandlers.andThen(messageHandler);
+        messageHandlers = messageHandlers.andThen((channel, packagedMessage, timedOut) -> {
+            // In try/catch block so that one handler can't crash others (unless it Errors)
+            try {
+                messageHandler.onMessage(channel, packagedMessage, timedOut);
+            } catch (Exception e) {
+                App.logger.catching(e);
+            }
+        });
     }
 
     @Override

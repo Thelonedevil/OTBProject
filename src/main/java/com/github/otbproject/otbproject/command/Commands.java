@@ -72,7 +72,7 @@ public class Commands {
         }
         Command command = optional.get();
         command.setCount(command.getCount() + 1);
-        addCommandFromLoadedCommand(db, command);
+        addCommandFromObj(db, command);
     }
 
     public static void resetCount(DatabaseWrapper db, String commandName) {
@@ -82,10 +82,10 @@ public class Commands {
         }
         Command command = optional.get();
         command.setCount(0);
-        addCommandFromLoadedCommand(db, command);
+        addCommandFromObj(db, command);
     }
 
-    public static boolean addCommandFromLoadedCommand(DatabaseWrapper db, Command command) {
+    public static boolean addCommandFromObj(DatabaseWrapper db, Command command) {
         HashMap<String, Object> map = new HashMap<>();
 
         map.put(CommandFields.NAME, command.getName());

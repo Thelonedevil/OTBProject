@@ -2,6 +2,7 @@ package com.github.otbproject.otbproject.channel;
 
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.bot.Bot;
+import com.github.otbproject.otbproject.bot.IBot;
 import com.github.otbproject.otbproject.command.parser.ResponseParserUtil;
 import com.github.otbproject.otbproject.config.BotConfig;
 import com.github.otbproject.otbproject.config.ChannelConfig;
@@ -38,8 +39,6 @@ public class Channels {
     public static boolean join(String channelName, boolean checkValidChannel) {
         channelName = channelName.toLowerCase();
         App.logger.info("Attempting to join channel: " + channelName);
-        boolean isBotChannel;
-        BotConfig botConfig;
 
         lock.lock();
         try {
@@ -48,10 +47,11 @@ public class Channels {
                 return false;
             }
 
-            isBotChannel = channelName.equals(Bot.getBot().getUserName());
+            IBot bot = Bot.getBot();
+            boolean isBotChannel = channelName.equals(bot.getUserName());
 
             // Check whitelist/blacklist
-            botConfig = Configs.getBotConfig();
+            BotConfig botConfig = Configs.getBotConfig();
             ChannelJoinSetting channelJoinSetting = botConfig.getChannelJoinSetting();
             if (!isBotChannel) {
                 if (channelJoinSetting == ChannelJoinSetting.WHITELIST) {
@@ -67,12 +67,13 @@ public class Channels {
                 }
             }
 
-            if (checkValidChannel && !Bot.getBot().isChannel(channelName)) {
+            if (checkValidChannel && !bot.isChannel(channelName)) {
                 App.logger.info("Failed to join channel: " + channelName + ". Channel does not exist.");
                 return false;
 
             }
 
+            // Setup channel files
             try {
                 Setup.setupChannel(channelName);
             } catch (IOException e) {
@@ -80,19 +81,23 @@ public class Channels {
                 App.logger.catching(e);
                 return false;
             }
-            if (Bot.getBot().isConnected()) {
-                if (!Bot.getBot().isConnected(channelName)) {
-                    if (!Bot.getBot().join(channelName)) {
-                        App.logger.warn("Failed to join channel: " + channelName);
+
+            // Connect to channel
+            if (bot.isConnected()) {
+                if (!bot.isConnected(channelName)) {
+                    if (!bot.join(channelName)) {
+                        App.logger.warn("Failed to connect to channel: " + channelName);
                         return false;
                     }
                 } else {
-                    App.logger.error("Already in the channel: " + channelName);
+                    App.logger.error("Already connected to channel: " + channelName);
                 }
             } else {
                 App.logger.error("Not connected to " + ResponseParserUtil.wordCap(Configs.getGeneralConfig().getService().toString(), true));
                 return false;
             }
+
+            // Create and join channel object
             Optional<Channel> optional = get(channelName);
             Channel channel;
             if (!optional.isPresent()) {
@@ -101,14 +106,17 @@ public class Channels {
                     channel = Channel.create(channelName, channelConfig);
                 } catch (ChannelInitException e) {
                     App.logger.catching(e);
+                    // Disconnect from channel if failed to create channel object
+                    bot.leave(channelName);
                     return false;
                 }
-                Bot.getBot().getChannels().put(channelName, channel);
+                bot.getChannels().put(channelName, channel);
             } else {
                 channel = optional.get();
             }
             channel.join();
 
+            // Add channel to list of channels bot is in in config (if not bot channel)
             if (!isBotChannel) {
                 botConfig.getCurrentChannels().add(channelName);
                 Configs.writeBotConfig();
@@ -132,7 +140,7 @@ public class Channels {
                 return false;
             }
             App.logger.info("Leaving channel: " + channelName);
-            get(channelName).ifPresent(Channel::leave);
+            get(channelName).ifPresent(Channel::leave); // TODO possibly remove from channel list?
             Configs.getBotConfig().getCurrentChannels().remove(channelName);
             Configs.writeBotConfig();
             Bot.getBot().leave(channelName);
