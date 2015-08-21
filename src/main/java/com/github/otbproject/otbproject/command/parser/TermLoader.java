@@ -5,7 +5,6 @@ import com.github.otbproject.otbproject.fs.FSUtil;
 import com.github.otbproject.otbproject.script.ScriptProcessor;
 
 import java.io.File;
-import java.util.stream.Stream;
 
 public class TermLoader {
     private static final ScriptProcessor PROCESSOR = new ScriptProcessor(false);
@@ -22,11 +21,7 @@ public class TermLoader {
     }
 
     public static void loadTerms() {
-        File[] files = new File(FSUtil.termScriptDir()).listFiles();
-        if (files == null) {
-            return;
-        }
-        Stream.of(files)
+        FSUtil.streamDirectory(new File(FSUtil.termScriptDir()))
                 .filter(file -> !file.isDirectory())
                 .map(File::getName)
                 .forEach(script -> {

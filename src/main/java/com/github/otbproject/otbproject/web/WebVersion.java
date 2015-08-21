@@ -44,13 +44,7 @@ public class WebVersion {
     }
 
     private static Optional<Version> lookupCurrent() {
-        File dir = new File(FSUtil.webDir());
-        File[] files = dir.listFiles();
-        if (files == null) {
-            return Optional.empty();
-        }
-
-        return Stream.of(files)
+        return FSUtil.streamDirectory(new File(FSUtil.webDir()))
                 .filter(File::isFile)
                 .map(File::getName)
                 .filter(s -> s.startsWith(WarDownload.WAR_PREFIX))

@@ -1,7 +1,11 @@
 package com.github.otbproject.otbproject.util.compat;
 
 import com.github.otbproject.otbproject.App;
+import com.github.otbproject.otbproject.command.Command;
+import com.github.otbproject.otbproject.command.Commands;
 import com.github.otbproject.otbproject.config.GeneralConfig;
+import com.github.otbproject.otbproject.database.DatabaseHelper;
+import com.github.otbproject.otbproject.database.Databases;
 import com.github.otbproject.otbproject.fs.FSUtil;
 import com.github.otbproject.otbproject.fs.PathBuilder;
 import com.github.otbproject.otbproject.fs.groups.Base;
@@ -12,7 +16,6 @@ import com.github.otbproject.otbproject.util.version.Version;
 
 import java.io.File;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 public class VersionCompatHelper {
     public static void fixCompatIssues(Version oldVersion) {
@@ -31,16 +34,10 @@ public class VersionCompatHelper {
     }
 
     private static void fixScripts() {
-        // Delete scripts from base dir, because they will be unpacked into a subdirectory
-        File scriptsDir = new File(FSUtil.scriptDir());
-        File[] files = scriptsDir.listFiles();
-        if (files == null) {
-            return;
-        }
-        String newDir = FSUtil.commandScriptDir() + File.separator;
-        Stream.of(files)
+        // Move scripts from base dir into subdirectory
+        FSUtil.streamDirectory(new File(FSUtil.scriptDir()))
                 .filter(File::isFile)
-                .forEach(file -> file.renameTo(new File(newDir + file.getName())));
+                .forEach(file -> file.renameTo(new File(FSUtil.commandScriptDir() + File.separator + file.getName())));
     }
 
     private static void fixGeneralConfig() {
@@ -60,6 +57,10 @@ public class VersionCompatHelper {
         String basePath = new PathBuilder().base(Base.CMD).channels(Chan.ALL).load(Load.ED).create();
         deleteFile(basePath + File.separator + "command.reset.count.success.json");
         deleteFile(FSUtil.commandScriptDir() + File.separator + "ScriptResetCount.groovy");
+        FSUtil.streamDirectory(new File(FSUtil.dataDir() + File.separator + FSUtil.DirNames.CHANNELS))
+                .map(File::getName)
+                .map(Databases::createChannelMainDbWrapper)
+                .forEach(db -> Commands.remove(db, "~%command.reset.count.success"));
     }
 
     private static void deleteFile(String path) {

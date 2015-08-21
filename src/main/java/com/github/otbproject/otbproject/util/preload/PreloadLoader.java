@@ -20,24 +20,22 @@ import com.github.otbproject.otbproject.util.JsonHandler;
 import com.github.otbproject.otbproject.util.Watcher;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
+// TODO tweak logging
 public class PreloadLoader {
     public static void loadDirectoryForEachChannel(Base base, LoadStrategy strategy) {
-        File[] files = new File(FSUtil.dataDir() + File.separator + FSUtil.DirNames.CHANNELS).listFiles();
-        if (files == null) {
-            App.logger.error("Failed to load objects of type '" + base.toString() + "' for all channels - unable to get list of channels");
-            return;
-        }
-        Stream.of(files).filter(File::isDirectory)
+        FSUtil.streamDirectory(new File(FSUtil.dataDir() + File.separator + FSUtil.DirNames.CHANNELS),
+                "Failed to load objects of type '" + base.toString() + "' for each channel - unable to get list of channels")
+                .filter(File::isDirectory)
                 .forEach(file -> loadDirectory(base, Chan.SPECIFIC, file.getName(), strategy));
     }
 
     public static void loadDirectory(Base base, Chan chan, String channelName, LoadStrategy strategy) {
         List<PreloadPair<?>> list = loadDirectoryContents(base, chan, channelName, strategy);
-        if (list == null) {
+        if (list.isEmpty()) {
             return;
         }
 
@@ -60,14 +58,10 @@ public class PreloadLoader {
             return;
         }
 
-        File[] files = new File(FSUtil.dataDir() + File.separator + FSUtil.DirNames.CHANNELS).listFiles();
-        if (files == null) {
-            App.logger.error("Failed to load objects of type '" + base.toString() + "' for all channels - unable to get list of channels");
-            return;
-        }
-
         App.logger.debug("Loading objects of type '" + base.toString() + "' for all channels");
-        Stream.of(files).filter(File::isDirectory)
+        FSUtil.streamDirectory(new File(FSUtil.dataDir() + File.separator + FSUtil.DirNames.CHANNELS),
+                "Failed to load objects of type '" + base.toString() + "' for each channel - unable to get list of channels")
+                .filter(File::isDirectory)
                 .forEach(file -> loadForChannel(list, file.getName(), base, strategy));
         App.logger.debug("Finished loading objects of type '" + base.toString() + "' for all channels");
     }
@@ -144,7 +138,7 @@ public class PreloadLoader {
 
     private static List<PreloadPair<?>> loadDirectoryContents(Base base, Chan chan, String channelName, LoadStrategy strategy) {
         if ((chan == Chan.SPECIFIC) && (channelName == null)) {
-            return null;
+            return Collections.emptyList();
         }
         File dir;
         PathBuilder builder = new PathBuilder();
@@ -154,19 +148,13 @@ public class PreloadLoader {
             dir = builder.base(base).channels(chan).forChannel(channelName).load(Load.TO).asFile();
         }
 
-        File[] files = dir.listFiles();
-        if (files == null) {
-            App.logger.error("Unable to get list of files for directory: " + dir.toString());
-            return null;
-        }
-
         final Class<?> tClass = getClassFromBase(base);
         if (tClass == null) {
-            App.logger.warn("Unable to determine class to load as for base: " + base.toString());
-            return null;
+            App.logger.error("Unable to determine class to load as for base: " + base.toString());
+            return Collections.emptyList();
         }
 
-        return Stream.of(files)
+        return FSUtil.streamDirectory(dir)
                 .map(file -> {
                     String name = file.getName();
                     String pathOld = builder.base(base).channels(chan).forChannel(channelName).load(Load.ED).create() + File.separator + name;
