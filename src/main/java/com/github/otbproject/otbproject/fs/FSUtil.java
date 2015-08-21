@@ -1,5 +1,7 @@
 package com.github.otbproject.otbproject.fs;
 
+import com.github.otbproject.otbproject.App;
+
 import java.io.File;
 import java.util.stream.Stream;
 
@@ -94,8 +96,13 @@ public class FSUtil {
     }
 
     public static Stream<File> streamDirectory(File directory) {
+        return streamDirectory(directory, "Error listing files for directory: " + directory.getPath());
+    }
+
+    public static Stream<File> streamDirectory(File directory, String errMsg) {
         File[] files = directory.listFiles();
         if (files == null) {
+            App.logger.error(errMsg);
             return Stream.empty();
         }
         return Stream.of(files);
