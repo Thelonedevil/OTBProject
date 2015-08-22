@@ -20,12 +20,15 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import org.apache.commons.io.input.Tailer;
 import org.apache.commons.io.input.TailerListenerAdapter;
+import org.isomorphism.util.TokenBucket;
+import org.isomorphism.util.TokenBuckets;
 
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.concurrent.TimeUnit;
 
 public class GuiApplication extends Application {
 
@@ -130,9 +133,22 @@ public class GuiApplication extends Application {
     }
 
     static class CustomTailer extends TailerListenerAdapter {
+        private final TokenBucket tokenBucket = TokenBuckets.builder()
+                .withCapacity(10)
+                .withFixedIntervalRefillStrategy(1, 50, TimeUnit.MILLISECONDS)
+                .build();
+        private StringBuilder buffer = new StringBuilder();
+
+        // Seems to be handled by a single thread, so shouldn't need synchronization
         @Override
         public void handle(String line) {
-            GuiUtils.runSafe(() -> controller.logOutput.appendText(line + "\n"));
+            // TokenBucket to prevent spamming and overwhelming the GUI if a lot of lines come in simultaneously
+            if (tokenBucket.tryConsume()) {
+                GuiUtils.runSafe(() -> controller.logOutput.appendText(buffer.toString() + line + "\n"));
+                buffer.delete(0, buffer.length());
+            } else {
+                buffer.append(line).append("\n");
+            }
         }
     }
 
