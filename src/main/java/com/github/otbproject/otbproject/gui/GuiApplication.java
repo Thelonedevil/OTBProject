@@ -134,7 +134,7 @@ public class GuiApplication extends Application {
 
     static class CustomTailer extends TailerListenerAdapter {
         private final TokenBucket tokenBucket = TokenBuckets.builder()
-                .withCapacity(10)
+                .withCapacity(5)
                 .withFixedIntervalRefillStrategy(1, 200, TimeUnit.MILLISECONDS) // Slightly faster than the tailer just in case
                 .build();
         private StringBuilder buffer = new StringBuilder();
