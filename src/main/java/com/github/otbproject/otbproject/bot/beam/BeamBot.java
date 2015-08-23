@@ -8,6 +8,7 @@ import com.github.otbproject.otbproject.channel.ChannelInitException;
 import com.github.otbproject.otbproject.channel.ChannelNotFoundException;
 import com.github.otbproject.otbproject.channel.Channels;
 import com.github.otbproject.otbproject.config.Configs;
+import com.github.otbproject.otbproject.util.ThreadUtil;
 import net.jodah.expiringmap.ExpiringMap;
 import org.apache.logging.log4j.Level;
 import pro.beam.api.BeamAPI;
@@ -40,6 +41,7 @@ public class BeamBot extends AbstractBot {
         try {
             beamUser = beam.use(UsersService.class).login(Configs.getAccount().getName(), Configs.getAccount().getPasskey()).get();
         } catch (InterruptedException | ExecutionException e) {
+            ThreadUtil.interruptIfInterruptedException(e);
             throw new BotInitException("Unable to connect bot to Beam", e);
         }
     }
@@ -60,6 +62,7 @@ public class BeamBot extends AbstractBot {
             return beam.use(UsersService.class).search(channelName).get().stream()
                     .anyMatch(user -> user.username.equalsIgnoreCase(channelName));
         } catch (InterruptedException | ExecutionException e) {
+            ThreadUtil.interruptIfInterruptedException(e);
             App.logger.catching(e);
         }
         return false;
@@ -115,6 +118,7 @@ public class BeamBot extends AbstractBot {
                 Thread.sleep(200);
             } catch (InterruptedException ignored) {
                 App.logger.warn("Bot thread interrupted - shutting down bot");
+                Thread.currentThread().interrupt();
                 shutdown();
                 break;
             }
@@ -243,8 +247,11 @@ public class BeamBot extends AbstractBot {
             if ((result != null) && result.toString().contains("username")) {
                 return true;
             }
-        } catch (InterruptedException | TimeoutException e) {
+        } catch (TimeoutException ignored) {
+            App.logger.error("Request to set 'Banned' status of user '" + user + "' timed out");
+        } catch (InterruptedException e) {
             App.logger.catching(e);
+            Thread.currentThread().interrupt();
         } catch (ExecutionException e) {
             App.logger.catching(Level.DEBUG, e);
         }

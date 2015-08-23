@@ -3,6 +3,7 @@ package com.github.otbproject.otbproject.bot.beam;
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.bot.Control;
 import com.github.otbproject.otbproject.channel.ChannelInitException;
+import com.github.otbproject.otbproject.util.ThreadUtil;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.RemovalListener;
@@ -80,6 +81,7 @@ public class BeamChatChannel {
             channel = beamBot.beam.use(UsersService.class).findOne(beamUser.id).get().channel;
             beamChat = beamBot.beam.use(ChatService.class).findOne(channel.id).get();
         } catch (InterruptedException | ExecutionException e) {
+            ThreadUtil.interruptIfInterruptedException(e);
             throw new ChannelInitException(channelName, ERR_MSG, e);
         }
         beamChatConnectable = beamChat.makeConnectable(beamBot.beam);
@@ -87,7 +89,7 @@ public class BeamChatChannel {
         try {
             connected = beamChatConnectable.connectBlocking();
         } catch (InterruptedException e) {
-            App.logger.catching(e);
+            Thread.currentThread().interrupt();
             throw new ChannelInitException(channelName, ERR_MSG, e);
         }
         if (!connected) {
@@ -108,6 +110,7 @@ public class BeamChatChannel {
                             user -> Collections.unmodifiableList(user.getUserRoles())));
             userRoles.putAll(roleMap);
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            ThreadUtil.interruptIfInterruptedException(e);
             App.logger.catching(e);
         }
 

@@ -40,6 +40,7 @@ class WarDownload {
                     App.logger.error("Taking too long to download web interface - aborting...");
                 } else {
                     App.logger.error("Thread interrupted while waiting for web interface download to complete");
+                    Thread.currentThread().interrupt();
                 }
                 future.cancel(true);
                 App.logger.error("Stopping after " + i + "/" + ATTEMPTS + " download attempts");

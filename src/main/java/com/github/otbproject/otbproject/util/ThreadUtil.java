@@ -34,4 +34,10 @@ public class ThreadUtil {
                         .build()
         );
     }
+
+    public static void interruptIfInterruptedException(Exception e) {
+        if (e instanceof InterruptedException) {
+            Thread.currentThread().interrupt();
+        }
+    }
 }

@@ -99,6 +99,7 @@ public class ChannelMessageSender {
             }
         } catch (InterruptedException e) {
             App.logger.info("Stopped message sender for " + channel.getName());
+            Thread.currentThread().interrupt();
         }
     }
 }
