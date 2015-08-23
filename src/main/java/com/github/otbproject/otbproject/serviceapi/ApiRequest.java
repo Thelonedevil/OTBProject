@@ -1,6 +1,7 @@
 package com.github.otbproject.otbproject.serviceapi;
 
 import com.github.otbproject.otbproject.App;
+import com.google.common.util.concurrent.Uninterruptibles;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.HttpResponseException;
@@ -9,6 +10,7 @@ import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.HttpClientBuilder;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 public class ApiRequest {
     public static String sendRequest(String request) {
@@ -35,11 +37,7 @@ public class ApiRequest {
         for (int i = 0; i < attempts; i++) {
             String response = ApiRequest.sendRequest(request);
             if (response == null) {
-                try {
-                    Thread.sleep(millisecondsBetweenAttempts);
-                } catch (InterruptedException e) {
-                    App.logger.info("Interrupted sleep in http request cooldown.");
-                }
+                Uninterruptibles.sleepUninterruptibly(millisecondsBetweenAttempts, TimeUnit.MILLISECONDS);
             } else {
                 return response;
             }

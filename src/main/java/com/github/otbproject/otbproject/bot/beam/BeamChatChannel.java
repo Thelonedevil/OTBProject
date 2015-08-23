@@ -9,6 +9,7 @@ import com.google.common.cache.RemovalListener;
 import com.google.common.cache.RemovalNotification;
 import com.google.common.collect.Multimaps;
 import com.google.common.collect.SetMultimap;
+import com.google.common.util.concurrent.Uninterruptibles;
 import net.jodah.expiringmap.ExpiringMap;
 import pro.beam.api.BeamAPI;
 import pro.beam.api.resource.BeamUser;
@@ -94,11 +95,7 @@ public class BeamChatChannel {
         }
 
         beamChatConnectable.send(AuthenticateMessage.from(channel, beamBot.beamUser, beamChat.authkey));
-        try {
-            Thread.sleep(200);// needed to allow the authentication
-        } catch (InterruptedException e) {
-            App.logger.catching(e);
-        }
+        Uninterruptibles.sleepUninterruptibly(200, TimeUnit.MILLISECONDS); // needed to allow the authentication
 
         // Get list of users and roles
         String path = BeamAPI.BASE_PATH.resolve("chats/" + channel.id + "/users").toString();
