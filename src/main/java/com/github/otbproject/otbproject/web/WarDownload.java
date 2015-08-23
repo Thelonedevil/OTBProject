@@ -9,10 +9,7 @@ import java.io.*;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Stream;
+import java.util.concurrent.*;
 
 class WarDownload {
     private static final int ATTEMPTS = 2;
@@ -37,13 +34,11 @@ class WarDownload {
                 }
                 success = true;
                 break;
-            } catch (Exception e) {
+            } catch (WarDownloadException | InterruptedException | ExecutionException | TimeoutException e) {
                 App.logger.error("Error downloading web interface");
                 App.logger.catching(e);
                 App.logger.error("Failed attempt to download web interface (" + i + "/" + ATTEMPTS + ")");
-                if (future != null) {
-                    future.cancel(true);
-                }
+                future.cancel(true);
                 cleanupTempDownload();
             }
         }
