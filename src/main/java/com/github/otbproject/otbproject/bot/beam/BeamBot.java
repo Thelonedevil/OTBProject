@@ -114,6 +114,9 @@ public class BeamBot extends AbstractBot {
             try {
                 Thread.sleep(200);
             } catch (InterruptedException ignored) {
+                App.logger.warn("Bot thread interrupted - shutting down bot");
+                shutdown();
+                break;
             }
         }
     }
