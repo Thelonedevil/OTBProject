@@ -8,6 +8,7 @@ import org.apache.commons.codec.digest.DigestUtils;
 import java.io.*;
 import java.net.URL;
 import java.nio.channels.Channels;
+import java.nio.channels.ClosedByInterruptException;
 import java.nio.channels.ReadableByteChannel;
 import java.util.concurrent.*;
 
@@ -34,11 +35,20 @@ class WarDownload {
                 }
                 success = true;
                 break;
-            } catch (WarDownloadException | InterruptedException | ExecutionException | TimeoutException e) {
+            } catch (TimeoutException | InterruptedException e) {
+                if (e instanceof TimeoutException) {
+                    App.logger.error("Taking too long to download web interface - aborting...");
+                } else {
+                    App.logger.error("Thread interrupted while waiting for web interface download to complete");
+                }
+                future.cancel(true);
+                App.logger.error("Stopping after " + i + "/" + ATTEMPTS + " download attempts");
+                cleanupTempDownload();
+                break;
+            } catch (WarDownloadException | ExecutionException e) {
                 App.logger.error("Error downloading web interface");
                 App.logger.catching(e);
                 App.logger.error("Failed attempt to download web interface (" + i + "/" + ATTEMPTS + ")");
-                future.cancel(true);
                 cleanupTempDownload();
             }
         }
@@ -95,6 +105,8 @@ class WarDownload {
             if (!md5.equals(inputLine)) {
                 throw new WarDownloadException("Download of War file either corrupted or some 3rd party has changed the file");
             }
+        } catch (ClosedByInterruptException ignored) {
+            App.logger.error("War download interrupted before it could complete");
         } catch (IOException e) {
             throw new WarDownloadException(e);
         }
