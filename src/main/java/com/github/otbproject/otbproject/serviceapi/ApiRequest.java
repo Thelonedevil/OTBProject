@@ -26,7 +26,7 @@ public class ApiRequest {
             App.logger.debug(responseStr);
             return responseStr;
         } catch (HttpResponseException e) {
-            App.logger.info("Request failed.");
+            App.logger.error("Twitch API request failed.");
         } catch (IOException e) {
             App.logger.catching(e);
         }
@@ -37,7 +37,13 @@ public class ApiRequest {
         for (int i = 0; i < attempts; i++) {
             String response = ApiRequest.sendRequest(request);
             if (response == null) {
-                Uninterruptibles.sleepUninterruptibly(millisecondsBetweenAttempts, TimeUnit.MILLISECONDS);
+                try {
+                    Thread.sleep(millisecondsBetweenAttempts);
+                } catch (InterruptedException e) {
+                    App.logger.warn("Interrupted Twitch API request");
+                    Thread.currentThread().interrupt();
+                    break;
+                }
             } else {
                 return response;
             }
