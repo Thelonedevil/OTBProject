@@ -98,7 +98,7 @@ public class GuiApplication extends Application {
         controller.cliOutput.appendText(">  ");
         controller.commandsInput.setEditable(false);
         controller.commandsOutput.appendText("Type \"help\" for a list of commands.\nThe PID of the bot is probably "
-                + App.PID  + ", if you are using an Oracle JVM, but it may be different,"
+                + App.PID  + " if you are using an Oracle JVM, but it may be different,"
                 + " especially if you are using a different JVM. Be careful stopping the bot using this PID.");
         controller.readHistory();
         primaryStage.show();
