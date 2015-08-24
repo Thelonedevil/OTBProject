@@ -62,7 +62,7 @@ public class GuiApplication extends Application {
         primaryStage.setScene(new Scene(start, 1200, 515));
         primaryStage.setResizable(false);
         primaryStage.setTitle("OTB");
-        primaryStage.getIcons().add(new Image("file://" + FSUtil.assetsDir() + File.separator + FSUtil.Assets.LOGO));
+        primaryStage.getIcons().add(new Image("file:" + FSUtil.assetsDir() + File.separator + FSUtil.Assets.LOGO));
         // Create tailer
         CustomTailerListenerAdapter listenerAdapter = new CustomTailerListenerAdapter();
         File logFile = new File(FSUtil.logsDir() + File.separator + "console.log");
