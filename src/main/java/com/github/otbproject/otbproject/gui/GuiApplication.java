@@ -20,22 +20,23 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import org.apache.commons.io.input.Tailer;
 import org.apache.commons.io.input.TailerListenerAdapter;
-import org.isomorphism.util.TokenBucket;
-import org.isomorphism.util.TokenBuckets;
 
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.concurrent.TimeUnit;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.stream.Collectors;
 
 public class GuiApplication extends Application {
 
 
     private static GuiController controller;
-    private Tailer tailer;
 
     /**
      * The main entry point for all JavaFX applications.
@@ -62,6 +63,11 @@ public class GuiApplication extends Application {
         primaryStage.setResizable(false);
         primaryStage.setTitle("OTB");
         primaryStage.getIcons().add(new Image("file://" + FSUtil.assetsDir() + File.separator + FSUtil.Assets.LOGO));
+        // Create tailer
+        CustomTailerListenerAdapter listenerAdapter = new CustomTailerListenerAdapter();
+        File logFile = new File(FSUtil.logsDir() + File.separator + "console.log");
+        Tailer tailer = Tailer.create(logFile, listenerAdapter, 250);
+        // Set on-close action
         primaryStage.setOnCloseRequest(event -> {
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setTitle("Confirm Close");
@@ -79,6 +85,7 @@ public class GuiApplication extends Application {
                 if (buttonType == buttonTypeCloseNoExit) {
                     primaryStage.hide();
                     tailer.stop();
+                    listenerAdapter.stop();
                 } else if (buttonType == buttonTypeExit) {
                     Control.shutdownAndExit();
                     System.exit(0);
@@ -90,9 +97,9 @@ public class GuiApplication extends Application {
         setUpMenus();
         controller.cliOutput.appendText(">  ");
         controller.commandsInput.setEditable(false);
-        controller.commandsOutput.appendText("Type \"help\" for a list of commands.\nThe PID of the bot is probably " + App.PID + ", if you are using an Oracle JVM, but it may be different, especially if you are using a different JVM. Be careful stopping the bot using this PID.");
-        File logFile = new File(FSUtil.logsDir() + File.separator + "console.log");
-        tailer = Tailer.create(logFile, new CustomTailer(), 250);
+        controller.commandsOutput.appendText("Type \"help\" for a list of commands.\nThe PID of the bot is probably "
+                + App.PID  + ", if you are using an Oracle JVM, but it may be different,"
+                + " especially if you are using a different JVM. Be careful stopping the bot using this PID.");
         controller.readHistory();
         primaryStage.show();
         checkForNewRelease();
@@ -133,22 +140,47 @@ public class GuiApplication extends Application {
         });
     }
 
-    static class CustomTailer extends TailerListenerAdapter {
-        private final TokenBucket tokenBucket = TokenBuckets.builder()
-                .withCapacity(5)
-                .withFixedIntervalRefillStrategy(1, 100, TimeUnit.MILLISECONDS) // faster than the Tailer to reduce lag
-                .build();
-        private StringBuilder buffer = new StringBuilder();
+    static class CustomTailerListenerAdapter extends TailerListenerAdapter {
+        private final BlockingQueue<String> queue = new LinkedBlockingQueue<>();
+        private final List<String> buffer = new ArrayList<>();
+        private final Future<?> future;
 
-        // Seems to be handled by a single thread, so shouldn't need synchronization
+        public CustomTailerListenerAdapter() {
+            future = ThreadUtil.getSingleThreadExecutor("GUI-console-daemon").submit(() -> {
+                while (true) {
+                    addToConsole();
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        App.logger.info("Stopping console daemon");
+                        Thread.currentThread().interrupt();
+                        break;
+                    }
+                }
+                return null;
+            });
+        }
+
+        void stop() {
+            future.cancel(true);
+        }
+
+        private void addToConsole() {
+            queue.drainTo(buffer);
+            if (!buffer.isEmpty()) {
+                String text = buffer.stream().collect(Collectors.joining("\n", "", "\n"));
+                GuiUtils.runSafe(() -> controller.logOutput.appendText(text));
+                buffer.clear();
+            }
+        }
+
         @Override
         public void handle(String line) {
-            // TokenBucket to prevent spamming and overwhelming the GUI if a lot of lines come in simultaneously
-            if (tokenBucket.tryConsume()) {
-                GuiUtils.runSafe(() -> controller.logOutput.appendText(buffer.toString() + line + "\n"));
-                buffer.delete(0, buffer.length());
-            } else {
-                buffer.append(line).append("\n");
+            try {
+                queue.put(line);
+            } catch (InterruptedException e) {
+                App.logger.catching(e);
+                Thread.currentThread().interrupt();
             }
         }
     }
