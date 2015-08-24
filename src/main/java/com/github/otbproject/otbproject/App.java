@@ -124,9 +124,6 @@ public class App {
             ThreadUtil.getSingleThreadExecutor().execute(() -> GuiApplication.start(args));
         }
 
-        // Check for previous fatal crash
-        FatalChecker.checkForPreviousFatalCrashes();
-
         // Fix other compatibility issues
         if (unpack) {
             VersionCompatHelper.normalCompatFixes(version);
@@ -145,6 +142,9 @@ public class App {
 
         // Perform various startup actions
         Control.firstStartup();
+
+        // Check for previous fatal crash
+        FatalChecker.checkForPreviousFatalCrashes();
 
         // Start web interface
         if (Configs.getWebConfig().isEnabled()) {
