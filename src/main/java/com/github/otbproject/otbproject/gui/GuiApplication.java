@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 public class GuiApplication extends Application {
 
@@ -266,14 +267,25 @@ public class GuiApplication extends Application {
         });
     }
 
-    // TODO fix
     public static void fatalErrorAlert(String fileName) {
         GuiUtils.runSafe(() -> {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Fatal Error");
-            alert.setHeaderText("OTB has experienced a fatal error");
+            alert.setHeaderText("OTB experienced a fatal error the last time it ran");
             String url = "https://github.com/OTBProject/OTBProject/issues";
             alert.setContentText("Please report this problem to the developers at\n\"" + url + "\"\nand provide them with the file: " + fileName);
+            showErrorAlert(alert, url);
+        });
+    }
+
+    public static void multipleFatalErrorAlert(java.util.List<String> fileNames) {
+        GuiUtils.runSafe(() -> {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Fatal Error");
+            alert.setHeaderText("OTB somehow experienced multiple fatal errors the last time it ran");
+            String url = "https://github.com/OTBProject/OTBProject/issues";
+            alert.setContentText("Please report this problem to the developers at\n\"" + url + "\"\nand provide them with the files:\n"
+                    + fileNames.stream().collect(Collectors.joining("\n")));
             showErrorAlert(alert, url);
         });
     }

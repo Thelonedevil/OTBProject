@@ -13,6 +13,7 @@ import com.github.otbproject.otbproject.fs.groups.Chan;
 import com.github.otbproject.otbproject.fs.groups.Load;
 import com.github.otbproject.otbproject.gui.GuiApplication;
 import com.github.otbproject.otbproject.messages.internal.InternalMessageSender;
+import com.github.otbproject.otbproject.util.FatalChecker;
 import com.github.otbproject.otbproject.util.Unpacker;
 import com.github.otbproject.otbproject.util.ThreadUtil;
 import com.github.otbproject.otbproject.util.compat.VersionCompatHelper;
@@ -54,14 +55,12 @@ public class App {
                 // log throwable
                 DateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd-HH.mm.ss");
                 Date date = new Date();
-                String fileName = "OTBProjectFatal-" + dateFormat.format(date) + ".log";
-                File file = new File(fileName);
+                File file = new File("OTBProjectFatal-" + dateFormat.format(date) + ".log");
                 if (!file.createNewFile()) {
                     throw new IOException("Failed to create fatal log file for some reason.");
                 }
                 PrintStream ps = new PrintStream(file);
                 t.printStackTrace(ps);
-                // TODO attempt to create popup
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -124,6 +123,9 @@ public class App {
         if (Control.Graphics.present()) {
             ThreadUtil.getSingleThreadExecutor().execute(() -> GuiApplication.start(args));
         }
+
+        // Check for previous fatal crash
+        FatalChecker.checkForPreviousFatalCrashes();
 
         // Fix other compatibility issues
         if (unpack) {
