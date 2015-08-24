@@ -40,7 +40,7 @@ public class ChannelMessageSender {
             return false;
         }
         active = true;
-        future = EXECUTOR_SERVICE.submit(this::run);
+        future = EXECUTOR_SERVICE.submit(this::sendMessages);
         return true;
     }
 
@@ -86,7 +86,7 @@ public class ChannelMessageSender {
         queue.clear();
     }
 
-    private void run() {
+    private void sendMessages() {
         try {
             Thread.currentThread().setName(channel.getName() + " Message Sender");
             MessageOut message;
@@ -99,6 +99,7 @@ public class ChannelMessageSender {
             }
         } catch (InterruptedException e) {
             App.logger.info("Stopped message sender for " + channel.getName());
+            Thread.currentThread().interrupt();
         }
     }
 }

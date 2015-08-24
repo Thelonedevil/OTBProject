@@ -1,6 +1,7 @@
 package com.github.otbproject.otbproject.serviceapi;
 
 import com.github.otbproject.otbproject.App;
+import com.google.common.util.concurrent.Uninterruptibles;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.HttpResponseException;
@@ -9,6 +10,7 @@ import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.HttpClientBuilder;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 public class ApiRequest {
     public static String sendRequest(String request) {
@@ -24,7 +26,7 @@ public class ApiRequest {
             App.logger.debug(responseStr);
             return responseStr;
         } catch (HttpResponseException e) {
-            App.logger.info("Request failed.");
+            App.logger.error("Twitch API request failed.");
         } catch (IOException e) {
             App.logger.catching(e);
         }
@@ -38,7 +40,9 @@ public class ApiRequest {
                 try {
                     Thread.sleep(millisecondsBetweenAttempts);
                 } catch (InterruptedException e) {
-                    App.logger.info("Interrupted sleep in http request cooldown.");
+                    App.logger.warn("Interrupted Twitch API request");
+                    Thread.currentThread().interrupt();
+                    break;
                 }
             } else {
                 return response;

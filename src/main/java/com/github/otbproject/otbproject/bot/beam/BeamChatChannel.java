@@ -3,12 +3,14 @@ package com.github.otbproject.otbproject.bot.beam;
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.bot.Control;
 import com.github.otbproject.otbproject.channel.ChannelInitException;
+import com.github.otbproject.otbproject.util.ThreadUtil;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.RemovalListener;
 import com.google.common.cache.RemovalNotification;
 import com.google.common.collect.Multimaps;
 import com.google.common.collect.SetMultimap;
+import com.google.common.util.concurrent.Uninterruptibles;
 import net.jodah.expiringmap.ExpiringMap;
 import pro.beam.api.BeamAPI;
 import pro.beam.api.resource.BeamUser;
@@ -79,6 +81,7 @@ public class BeamChatChannel {
             channel = beamBot.beam.use(UsersService.class).findOne(beamUser.id).get().channel;
             beamChat = beamBot.beam.use(ChatService.class).findOne(channel.id).get();
         } catch (InterruptedException | ExecutionException e) {
+            ThreadUtil.interruptIfInterruptedException(e);
             throw new ChannelInitException(channelName, ERR_MSG, e);
         }
         beamChatConnectable = beamChat.makeConnectable(beamBot.beam);
@@ -86,7 +89,7 @@ public class BeamChatChannel {
         try {
             connected = beamChatConnectable.connectBlocking();
         } catch (InterruptedException e) {
-            App.logger.catching(e);
+            Thread.currentThread().interrupt();
             throw new ChannelInitException(channelName, ERR_MSG, e);
         }
         if (!connected) {
@@ -94,11 +97,7 @@ public class BeamChatChannel {
         }
 
         beamChatConnectable.send(AuthenticateMessage.from(channel, beamBot.beamUser, beamChat.authkey));
-        try {
-            Thread.sleep(200);// needed to allow the authentication
-        } catch (InterruptedException e) {
-            App.logger.catching(e);
-        }
+        Uninterruptibles.sleepUninterruptibly(200, TimeUnit.MILLISECONDS); // needed to allow the authentication
 
         // Get list of users and roles
         String path = BeamAPI.BASE_PATH.resolve("chats/" + channel.id + "/users").toString();
@@ -111,6 +110,7 @@ public class BeamChatChannel {
                             user -> Collections.unmodifiableList(user.getUserRoles())));
             userRoles.putAll(roleMap);
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            ThreadUtil.interruptIfInterruptedException(e);
             App.logger.catching(e);
         }
 
