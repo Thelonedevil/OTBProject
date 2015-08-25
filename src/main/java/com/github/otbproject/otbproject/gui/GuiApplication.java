@@ -7,6 +7,7 @@ import com.github.otbproject.otbproject.fs.FSUtil;
 import com.github.otbproject.otbproject.util.ThreadUtil;
 import com.github.otbproject.otbproject.util.version.AppVersion;
 import com.github.otbproject.otbproject.util.version.Version;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -20,21 +21,21 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import org.apache.commons.io.input.Tailer;
 import org.apache.commons.io.input.TailerListenerAdapter;
-import org.isomorphism.util.TokenBucket;
-import org.isomorphism.util.TokenBuckets;
 
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.concurrent.TimeUnit;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.*;
+import java.util.stream.Collectors;
 
 public class GuiApplication extends Application {
 
 
     private static GuiController controller;
-    private Tailer tailer;
 
     /**
      * The main entry point for all JavaFX applications.
@@ -60,7 +61,12 @@ public class GuiApplication extends Application {
         primaryStage.setScene(new Scene(start, 1200, 515));
         primaryStage.setResizable(false);
         primaryStage.setTitle("OTB");
-        primaryStage.getIcons().add(new Image("file://" + FSUtil.assetsDir() + File.separator + FSUtil.Assets.LOGO));
+        primaryStage.getIcons().add(new Image("file:" + FSUtil.assetsDir() + File.separator + FSUtil.Assets.LOGO));
+        // Create tailer
+        CustomTailerListenerAdapter listenerAdapter = new CustomTailerListenerAdapter();
+        File logFile = new File(FSUtil.logsDir() + File.separator + "console.log");
+        Tailer tailer = Tailer.create(logFile, listenerAdapter, 250);
+        // Set on-close action
         primaryStage.setOnCloseRequest(event -> {
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setTitle("Confirm Close");
@@ -78,6 +84,7 @@ public class GuiApplication extends Application {
                 if (buttonType == buttonTypeCloseNoExit) {
                     primaryStage.hide();
                     tailer.stop();
+                    listenerAdapter.stop();
                 } else if (buttonType == buttonTypeExit) {
                     Control.shutdownAndExit();
                     System.exit(0);
@@ -89,9 +96,9 @@ public class GuiApplication extends Application {
         setUpMenus();
         controller.cliOutput.appendText(">  ");
         controller.commandsInput.setEditable(false);
-        controller.commandsOutput.appendText("Type \"help\" for a list of commands.\nThe PID of the bot is probably " + App.PID + ", if you are using an Oracle JVM, but it may be different, especially if you are using a different JVM. Be careful stopping the bot using this PID.");
-        File logFile = new File(FSUtil.logsDir() + File.separator + "console.log");
-        tailer = Tailer.create(logFile, new CustomTailer(), 250);
+        controller.commandsOutput.appendText("Type \"help\" for a list of commands.\nThe PID of the bot is probably "
+                + App.PID  + " if you are using an Oracle JVM, but it may be different,"
+                + " especially if you are using a different JVM. Be careful stopping the bot using this PID.");
         controller.readHistory();
         primaryStage.show();
         checkForNewRelease();
@@ -132,22 +139,40 @@ public class GuiApplication extends Application {
         });
     }
 
-    static class CustomTailer extends TailerListenerAdapter {
-        private final TokenBucket tokenBucket = TokenBuckets.builder()
-                .withCapacity(5)
-                .withFixedIntervalRefillStrategy(1, 100, TimeUnit.MILLISECONDS) // faster than the Tailer to reduce lag
-                .build();
-        private StringBuilder buffer = new StringBuilder();
+    static class CustomTailerListenerAdapter extends TailerListenerAdapter {
+        private final BlockingQueue<String> queue = new LinkedBlockingQueue<>();
+        private final List<String> buffer = new ArrayList<>();
+        private final ScheduledFuture<?> scheduledFuture;
 
-        // Seems to be handled by a single thread, so shouldn't need synchronization
+        public CustomTailerListenerAdapter() {
+            scheduledFuture = Executors.newSingleThreadScheduledExecutor(
+                    new ThreadFactoryBuilder()
+                            .setNameFormat("GUI-console-daemon")
+                            .setUncaughtExceptionHandler(ThreadUtil.UNCAUGHT_EXCEPTION_HANDLER)
+                            .build()
+            ).scheduleWithFixedDelay(this::addToConsole, 0, 100, TimeUnit.MILLISECONDS);
+        }
+
+        void stop() {
+            scheduledFuture.cancel(true);
+        }
+
+        private void addToConsole() {
+            queue.drainTo(buffer);
+            if (!buffer.isEmpty()) {
+                String text = buffer.stream().collect(Collectors.joining("\n", "", "\n"));
+                GuiUtils.runSafe(() -> controller.logOutput.appendText(text));
+                buffer.clear();
+            }
+        }
+
         @Override
         public void handle(String line) {
-            // TokenBucket to prevent spamming and overwhelming the GUI if a lot of lines come in simultaneously
-            if (tokenBucket.tryConsume()) {
-                GuiUtils.runSafe(() -> controller.logOutput.appendText(buffer.toString() + line + "\n"));
-                buffer.delete(0, buffer.length());
-            } else {
-                buffer.append(line).append("\n");
+            try {
+                queue.put(line);
+            } catch (InterruptedException e) {
+                App.logger.catching(e);
+                Thread.currentThread().interrupt();
             }
         }
     }
@@ -266,14 +291,25 @@ public class GuiApplication extends Application {
         });
     }
 
-    // TODO fix
     public static void fatalErrorAlert(String fileName) {
         GuiUtils.runSafe(() -> {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Fatal Error");
-            alert.setHeaderText("OTB has experienced a fatal error");
+            alert.setHeaderText("OTB experienced a fatal error the last time it ran");
             String url = "https://github.com/OTBProject/OTBProject/issues";
             alert.setContentText("Please report this problem to the developers at\n\"" + url + "\"\nand provide them with the file: " + fileName);
+            showErrorAlert(alert, url);
+        });
+    }
+
+    public static void multipleFatalErrorAlert(java.util.List<String> fileNames) {
+        GuiUtils.runSafe(() -> {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Fatal Error");
+            alert.setHeaderText("OTB somehow experienced multiple fatal errors the last time it ran");
+            String url = "https://github.com/OTBProject/OTBProject/issues";
+            alert.setContentText("Please report this problem to the developers at\n\"" + url + "\"\nand provide them with the files:\n"
+                    + fileNames.stream().collect(Collectors.joining("\n")));
             showErrorAlert(alert, url);
         });
     }
