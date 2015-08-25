@@ -7,6 +7,7 @@ import com.github.otbproject.otbproject.fs.FSUtil;
 import com.github.otbproject.otbproject.util.ThreadUtil;
 import com.github.otbproject.otbproject.util.version.AppVersion;
 import com.github.otbproject.otbproject.util.version.Version;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -28,9 +29,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.Future;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 public class GuiApplication extends Application {
@@ -143,26 +142,19 @@ public class GuiApplication extends Application {
     static class CustomTailerListenerAdapter extends TailerListenerAdapter {
         private final BlockingQueue<String> queue = new LinkedBlockingQueue<>();
         private final List<String> buffer = new ArrayList<>();
-        private final Future<?> future;
+        private final ScheduledFuture<?> scheduledFuture;
 
         public CustomTailerListenerAdapter() {
-            future = ThreadUtil.getSingleThreadExecutor("GUI-console-daemon").submit(() -> {
-                while (true) {
-                    addToConsole();
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
-                        App.logger.info("Stopping console daemon");
-                        Thread.currentThread().interrupt();
-                        break;
-                    }
-                }
-                return null;
-            });
+            scheduledFuture = Executors.newSingleThreadScheduledExecutor(
+                    new ThreadFactoryBuilder()
+                            .setNameFormat("GUI-console-daemon")
+                            .setUncaughtExceptionHandler(ThreadUtil.UNCAUGHT_EXCEPTION_HANDLER)
+                            .build()
+            ).scheduleWithFixedDelay(this::addToConsole, 0, 100, TimeUnit.MILLISECONDS);
         }
 
         void stop() {
-            future.cancel(true);
+            scheduledFuture.cancel(true);
         }
 
         private void addToConsole() {
