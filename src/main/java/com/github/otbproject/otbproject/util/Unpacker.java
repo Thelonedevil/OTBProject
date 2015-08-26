@@ -26,6 +26,7 @@ public class Unpacker {
                             App.logger.catching(e);
                         }
                     });
+            jar.close();
         } catch (URISyntaxException | IOException e) {
             App.logger.catching(e);
         }
