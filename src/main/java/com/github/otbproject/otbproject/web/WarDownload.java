@@ -42,7 +42,7 @@ class WarDownload {
                     App.logger.error("Thread interrupted while waiting for web interface download to complete");
                     Thread.currentThread().interrupt();
                 }
-                future.cancel(true);
+                future.cancel(true); // Doesn't seem possible for future to be null, even though FindBugs claims it might be
                 App.logger.error("Stopping after " + i + "/" + ATTEMPTS + " download attempts");
                 cleanupTempDownload();
                 break;
@@ -97,14 +97,13 @@ class WarDownload {
             FileOutputStream fos = new FileOutputStream(dlPath);
             fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
             URL md5Original = new URL(warURL + ".md5");
-            BufferedReader in = new BufferedReader(new InputStreamReader(md5Original.openStream()));
-            String inputLine = in.readLine();
-            in.close();
-            FileInputStream fis = new FileInputStream(dlPath);
-            String md5 = DigestUtils.md5Hex(fis);
-            fis.close();
-            if (!md5.equals(inputLine)) {
-                throw new WarDownloadException("Download of War file either corrupted or some 3rd party has changed the file");
+            try (BufferedReader in = new BufferedReader(new InputStreamReader(md5Original.openStream()));
+                 FileInputStream fis = new FileInputStream(dlPath)) {
+                String inputLine = in.readLine();
+                String md5 = DigestUtils.md5Hex(fis);
+                if (!md5.equals(inputLine)) {
+                    throw new WarDownloadException("Download of War file either corrupted or some 3rd party has changed the file");
+                }
             }
         } catch (ClosedByInterruptException ignored) {
             App.logger.error("War download interrupted before it could complete");

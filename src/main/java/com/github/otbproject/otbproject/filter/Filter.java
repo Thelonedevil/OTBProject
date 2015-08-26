@@ -87,7 +87,7 @@ public class Filter {
     }
 
     public static Filter fromBasicFilter(BasicFilter filter) {
-        Pattern pattern = null;
+        Pattern pattern;
         switch (filter.getType()) {
             case PHRASE:
                 pattern = Pattern.compile((ANY + WORD_BOUNDARY + Pattern.quote(filter.getData()) + WORD_BOUNDARY + ANY), Pattern.CASE_INSENSITIVE);
@@ -95,6 +95,8 @@ public class Filter {
             case REGEX:
                 pattern = Pattern.compile((ANY + filter.getData() + ANY), Pattern.CASE_INSENSITIVE);
                 break;
+            default:
+                pattern = null;
         }
         return new Filter(filter.getGroup(), filter.getType(), pattern, filter.getData(), filter.isEnabled());
     }

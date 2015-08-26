@@ -137,6 +137,8 @@ public class GuiController {
                         case CmdParser.HELP:
                             tabComplete(parts, 1, CmdParser.getCommands());
                             break;
+                        default:
+                            // defaults to no tab completion for first argument
                     }
                 } else if (parts.size() == 3 && parts.get(0).equals(CmdParser.EXEC)) {
                     Optional<Channel> optional = Channels.get(parts.get(1));
