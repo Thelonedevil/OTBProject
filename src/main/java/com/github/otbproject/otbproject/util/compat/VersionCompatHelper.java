@@ -32,9 +32,7 @@ public class VersionCompatHelper {
     }
 
     private static boolean versionCheck(Version oldVersion) {
-        return !((oldVersion == null) || App.VERSION.equals(oldVersion))
-                && App.VERSION.checker().major(2).minor(0).isVersion()
-                && oldVersion.checker().major(1).minor(1).isVersion();
+        return App.VERSION.checker().major(2).minor(0).isVersion() && oldVersion.checker().major(1).minor(1).isVersion();
     }
 
     private static void fix1_1To2_0() {
