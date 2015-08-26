@@ -64,11 +64,15 @@ public class VersionCompatHelper {
     private static void removeOldPreloads() {
         String basePath = new PathBuilder().base(Base.CMD).channels(Chan.ALL).load(Load.ED).create();
         deleteFile(basePath + File.separator + "command.reset.count.success.json");
+        deleteFile(basePath + File.separator + "reset-count.json");
         deleteFile(FSUtil.commandScriptDir() + File.separator + "ScriptResetCount.groovy");
         FSUtil.streamDirectory(new File(FSUtil.dataDir() + File.separator + FSUtil.DirNames.CHANNELS))
                 .map(File::getName)
                 .map(Databases::createChannelMainDbWrapper)
-                .forEach(db -> Commands.remove(db, "~%command.reset.count.success"));
+                .forEach(db -> {
+                    Commands.remove(db, "~%command.reset.count.success");
+                    Commands.remove(db, "!resetCount");
+                });
     }
 
     private static void deleteFile(String path) {
