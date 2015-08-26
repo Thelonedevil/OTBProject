@@ -42,6 +42,8 @@ public class TimeoutProcessor {
             case PURGE:
                 Control.getBot().timeout(packagedMessage.channel, packagedMessage.user, 1);
                 break;
+            default:
+                // No action to perform by default
         }
     }
 

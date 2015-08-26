@@ -15,6 +15,9 @@ public class InternalMessageSender {
                 break;
             case TERMINAL:
                 sendToTerminal(message, source);
+                break;
+            default:
+                App.logger.error("Invalid internal destination: " + destination);
         }
     }
 
