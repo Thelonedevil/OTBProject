@@ -42,7 +42,7 @@ class WarDownload {
                     App.logger.error("Thread interrupted while waiting for web interface download to complete");
                     Thread.currentThread().interrupt();
                 }
-                future.cancel(true);
+                future.cancel(true); // Doesn't seem possible for future to be null, even though FindBugs claims it might be
                 App.logger.error("Stopping after " + i + "/" + ATTEMPTS + " download attempts");
                 cleanupTempDownload();
                 break;
