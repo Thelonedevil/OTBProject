@@ -73,7 +73,7 @@ public class CommandResponseParser {
                 }
             } else {
                 try {
-                    int quoteNum = Integer.valueOf(quoteNumStr);
+                    int quoteNum = Integer.parseInt(quoteNumStr);
                     if (channelOptional.isPresent()) {
                         quoteOptional = Quotes.get(channelOptional.get().getQuoteDatabaseWrapper(), quoteNum);
                     }
