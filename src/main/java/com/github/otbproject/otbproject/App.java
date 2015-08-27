@@ -104,8 +104,9 @@ public class App {
             System.exit(1);
         }
 
-        File versionFile = new File(FSUtil.configDir() + File.separator + "VERSION");
-        Version version = Versions.readFromFile(versionFile).orElse(null); // TODO possibly not or else null?
+        File versionFile = new File(FSUtil.dataDir() + File.separator + "VERSION");
+        File oldVersionFile = new File(FSUtil.configDir() + File.separator + "VERSION");
+        Version version = Versions.readFromFile(versionFile).orElse(Versions.readFromFile(oldVersionFile).orElse(Version.create(0, 0, 0, Version.Type.RELEASE)));
         Versions.writeToFile(versionFile, VERSION);
 
         boolean unpack = cmd.hasOption(ArgParser.Opts.UNPACK)

@@ -5,6 +5,7 @@ import com.github.otbproject.otbproject.command.Command;
 import com.github.otbproject.otbproject.command.Commands;
 import com.github.otbproject.otbproject.config.GeneralConfig;
 import com.github.otbproject.otbproject.database.DatabaseHelper;
+import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.database.Databases;
 import com.github.otbproject.otbproject.fs.FSUtil;
 import com.github.otbproject.otbproject.fs.PathBuilder;
@@ -31,14 +32,13 @@ public class VersionCompatHelper {
     }
 
     private static boolean versionCheck(Version oldVersion) {
-        return !((oldVersion == null) || App.VERSION.equals(oldVersion))
-                && App.VERSION.checker().major(2).minor(0).isVersion()
-                && oldVersion.checker().major(1).minor(1).isVersion();
+        return oldVersion.checker().major(1).minor(1).isVersion();
     }
 
     private static void fix1_1To2_0() {
         fixScripts();
         removeOldPreloads();
+        removeOldVersionFile();
     }
 
     private static void fixScripts() {
@@ -61,6 +61,10 @@ public class VersionCompatHelper {
         JsonHandler.writeValue((FSUtil.configDir() + File.separator + FSUtil.ConfigFileNames.GENERAL_CONFIG), configNew);
     }
 
+    private static void removeOldVersionFile() {
+        deleteFile(FSUtil.configDir() + File.separator + "VERSION");
+    }
+
     private static void removeOldPreloads() {
         String basePath = new PathBuilder().base(Base.CMD).channels(Chan.ALL).load(Load.ED).create();
         deleteFile(basePath + File.separator + "command.reset.count.success.json");
@@ -68,11 +72,20 @@ public class VersionCompatHelper {
         deleteFile(FSUtil.commandScriptDir() + File.separator + "ScriptResetCount.groovy");
         FSUtil.streamDirectory(new File(FSUtil.dataDir() + File.separator + FSUtil.DirNames.CHANNELS))
                 .map(File::getName)
+                .peek(s -> App.logger.debug("Deleting old commands for channel: " + s))
                 .map(Databases::createChannelMainDbWrapper)
                 .forEach(db -> {
-                    Commands.remove(db, "~%command.reset.count.success");
-                    Commands.remove(db, "!resetCount");
+                    removeCommand(db, "~%command.reset.count.success");
+                    removeCommand(db, "!resetCount");
                 });
+    }
+
+    private static void removeCommand(DatabaseWrapper db, String command) {
+        if (Commands.remove(db, command)) {
+            App.logger.debug("Successfully removed old command: " + command);
+        } else {
+            App.logger.warn("Failed to remove old command: " + command);
+        }
     }
 
     private static void deleteFile(String path) {
