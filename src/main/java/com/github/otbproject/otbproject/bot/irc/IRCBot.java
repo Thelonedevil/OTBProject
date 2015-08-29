@@ -16,7 +16,8 @@ class IRCBot extends PircBotX {
     private final OutputRaw newOutputRaw;
 
     public IRCBot() {
-        super(new Configuration.Builder().setName(Configs.getAccount().getName())
+        super(new Configuration.Builder()
+                .setName(Configs.getAccount().getName())
                 .setAutoNickChange(false) //Twitch doesn't support multiple users
                 .setOnJoinWhoEnabled(false) //Twitch doesn't support WHO command
                 .setCapEnabled(true)

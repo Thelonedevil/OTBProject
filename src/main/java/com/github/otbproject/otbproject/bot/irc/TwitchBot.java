@@ -9,6 +9,7 @@ import com.github.otbproject.otbproject.serviceapi.ApiRequest;
 import com.github.otbproject.otbproject.util.Watcher;
 import com.google.common.collect.Multimaps;
 import com.google.common.collect.SetMultimap;
+import com.google.common.util.concurrent.Uninterruptibles;
 import org.isomorphism.util.TokenBucket;
 import org.isomorphism.util.TokenBuckets;
 import org.pircbotx.Channel;
@@ -23,7 +24,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 public class TwitchBot extends AbstractBot {
-    private IRCBot ircBot = new IRCBot();
+    IRCBot ircBot = new IRCBot();
 
     // Should take slightly more than 30 seconds to refill 99 tokens adding 1
     // token every 304 milliseconds
@@ -101,10 +102,7 @@ public class TwitchBot extends AbstractBot {
     public boolean join(String channelName) {
         tokenBucket.consume();
         ircBot.sendRaw().rawLine("JOIN " + IRCHelper.getIrcChannelName(channelName));
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException ignored){
-        }
+        Uninterruptibles.sleepUninterruptibly(2, TimeUnit.SECONDS);
         return ircChannelHashMap.containsKey(channelName);
     }
 
@@ -112,10 +110,7 @@ public class TwitchBot extends AbstractBot {
     public boolean leave(String channelName) {
         tokenBucket.consume();
         ircBot.sendRaw().rawLine("PART " + IRCHelper.getIrcChannelName(channelName));
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException ignored){
-        }
+        Uninterruptibles.sleepUninterruptibly(2, TimeUnit.SECONDS);
         return !ircChannelHashMap.containsKey(channelName);
     }
 
