@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.StringTokenizer;
 
-public class InputParserImproved extends InputParser {
+class InputParserImproved extends InputParser {
 
     public InputParserImproved(IRCBot bot) {
         super(bot);

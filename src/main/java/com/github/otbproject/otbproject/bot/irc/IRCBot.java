@@ -22,7 +22,8 @@ class IRCBot extends PircBotX {
                 .setCapEnabled(true)
                 .addCapHandler(new EnableCapHandler("twitch.tv/membership"))
                 .addCapHandler((new EnableCapHandler("twitch.tv/tags")))
-                .addListener(new IrcListener()).addServer("irc.twitch.tv", 6667)
+                .addListener(new IrcListener())
+                .addServer("irc.twitch.tv", 6667)
                 .setServerPassword(Configs.getAccount().getPasskey())
                 .setEncoding(Charset.forName("UTF-8"))
                 .buildConfiguration());

@@ -18,7 +18,7 @@ import org.pircbotx.output.OutputCAP;
 
 import java.util.Optional;
 
-public class IrcListener extends ListenerAdapter {
+class IrcListener extends ListenerAdapter {
 
     @Override
     public void onMessage(MessageEvent event) throws Exception {
