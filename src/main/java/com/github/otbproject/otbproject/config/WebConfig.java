@@ -10,10 +10,10 @@ public class WebConfig {
     private boolean autoUpdating = true;
     private int portNumber = 22222;
     private String ipBinding = "0.0.0.0";
-    private Set<String> whitelistedIPAddressesWithSubnettingPrefix = ConcurrentHashMap.newKeySet();
+    private Set<String> writableWhitelist = ConcurrentHashMap.newKeySet();
 
     public WebConfig() {
-        whitelistedIPAddressesWithSubnettingPrefix.addAll(Arrays.asList("127.0.0.0/8", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"));
+        writableWhitelist.addAll(Arrays.asList("127.0.0.0/8", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"));
     }
 
     public boolean isEnabled() {
@@ -48,12 +48,12 @@ public class WebConfig {
         this.ipBinding = ipBinding;
     }
 
-    public Set<String> getWhitelistedIPAddressesWithSubnettingPrefix() {
-        return whitelistedIPAddressesWithSubnettingPrefix;
+    public Set<String> getWritableWhitelist() {
+        return writableWhitelist;
     }
 
-    public void setWhitelistedIPAddressesWithSubnettingPrefix(List<String> whitelistedIPAddressesWithSubnettingPrefix) {
-        this.whitelistedIPAddressesWithSubnettingPrefix.clear();
-        this.whitelistedIPAddressesWithSubnettingPrefix.addAll(whitelistedIPAddressesWithSubnettingPrefix);
+    public void setWritableWhitelist(List<String> writableWhitelist) {
+        this.writableWhitelist.clear();
+        this.writableWhitelist.addAll(writableWhitelist);
     }
 }
