@@ -9,6 +9,7 @@ import com.github.otbproject.otbproject.serviceapi.ApiRequest;
 import com.github.otbproject.otbproject.util.Watcher;
 import com.google.common.collect.Multimaps;
 import com.google.common.collect.SetMultimap;
+import com.google.common.util.concurrent.Uninterruptibles;
 import org.isomorphism.util.TokenBucket;
 import org.isomorphism.util.TokenBuckets;
 import org.pircbotx.Channel;
@@ -18,16 +19,17 @@ import org.pircbotx.exception.IrcException;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 public class TwitchBot extends AbstractBot {
-    private IRCBot ircBot = new IRCBot();
+    IRCBot ircBot = new IRCBot();
 
     // Should take slightly more than 30 seconds to refill 99 tokens adding 1
     // token every 304 milliseconds
     private final TokenBucket tokenBucket = TokenBuckets.builder().withCapacity(99).withFixedIntervalRefillStrategy(1, 304, TimeUnit.MILLISECONDS).build();
-
+    private final ConcurrentHashMap<String,Channel> ircChannelHashMap = new ConcurrentHashMap<>();
     public final SetMultimap<String, String> subscriberStorage = Multimaps.newSetMultimap(new ConcurrentHashMap<>(), ConcurrentHashMap::newKeySet);
 
     public TwitchBot() throws BotInitException {
@@ -46,8 +48,7 @@ public class TwitchBot extends AbstractBot {
 
     @Override
     public boolean isConnected(String channelName) {
-        UserChannelDao<User, Channel> userChannelDao = ircBot.getUserChannelDao();
-        return userChannelDao.getAllChannels().contains(userChannelDao.getChannel(channelName));
+        return ircChannelHashMap.containsKey(channelName);
     }
 
     @Override
@@ -100,17 +101,17 @@ public class TwitchBot extends AbstractBot {
     @Override
     public boolean join(String channelName) {
         tokenBucket.consume();
-        ircBot.sendIRC().joinChannel(IRCHelper.getIrcChannelName(channelName));
-        UserChannelDao<User, Channel> userChannelDao = ircBot.getUserChannelDao();
-        return userChannelDao.getAllChannels().contains(userChannelDao.getChannel(channelName));
+        ircBot.sendRaw().rawLine("JOIN " + IRCHelper.getIrcChannelName(channelName));
+        Uninterruptibles.sleepUninterruptibly(2, TimeUnit.SECONDS);
+        return ircChannelHashMap.containsKey(channelName);
     }
 
     @Override
     public boolean leave(String channelName) {
         tokenBucket.consume();
-        UserChannelDao<User, Channel> userChannelDao = ircBot.getUserChannelDao();
-        userChannelDao.getChannel(IRCHelper.getIrcChannelName(channelName)).send().part();
-        return !userChannelDao.getAllChannels().contains(userChannelDao.getChannel(channelName));
+        ircBot.sendRaw().rawLine("PART " + IRCHelper.getIrcChannelName(channelName));
+        Uninterruptibles.sleepUninterruptibly(2, TimeUnit.SECONDS);
+        return !ircChannelHashMap.containsKey(channelName);
     }
 
     @Override
@@ -160,5 +161,13 @@ public class TwitchBot extends AbstractBot {
     public boolean removeTimeout(String channelName, String user) {
         sendMessage(channelName, ".unban " + user); // TODO deal with danger of unbanning someone who's banned
         return true;
+    }
+
+    public void addJoined(String internalChannelName, Channel channel) {
+        ircChannelHashMap.putIfAbsent(internalChannelName, channel);
+    }
+
+    public void removeJoined(String internalChannelName) {
+        ircChannelHashMap.remove(internalChannelName);
     }
 }

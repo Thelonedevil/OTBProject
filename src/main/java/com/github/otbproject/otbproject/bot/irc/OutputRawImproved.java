@@ -5,11 +5,12 @@ import org.pircbotx.PircBotX;
 import org.pircbotx.Utils;
 import org.pircbotx.output.OutputRaw;
 
+import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class OutputRawImproved extends OutputRaw {
+class OutputRawImproved extends OutputRaw {
     public OutputRawImproved(PircBotX bot) {
         super(bot);
     }
@@ -34,6 +35,10 @@ public class OutputRawImproved extends OutputRaw {
             if (resetDelay)
                 //Reset the
                 writeNowCondition.signalAll();
+        } catch (IOException var8) {
+            throw new RuntimeException("IO exception when sending line to server, is the network still up? " + this.exceptionDebug(), var8);
+        } catch (Exception var9) {
+            throw new RuntimeException("Could not send line to server. " + this.exceptionDebug(), var9);
         } finally {
             writeLock.unlock();
         }

@@ -1,97 +1,95 @@
 package com.github.otbproject.otbproject.bot.irc;
 
 import com.github.otbproject.otbproject.App;
+import com.google.common.base.CharMatcher;
+import com.google.common.collect.ImmutableMap;
 import org.pircbotx.InputParser;
+import org.pircbotx.UserHostmask;
 import org.pircbotx.Utils;
+import org.pircbotx.cap.CapHandler;
 import org.pircbotx.exception.IrcException;
 import org.pircbotx.hooks.events.ServerPingEvent;
 import org.pircbotx.hooks.events.UnknownEvent;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.StringTokenizer;
 
-public class InputParserImproved extends InputParser {
+class InputParserImproved extends InputParser {
 
     public InputParserImproved(IRCBot bot) {
         super(bot);
     }
 
-    /**
-     * This method handles events when any line of text arrives from the server,
-     * then dispatching the appropriate event.
-     *
-     * @param line The raw line of text from the server.
-     */
-    public void handleLine(String line) throws IOException, IrcException {
+    @Override
+    public void handleLine(String rawLine) throws IOException, IrcException {
+        if (rawLine == null) {
+            throw new NullPointerException("rawLine");
+        } else {
+            String line = CharMatcher.WHITESPACE.trimFrom(rawLine);
+            com.google.common.collect.ImmutableMap.Builder tags = ImmutableMap.builder();
+            String command;
+            if (line.startsWith("@")) {
+                String parsedLine = line.substring(1, line.indexOf(" "));
+                line = line.substring(line.indexOf(" ") + 1);
+                StringTokenizer sourceRaw = new StringTokenizer(parsedLine);
 
-        List<String> parsedLine = Utils.tokenizeLine(line);
-
-        String senderInfo = "";
-        if (parsedLine.get(0).charAt(0) == ':')
-            senderInfo = parsedLine.remove(0);
-
-        String command = parsedLine.remove(0).toUpperCase(configuration.getLocale());
-        if (!command.equals("PING")) {
-            App.logger.info(line);
-        }
-        // Check for server pings.
-        if (command.equals("PING")) {
-            // Respond to the ping and return immediately.
-            configuration.getListenerManager().dispatchEvent(new ServerPingEvent<>(bot, parsedLine.get(0)));
-            return;
-        } else if (command.startsWith("ERROR")) {
-            //Server is shutting us down
-            ((IRCBot) bot).shutdown();
-            return;
-        }
-
-        String sourceNick;
-        String sourceLogin = "";
-        String sourceHostname = "";
-        String target = !parsedLine.isEmpty() ? parsedLine.get(0) : "";
-
-        if (target.startsWith(":"))
-            target = target.substring(1);
-
-        int exclamation = senderInfo.indexOf('!');
-        int at = senderInfo.indexOf('@');
-        if (senderInfo.startsWith(":"))
-            if (exclamation > 0 && at > 0 && exclamation < at) {
-                sourceNick = senderInfo.substring(1, exclamation);
-                sourceLogin = senderInfo.substring(exclamation + 1, at);
-                sourceHostname = senderInfo.substring(at + 1);
-            } else {
-                int code = Utils.tryParseInt(command, -1);
-                if (code != -1) {
-                    if (((IRCBot) bot).notLoggedIn())
-                        processConnect(line, command, target, parsedLine);
-                    processServerResponse(code, line, parsedLine);
-                    // Return from the method.
-                    return;
-                } else
-                    // This is not a server response.
-                    // It must be a nick without login and hostname.
-                    // (or maybe a NOTICE or suchlike from the server)
-                    //WARNING: Changed from origional PircBot. Instead of command as target, use channel/user (setup later)
-                    sourceNick = senderInfo;
+                while (sourceRaw.hasMoreTokens()) {
+                    command = sourceRaw.nextToken(";");
+                    if (command.contains("=")) {
+                        String[] target = command.split("=");
+                        tags.put(target[0], target.length == 2 ? target[1] : "");
+                    } else {
+                        tags.put(command, "");
+                    }
+                }
             }
-        else {
-            // We don't know what this line means.
-            configuration.getListenerManager().dispatchEvent(new UnknownEvent<>(bot, line));
 
-            if (((IRCBot) bot).notLoggedIn())
-                //Pass to CapHandlers, could be important
-                capHandlersFinished.addAll(configuration.getCapHandlers().stream().filter(curCapHandler -> curCapHandler.handleUnknown(bot, line)).collect(Collectors.toList()));
-            // Return from the method;
-            return;
+            List parsedLine1 = Utils.tokenizeLine(line);
+            String sourceRaw1 = "";
+            if (((String) parsedLine1.get(0)).charAt(0) == 58) {
+                sourceRaw1 = (String) parsedLine1.remove(0);
+            }
+
+            command = ((String) parsedLine1.remove(0)).toUpperCase(this.configuration.getLocale());
+            if (!command.equals("PING")) {
+                App.logger.info(rawLine);
+            }
+            if (command.equals("PING")) {
+                this.configuration.getListenerManager().onEvent(new ServerPingEvent(this.bot, (String) parsedLine1.get(0)));
+            } else if (command.startsWith("ERROR")) {
+                this.bot.close();
+            } else {
+                String target1 = parsedLine1.isEmpty() ? "" : (String) parsedLine1.get(0);
+                if (target1.startsWith(":")) {
+                    target1 = target1.substring(1);
+                }
+
+                if (sourceRaw1.startsWith(":")) {
+                    if (((IRCBot) this.bot).notLoggedIn()) {
+                        this.processConnect(line, command, target1, parsedLine1);
+                    }
+
+                    int code1 = Utils.tryParseInt(command, -1);
+                    if (code1 != -1) {
+                        this.processServerResponse(code1, line, parsedLine1);
+                    } else {
+                        UserHostmask source1 = this.bot.getConfiguration().getBotFactory().createUserHostmask(this.bot, sourceRaw1.substring(1));
+                        this.processCommand(target1, source1, command, line, parsedLine1, tags.build());
+                    }
+                } else {
+                    this.configuration.getListenerManager().onEvent(new UnknownEvent(this.bot, line));
+                    if (((IRCBot) this.bot).notLoggedIn()) {
+                        for (CapHandler source : this.configuration.getCapHandlers()) {
+                            if (source.handleUnknown(this.bot, line)) {
+                                this.addCapHandlerFinished(source);
+                            }
+                        }
+                    }
+
+                }
+            }
         }
-
-        if (sourceNick.startsWith(":"))
-            sourceNick = sourceNick.substring(1);
-
-        if (((IRCBot) bot).notLoggedIn())
-            processConnect(line, command, target, parsedLine);
-        processCommand(target, sourceNick, sourceLogin, sourceHostname, command, line, parsedLine);
     }
+
 }
