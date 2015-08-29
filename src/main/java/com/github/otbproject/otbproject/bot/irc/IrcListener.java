@@ -63,9 +63,6 @@ class IrcListener extends ListenerAdapter {
 
     @Override
     public void onConnect(ConnectEvent event) {
-        /*OutputCAP cap = ((TwitchBot) Control.getBot()).getIRC().sendCAP();
-        cap.request(":twitch.tv/tags");
-        cap.request(":twitch.tv/membership");*/
         // Join bot channel
         Channels.join(Control.getBot().getUserName(), false);
         // Join channels
