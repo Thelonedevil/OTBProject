@@ -4,6 +4,8 @@ import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.config.Configs;
 import org.pircbotx.Configuration;
 import org.pircbotx.PircBotX;
+import org.pircbotx.cap.CapHandler;
+import org.pircbotx.cap.EnableCapHandler;
 import org.pircbotx.output.OutputRaw;
 
 import java.io.InterruptedIOException;
@@ -13,10 +15,17 @@ import java.nio.charset.Charset;
 class IRCBot extends PircBotX {
     private final OutputRaw newOutputRaw;
 
-    @SuppressWarnings("unchecked")
     public IRCBot() {
-        super(new Configuration.Builder().setName(Configs.getAccount().getName()).setAutoNickChange(false).setCapEnabled(false).addListener(new IrcListener()).setServerHostname("irc.twitch.tv")
-                .setServerPort(6667).setServerPassword(Configs.getAccount().getPasskey()).setEncoding(Charset.forName("UTF-8")).buildConfiguration());
+        super(new Configuration.Builder().setName(Configs.getAccount().getName())
+                .setAutoNickChange(false) //Twitch doesn't support multiple users
+                .setOnJoinWhoEnabled(false) //Twitch doesn't support WHO command
+                .setCapEnabled(true)
+                .addCapHandler(new EnableCapHandler("twitch.tv/membership"))
+                .addCapHandler((new EnableCapHandler("twitch.tv/tags")))
+                .addListener(new IrcListener()).addServer("irc.twitch.tv", 6667)
+                .setServerPassword(Configs.getAccount().getPasskey())
+                .setEncoding(Charset.forName("UTF-8"))
+                .buildConfiguration());
         App.logger.info("Bot configuration built");
         newOutputRaw = new OutputRawImproved(this);
     }
@@ -24,7 +33,7 @@ class IRCBot extends PircBotX {
     @Override
     public synchronized void shutdown() {
         if (isConnected()) {
-            super.shutdown(true);
+            super.shutdown();
         }
     }
 

@@ -1,6 +1,8 @@
 package com.github.otbproject.otbproject.bot.irc;
 
 import com.github.otbproject.otbproject.App;
+import com.github.otbproject.otbproject.bot.AbstractBot;
+import com.github.otbproject.otbproject.bot.Bot;
 import com.github.otbproject.otbproject.bot.Control;
 import com.github.otbproject.otbproject.channel.Channel;
 import com.github.otbproject.otbproject.channel.Channels;
@@ -12,6 +14,7 @@ import com.github.otbproject.otbproject.user.UserLevel;
 import com.github.otbproject.otbproject.user.UserLevels;
 import org.pircbotx.hooks.ListenerAdapter;
 import org.pircbotx.hooks.events.*;
+import org.pircbotx.output.OutputCAP;
 
 import java.util.Optional;
 
@@ -31,28 +34,26 @@ public class IrcListener extends ListenerAdapter {
 
         String message = event.getMessage();
         TwitchBot bot = (TwitchBot) Control.getBot();
-        if (user.equalsIgnoreCase("jtv")) {
-            if (message.contains(":SPECIALUSER")) {
-                String[] messageSplit = message.split(":SPECIALUSER")[1].split(" ");
-                String name = messageSplit[0];
-                String userType = messageSplit[1];
-                if (userType.equalsIgnoreCase("subscriber")) {
-                    bot.subscriberStorage.put(channelName, name);
-                }
-            }
-        } else {
-            UserLevel userLevel = UserLevels.getUserLevel(channel.getMainDatabaseWrapper(), channelName, user);
-            PackagedMessage packagedMessage = new PackagedMessage(message, user, channelName, userLevel, MessagePriority.DEFAULT);
-            bot.invokeMessageHandlers(channel, packagedMessage, TimeoutProcessor.doTimeouts(channel, packagedMessage));
+        if(event.getTags().get("subscriber") != null && event.getTags().get("subscriber").equalsIgnoreCase("1")){
+            bot.subscriberStorage.put(channelName,user);
         }
+        UserLevel userLevel = UserLevels.getUserLevel(channel.getMainDatabaseWrapper(), channelName, user);
+        PackagedMessage packagedMessage = new PackagedMessage(message, user, channelName, userLevel, MessagePriority.DEFAULT);
+        bot.invokeMessageHandlers(channel, packagedMessage, TimeoutProcessor.doTimeouts(channel, packagedMessage));
     }
 
     @Override
     public void onJoin(JoinEvent event) {
+        if(event.getUser().equals(event.getBot().getUserBot())) {
+            ((TwitchBot) Control.getBot()).addJoined(IRCHelper.getInternalChannelName(event.getChannel().getName()),event.getChannel());
+        }
     }
 
     @Override
     public void onPart(PartEvent event) {
+        if(event.getUser().equals(event.getBot().getUserBot())) {
+            ((TwitchBot) Control.getBot()).removeJoined(IRCHelper.getInternalChannelName(event.getChannel().getName()));
+        }
     }
 
     @Override
@@ -62,7 +63,9 @@ public class IrcListener extends ListenerAdapter {
 
     @Override
     public void onConnect(ConnectEvent event) {
-        ((IRCBot) Control.getBot()).sendRaw().rawLine("TWITCHCLIENT 3");
+        /*OutputCAP cap = ((TwitchBot) Control.getBot()).getIRC().sendCAP();
+        cap.request(":twitch.tv/tags");
+        cap.request(":twitch.tv/membership");*/
         // Join bot channel
         Channels.join(Control.getBot().getUserName(), false);
         // Join channels
