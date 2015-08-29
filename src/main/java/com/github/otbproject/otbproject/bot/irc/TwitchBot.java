@@ -47,9 +47,7 @@ public class TwitchBot extends AbstractBot {
 
     @Override
     public boolean isConnected(String channelName) {
-        UserChannelDao<User, Channel> userChannelDao = ircBot.getUserChannelDao();
-        return userChannelDao.containsChannel(channelName);
-
+        return ircChannelHashMap.containsKey(channelName);
     }
 
     @Override
