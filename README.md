@@ -7,7 +7,7 @@ OTBProject
 
 An open source chat bot for <a href="http://www.twitch.tv" target="_blank">Twitch</a> and <a href="https://beam.pro" target="_blank">Beam</a>.
 
-The project website is <a href="http://otbproject.github.io" target="_blank">otbproject.github.io</a>.
+The project website is <a href="https://otbproject.github.io" target="_blank">otbproject.github.io</a>.
 
 A tutorial for how to set up your bot and run it the first time can be found on the website, as can documentation for how to interact with the bot in chat and how configuration files work.
 
