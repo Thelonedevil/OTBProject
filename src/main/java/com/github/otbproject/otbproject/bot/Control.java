@@ -22,7 +22,7 @@ import java.awt.*;
 
 public class Control {
     private static volatile boolean running = false;
-    private static Bot bot = NullBot.INSTANCE;
+    private static volatile Bot bot = NullBot.INSTANCE;
 
     public static Bot getBot() {
         return bot;
