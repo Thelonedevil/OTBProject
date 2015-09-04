@@ -4,6 +4,8 @@ import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.bot.Control;
 import com.github.otbproject.otbproject.channel.ChannelNotFoundException;
 import com.github.otbproject.otbproject.channel.Channels;
+import com.github.otbproject.otbproject.channel.JoinCheck;
+import com.github.otbproject.otbproject.config.BotConfig;
 import com.github.otbproject.otbproject.config.ChannelJoinSetting;
 import com.github.otbproject.otbproject.config.Configs;
 import com.github.otbproject.otbproject.fs.groups.Base;
@@ -195,9 +197,14 @@ public class CmdParser {
                 .withAction(() -> {
                     if (args.size() > 0) {
                         String channel  = args.get(0).toLowerCase();
-                        boolean success = Channels.join(channel, false);
-                        if (success && (Configs.getBotConfig().getChannelJoinSetting() == ChannelJoinSetting.WHITELIST)) {
-                            Configs.getBotConfig().getWhitelist().add(channel);
+                        boolean success = Channels.join(channel, EnumSet.of(JoinCheck.IS_CHANNEL));
+                        if (success) {
+                            BotConfig config = Configs.getBotConfig();
+                            if (config.getChannelJoinSetting() == ChannelJoinSetting.WHITELIST) {
+                                config.getWhitelist().add(channel);
+                            } else if (config.getChannelJoinSetting() == ChannelJoinSetting.BLACKLIST) {
+                                config.getBlacklist().remove(channel);
+                            }
                         }
                         String string = success ? "Successfully joined" : "Failed to join";
                         return string + " channel: " + channel;

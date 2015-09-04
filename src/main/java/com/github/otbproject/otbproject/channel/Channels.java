@@ -1,8 +1,8 @@
 package com.github.otbproject.otbproject.channel;
 
 import com.github.otbproject.otbproject.App;
-import com.github.otbproject.otbproject.bot.Control;
 import com.github.otbproject.otbproject.bot.Bot;
+import com.github.otbproject.otbproject.bot.Control;
 import com.github.otbproject.otbproject.command.parser.ResponseParserUtil;
 import com.github.otbproject.otbproject.config.BotConfig;
 import com.github.otbproject.otbproject.config.ChannelConfig;
@@ -11,6 +11,7 @@ import com.github.otbproject.otbproject.config.Configs;
 import com.github.otbproject.otbproject.fs.Setup;
 
 import java.io.IOException;
+import java.util.EnumSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.locks.Lock;
@@ -33,10 +34,10 @@ public class Channels {
     }
 
     public static boolean join(String channelName) {
-        return join(channelName, true);
+        return join(channelName, JoinCheck.ALL_CHECKS);
     }
 
-    public static boolean join(String channelName, boolean checkValidChannel) {
+    public static boolean join(String channelName, EnumSet<JoinCheck> checks) {
         channelName = channelName.toLowerCase();
         App.logger.info("Attempting to join channel: " + channelName);
 
@@ -54,20 +55,20 @@ public class Channels {
             BotConfig botConfig = Configs.getBotConfig();
             ChannelJoinSetting channelJoinSetting = botConfig.getChannelJoinSetting();
             if (!isBotChannel) {
-                if (channelJoinSetting == ChannelJoinSetting.WHITELIST) {
-                    if (!botConfig.getWhitelist().contains(channelName)) {
-                        App.logger.info("Failed to join channel: " + channelName + ". Not whitelisted.");
-                        return false;
-                    }
-                } else if (channelJoinSetting == ChannelJoinSetting.BLACKLIST) {
-                    if (botConfig.getBlacklist().contains(channelName)) {
-                        App.logger.info("Failed to join channel: " + channelName + ". Blacklisted.");
-                        return false;
-                    }
+                if (checks.contains(JoinCheck.WHITELIST)
+                        && (channelJoinSetting == ChannelJoinSetting.WHITELIST)
+                        && !botConfig.getWhitelist().contains(channelName)) {
+                    App.logger.info("Failed to join channel: " + channelName + ". Not whitelisted.");
+                    return false;
+                } else if (checks.contains(JoinCheck.BLACKLIST)
+                        && (channelJoinSetting == ChannelJoinSetting.BLACKLIST)
+                        && botConfig.getBlacklist().contains(channelName)) {
+                    App.logger.info("Failed to join channel: " + channelName + ". Blacklisted.");
+                    return false;
                 }
             }
 
-            if (checkValidChannel && !bot.isChannel(channelName)) {
+            if (checks.contains(JoinCheck.IS_CHANNEL) && !bot.isChannel(channelName)) {
                 App.logger.info("Failed to join channel: " + channelName + ". Channel does not exist.");
                 return false;
 
@@ -161,4 +162,5 @@ public class Channels {
     public static boolean isBotChannel(Channel channel) {
         return isBotChannel(channel.getName());
     }
+
 }
