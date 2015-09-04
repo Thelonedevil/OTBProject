@@ -7,6 +7,7 @@ import com.github.otbproject.otbproject.bot.BotUtil;
 import com.github.otbproject.otbproject.channel.ChannelInitException;
 import com.github.otbproject.otbproject.channel.ChannelNotFoundException;
 import com.github.otbproject.otbproject.channel.Channels;
+import com.github.otbproject.otbproject.channel.JoinCheck;
 import com.github.otbproject.otbproject.config.Configs;
 import com.github.otbproject.otbproject.util.ThreadUtil;
 import net.jodah.expiringmap.ExpiringMap;
@@ -16,6 +17,7 @@ import pro.beam.api.resource.BeamUser;
 import pro.beam.api.resource.chat.methods.ChatSendMethod;
 import pro.beam.api.services.impl.UsersService;
 
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -111,8 +113,8 @@ public class BeamBot extends AbstractBot {
 
     @Override
     public void startBot() {
-        Channels.join(getUserName(), false);
-        Configs.getBotConfig().getCurrentChannels().forEach(channel -> Channels.join(channel, false));
+        Channels.join(getUserName(), EnumSet.of(JoinCheck.WHITELIST, JoinCheck.BLACKLIST));
+        Configs.getBotConfig().getCurrentChannels().forEach(channel -> Channels.join(channel, EnumSet.of(JoinCheck.WHITELIST, JoinCheck.BLACKLIST)));
         while (!beamChannels.isEmpty()) {
             try {
                 Thread.sleep(200);
