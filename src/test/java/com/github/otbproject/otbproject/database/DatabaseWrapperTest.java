@@ -47,7 +47,7 @@ public class DatabaseWrapperTest {
         primaryKeys.add(fieldName);
         testFields = new TableFields(fields, primaryKeys);
         tables.put(tableName, testFields);
-        db = DatabaseWrapper.createDatabase(path, tables);
+        db = SQLiteWrapper.createDatabase(path, tables);
         testData.put(fieldName, "Test Data");
         testDataNew.put(fieldName, "Test Data New");
         testDataInt.put(fieldName2, 1);

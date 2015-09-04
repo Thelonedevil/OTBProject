@@ -6,13 +6,12 @@ import com.github.otbproject.otbproject.quote.QuoteFields;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
-public class SQLiteQuoteWrapper extends DatabaseWrapper {
+public class SQLiteQuoteWrapper extends SQLiteWrapper {
     private final Lock lock = new ReentrantLock();
 
     private SQLiteQuoteWrapper(String path, HashMap<String, TableFields> tables) throws SQLException, ClassNotFoundException {
