@@ -17,6 +17,7 @@ import com.github.otbproject.otbproject.web.WebInterface;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class CmdParser {
 
@@ -33,7 +34,7 @@ public class CmdParser {
     public static final String HELP = "help";
     private static final HashMap<String, CliCommand> map = new HashMap<>();
     private static final CliCommand.Builder commandBuilder = new CliCommand.Builder();
-    private static List<String> args = new ArrayList<>();
+    private static List<String> args;
     private static String source = "";
 
     public static class ClearTargets {
@@ -86,34 +87,17 @@ public class CmdParser {
     }
 
     private static String doLine(String line) {
-        //use a second Scanner to parse the content of each line
-        line = line.trim();
-
-        Scanner scanner = new Scanner(line);
-        scanner.useDelimiter(" ");
-        try {
-            if (scanner.hasNext()) {
-                App.logger.debug("Processing input line: " + line);
-                String name = scanner.next().toLowerCase();
-                while (scanner.hasNext()) {
-                    args.add(scanner.next());
-                }
-                // Remove empty elements from list
-                args = args.stream().filter(s -> !s.isEmpty()).collect(Collectors.toList());
-
-                if (map.containsKey(name)) {
-                    return map.get(name).call();
-                } else {
-                    return printHelpNoCommand(name);
-                }
+        args = Stream.of(line.trim().split(" ")).filter(s -> !s.isEmpty()).collect(Collectors.toList());
+        if (!args.isEmpty()) {
+            App.logger.debug("Processing input line: " + line);
+            String cliCommand = args.get(0).toLowerCase();
+            if (map.containsKey(cliCommand)) {
+                return map.get(cliCommand).get();
             } else {
-                App.logger.warn("Empty or invalid line. Unable to process.");
+                return printHelpNoCommand(cliCommand);
             }
-        } catch (Exception e) {
-            App.logger.catching(e);
-        } finally {
-            scanner.close();
-            args.clear();
+        } else {
+            App.logger.warn("Empty or invalid line. Unable to process.");
         }
         return "";
     }
