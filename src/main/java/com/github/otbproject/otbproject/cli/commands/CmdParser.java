@@ -91,6 +91,7 @@ public class CmdParser {
         if (!args.isEmpty()) {
             App.logger.debug("Processing input line: " + line);
             String cliCommand = args.get(0).toLowerCase();
+            args = args.subList(1, args.size());
             if (map.containsKey(cliCommand)) {
                 return map.get(cliCommand).get();
             } else {
