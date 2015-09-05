@@ -37,7 +37,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Scanner;
-import java.util.concurrent.ExecutorService;
 
 public class App {
     public static final String PID = ManagementFactory.getRuntimeMXBean().getName().split("@")[0];
