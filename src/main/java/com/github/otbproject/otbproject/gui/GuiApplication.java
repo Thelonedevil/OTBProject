@@ -108,6 +108,13 @@ public class GuiApplication extends Application {
         launch(args);
     }
 
+    public static void setInputInactive() {
+        GuiUtils.runSafe(() -> {
+            controller.commandsInput.setEditable(false);
+            controller.commandsInput.setPromptText("Command executing, please wait...");
+        });
+    }
+
     public static void setInputActive() {
         GuiUtils.runSafe(() -> {
             controller.commandsInput.setEditable(true);

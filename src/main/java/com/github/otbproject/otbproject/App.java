@@ -37,6 +37,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Scanner;
+import java.util.concurrent.ExecutorService;
 
 public class App {
     public static final String PID = ManagementFactory.getRuntimeMXBean().getName().split("@")[0];
@@ -161,8 +162,9 @@ public class App {
         System.out.println("Terminal input is now active.");
         while (scanner.hasNext()) {
             String in = scanner.next();
-            if (!in.equals(""))
-                System.out.println(CmdParser.processLine(in, InternalMessageSender.TERMINAL));
+            if (!in.equals("")) {
+                CmdParser.processLineAndThen(in, InternalMessageSender.TERMINAL, System.out::println, () -> {});
+            }
         }
         scanner.close();
     }
