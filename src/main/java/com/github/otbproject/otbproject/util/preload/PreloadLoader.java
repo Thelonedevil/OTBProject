@@ -58,75 +58,103 @@ public class PreloadLoader {
             return;
         }
 
-        App.logger.debug("Loading objects of type '" + base.toString() + "' for all channels");
+        App.logger.info("Loading objects of type '" + base.toString() + "' for all channels");
         FSUtil.streamDirectory(new File(FSUtil.dataDir() + File.separator + FSUtil.DirNames.CHANNELS),
                 "Failed to load objects of type '" + base.toString() + "' for each channel - unable to get list of channels")
                 .filter(File::isDirectory)
                 .forEach(file -> loadForChannel(list, file.getName(), base, strategy));
-        App.logger.debug("Finished loading objects of type '" + base.toString() + "' for all channels");
+        App.logger.info("Finished loading objects of type '" + base.toString() + "' for all channels");
     }
 
     private static void loadForChannel(List<PreloadPair<?>> list, String channel, Base base, LoadStrategy strategy) {
-        App.logger.debug("Loading objects of type '" + base.toString() + "' for channel: " + channel);
+        App.logger.info("Loading " + list.size() + " object(s) of type '" + base.toString() + "' for channel: " + channel);
         DatabaseWrapper db = Databases.createChannelMainDbWrapper(channel);
         if (db == null) {
             App.logger.error("Failed to load objects of type '" + base.toString() + "' for channel '" + channel + "' - unable to get database");
             return;
         }
-        loadFromList(list, db, base, strategy);
-        App.logger.debug("Finished loading objects of type '" + base.toString() + "' for channel: " + channel);
+        long successful = loadFromList(list, db, base, strategy);
+        App.logger.info("Successfully loaded " + successful + " object(s) of type '" + base.toString() + "' for channel: " + channel);
+        if (successful != list.size()) {
+            App.logger.warn((list.size() - successful) + " object(s) failed to load");
+        }
     }
 
     private static void loadForBotChannel(List<PreloadPair<?>> list, Base base, LoadStrategy strategy) {
-        App.logger.debug("Loading objects of type '" + base.toString() + "' for bot channel");
+        App.logger.info("Loading " + list.size() + " object(s) of type '" + base.toString() + "' for bot channel");
         DatabaseWrapper db = Databases.createBotDbWrapper();
         if (db == null) {
             App.logger.error("Failed to load objects of type '" + base.toString() + "' for bot channel - unable to get bot database");
             return;
         }
-        loadFromList(list, db, base, strategy);
-        App.logger.debug("Finished loading objects of type '" + base.toString() + "' for bot channel");
+        long successful = loadFromList(list, db, base, strategy);
+        App.logger.info("Successfully loaded " + successful + " object(s) of type '" + base.toString() + "' for bot channel");
+        if (successful != list.size()) {
+            App.logger.warn((list.size() - successful) + " object(s) failed to load");
+        }
     }
 
-    private static void loadFromList(List<PreloadPair<?>> list, DatabaseWrapper db, Base base, LoadStrategy strategy) {
-        list.forEach(preloadPair -> loadObjectUsingStrategy(db, preloadPair.tNew, preloadPair.tOld, base, strategy));
+    private static long loadFromList(List<PreloadPair<?>> list, DatabaseWrapper db, Base base, LoadStrategy strategy) {
+        return list.stream()
+                .filter(preloadPair -> loadObjectUsingStrategy(db, preloadPair.tNew, preloadPair.tOld, base, strategy))
+                .count();
     }
 
-    private static <T> void loadObjectUsingStrategy(DatabaseWrapper db, T tNew, T tOld, Base base, LoadStrategy strategy) {
+    private static <T> boolean loadObjectUsingStrategy(DatabaseWrapper db, T tNew, T tOld, Base base, LoadStrategy strategy) {
         try {
             switch (base) {
                 case ALIAS:
                     Alias alias = (strategy == LoadStrategy.UPDATE) ?
                             PreloadComparator.generateAliasHybrid(db, (Alias) tNew, (Alias) tOld) : (Alias) tNew;
                     if (alias == null) {
-                        break;
+                        return false;
                     }
-                    Aliases.addAliasFromObj(db, alias);
-                    break;
+                    if (Aliases.addAliasFromObj(db, alias)) {
+                        App.logger.debug("Loaded alias: " + alias.getName());
+                        return true;
+                    } else {
+                        App.logger.error("Failed to load alias: " + alias.getName());
+                        return false;
+                    }
                 case CMD:
                     Command command = (strategy == LoadStrategy.UPDATE) ?
                             PreloadComparator.generateCommandHybrid(db, (Command) tNew, (Command) tOld) : (Command) tNew;
                     if (command == null) {
-                        break;
+                        return false;
                     }
-                    Commands.addCommandFromObj(db, command);
-                    break;
+                    if (Commands.addCommandFromObj(db, command)) {
+                        App.logger.debug("Loaded command: " + command.getName());
+                        return true;
+                    } else {
+                        App.logger.error("Failed to load command: " + command.getName());
+                        return false;
+                    }
                 case FILTER:
                     BasicFilter filter = (strategy == LoadStrategy.UPDATE) ?
                             PreloadComparator.generateFilterHybrid(db, (BasicFilter) tNew, (BasicFilter) tOld) : (BasicFilter) tNew;
                     if (filter == null) {
                         break;
                     }
-                    Filters.addFilterFromObj(db, filter);
-                    break;
+                    if (Filters.addFilterFromObj(db, filter)) {
+                        App.logger.debug("Loaded filter: " + filter.getData());
+                        return true;
+                    } else {
+                        App.logger.error("Failed to load filter: " + filter.getData());
+                        return false;
+                    }
                 case FILTER_GRP:
                     FilterGroup group = (strategy == LoadStrategy.UPDATE) ?
                             PreloadComparator.generateFilterGroupHybrid(db, (FilterGroup) tNew, (FilterGroup) tOld) : (FilterGroup) tNew;
                     if (group == null) {
                         break;
                     }
-                    FilterGroups.addFilterGroupFromObj(db, group);
-                    break;
+                    if (FilterGroups.addFilterGroupFromObj(db, group)) {
+                        App.logger.debug("Loaded filter group: " + group.getName());
+                        return true;
+                    } else {
+                        App.logger.error("Failed to load filter group: " + group.getName());
+                        return false;
+                    }
                 default:
                     App.logger.warn("Unable to load object into database based on base: " + base.toString());
             }
@@ -134,6 +162,7 @@ public class PreloadLoader {
             App.logger.catching(e);
             Watcher.logException();
         }
+        return false;
     }
 
     private static List<PreloadPair<?>> loadDirectoryContents(Base base, Chan chan, String channelName, LoadStrategy strategy) {
@@ -154,7 +183,7 @@ public class PreloadLoader {
             return Collections.emptyList();
         }
 
-        return FSUtil.streamDirectory(dir)
+        List<PreloadPair<?>> list = FSUtil.streamDirectory(dir)
                 .map(file -> {
                     String name = file.getName();
                     String pathOld = builder.base(base).channels(chan).forChannel(channelName).load(Load.ED).create() + File.separator + name;
@@ -168,10 +197,14 @@ public class PreloadLoader {
                     return loadFromFile(pathNew, pathOld, pathFail, tClass, strategy);
                 })
                 .collect(Collectors.toList());
+        if (list.size() > 0) {
+            App.logger.info("Read " + list.size() + " object(s) of type '" + base.toString() + "' from directory: " + dir.getPath());
+        }
+        return list;
     }
 
     private static <T> PreloadPair<T> loadFromFile(String pathNew, String pathOld, String pathFail, Class<T> tClass, LoadStrategy strategy) {
-        App.logger.info("Attempting to load from file: " + pathNew);
+        App.logger.debug("Attempting to load from file: " + pathNew);
         T tNew = JsonHandler.readValue(pathNew, tClass).orElse(null); // TODO change orElse()
         T tOld;
         if (strategy == LoadStrategy.UPDATE) {
@@ -185,7 +218,7 @@ public class PreloadLoader {
             App.logger.warn("Failed to load file: " + pathNew);
         } else {
             doMove(pathNew, pathOld);
-            App.logger.info("Successfully loaded file: " + pathNew);
+            App.logger.debug("Successfully loaded file: " + pathNew);
         }
         return new PreloadPair<>(tNew, tOld);
     }
