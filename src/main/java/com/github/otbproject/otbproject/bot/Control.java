@@ -3,6 +3,7 @@ package com.github.otbproject.otbproject.bot;
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.bot.beam.BeamBot;
 import com.github.otbproject.otbproject.bot.irc.TwitchBot;
+import com.github.otbproject.otbproject.bot.nullbot.NullBot;
 import com.github.otbproject.otbproject.cli.ArgParser;
 import com.github.otbproject.otbproject.command.parser.CommandResponseParser;
 import com.github.otbproject.otbproject.command.parser.TermLoader;
@@ -18,12 +19,10 @@ import com.github.otbproject.otbproject.util.preload.PreloadLoader;
 import org.apache.commons.cli.CommandLine;
 
 import java.awt.*;
-import java.util.concurrent.Future;
 
 public class Control {
     private static volatile boolean running = false;
-    private static Bot bot;
-    private static Future<?> botFuture;
+    private static volatile Bot bot = NullBot.INSTANCE;
 
     public static Bot getBot() {
         return bot;
@@ -93,20 +92,19 @@ public class Control {
         }
 
         App.logger.info("Shutting down bot");
-        Bot bot = getBot();
-        if (bot != null) {
-            bot.shutdown();
-        }
+        Bot oldBot = bot;
+        bot = NullBot.INSTANCE; // Quickly make calls to getBot() return NullBot
+        oldBot.shutdown();
         if (cleanup) {
-            shutdownCleanup();
+            shutdownCleanup(oldBot);
         }
         running = false;
         return true;
     }
 
-    private static void shutdownCleanup() {
+    private static void shutdownCleanup(Bot bot) {
         clearCaches();
-        getBot().getChannels().clear();
+        bot.getChannels().clear();
         // TODO unload libs?
     }
 
@@ -146,21 +144,21 @@ public class Control {
         try {
             switch (Configs.getGeneralConfig().getService()) {
                 case TWITCH:
-                    setBot(new TwitchBot());
+                    bot = new TwitchBot();
                     break;
                 case BEAM:
-                    setBot(new BeamBot());
+                    bot = new BeamBot();
                     break;
             }
         } catch (BotInitException e) {
             App.logger.catching(e);
         }
-        if (getBot() == null) {
+        if (bot == NullBot.INSTANCE) {
             App.logger.error("Failed to start bot");
             return false;
         } else {
             Runnable botRunnable = new BotRunnable();
-            botFuture = ThreadUtil.getSingleThreadExecutor("Bot").submit(botRunnable);
+            ThreadUtil.getSingleThreadExecutor("Bot").execute(botRunnable);
             return true;
         }
     }

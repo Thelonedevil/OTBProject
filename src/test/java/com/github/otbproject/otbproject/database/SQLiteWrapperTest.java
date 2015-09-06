@@ -13,7 +13,7 @@ import java.util.HashSet;
 
 import static org.junit.Assert.*;
 
-public class DatabaseWrapperTest {
+public class SQLiteWrapperTest {
     public static final String path = "target/test.db";
     public static final HashMap<String, TableFields> tables = new HashMap<>();
     public static final String tableName = "tblTest";
@@ -47,7 +47,7 @@ public class DatabaseWrapperTest {
         primaryKeys.add(fieldName);
         testFields = new TableFields(fields, primaryKeys);
         tables.put(tableName, testFields);
-        db = DatabaseWrapper.createDatabase(path, tables);
+        db = SQLiteWrapper.createDatabase(path, tables);
         testData.put(fieldName, "Test Data");
         testDataNew.put(fieldName, "Test Data New");
         testDataInt.put(fieldName2, 1);
