@@ -196,6 +196,7 @@ public class PreloadLoader {
                     String pathFail = builder.base(base).channels(chan).forChannel(channelName).load(Load.FAIL).create() + File.separator + name;
                     return loadFromFile(pathNew, pathOld, pathFail, tClass, strategy);
                 })
+                .filter(preloadPair -> preloadPair.tNew != null)
                 .collect(Collectors.toList());
         if (list.size() > 0) {
             App.logger.info("Read " + list.size() + " object(s) of type '" + base.toString() + "' from directory: " + dir.getPath());
