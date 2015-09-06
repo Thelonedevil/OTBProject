@@ -6,6 +6,7 @@ import com.github.otbproject.otbproject.bot.Bot;
 import com.github.otbproject.otbproject.bot.Control;
 import com.github.otbproject.otbproject.channel.Channel;
 import com.github.otbproject.otbproject.channel.Channels;
+import com.github.otbproject.otbproject.channel.JoinCheck;
 import com.github.otbproject.otbproject.config.Configs;
 import com.github.otbproject.otbproject.messages.receive.PackagedMessage;
 import com.github.otbproject.otbproject.messages.send.MessagePriority;
@@ -16,6 +17,7 @@ import org.pircbotx.hooks.ListenerAdapter;
 import org.pircbotx.hooks.events.*;
 import org.pircbotx.output.OutputCAP;
 
+import java.util.EnumSet;
 import java.util.Optional;
 
 class IrcListener extends ListenerAdapter {
@@ -64,9 +66,9 @@ class IrcListener extends ListenerAdapter {
     @Override
     public void onConnect(ConnectEvent event) {
         // Join bot channel
-        Channels.join(Control.getBot().getUserName(), false);
+        Channels.join(Control.getBot().getUserName(), EnumSet.of(JoinCheck.WHITELIST, JoinCheck.BLACKLIST));
         // Join channels
-        Configs.getBotConfig().getCurrentChannels().forEach(channel -> Channels.join(channel, false));
+        Configs.getBotConfig().getCurrentChannels().forEach(channel -> Channels.join(channel, EnumSet.of(JoinCheck.WHITELIST, JoinCheck.BLACKLIST)));
     }
 
 }

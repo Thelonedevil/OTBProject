@@ -5,7 +5,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class BotConfig {
-    private ChannelJoinSetting channelJoinSetting = ChannelJoinSetting.NONE;
+    private ChannelJoinSetting channelJoinSetting = ChannelJoinSetting.WHITELIST;
     private Set<String> whitelist = ConcurrentHashMap.newKeySet();
     private Set<String> blacklist = ConcurrentHashMap.newKeySet();
     private Set<String> currentChannels = ConcurrentHashMap.newKeySet();
