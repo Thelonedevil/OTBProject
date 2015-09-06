@@ -2,21 +2,22 @@ package com.github.otbproject.otbproject.cli.commands;
 
 import com.github.otbproject.otbproject.App;
 
-import java.util.concurrent.Callable;
+import java.util.function.Supplier;
 
-public class CliCommand implements Callable<String> {
+public class CliCommand implements Supplier<String> {
     private String shortHelp;
     private String longHelp;
-    private Callable<String> callable;
+    private Supplier<String> supplier;
 
-    private CliCommand(String shortHelp, String longHelp, Callable<String> callable) {
+    private CliCommand(String shortHelp, String longHelp, Supplier<String> supplier) {
         this.shortHelp = shortHelp;
         this.longHelp = longHelp;
-        this.callable = callable;
+        this.supplier = supplier;
     }
 
-    public String call() throws Exception {
-        return callable.call();
+    @Override
+    public String get() {
+        return supplier.get();
     }
 
     public String getLongHelp() {
@@ -35,7 +36,7 @@ public class CliCommand implements Callable<String> {
 
         private String shortHelp;
         private String longHelp;
-        private Callable<String> callable;
+        private Supplier<String> supplier;
 
         public Builder() {
             init();
@@ -44,8 +45,8 @@ public class CliCommand implements Callable<String> {
         private void init() {
             shortHelp = "No short help message provided";
             longHelp = "No long help message provided";
-            callable = () -> {
-                App.logger.warn("Missing callable for cli command");
+            supplier = () -> {
+                App.logger.warn("Missing supplier for cli command");
                 return "";
             };
         }
@@ -60,13 +61,13 @@ public class CliCommand implements Callable<String> {
             return this;
         }
 
-        public Builder withAction(Callable<String> callable) {
-            this.callable = callable;
+        public Builder withAction(Supplier<String> supplier) {
+            this.supplier = supplier;
             return this;
         }
 
         public CliCommand create() {
-            CliCommand cliCommand = new CliCommand(shortHelp, longHelp, callable);
+            CliCommand cliCommand = new CliCommand(shortHelp, longHelp, supplier);
             init();
             return cliCommand;
         }

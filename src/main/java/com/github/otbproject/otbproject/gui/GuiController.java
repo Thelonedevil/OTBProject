@@ -9,7 +9,6 @@ import com.github.otbproject.otbproject.command.Commands;
 import com.github.otbproject.otbproject.fs.FSUtil;
 import com.github.otbproject.otbproject.messages.internal.InternalMessageSender;
 import com.github.otbproject.otbproject.util.JsonHandler;
-import com.github.otbproject.otbproject.util.ThreadUtil;
 import javafx.fxml.FXML;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextArea;
@@ -19,7 +18,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.util.*;
-import java.util.concurrent.ExecutorService;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -50,7 +48,6 @@ public class GuiController {
 
     protected final List<String> history = new ArrayList<>();
     protected int historyPointer = 0;
-    private final ExecutorService executorService = ThreadUtil.getSingleThreadExecutor("CLI Command Processor");
     private List<String> tabCompleteList = Collections.emptyList();
     private int tabCompleteIndex = 0;
     private static final int MAX_HISTORY_SIZE = 100;
@@ -66,13 +63,10 @@ public class GuiController {
                 }
                 cliOutput.appendText(input + "\n");
                 commandsInput.clear();
-                commandsInput.setEditable(false);
-                commandsInput.setPromptText("Command executing, please wait...");
-                executorService.execute(() -> {
-                    String output = CmdParser.processLine(input, InternalMessageSender.CLI);
-                    GuiUtils.runSafe(() -> cliOutput.appendText((output.isEmpty() ? "" : (output + "\n")) + ">  "));
-                    GuiApplication.setInputActive();
-                });
+                GuiApplication.setInputInactive();
+                CmdParser.processLineAndThen(input, InternalMessageSender.CLI,
+                        s -> GuiUtils.runSafe(() -> cliOutput.appendText((s.isEmpty() ? "" : (s + "\n")) + ">  ")),
+                        GuiApplication::setInputActive);
 
                 boolean writeHistory = false;
                 if (history.isEmpty() || !history.get(history.size() - 1).equals(input)) {

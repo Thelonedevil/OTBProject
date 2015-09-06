@@ -161,8 +161,9 @@ public class App {
         System.out.println("Terminal input is now active.");
         while (scanner.hasNext()) {
             String in = scanner.next();
-            if (!in.equals(""))
-                System.out.println(CmdParser.processLine(in, InternalMessageSender.TERMINAL));
+            if (!in.equals("")) {
+                CmdParser.processLineAndThen(in, InternalMessageSender.TERMINAL, System.out::println, () -> {});
+            }
         }
         scanner.close();
     }
