@@ -51,6 +51,12 @@ public class Channels {
             Bot bot = Control.getBot();
             boolean isBotChannel = channelName.equals(bot.getUserName());
 
+            // Check if bot is connected
+            if (!bot.isConnected()) {
+                App.logger.warn("Not connected to " + ResponseParserUtil.wordCap(Configs.getGeneralConfig().getService().toString(), true));
+                return false;
+            }
+
             // Check whitelist/blacklist
             BotConfig botConfig = Configs.getBotConfig();
             ChannelJoinSetting channelJoinSetting = botConfig.getChannelJoinSetting();
@@ -84,18 +90,13 @@ public class Channels {
             }
 
             // Connect to channel
-            if (bot.isConnected()) {
-                if (!bot.isConnected(channelName)) {
-                    if (!bot.join(channelName)) {
-                        App.logger.warn("Failed to connect to channel: " + channelName);
-                        return false;
-                    }
-                } else {
-                    App.logger.error("Already connected to channel: " + channelName);
+            if (!bot.isConnected(channelName)) {
+                if (!bot.join(channelName)) {
+                    App.logger.warn("Failed to connect to channel: " + channelName);
+                    return false;
                 }
             } else {
-                App.logger.error("Not connected to " + ResponseParserUtil.wordCap(Configs.getGeneralConfig().getService().toString(), true));
-                return false;
+                App.logger.error("Already connected to channel: " + channelName);
             }
 
             // Create and join channel object
