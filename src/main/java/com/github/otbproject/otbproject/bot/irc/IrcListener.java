@@ -1,12 +1,11 @@
 package com.github.otbproject.otbproject.bot.irc;
 
 import com.github.otbproject.otbproject.App;
-import com.github.otbproject.otbproject.bot.AbstractBot;
-import com.github.otbproject.otbproject.bot.Bot;
 import com.github.otbproject.otbproject.bot.Control;
 import com.github.otbproject.otbproject.channel.Channel;
 import com.github.otbproject.otbproject.channel.Channels;
 import com.github.otbproject.otbproject.channel.JoinCheck;
+import com.github.otbproject.otbproject.config.BotConfig;
 import com.github.otbproject.otbproject.config.Configs;
 import com.github.otbproject.otbproject.messages.receive.PackagedMessage;
 import com.github.otbproject.otbproject.messages.send.MessagePriority;
@@ -15,7 +14,6 @@ import com.github.otbproject.otbproject.user.UserLevel;
 import com.github.otbproject.otbproject.user.UserLevels;
 import org.pircbotx.hooks.ListenerAdapter;
 import org.pircbotx.hooks.events.*;
-import org.pircbotx.output.OutputCAP;
 
 import java.util.EnumSet;
 import java.util.Optional;
@@ -68,7 +66,7 @@ class IrcListener extends ListenerAdapter {
         // Join bot channel
         Channels.join(Control.getBot().getUserName(), EnumSet.of(JoinCheck.WHITELIST, JoinCheck.BLACKLIST));
         // Join channels
-        Configs.getBotConfig().getCurrentChannels().forEach(channel -> Channels.join(channel, EnumSet.of(JoinCheck.WHITELIST, JoinCheck.BLACKLIST)));
+        Configs.getFromBotConfig(BotConfig::getCurrentChannels).forEach(channel -> Channels.join(channel, EnumSet.of(JoinCheck.WHITELIST, JoinCheck.BLACKLIST)));
     }
 
 }

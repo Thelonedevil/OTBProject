@@ -2,6 +2,7 @@ package com.github.otbproject.otbproject.web;
 
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.config.Configs;
+import com.github.otbproject.otbproject.config.WebConfig;
 import com.github.otbproject.otbproject.fs.FSUtil;
 import com.github.otbproject.otbproject.util.version.Version;
 import org.eclipse.jetty.server.Server;
@@ -20,10 +21,10 @@ public class WebInterface {
             App.logger.warn("You are running a dev build of OTB. Please grab the latest build of the web interface and place in \"" +
                     FSUtil.webDir() + File.separator + "\" as \"web-interface-" + WebVersion.latest() +
                     ".war\". Releases will automatically download the latest version of the web interface for you");
-        } else if (!path.exists() || (Configs.getWebConfig().isAutoUpdating() && (WebVersion.current().compareTo(WebVersion.latest()) < 0))) {
+        } else if (!path.exists() || (Configs.getFromWebConfig(WebConfig::isAutoUpdating) && (WebVersion.current().compareTo(WebVersion.latest()) < 0))) {
             WarDownload.downloadLatest();
         }
-        startInterface(Configs.getWebConfig().getPortNumber(), Configs.getWebConfig().getIpBinding());
+        startInterface(Configs.getFromWebConfig(WebConfig::getPortNumber), Configs.getFromWebConfig(WebConfig::getIpBinding));
     }
 
     private static void startInterface(int port, String address) {
@@ -51,7 +52,7 @@ public class WebInterface {
     public static void openInBrowser() {
         if (Desktop.isDesktopSupported()) {
             try {
-                Desktop.getDesktop().browse(URI.create("http://127.0.0.1:" + Configs.getWebConfig().getPortNumber()));
+                Desktop.getDesktop().browse(URI.create("http://127.0.0.1:" + Configs.getFromWebConfig(WebConfig::getPortNumber)));
             } catch (IOException e) {
                 App.logger.catching(e);
             }

@@ -142,7 +142,7 @@ public class Control {
     private static boolean createBot() {
         // Connect to service
         try {
-            switch (Configs.getGeneralConfig().getService()) {
+            switch (Configs.getFromGeneralConfig(GeneralConfig::getService)) {
                 case TWITCH:
                     bot = new TwitchBot();
                     break;
@@ -198,40 +198,34 @@ public class Control {
 
     public static void loadConfigs(CommandLine cmd) {
         // General config
-        GeneralConfig generalConfig = Configs.readGeneralConfig(); // Must be read first for service info
-        App.configManager.setGeneralConfig(generalConfig);
+        App.configManager.setGeneralConfig(Configs.readGeneralConfig()); // Must be read first for service info
         if (cmd.hasOption(ArgParser.Opts.SERVICE)) {
             String serviceName = cmd.getOptionValue(ArgParser.Opts.SERVICE).toUpperCase();
             try {
-                Configs.getGeneralConfig().setService(Service.valueOf(serviceName));
+                Configs.editGeneralConfig(config -> config.setService(Service.valueOf(serviceName)));
             } catch (IllegalArgumentException e) {
                 App.logger.fatal("Invalid service name: " + serviceName);
                 ArgParser.printHelp();
                 System.exit(1);
             }
-            Configs.writeGeneralConfig();
         }
 
         // Account config
         if (cmd.hasOption(ArgParser.Opts.ACCOUNT_FILE)) {
             Configs.setAccountFileName(cmd.getOptionValue(ArgParser.Opts.ACCOUNT_FILE));
         }
-        Account account = Configs.readAccount();
+        App.configManager.setAccount(Configs.readAccount());
         if (cmd.hasOption(ArgParser.Opts.ACCOUNT)) {
-            account.setName(cmd.getOptionValue(ArgParser.Opts.ACCOUNT));
+            Configs.editAccount(account -> account.setName(cmd.getOptionValue(ArgParser.Opts.ACCOUNT)));
         }
         if (cmd.hasOption(ArgParser.Opts.PASSKEY)) {
-            account.setPasskey(cmd.getOptionValue(ArgParser.Opts.PASSKEY));
+            Configs.editAccount(account -> account.setPasskey(cmd.getOptionValue(ArgParser.Opts.PASSKEY)));
         }
-        App.configManager.setAccount(account);
-        Configs.writeAccount();
 
         // Web Config
-        WebConfig webConfig = Configs.readWebConfig();
-        App.configManager.setWebConfig(webConfig);
+        App.configManager.setWebConfig(Configs.readWebConfig());
         if (cmd.hasOption(ArgParser.Opts.WEB)) {
-            webConfig.setEnabled(Boolean.parseBoolean(cmd.getOptionValue(ArgParser.Opts.WEB)));
-            Configs.writeWebConfig();
+            Configs.editWebConfig(webConfig -> webConfig.setEnabled(Boolean.parseBoolean(cmd.getOptionValue(ArgParser.Opts.WEB))));
         }
 
         loadOtherConfigs();
@@ -239,8 +233,7 @@ public class Control {
 
     private static void loadOtherConfigs() {
         // Bot config
-        BotConfig botConfig = Configs.readBotConfig();
-        App.configManager.setBotConfig(botConfig);
+        App.configManager.setBotConfig(Configs.readBotConfig());
     }
 
     public static class Graphics {
