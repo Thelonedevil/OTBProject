@@ -182,16 +182,13 @@ public class Control {
 
     private static void loadConfigs() {
         // General config
-        GeneralConfig generalConfig = Configs.readGeneralConfig(); // Must be read first for service info
-        App.configManager.setGeneralConfig(generalConfig);
+        App.configManager.setGeneralConfig(Configs.readGeneralConfig()); // Must be read first for service info
 
         // Account config
-        Account account = Configs.readAccount();
-        App.configManager.setAccount(account);
+        App.configManager.setAccount(Configs.readAccount());
 
         // Web Config
-        WebConfig webConfig = Configs.readWebConfig();
-        App.configManager.setWebConfig(webConfig);
+        App.configManager.setWebConfig(Configs.readWebConfig());
 
         loadOtherConfigs();
     }
