@@ -53,6 +53,7 @@ public class Configs {
         JsonHandler.writeValue(getAccountPath(), account);
     }
 
+    @Deprecated
     public static void writeAccount() {
         writeAccount(getAccount());
     }
@@ -61,22 +62,25 @@ public class Configs {
         JsonHandler.writeValue(GENERAL_CONFIG_PATH, config);
     }
 
+    @Deprecated
+    public static void writeGeneralConfig() {
+        writeGeneralConfig(getGeneralConfig());
+    }
+
     private static void writeWebConfig(WebConfig config) {
         JsonHandler.writeValue(WEB_CONFIG_PATH, config);
     }
 
+    @Deprecated
     public static void writeWebConfig() {
         writeWebConfig(getWebConfig());
-    }
-
-    public static void writeGeneralConfig() {
-        writeGeneralConfig(getGeneralConfig());
     }
 
     private static void writeBotConfig(BotConfig config) {
         JsonHandler.writeValue(BOT_CONFIG_PATH, config);
     }
 
+    @Deprecated
     public static void writeBotConfig() {
         writeBotConfig(getBotConfig());
     }
@@ -85,6 +89,7 @@ public class Configs {
         JsonHandler.writeValue(getChannelPath(channel), config);
     }
 
+    @Deprecated
     public static void writeChannelConfig(String channel) throws ChannelNotFoundException {
         writeChannelConfig(getChannelConfig(channel), channel);
     }
@@ -92,27 +97,27 @@ public class Configs {
     // Edit wrappers
     public static void editAccount(Consumer<Account> consumer) {
         consumer.accept(getAccount());
-        writeAccount();
+        writeAccount(getAccount());
     }
 
     public static void editGeneralConfig(Consumer<GeneralConfig> consumer) {
         consumer.accept(getGeneralConfig());
-        writeGeneralConfig();
+        writeGeneralConfig(getGeneralConfig());
     }
 
     public static void editWebConfig(Consumer<WebConfig> consumer) {
         consumer.accept(getWebConfig());
-        writeWebConfig();
+        writeWebConfig(getWebConfig());
     }
 
     public static void editBotConfig(Consumer<BotConfig> consumer) {
         consumer.accept(getBotConfig());
-        writeBotConfig();
+        writeBotConfig(getBotConfig());
     }
 
     public static void editChannelConfig(String channel, Consumer<ChannelConfig> consumer) throws ChannelNotFoundException {
         consumer.accept(getChannelConfig(channel));
-        writeChannelConfig(channel);
+        writeChannelConfig(getChannelConfig(channel), channel);
     }
 
     // Get wrappers
