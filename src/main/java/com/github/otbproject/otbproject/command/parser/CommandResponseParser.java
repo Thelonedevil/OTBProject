@@ -6,6 +6,7 @@ import com.github.otbproject.otbproject.channel.Channels;
 import com.github.otbproject.otbproject.command.Command;
 import com.github.otbproject.otbproject.command.Commands;
 import com.github.otbproject.otbproject.config.Configs;
+import com.github.otbproject.otbproject.config.GeneralConfig;
 import com.github.otbproject.otbproject.quote.Quote;
 import com.github.otbproject.otbproject.quote.Quotes;
 
@@ -167,7 +168,7 @@ public class CommandResponseParser {
 
         // [[service]]
         registerTerm("service", (userNick, channel, count, args, term) ->
-                doModifier(ResponseParserUtil.firstCap(Configs.getGeneralConfig().getService().toString(), true), term));
+                doModifier(ResponseParserUtil.firstCap(Configs.getFromGeneralConfig(GeneralConfig::getService).toString(), true), term));
 
         // [[bot]]
         registerTerm("bot", (userNick, channel, count, args, term) -> doModifier(Control.getBot().getUserName(), term));
