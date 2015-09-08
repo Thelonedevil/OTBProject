@@ -7,6 +7,8 @@ import com.github.otbproject.otbproject.fs.FSUtil;
 import com.github.otbproject.otbproject.util.JsonHandler;
 
 import java.io.File;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class Configs {
     private static String accountFileName = "";
@@ -85,6 +87,53 @@ public class Configs {
 
     public static void writeChannelConfig(String channel) throws ChannelNotFoundException {
         writeChannelConfig(getChannelConfig(channel), channel);
+    }
+
+    // Edit wrappers
+    public static void editAccount(Consumer<Account> consumer) {
+        consumer.accept(getAccount());
+        writeAccount();
+    }
+
+    public static void editGeneralConfig(Consumer<GeneralConfig> consumer) {
+        consumer.accept(getGeneralConfig());
+        writeGeneralConfig();
+    }
+
+    public static void editWebConfig(Consumer<WebConfig> consumer) {
+        consumer.accept(getWebConfig());
+        writeWebConfig();
+    }
+
+    public static void editBotConfig(Consumer<BotConfig> consumer) {
+        consumer.accept(getBotConfig());
+        writeBotConfig();
+    }
+
+    public static void editChannelConfig(String channel, Consumer<ChannelConfig> consumer) throws ChannelNotFoundException {
+        consumer.accept(getChannelConfig(channel));
+        writeChannelConfig(channel);
+    }
+
+    // Get wrappers
+    public static <R> R getFromAccount(Function<Account, R> function) {
+        return function.apply(getAccount());
+    }
+
+    public static <R> R getFromGeneralConfig(Function<GeneralConfig, R> function) {
+        return function.apply(getGeneralConfig());
+    }
+
+    public static <R> R getFromWebConfig(Function<WebConfig, R> function) {
+        return function.apply(getWebConfig());
+    }
+
+    public static <R> R getFromBotConfig(Function<BotConfig, R> function) {
+        return function.apply(getBotConfig());
+    }
+
+    public static <R> R getFromChannelConfig(String channel, Function<ChannelConfig, R> function) throws ChannelNotFoundException {
+        return function.apply(getChannelConfig(channel));
     }
 
     // Getting
