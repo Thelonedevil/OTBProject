@@ -5,6 +5,7 @@ import com.github.otbproject.otbproject.cli.ArgParser;
 import com.github.otbproject.otbproject.cli.commands.CmdParser;
 import com.github.otbproject.otbproject.config.ConfigManager;
 import com.github.otbproject.otbproject.config.Configs;
+import com.github.otbproject.otbproject.config.WebConfig;
 import com.github.otbproject.otbproject.fs.FSUtil;
 import com.github.otbproject.otbproject.fs.PathBuilder;
 import com.github.otbproject.otbproject.fs.Setup;
@@ -148,7 +149,7 @@ public class App {
         FatalChecker.checkForPreviousFatalCrashes();
 
         // Start web interface
-        if (Configs.getWebConfig().isEnabled()) {
+        if (Configs.getFromWebConfig(WebConfig::isEnabled)) {
             WebInterface.start();
         }
 
