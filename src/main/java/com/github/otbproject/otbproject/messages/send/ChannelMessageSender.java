@@ -3,6 +3,7 @@ package com.github.otbproject.otbproject.messages.send;
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.bot.Control;
 import com.github.otbproject.otbproject.channel.Channel;
+import com.github.otbproject.otbproject.config.BotConfig;
 import com.github.otbproject.otbproject.config.Configs;
 import com.github.otbproject.otbproject.util.ThreadUtil;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
@@ -90,7 +91,7 @@ public class ChannelMessageSender {
         try {
             Thread.currentThread().setName(channel.getName() + " Message Sender");
             MessageOut message;
-            int sleepTime = Configs.getBotConfig().getMessageSendDelayInMilliseconds();
+            int sleepTime = Configs.getFromBotConfig(BotConfig::getMessageSendDelayInMilliseconds);
 
             while (true) {
                 message = queue.take();
