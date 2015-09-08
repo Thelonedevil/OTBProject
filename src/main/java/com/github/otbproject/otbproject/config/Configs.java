@@ -55,7 +55,7 @@ public class Configs {
 
     @Deprecated
     public static void writeAccount() {
-        writeAccount(getAccount());
+        writeAccount(doGetAccount());
     }
 
     private static void writeGeneralConfig(GeneralConfig config) {
@@ -64,7 +64,7 @@ public class Configs {
 
     @Deprecated
     public static void writeGeneralConfig() {
-        writeGeneralConfig(getGeneralConfig());
+        writeGeneralConfig(doGetGeneralConfig());
     }
 
     private static void writeWebConfig(WebConfig config) {
@@ -73,7 +73,7 @@ public class Configs {
 
     @Deprecated
     public static void writeWebConfig() {
-        writeWebConfig(getWebConfig());
+        writeWebConfig(doGetWebConfig());
     }
 
     private static void writeBotConfig(BotConfig config) {
@@ -82,7 +82,7 @@ public class Configs {
 
     @Deprecated
     public static void writeBotConfig() {
-        writeBotConfig(getBotConfig());
+        writeBotConfig(doGetBotConfig());
     }
 
     private static void writeChannelConfig(ChannelConfig config, String channel) {
@@ -91,75 +91,102 @@ public class Configs {
 
     @Deprecated
     public static void writeChannelConfig(String channel) throws ChannelNotFoundException {
-        writeChannelConfig(getChannelConfig(channel), channel);
+        writeChannelConfig(doGetChannelConfig(channel), channel);
     }
 
     // Edit wrappers
     public static void editAccount(Consumer<Account> consumer) {
-        consumer.accept(getAccount());
-        writeAccount(getAccount());
+        consumer.accept(doGetAccount());
+        writeAccount(doGetAccount());
     }
 
     public static void editGeneralConfig(Consumer<GeneralConfig> consumer) {
-        consumer.accept(getGeneralConfig());
-        writeGeneralConfig(getGeneralConfig());
+        consumer.accept(doGetGeneralConfig());
+        writeGeneralConfig(doGetGeneralConfig());
     }
 
     public static void editWebConfig(Consumer<WebConfig> consumer) {
-        consumer.accept(getWebConfig());
-        writeWebConfig(getWebConfig());
+        consumer.accept(doGetWebConfig());
+        writeWebConfig(doGetWebConfig());
     }
 
     public static void editBotConfig(Consumer<BotConfig> consumer) {
-        consumer.accept(getBotConfig());
-        writeBotConfig(getBotConfig());
+        consumer.accept(doGetBotConfig());
+        writeBotConfig(doGetBotConfig());
     }
 
     public static void editChannelConfig(String channel, Consumer<ChannelConfig> consumer) throws ChannelNotFoundException {
-        consumer.accept(getChannelConfig(channel));
-        writeChannelConfig(getChannelConfig(channel), channel);
+        consumer.accept(doGetChannelConfig(channel));
+        writeChannelConfig(doGetChannelConfig(channel), channel);
     }
 
     // Get wrappers
     public static <R> R getFromAccount(Function<Account, R> function) {
-        return function.apply(getAccount());
+        return function.apply(doGetAccount());
     }
 
     public static <R> R getFromGeneralConfig(Function<GeneralConfig, R> function) {
-        return function.apply(getGeneralConfig());
+        return function.apply(doGetGeneralConfig());
     }
 
     public static <R> R getFromWebConfig(Function<WebConfig, R> function) {
-        return function.apply(getWebConfig());
+        return function.apply(doGetWebConfig());
     }
 
     public static <R> R getFromBotConfig(Function<BotConfig, R> function) {
-        return function.apply(getBotConfig());
+        return function.apply(doGetBotConfig());
     }
 
     public static <R> R getFromChannelConfig(String channel, Function<ChannelConfig, R> function) throws ChannelNotFoundException {
-        return function.apply(getChannelConfig(channel));
+        return function.apply(doGetChannelConfig(channel));
     }
 
-    // Getting
-    public static Account getAccount() {
+    // Private getters
+    // TODO refactor 'do' out of name once deprecated methods are removed
+    private static Account doGetAccount() {
         return App.configManager.getAccount();
     }
 
-    public static GeneralConfig getGeneralConfig() {
+    private static GeneralConfig doGetGeneralConfig() {
         return App.configManager.getGeneralConfig();
     }
 
-    public static WebConfig getWebConfig() {
+    private static WebConfig doGetWebConfig() {
         return App.configManager.getWebConfig();
     }
 
-    public static BotConfig getBotConfig() {
+    private static BotConfig doGetBotConfig() {
         return App.configManager.getBotConfig();
     }
 
-    public static ChannelConfig getChannelConfig(String channel) throws ChannelNotFoundException {
+    private static ChannelConfig doGetChannelConfig(String channel) throws ChannelNotFoundException {
         return Channels.getOrThrow(channel).getConfig();
+    }
+
+    // Deprecated public getters
+    @Deprecated
+    public static Account getAccount() {
+        return doGetAccount();
+    }
+
+    @Deprecated
+    public static GeneralConfig getGeneralConfig() {
+        return doGetGeneralConfig();
+    }
+
+    @Deprecated
+    public static WebConfig getWebConfig() {
+        return doGetWebConfig();
+    }
+
+    @Deprecated
+    public static BotConfig getBotConfig() {
+        return doGetBotConfig();
+    }
+
+    @Deprecated
+    public static ChannelConfig getChannelConfig(String channel) throws ChannelNotFoundException {
+        return doGetChannelConfig(channel);
     }
 
     // Misc
@@ -168,7 +195,7 @@ public class Configs {
             return accountFileName;
         }
 
-        Service service = getGeneralConfig().getService();
+        Service service = doGetGeneralConfig().getService();
         if (service == Service.BEAM) {
             return FSUtil.ConfigFileNames.ACCOUNT_BEAM;
         } else { // Defaults to Twitch
