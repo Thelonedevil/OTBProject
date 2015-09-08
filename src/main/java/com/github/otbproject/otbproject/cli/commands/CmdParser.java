@@ -209,8 +209,10 @@ public class CmdParser {
                             BotConfig config = Configs.getBotConfig();
                             if (config.getChannelJoinSetting() == ChannelJoinSetting.WHITELIST) {
                                 config.getWhitelist().add(channel);
+                                Configs.writeBotConfig();
                             } else if (config.getChannelJoinSetting() == ChannelJoinSetting.BLACKLIST) {
                                 config.getBlacklist().remove(channel);
+                                Configs.writeBotConfig();
                             }
                         }
                         String string = success ? "Successfully joined" : "Failed to join";
