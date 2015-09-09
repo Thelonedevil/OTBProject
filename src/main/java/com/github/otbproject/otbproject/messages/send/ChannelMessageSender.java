@@ -66,11 +66,11 @@ public class ChannelMessageSender {
         int limit = -1;
 
         if (priority == MessagePriority.HIGH) {
-            limit = channel.getConfig().queueLimits.getHighPriorityLimit();
+            limit = channel.getFromConfig(config -> config.queueLimits.getHighPriorityLimit());
         } else if (priority == MessagePriority.DEFAULT) {
-            limit = channel.getConfig().queueLimits.getDefaultPriorityLimit();
+            limit = channel.getFromConfig(config -> config.queueLimits.getDefaultPriorityLimit());
         } else if (priority == MessagePriority.LOW) {
-            limit = channel.getConfig().queueLimits.getLowPriorityLimit();
+            limit = channel.getFromConfig(config -> config.queueLimits.getLowPriorityLimit());
         }
 
         // Yes, I am aware that this can be simplified, but it ends up being just
