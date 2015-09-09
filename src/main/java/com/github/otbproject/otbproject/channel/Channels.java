@@ -58,7 +58,6 @@ public class Channels {
             }
 
             // Check whitelist/blacklist
-            //BotConfig botConfig = Configs.getBotConfig();
             ChannelJoinSetting channelJoinSetting = Configs.getFromBotConfig(BotConfig::getChannelJoinSetting);
             if (!isBotChannel) {
                 if (checks.contains(JoinCheck.WHITELIST)
