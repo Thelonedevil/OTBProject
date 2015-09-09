@@ -1,6 +1,7 @@
 package com.github.otbproject.otbproject.config;
 
 import com.github.otbproject.otbproject.App;
+import com.github.otbproject.otbproject.channel.Channel;
 import com.github.otbproject.otbproject.channel.ChannelNotFoundException;
 import com.github.otbproject.otbproject.channel.Channels;
 import com.github.otbproject.otbproject.fs.FSUtil;
@@ -91,7 +92,7 @@ public class Configs {
 
     @Deprecated
     public static void writeChannelConfig(String channel) throws ChannelNotFoundException {
-        writeChannelConfig(doGetChannelConfig(channel), channel);
+        writeChannelConfig(getChannelConfig(channel), channel);
     }
 
     // Edit wrappers
@@ -116,8 +117,16 @@ public class Configs {
     }
 
     public static void editChannelConfig(String channel, Consumer<ChannelConfig> consumer) throws ChannelNotFoundException {
-        consumer.accept(doGetChannelConfig(channel));
-        writeChannelConfig(doGetChannelConfig(channel), channel);
+        Channels.getOrThrow(channel).editConfig(consumer);
+    }
+
+    public static void editChannelConfig(Channel channel, Consumer<ChannelConfig> consumer) {
+        channel.editConfig(consumer);
+    }
+
+    public static void doEditChannelConfig(String channel, ChannelConfig config, Consumer<ChannelConfig> consumer) {
+        consumer.accept(config);
+        writeChannelConfig(config, channel);
     }
 
     // Get wrappers
@@ -138,7 +147,11 @@ public class Configs {
     }
 
     public static <R> R getFromChannelConfig(String channel, Function<ChannelConfig, R> function) throws ChannelNotFoundException {
-        return function.apply(doGetChannelConfig(channel));
+        return Channels.getOrThrow(channel).getFromConfig(function);
+    }
+
+    public static <R> R getFromChannelConfig(Channel channel, Function<ChannelConfig, R> function) {
+        return channel.getFromConfig(function);
     }
 
     // Private getters
@@ -157,10 +170,6 @@ public class Configs {
 
     private static BotConfig doGetBotConfig() {
         return App.configManager.getBotConfig();
-    }
-
-    private static ChannelConfig doGetChannelConfig(String channel) throws ChannelNotFoundException {
-        return Channels.getOrThrow(channel).getConfig();
     }
 
     // Deprecated public getters
@@ -186,7 +195,7 @@ public class Configs {
 
     @Deprecated
     public static ChannelConfig getChannelConfig(String channel) throws ChannelNotFoundException {
-        return doGetChannelConfig(channel);
+        return Channels.getOrThrow(channel).getConfig();
     }
 
     // Misc
