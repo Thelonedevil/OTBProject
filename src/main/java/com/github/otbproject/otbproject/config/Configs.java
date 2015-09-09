@@ -1,12 +1,15 @@
 package com.github.otbproject.otbproject.config;
 
 import com.github.otbproject.otbproject.App;
+import com.github.otbproject.otbproject.channel.Channel;
 import com.github.otbproject.otbproject.channel.ChannelNotFoundException;
 import com.github.otbproject.otbproject.channel.Channels;
 import com.github.otbproject.otbproject.fs.FSUtil;
 import com.github.otbproject.otbproject.util.JsonHandler;
 
 import java.io.File;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class Configs {
     private static String accountFileName = "";
@@ -51,59 +54,146 @@ public class Configs {
         JsonHandler.writeValue(getAccountPath(), account);
     }
 
+    @Deprecated
     public static void writeAccount() {
-        writeAccount(getAccount());
+        writeAccount(doGetAccount());
     }
 
     private static void writeGeneralConfig(GeneralConfig config) {
         JsonHandler.writeValue(GENERAL_CONFIG_PATH, config);
     }
 
+    @Deprecated
+    public static void writeGeneralConfig() {
+        writeGeneralConfig(doGetGeneralConfig());
+    }
+
     private static void writeWebConfig(WebConfig config) {
         JsonHandler.writeValue(WEB_CONFIG_PATH, config);
     }
 
+    @Deprecated
     public static void writeWebConfig() {
-        writeWebConfig(getWebConfig());
-    }
-
-    public static void writeGeneralConfig() {
-        writeGeneralConfig(getGeneralConfig());
+        writeWebConfig(doGetWebConfig());
     }
 
     private static void writeBotConfig(BotConfig config) {
         JsonHandler.writeValue(BOT_CONFIG_PATH, config);
     }
 
+    @Deprecated
     public static void writeBotConfig() {
-        writeBotConfig(getBotConfig());
+        writeBotConfig(doGetBotConfig());
     }
 
     private static void writeChannelConfig(ChannelConfig config, String channel) {
         JsonHandler.writeValue(getChannelPath(channel), config);
     }
 
+    @Deprecated
     public static void writeChannelConfig(String channel) throws ChannelNotFoundException {
         writeChannelConfig(getChannelConfig(channel), channel);
     }
 
-    // Getting
-    public static Account getAccount() {
+    // Edit wrappers
+    public static void editAccount(Consumer<Account> consumer) {
+        consumer.accept(doGetAccount());
+        writeAccount(doGetAccount());
+    }
+
+    public static void editGeneralConfig(Consumer<GeneralConfig> consumer) {
+        consumer.accept(doGetGeneralConfig());
+        writeGeneralConfig(doGetGeneralConfig());
+    }
+
+    public static void editWebConfig(Consumer<WebConfig> consumer) {
+        consumer.accept(doGetWebConfig());
+        writeWebConfig(doGetWebConfig());
+    }
+
+    public static void editBotConfig(Consumer<BotConfig> consumer) {
+        consumer.accept(doGetBotConfig());
+        writeBotConfig(doGetBotConfig());
+    }
+
+    public static void editChannelConfig(String channel, Consumer<ChannelConfig> consumer) throws ChannelNotFoundException {
+        Channels.getOrThrow(channel).editConfig(consumer);
+    }
+
+    public static void editChannelConfig(Channel channel, Consumer<ChannelConfig> consumer) {
+        channel.editConfig(consumer);
+    }
+
+    public static void doEditChannelConfig(String channel, ChannelConfig config, Consumer<ChannelConfig> consumer) {
+        consumer.accept(config);
+        writeChannelConfig(config, channel);
+    }
+
+    // Get wrappers
+    public static <R> R getFromAccount(Function<Account, R> function) {
+        return function.apply(doGetAccount());
+    }
+
+    public static <R> R getFromGeneralConfig(Function<GeneralConfig, R> function) {
+        return function.apply(doGetGeneralConfig());
+    }
+
+    public static <R> R getFromWebConfig(Function<WebConfig, R> function) {
+        return function.apply(doGetWebConfig());
+    }
+
+    public static <R> R getFromBotConfig(Function<BotConfig, R> function) {
+        return function.apply(doGetBotConfig());
+    }
+
+    public static <R> R getFromChannelConfig(String channel, Function<ChannelConfig, R> function) throws ChannelNotFoundException {
+        return Channels.getOrThrow(channel).getFromConfig(function);
+    }
+
+    public static <R> R getFromChannelConfig(Channel channel, Function<ChannelConfig, R> function) {
+        return channel.getFromConfig(function);
+    }
+
+    // Private getters
+    // TODO refactor 'do' out of name once deprecated methods are removed
+    private static Account doGetAccount() {
         return App.configManager.getAccount();
     }
 
-    public static GeneralConfig getGeneralConfig() {
+    private static GeneralConfig doGetGeneralConfig() {
         return App.configManager.getGeneralConfig();
     }
 
-    public static WebConfig getWebConfig() {
+    private static WebConfig doGetWebConfig() {
         return App.configManager.getWebConfig();
     }
 
-    public static BotConfig getBotConfig() {
+    private static BotConfig doGetBotConfig() {
         return App.configManager.getBotConfig();
     }
 
+    // Deprecated public getters
+    @Deprecated
+    public static Account getAccount() {
+        return doGetAccount();
+    }
+
+    @Deprecated
+    public static GeneralConfig getGeneralConfig() {
+        return doGetGeneralConfig();
+    }
+
+    @Deprecated
+    public static WebConfig getWebConfig() {
+        return doGetWebConfig();
+    }
+
+    @Deprecated
+    public static BotConfig getBotConfig() {
+        return doGetBotConfig();
+    }
+
+    @Deprecated
     public static ChannelConfig getChannelConfig(String channel) throws ChannelNotFoundException {
         return Channels.getOrThrow(channel).getConfig();
     }
@@ -114,7 +204,7 @@ public class Configs {
             return accountFileName;
         }
 
-        Service service = getGeneralConfig().getService();
+        Service service = doGetGeneralConfig().getService();
         if (service == Service.BEAM) {
             return FSUtil.ConfigFileNames.ACCOUNT_BEAM;
         } else { // Defaults to Twitch

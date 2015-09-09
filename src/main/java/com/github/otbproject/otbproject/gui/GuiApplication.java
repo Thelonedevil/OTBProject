@@ -3,6 +3,8 @@ package com.github.otbproject.otbproject.gui;
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.bot.Control;
 import com.github.otbproject.otbproject.config.Configs;
+import com.github.otbproject.otbproject.config.GeneralConfig;
+import com.github.otbproject.otbproject.config.WebConfig;
 import com.github.otbproject.otbproject.fs.FSUtil;
 import com.github.otbproject.otbproject.util.ThreadUtil;
 import com.github.otbproject.otbproject.util.version.AppVersion;
@@ -236,11 +238,11 @@ public class GuiApplication extends Application {
     }
 
     private void openWebInterfaceInBrowser() {
-        this.getHostServices().showDocument("http://127.0.0.1:" + Configs.getWebConfig().getPortNumber());
+        this.getHostServices().showDocument("http://127.0.0.1:" + Configs.getFromWebConfig(WebConfig::getPortNumber));
     }
 
     private void checkForNewRelease() {
-        if (Configs.getGeneralConfig().isUpdateChecking()
+        if (Configs.getFromGeneralConfig(GeneralConfig::isUpdateChecking)
                 && (AppVersion.latest().compareTo(App.VERSION) > 0)
                 && (AppVersion.latest().type == Version.Type.RELEASE)) {
             String url = "https://github.com/OTBProject/OTBProject/releases/latest";
@@ -263,8 +265,7 @@ public class GuiApplication extends Application {
             alert.initStyle(StageStyle.UNDECORATED);
             alert.showAndWait().ifPresent(buttonType -> {
                 if (buttonType == buttonTypeDontAskAgain) {
-                    Configs.getGeneralConfig().setUpdateChecking(false);
-                    Configs.writeGeneralConfig();
+                    Configs.editGeneralConfig(config -> config.setUpdateChecking(false));
                 } else if (buttonType == buttonTypeGetRelease) {
                     this.getHostServices().showDocument(url);
                 }

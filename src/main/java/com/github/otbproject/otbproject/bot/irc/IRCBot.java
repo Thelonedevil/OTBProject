@@ -1,10 +1,10 @@
 package com.github.otbproject.otbproject.bot.irc;
 
 import com.github.otbproject.otbproject.App;
+import com.github.otbproject.otbproject.config.Account;
 import com.github.otbproject.otbproject.config.Configs;
 import org.pircbotx.Configuration;
 import org.pircbotx.PircBotX;
-import org.pircbotx.cap.CapHandler;
 import org.pircbotx.cap.EnableCapHandler;
 import org.pircbotx.output.OutputRaw;
 
@@ -17,7 +17,7 @@ class IRCBot extends PircBotX {
 
     public IRCBot() {
         super(new Configuration.Builder()
-                .setName(Configs.getAccount().getName())
+                .setName(Configs.getFromAccount(Account::getName))
                 .setAutoNickChange(false) //Twitch doesn't support multiple users
                 .setOnJoinWhoEnabled(false) //Twitch doesn't support WHO command
                 .setCapEnabled(true)
@@ -25,7 +25,7 @@ class IRCBot extends PircBotX {
                 .addCapHandler((new EnableCapHandler("twitch.tv/tags")))
                 .addListener(new IrcListener())
                 .addServer("irc.twitch.tv", 6667)
-                .setServerPassword(Configs.getAccount().getPasskey())
+                .setServerPassword(Configs.getFromAccount(Account::getPasskey))
                 .setEncoding(Charset.forName("UTF-8"))
                 .buildConfiguration());
         App.logger.info("Bot configuration built");

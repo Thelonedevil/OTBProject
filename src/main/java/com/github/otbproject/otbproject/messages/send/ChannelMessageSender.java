@@ -3,6 +3,7 @@ package com.github.otbproject.otbproject.messages.send;
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.bot.Control;
 import com.github.otbproject.otbproject.channel.Channel;
+import com.github.otbproject.otbproject.config.BotConfig;
 import com.github.otbproject.otbproject.config.Configs;
 import com.github.otbproject.otbproject.util.ThreadUtil;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
@@ -65,11 +66,11 @@ public class ChannelMessageSender {
         int limit = -1;
 
         if (priority == MessagePriority.HIGH) {
-            limit = channel.getConfig().queueLimits.getHighPriorityLimit();
+            limit = channel.getFromConfig(config -> config.queueLimits.getHighPriorityLimit());
         } else if (priority == MessagePriority.DEFAULT) {
-            limit = channel.getConfig().queueLimits.getDefaultPriorityLimit();
+            limit = channel.getFromConfig(config -> config.queueLimits.getDefaultPriorityLimit());
         } else if (priority == MessagePriority.LOW) {
-            limit = channel.getConfig().queueLimits.getLowPriorityLimit();
+            limit = channel.getFromConfig(config -> config.queueLimits.getLowPriorityLimit());
         }
 
         // Yes, I am aware that this can be simplified, but it ends up being just
@@ -90,7 +91,7 @@ public class ChannelMessageSender {
         try {
             Thread.currentThread().setName(channel.getName() + " Message Sender");
             MessageOut message;
-            int sleepTime = Configs.getBotConfig().getMessageSendDelayInMilliseconds();
+            int sleepTime = Configs.getFromBotConfig(BotConfig::getMessageSendDelayInMilliseconds);
 
             while (true) {
                 message = queue.take();

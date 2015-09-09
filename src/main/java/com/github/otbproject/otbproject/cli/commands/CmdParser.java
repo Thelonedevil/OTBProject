@@ -206,13 +206,11 @@ public class CmdParser {
                         String channel  = args.get(0).toLowerCase();
                         boolean success = Channels.join(channel, EnumSet.of(JoinCheck.IS_CHANNEL));
                         if (success) {
-                            BotConfig config = Configs.getBotConfig();
-                            if (config.getChannelJoinSetting() == ChannelJoinSetting.WHITELIST) {
-                                config.getWhitelist().add(channel);
-                                Configs.writeBotConfig();
-                            } else if (config.getChannelJoinSetting() == ChannelJoinSetting.BLACKLIST) {
-                                config.getBlacklist().remove(channel);
-                                Configs.writeBotConfig();
+                            ChannelJoinSetting channelJoinSetting = Configs.getFromBotConfig(BotConfig::getChannelJoinSetting);
+                            if (channelJoinSetting == ChannelJoinSetting.WHITELIST) {
+                                Configs.editBotConfig(config -> config.getWhitelist().add(channel));
+                            } else if (channelJoinSetting == ChannelJoinSetting.BLACKLIST) {
+                                Configs.editBotConfig(config -> config.getBlacklist().remove(channel));
                             }
                         }
                         String string = success ? "Successfully joined" : "Failed to join";

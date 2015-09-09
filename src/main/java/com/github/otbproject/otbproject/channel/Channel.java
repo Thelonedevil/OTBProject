@@ -3,6 +3,7 @@ package com.github.otbproject.otbproject.channel;
 import com.github.otbproject.otbproject.command.scheduler.Scheduler;
 import com.github.otbproject.otbproject.command.scheduler.Schedules;
 import com.github.otbproject.otbproject.config.ChannelConfig;
+import com.github.otbproject.otbproject.config.Configs;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.database.Databases;
 import com.github.otbproject.otbproject.database.SQLiteQuoteWrapper;
@@ -20,6 +21,8 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class Channel {
     private final ExpiringMap<String, Boolean> commandCooldownSet;
@@ -276,8 +279,17 @@ public class Channel {
         return quoteDb;
     }
 
+    @Deprecated
     public ChannelConfig getConfig() {
         return config;
+    }
+
+    public <R> R getFromConfig(Function<ChannelConfig, R> function) {
+        return function.apply(config);
+    }
+
+    public void editConfig(Consumer<ChannelConfig> consumer) {
+        Configs.doEditChannelConfig(name, config, consumer);
     }
 
     public Scheduler getScheduler() {

@@ -4,10 +4,7 @@ import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.bot.Bot;
 import com.github.otbproject.otbproject.bot.Control;
 import com.github.otbproject.otbproject.command.parser.ResponseParserUtil;
-import com.github.otbproject.otbproject.config.BotConfig;
-import com.github.otbproject.otbproject.config.ChannelConfig;
-import com.github.otbproject.otbproject.config.ChannelJoinSetting;
-import com.github.otbproject.otbproject.config.Configs;
+import com.github.otbproject.otbproject.config.*;
 import com.github.otbproject.otbproject.fs.Setup;
 
 import java.io.IOException;
@@ -38,7 +35,10 @@ public class Channels {
     }
 
     public static boolean join(String channelName, EnumSet<JoinCheck> checks) {
-        channelName = channelName.toLowerCase();
+        return doJoin(channelName.toLowerCase(), checks);
+    }
+
+    private static boolean doJoin(final String channelName, EnumSet<JoinCheck> checks) {
         App.logger.info("Attempting to join channel: " + channelName);
 
         lock.lock();
@@ -53,22 +53,21 @@ public class Channels {
 
             // Check if bot is connected
             if (!bot.isConnected()) {
-                App.logger.warn("Not connected to " + ResponseParserUtil.wordCap(Configs.getGeneralConfig().getService().toString(), true));
+                App.logger.warn("Not connected to " + ResponseParserUtil.wordCap(Configs.getFromGeneralConfig(GeneralConfig::getService).toString(), true));
                 return false;
             }
 
             // Check whitelist/blacklist
-            BotConfig botConfig = Configs.getBotConfig();
-            ChannelJoinSetting channelJoinSetting = botConfig.getChannelJoinSetting();
+            ChannelJoinSetting channelJoinSetting = Configs.getFromBotConfig(BotConfig::getChannelJoinSetting);
             if (!isBotChannel) {
                 if (checks.contains(JoinCheck.WHITELIST)
                         && (channelJoinSetting == ChannelJoinSetting.WHITELIST)
-                        && !botConfig.getWhitelist().contains(channelName)) {
+                        && !Configs.getFromBotConfig(BotConfig::getWhitelist).contains(channelName)) {
                     App.logger.info("Failed to join channel: " + channelName + ". Not whitelisted.");
                     return false;
                 } else if (checks.contains(JoinCheck.BLACKLIST)
                         && (channelJoinSetting == ChannelJoinSetting.BLACKLIST)
-                        && botConfig.getBlacklist().contains(channelName)) {
+                        && Configs.getFromBotConfig(BotConfig::getBlacklist).contains(channelName)) {
                     App.logger.info("Failed to join channel: " + channelName + ". Blacklisted.");
                     return false;
                 }
@@ -120,8 +119,7 @@ public class Channels {
 
             // Add channel to list of channels bot is in in config (if not bot channel)
             if (!isBotChannel) {
-                botConfig.getCurrentChannels().add(channelName);
-                Configs.writeBotConfig();
+                Configs.editBotConfig(config -> config.getCurrentChannels().add(channelName));
             }
         } finally {
             lock.unlock();
@@ -131,21 +129,20 @@ public class Channels {
     }
 
     public static boolean leave(String channelName) {
-        channelName = channelName.toLowerCase();
+        final String channel = channelName.toLowerCase();
         lock.lock();
         try {
-            if (!in(channelName)) {
-                App.logger.info("Not leaving channel '" + channelName + "' - not in channel");
+            if (!in(channel)) {
+                App.logger.info("Not leaving channel '" + channel + "' - not in channel");
                 return false;
-            } else if (channelName.equals(Control.getBot().getUserName())) {
-                App.logger.info("Not leaving channel '" + channelName + "' - cannot leave bot channel");
+            } else if (channel.equals(Control.getBot().getUserName())) {
+                App.logger.info("Not leaving channel '" + channel + "' - cannot leave bot channel");
                 return false;
             }
-            App.logger.info("Leaving channel: " + channelName);
-            get(channelName).ifPresent(Channel::leave); // TODO possibly remove from channel list?
-            Configs.getBotConfig().getCurrentChannels().remove(channelName);
-            Configs.writeBotConfig();
-            Control.getBot().leave(channelName);
+            App.logger.info("Leaving channel: " + channel);
+            get(channel).ifPresent(Channel::leave); // TODO possibly remove from channel list?
+            Configs.editBotConfig(config -> config.getCurrentChannels().remove(channel));
+            Control.getBot().leave(channel);
         } finally {
             lock.unlock();
         }
