@@ -5,10 +5,7 @@ import com.github.otbproject.otbproject.bot.Control;
 import com.github.otbproject.otbproject.channel.Channel;
 import com.github.otbproject.otbproject.channel.Channels;
 import com.github.otbproject.otbproject.command.Commands;
-import com.github.otbproject.otbproject.config.BotConfig;
-import com.github.otbproject.otbproject.config.ChannelConfigHelper;
-import com.github.otbproject.otbproject.config.Configs;
-import com.github.otbproject.otbproject.config.GeneralConfig;
+import com.github.otbproject.otbproject.config.*;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.messages.internal.InternalMessageSender;
 import com.github.otbproject.otbproject.messages.send.MessageOut;
@@ -70,14 +67,15 @@ public class ChannelMessageProcessor {
         // Process commands not as bot channel
         DatabaseWrapper db = channel.getMainDatabaseWrapper();
         UserLevel ul = packagedMessage.userLevel;
-        boolean debug = channel.getConfig().isDebug();
+        boolean debug = channel.getFromConfig(ChannelConfig::isDebug);
         if (inBotChannel) {
             debug = (debug || Configs.getFromBotConfig(BotConfig::isBotChannelDebug));
         }
         ProcessedCommand processedCmd = CommandProcessor.process(db, packagedMessage.message, channelName, user, ul, debug);
 
         // Check if bot is enabled
-        if (channel.getConfig().isEnabled() || Configs.getFromGeneralConfig(GeneralConfig::getPermanentlyEnabledCommands).contains(processedCmd.commandName)) {
+        if (channel.getFromConfig(ChannelConfig::isEnabled)
+                || Configs.getFromGeneralConfig(GeneralConfig::getPermanentlyEnabledCommands).contains(processedCmd.commandName)) {
             // Check if empty message, and then if command is on cooldown (skip cooldown check if internal)
             if ((processedCmd.isScript || !processedCmd.response.isEmpty()) && (internal || !destChannel.isCommandCooldown(processedCmd.commandName))) {
                 doResponse(db, processedCmd, channelName, destChannelName, destChannel, user, ul, packagedMessage.messagePriority, internal);
@@ -136,12 +134,12 @@ public class ChannelMessageProcessor {
         }
 
         // Handles command cooldowns
-        int commandCooldown = channel.getConfig().getCommandCooldown();
+        int commandCooldown = channel.getFromConfig(ChannelConfig::getCommandCooldown);
         if (commandCooldown > 0) {
             destChannel.addCommandCooldown(command, commandCooldown);
         }
         // Handles user cooldowns
-        int userCooldown = ChannelConfigHelper.getCooldown(channel.getConfig(), ul);
+        int userCooldown = ChannelConfigHelper.getCooldown(channel, ul);
         if (userCooldown > 0) {
             destChannel.addUserCooldown(user, userCooldown);
         }
