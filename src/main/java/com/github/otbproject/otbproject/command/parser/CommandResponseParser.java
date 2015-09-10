@@ -9,6 +9,9 @@ import com.github.otbproject.otbproject.config.Configs;
 import com.github.otbproject.otbproject.config.GeneralConfig;
 import com.github.otbproject.otbproject.quote.Quote;
 import com.github.otbproject.otbproject.quote.Quotes;
+import com.github.otbproject.otbproject.util.StrUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.text.WordUtils;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -168,7 +171,7 @@ public class CommandResponseParser {
 
         // [[service]]
         registerTerm("service", (userNick, channel, count, args, term) ->
-                doModifier(ResponseParserUtil.firstCap(Configs.getFromGeneralConfig(GeneralConfig::getService).toString(), true), term));
+                doModifier(StrUtils.capitalizeFully(Configs.getFromGeneralConfig(GeneralConfig::getService).toString()), term));
 
         // [[bot]]
         registerTerm("bot", (userNick, channel, count, args, term) -> doModifier(Control.getBot().getUserName(), term));
@@ -260,13 +263,13 @@ public class CommandResponseParser {
             case ModifierTypes.UPPER:
                 return toModify.toUpperCase();
             case ModifierTypes.FIRST_CAP:
-                return ResponseParserUtil.firstCap(toModify, true);
+                return StrUtils.capitalizeFully(toModify);
             case ModifierTypes.WORD_CAP:
-                return ResponseParserUtil.wordCap(toModify, true);
+                return WordUtils.capitalizeFully(toModify);
             case ModifierTypes.FIRST_CAP_SOFT:
-                return ResponseParserUtil.firstCap(toModify, false);
+                return StringUtils.capitalize(toModify);
             case ModifierTypes.WORD_CAP_SOFT:
-                return ResponseParserUtil.wordCap(toModify, false);
+                return WordUtils.capitalize(toModify);
             default:
                 return toModify;
         }
