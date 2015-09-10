@@ -73,6 +73,7 @@ public class App {
     private static void doMain(String[] args) {
         CommandLine cmd = initialArgParse(args);
 
+        System.setProperty("OTBBASE", FSUtil.getBaseDir());
         System.setProperty("OTBCONF", FSUtil.logsDir());
         org.apache.logging.log4j.core.Logger coreLogger
                 = (org.apache.logging.log4j.core.Logger) LogManager.getLogger();
