@@ -3,9 +3,9 @@ package com.github.otbproject.otbproject.channel;
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.bot.Bot;
 import com.github.otbproject.otbproject.bot.Control;
-import com.github.otbproject.otbproject.command.parser.ResponseParserUtil;
 import com.github.otbproject.otbproject.config.*;
 import com.github.otbproject.otbproject.fs.Setup;
+import com.github.otbproject.otbproject.util.StrUtils;
 
 import java.io.IOException;
 import java.util.EnumSet;
@@ -53,7 +53,7 @@ public class Channels {
 
             // Check if bot is connected
             if (!bot.isConnected()) {
-                App.logger.warn("Not connected to " + ResponseParserUtil.wordCap(Configs.getFromGeneralConfig(GeneralConfig::getService).toString(), true));
+                App.logger.warn("Not connected to " + StrUtils.capitalizeFully(Configs.getFromGeneralConfig(GeneralConfig::getService).toString()));
                 return false;
             }
 
