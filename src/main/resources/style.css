@@ -80,4 +80,12 @@
     -fx-light-text-color: #99a;
 }
 
+.menu-bar{
+    -fx-background-color: derive(#2b2b2b, 10%);
+}
+
+.menu:hover,.menu-item:hover, .menu:showing,.menu-item:showing,.menu-item:focused{
+    -fx-background-color: derive(#2b2b2b, 20%);
+}
+
 
