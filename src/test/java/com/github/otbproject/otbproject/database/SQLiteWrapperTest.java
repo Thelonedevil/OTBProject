@@ -1,5 +1,6 @@
 package com.github.otbproject.otbproject.database;
 
+import com.github.otbproject.otbproject.fs.FSUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.junit.AfterClass;
@@ -29,18 +30,8 @@ public class SQLiteWrapperTest {
 
     @BeforeClass
     public static void initialise() {
-        org.apache.logging.log4j.core.Logger coreLogger
-                = (org.apache.logging.log4j.core.Logger) LogManager.getLogger();
-        LoggerContext context
-                = coreLogger.getContext();
-        org.apache.logging.log4j.core.config.Configuration config
-                = context.getConfiguration();
-        coreLogger.removeAppender(config.getAppender("Console-info"));
-        coreLogger.removeAppender(config.getAppender("Console-debug"));
-        coreLogger.removeAppender(config.getAppender("Routing"));
-        coreLogger.removeAppender(config.getAppender("Routing-console-debug"));
-        coreLogger.removeAppender(config.getAppender("Routing-console-info"));
-
+        System.setProperty("OTBCONF", "./logs/");
+        System.setProperty("OTBDEBUG","false");
         fields.put(fieldName, DataTypes.STRING);
         fields.put(fieldName2, DataTypes.INTEGER);
         HashSet<String> primaryKeys = new HashSet<>();

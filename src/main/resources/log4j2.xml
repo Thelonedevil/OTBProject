@@ -1,20 +1,51 @@
-<Configuration status="INFO">
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
     <Appenders>
-        <Console name="Console-info" target="SYSTEM_OUT">
-            <PatternLayout pattern="%highlight{%d{HH:mm:ss} [%level] %msg%n}{INFO=white}"/>
-        </Console>
-        <Console name="Console-debug" target="SYSTEM_OUT">
-            <PatternLayout pattern="%highlight{%d{HH:mm:ss.SSS} [%t] %-5level %class{36} %L %M - %msg%n}{INFO=white}"/>
-        </Console>
         <routing name="Routing">
+            <routes pattern="$${sys:OTBDEBUG}">
+                <route key="false">
+                    <Console name="Console-info" target="SYSTEM_OUT">
+                        <ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
+                        <PatternLayout pattern="%highlight{%d{HH:mm:ss} [%level] %msg%n}{INFO=white}"/>
+                    </Console>
+                </route>
+                <route key="true">
+                    <Console name="Console-debug" target="SYSTEM_OUT">
+                        <ThresholdFilter level="DEBUG" onMatch="ACCEPT" onMismatch="DENY"/>
+                        <PatternLayout
+                                pattern="%highlight{%d{HH:mm:ss.SSS} [%t] %-5level %class{36} %L %M - %msg%n}{INFO=white}"/>
+                    </Console>
+                </route>
+            </routes>
+        </routing>
+        <routing name="Main-Routing">
             <routes pattern="*">
                 <route>
-                    <RollingFile name="RollingFile" fileName="${sys:OTBCONF}/app.log"
+                    <RollingFile name="Main-File" fileName="${sys:OTBCONF}/app.log"
                                  filePattern="${sys:OTBCONF}/app-%d{yyyy-MM-dd}-%i.log">
                         <PatternLayout>
                             <Pattern>%d{HH:mm:ss.SSS} [%t] %-5level %class{36} %L %M - %msg%n</Pattern>
                             <!-- <Pattern>%d %p %c{1.} [%t] %m%n</Pattern> -->
                         </PatternLayout>
+                        <!-- <ClassNameRegexFilter regex=".*jetty.*" onMatch="DENY" onMismatch="ALLOW"/> -->
+                        <Policies>
+                            <OnStartupTriggeringPolicy/>
+                        </Policies>
+
+                    </RollingFile>
+                </route>
+            </routes>
+        </routing>
+        <routing name="Web-Routing">
+            <routes pattern="*">
+                <route>
+                    <RollingFile name="Web-File" fileName="${sys:OTBCONF}/web.log"
+                                 filePattern="${sys:OTBCONF}/web-%d{yyyy-MM-dd}-%i.log">
+                        <PatternLayout>
+                            <Pattern>%d{HH:mm:ss.SSS} [%t] %-5level %class{36} %L %M - %msg%n</Pattern>
+                            <!-- <Pattern>%d %p %c{1.} [%t] %m%n</Pattern> -->
+                        </PatternLayout>
+                        <!-- <ClassNameRegexFilter regex=".*jetty.*" onMatch="ACCEPT" onMismatch="DENY"/> -->
                         <Policies>
                             <OnStartupTriggeringPolicy/>
                         </Policies>
@@ -22,22 +53,20 @@
                 </route>
             </routes>
         </routing>
-        <routing name="Routing-console-info">
-            <routes pattern="*">
-                <route>
-                    <File name="RollingFile" fileName="${sys:OTBCONF}/console.log">
+        <routing name="Console-Routing">
+            <routes pattern="$${sys:OTBDEBUG}">
+                <route key="false">
+                    <File name="console-file-info" fileName="${sys:OTBCONF}/console.log">
+                        <ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
                         <PatternLayout>
                             <Pattern>%d{HH:mm:ss} [%level] %msg%n</Pattern>
                             <!-- <Pattern>%d %p %c{1.} [%t] %m%n</Pattern> -->
                         </PatternLayout>
                     </File>
                 </route>
-            </routes>
-        </routing>
-        <routing name="Routing-console-debug">
-            <routes pattern="*">
-                <route>
-                    <File name="RollingFile" fileName="${sys:OTBCONF}/console.log">
+                <route key="true">
+                    <File name="console-file-debug" fileName="${sys:OTBCONF}/console.log">
+                        <ThresholdFilter level="DEBUG" onMatch="ACCEPT" onMismatch="DENY"/>
                         <PatternLayout>
                             <Pattern>%d{HH:mm:ss.SSS} [%t] %-5level %class{36} %L %M - %msg%n</Pattern>
                             <!-- <Pattern>%d %p %c{1.} [%t] %m%n</Pattern> -->
@@ -46,16 +75,30 @@
                 </route>
             </routes>
         </routing>
-
     </Appenders>
     <Loggers>
-        <Logger name="org.eclipse.jetty" level="INFO"/>
-        <Root level="trace">
-            <AppenderRef ref="Console-info" level="info"/>
-            <AppenderRef ref="Console-debug" level="debug"/>
-            <AppenderRef ref="Routing" level="debug"/>
-            <AppenderRef ref="Routing-console-info" level="info"/>
-            <AppenderRef ref="Routing-console-debug" level="debug"/>
-        </Root>
+        <logger name="org.eclipse.jetty.webapp.WebAppClassLoader" level="DEBUG" additivity="false">
+        </logger>
+        <logger name="org.eclipse.jetty" level="INFO" additivity="false">
+            <appenderRef ref="Web-Routing" level="info"/>
+        </logger>
+        <logger name="com" level="trace" additivity="false">
+            <appenderRef ref="Routing" level="debug"/>
+            <appenderRef ref="Main-Routing" level="debug"/>
+            <appenderRef ref="Console-Routing" level="debug"/>
+        </logger>
+        <logger name="pro" level="trace" additivity="false">
+            <appenderRef ref="Routing" level="debug"/>
+            <appenderRef ref="Main-Routing" level="debug"/>
+            <appenderRef ref="Console-Routing" level="debug"/>
+        </logger>
+        <logger name="org" level="debug" additivity="false">
+            <appenderRef ref="Routing" level="debug"/>
+            <appenderRef ref="Main-Routing" level="debug"/>
+            <appenderRef ref="Console-Routing" level="debug"/>
+        </logger>
+        <root level="trace">
+            <appenderRef ref="Web-Routing" level="info"/>
+        </root>
     </Loggers>
 </Configuration>

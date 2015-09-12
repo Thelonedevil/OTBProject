@@ -15,8 +15,8 @@ import com.github.otbproject.otbproject.fs.groups.Load;
 import com.github.otbproject.otbproject.gui.GuiApplication;
 import com.github.otbproject.otbproject.messages.internal.InternalMessageSender;
 import com.github.otbproject.otbproject.util.FatalChecker;
-import com.github.otbproject.otbproject.util.Unpacker;
 import com.github.otbproject.otbproject.util.ThreadUtil;
+import com.github.otbproject.otbproject.util.Unpacker;
 import com.github.otbproject.otbproject.util.compat.VersionCompatHelper;
 import com.github.otbproject.otbproject.util.preload.LoadStrategy;
 import com.github.otbproject.otbproject.util.version.AppVersion;
@@ -28,7 +28,6 @@ import org.apache.commons.cli.ParseException;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.LoggerContext;
 
 import java.io.File;
 import java.io.IOException;
@@ -75,19 +74,11 @@ public class App {
 
         System.setProperty("OTBBASE", FSUtil.getBaseDir());
         System.setProperty("OTBCONF", FSUtil.logsDir());
-        org.apache.logging.log4j.core.Logger coreLogger
-                = (org.apache.logging.log4j.core.Logger) LogManager.getLogger();
-        LoggerContext context
-                = coreLogger.getContext();
-        org.apache.logging.log4j.core.config.Configuration config
-                = context.getConfiguration();
 
         if (cmd.hasOption(ArgParser.Opts.DEBUG)) {
-            coreLogger.removeAppender(config.getAppender("Console-info"));
-            coreLogger.removeAppender(config.getAppender("Routing-console-info"));
+            System.setProperty("OTBDEBUG", "true");
         } else {
-            coreLogger.removeAppender(config.getAppender("Console-debug"));
-            coreLogger.removeAppender(config.getAppender("Routing-console-debug"));
+            System.setProperty("OTBDEBUG", "false");
         }
         File logFile = new File(FSUtil.logsDir() + File.separator + "console.log");
         if (logFile.exists() && !logFile.delete()) {
@@ -152,6 +143,7 @@ public class App {
         // Start web interface
         if (Configs.getFromWebConfig(WebConfig::isEnabled)) {
             WebInterface.start();
+            logger.info("Web Interface Started");
         }
 
         if (Control.Graphics.present()) {
@@ -164,7 +156,8 @@ public class App {
         while (scanner.hasNext()) {
             String in = scanner.next();
             if (!in.equals("")) {
-                CmdParser.processLineAndThen(in, InternalMessageSender.TERMINAL, System.out::println, () -> {});
+                CmdParser.processLineAndThen(in, InternalMessageSender.TERMINAL, System.out::println, () -> {
+                });
             }
         }
         scanner.close();
