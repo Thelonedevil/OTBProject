@@ -1,6 +1,8 @@
 package com.github.otbproject.otbproject.util;
 
 import com.github.otbproject.otbproject.App;
+import com.github.otbproject.otbproject.config.Configs;
+import com.github.otbproject.otbproject.config.GeneralConfig;
 import com.github.otbproject.otbproject.fs.FSUtil;
 
 import java.io.File;
@@ -15,6 +17,7 @@ public class LogRemover {
     public static void removeOldLogs() {
         final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         final long now = System.currentTimeMillis();
+        final long removeAfter = Configs.getFromGeneralConfig(GeneralConfig::getOldLogsRemovedAfter);
 
         final Pattern filePattern = Pattern.compile("(app|web)-\\d{4}-\\d{2}-\\d{2}-\\d+\\.log");
         final Pattern endPattern = Pattern.compile("-\\d+\\.log");
@@ -27,7 +30,7 @@ public class LogRemover {
                         Date logDate = dateFormat.parse(dateStr);
                         long then = logDate.getTime();
                         // Delete if more than 60 days old
-                        if ((now - then) > TimeUnit.DAYS.toMillis(60)) {
+                        if ((now - then) > TimeUnit.DAYS.toMillis(removeAfter)) {
                             return true;
                         }
                     } catch (ParseException e) { // Really shouldn't happen if it matched the Pattern

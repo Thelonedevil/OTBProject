@@ -7,7 +7,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class GeneralConfig {
     private Service service = Service.TWITCH;
     private boolean updateChecking = true;
-    private boolean deletingOldLogs = true;
+    private int oldLogsRemovedAfter = 60;
     private Set<String> permanentlyEnabledCommands;
 
     public GeneralConfig() {
@@ -32,12 +32,12 @@ public class GeneralConfig {
         this.updateChecking = updateChecking;
     }
 
-    public boolean isDeletingOldLogs() {
-        return deletingOldLogs;
+    public int getOldLogsRemovedAfter() {
+        return oldLogsRemovedAfter;
     }
 
-    public void setDeletingOldLogs(boolean deletingOldLogs) {
-        this.deletingOldLogs = deletingOldLogs;
+    public void setOldLogsRemovedAfter(int oldLogsRemovedAfter) {
+        this.oldLogsRemovedAfter = oldLogsRemovedAfter;
     }
 
     public Set<String> getPermanentlyEnabledCommands() {

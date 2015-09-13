@@ -154,7 +154,7 @@ public class App {
         }
 
         // Delete old logs if applicable
-        if (Configs.getFromGeneralConfig(GeneralConfig::isDeletingOldLogs)) {
+        if (Configs.getFromGeneralConfig(GeneralConfig::getOldLogsRemovedAfter) > 0) {
             LogRemover.removeOldLogs();
         }
 
