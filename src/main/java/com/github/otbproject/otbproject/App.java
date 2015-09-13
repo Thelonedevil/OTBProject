@@ -5,6 +5,7 @@ import com.github.otbproject.otbproject.cli.ArgParser;
 import com.github.otbproject.otbproject.cli.commands.CmdParser;
 import com.github.otbproject.otbproject.config.ConfigManager;
 import com.github.otbproject.otbproject.config.Configs;
+import com.github.otbproject.otbproject.config.GeneralConfig;
 import com.github.otbproject.otbproject.config.WebConfig;
 import com.github.otbproject.otbproject.fs.FSUtil;
 import com.github.otbproject.otbproject.fs.PathBuilder;
@@ -15,6 +16,7 @@ import com.github.otbproject.otbproject.fs.groups.Load;
 import com.github.otbproject.otbproject.gui.GuiApplication;
 import com.github.otbproject.otbproject.messages.internal.InternalMessageSender;
 import com.github.otbproject.otbproject.util.FatalChecker;
+import com.github.otbproject.otbproject.util.LogRemover;
 import com.github.otbproject.otbproject.util.ThreadUtil;
 import com.github.otbproject.otbproject.util.Unpacker;
 import com.github.otbproject.otbproject.util.compat.VersionCompatHelper;
@@ -146,10 +148,17 @@ public class App {
             logger.info("Web Interface Started");
         }
 
+        // Allow command input in GUI
         if (Control.Graphics.present()) {
             GuiApplication.setInputActive();
         }
 
+        // Delete old logs if applicable
+        if (Configs.getFromGeneralConfig(GeneralConfig::isDeletingOldLogs)) {
+            LogRemover.removeOldLogs();
+        }
+
+        // Start terminal CLI scanner
         Scanner scanner = new Scanner(System.in);
         scanner.useDelimiter("\n");
         System.out.println("Terminal input is now active.");
