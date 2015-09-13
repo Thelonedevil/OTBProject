@@ -7,17 +7,14 @@ import java.io.File;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
 public class LogRemover {
     public static void removeOldLogs() {
-        final Calendar calendar = Calendar.getInstance();
         final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        calendar.setTime(new Date());
-        final int month = calendar.get(Calendar.MONTH);
-        final int year = calendar.get(Calendar.YEAR);
+        final long now = System.currentTimeMillis();
 
         final Pattern filePattern = Pattern.compile("(app|web)-\\d{4}-\\d{2}-\\d{2}-\\d+\\.log");
         final Pattern endPattern = Pattern.compile("-\\d+\\.log");
@@ -28,15 +25,9 @@ public class LogRemover {
                     String dateStr = endPattern.matcher(file.getName().substring(4)).replaceFirst("");
                     try {
                         Date logDate = dateFormat.parse(dateStr);
-                        calendar.setTime(logDate);
-                        int logMonth = calendar.get(Calendar.MONTH);
-                        int logYear = calendar.get(Calendar.YEAR);
-
-                        // Remove if month is more than 1 month ago
-                        if ((year > logYear)
-                                && (12 * (year - logYear) + month - logMonth) > 1) {
-                            return true;
-                        } else if ((month - logMonth) > 1) {
+                        long then = logDate.getTime();
+                        // Delete if more than 60 days old
+                        if ((now - then) > TimeUnit.DAYS.toMillis(60)) {
                             return true;
                         }
                     } catch (ParseException e) { // Really shouldn't happen if it matched the Pattern
