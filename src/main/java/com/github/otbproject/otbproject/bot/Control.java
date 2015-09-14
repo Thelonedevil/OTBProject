@@ -236,10 +236,6 @@ public class Control {
     }
 
     public static class StartupException extends Exception {
-        private StartupException(String message) {
-            super(message);
-        }
-
         private StartupException(String message, Throwable cause) {
             super(message, cause);
         }
