@@ -142,7 +142,15 @@ public class Control {
                 bot = new BeamBot();
                 break;
         }
-        ThreadUtil.getSingleThreadExecutor("Bot").execute(new BotRunnable());
+        ThreadUtil.getSingleThreadExecutor("Bot").execute(() -> {
+            try {
+                App.logger.info("Bot Started");
+                Control.getBot().startBot();
+                App.logger.info("Bot Stopped");
+            } catch (BotInitException e) {
+                App.logger.catching(e);
+            }
+        });
     }
 
     private static void init() {
