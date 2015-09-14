@@ -16,19 +16,21 @@ import java.net.URI;
 
 public class WebInterface {
     public static void start() {
-        File path = new File(warPath());
+        Version current = WebVersion.lookupCurrent().orElse(Version.create(0, 0, Version.Type.RELEASE));
+        File path = new File(warPath(current));
         if (App.VERSION.type == Version.Type.SNAPSHOT) {
             App.logger.warn("You are running a dev build of OTB. Please grab the latest build of the web interface and place in \"" +
                     FSUtil.webDir() + File.separator + "\" as \"web-interface-" + WebVersion.latest() +
                     ".war\". Releases will automatically download the latest version of the web interface for you");
-        } else if (!path.exists() || (Configs.getFromWebConfig(WebConfig::isAutoUpdating) && (WebVersion.current().compareTo(WebVersion.latest()) < 0))) {
+        } else if (!path.exists() || (Configs.getFromWebConfig(WebConfig::isAutoUpdating) && (current.compareTo(WebVersion.latest()) < 0))) {
             WarDownload.downloadLatest();
         }
         startInterface(Configs.getFromWebConfig(WebConfig::getPortNumber), Configs.getFromWebConfig(WebConfig::getIpBinding));
     }
 
     private static void startInterface(int port, String address) {
-        App.logger.info("Starting web interface version " + WebVersion.current());
+        Version current = WebVersion.lookupCurrent().orElse(Version.create(0, 0, Version.Type.RELEASE));
+        App.logger.info("Starting web interface version " + current);
         Server server = new Server();
         ServerConnector http = new ServerConnector(server);
         http.setHost(address);
@@ -36,7 +38,7 @@ public class WebInterface {
         server.addConnector(http);
         WebAppContext webapp = new WebAppContext();
         webapp.setContextPath("/");
-        webapp.setWar(warPath());
+        webapp.setWar(warPath(current));
         server.setHandler(webapp);
         try {
             server.start();
@@ -45,8 +47,8 @@ public class WebInterface {
         }
     }
 
-    static String warPath() {
-        return FSUtil.webDir() + File.separator + "web-interface-" + WebVersion.current() + ".war";
+    static String warPath(Version version) {
+        return FSUtil.webDir() + File.separator + "web-interface-" + version + ".war";
     }
 
     public static void openInBrowser() {
