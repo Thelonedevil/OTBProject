@@ -290,7 +290,8 @@ public class CmdParser {
                 .withAction(() -> {
                     try {
                         return (Control.startup() ? "Started bot" : "Did not start bot - bot already running");
-                    } catch (Control.StartupException ignored) {
+                    } catch (Control.StartupException e) {
+                        App.logger.catching(e);
                         return "Failed to start bot";
                     }
                 });

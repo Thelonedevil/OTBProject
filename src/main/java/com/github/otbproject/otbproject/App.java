@@ -137,7 +137,11 @@ public class App {
         }
 
         // Perform various startup actions
-        Control.firstStartup();
+        try {
+            Control.startup();
+        } catch (Control.StartupException e) {
+            App.logger.catching(e);
+        }
 
         // Check for previous fatal crash
         FatalChecker.checkForPreviousFatalCrashes();
