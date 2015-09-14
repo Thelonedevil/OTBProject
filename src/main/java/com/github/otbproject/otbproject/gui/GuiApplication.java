@@ -253,7 +253,8 @@ public class GuiApplication extends Application {
         controller.botStart.setOnAction(event -> {
             try {
                 addInfo(Control.startup() ? "Started bot" : "Did not start bot - bot already running");
-            } catch (Control.StartupException ignored) {
+            } catch (Control.StartupException e) {
+                App.logger.catching(e);
                 addInfo("Failed to start bot");
             }
             event.consume();

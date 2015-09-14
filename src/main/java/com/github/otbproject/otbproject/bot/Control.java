@@ -7,7 +7,9 @@ import com.github.otbproject.otbproject.bot.nullbot.NullBot;
 import com.github.otbproject.otbproject.cli.ArgParser;
 import com.github.otbproject.otbproject.command.parser.CommandResponseParser;
 import com.github.otbproject.otbproject.command.parser.TermLoader;
-import com.github.otbproject.otbproject.config.*;
+import com.github.otbproject.otbproject.config.Configs;
+import com.github.otbproject.otbproject.config.GeneralConfig;
+import com.github.otbproject.otbproject.config.Service;
 import com.github.otbproject.otbproject.filter.FilterProcessor;
 import com.github.otbproject.otbproject.fs.groups.Base;
 import com.github.otbproject.otbproject.fs.groups.Chan;
@@ -21,6 +23,7 @@ import org.apache.commons.cli.CommandLine;
 import java.awt.*;
 
 public class Control {
+    private static volatile boolean firstStart = true;
     private static volatile boolean running = false;
     private static volatile Bot bot = NullBot.INSTANCE;
 
@@ -40,19 +43,6 @@ public class Control {
         }
         Control.bot = bot;
         return true;
-    }
-
-    /**
-     * Method used to start the bot the first time.
-     * Performs some actions which only need to be done once. Should not be run more than once.
-     *
-     * @return {@code true} if the bot started successfully, {@code false} if it failed to start
-     */
-    public static synchronized boolean firstStartup() {
-        LibsLoader.load();
-        init();
-        running = createBot();
-        return running;
     }
 
     /**
@@ -109,11 +99,7 @@ public class Control {
     }
 
     /**
-     * Should NOT be used for initial startup. Does not handle command line
-     * args. The function startup(CommandLine) should instead be used to
-     * start the bot the first time.
-     * <p>
-     * Should be run to start the bot after shutdown() has been called
+     * Starts the bot
      *
      * @return true if bot started successfully, false if bot was already running
      * @throws StartupException if failed to create bot properly
@@ -123,13 +109,20 @@ public class Control {
             return false;
         }
 
-        loadConfigs();
-        CommandResponseParser.reRegisterTerms();
+        if (firstStart) {
+            firstStart = false;
+            LibsLoader.load();
+        } else {
+            loadConfigs();
+            CommandResponseParser.reRegisterTerms();
+        }
+
         init();
-        running = createBot();
-        if (!running) {
-            shutdown(true);
-            throw new StartupException("Failed to start bot");
+        try {
+            createBot();
+            running = true;
+        } catch (BotInitException e) {
+            throw new StartupException("Failed to start bot", e);
         }
         return true;
     }
@@ -139,28 +132,25 @@ public class Control {
         FilterProcessor.clearScriptCache();
     }
 
-    private static boolean createBot() {
+    private static void createBot() throws BotInitException {
         // Connect to service
-        try {
-            switch (Configs.getFromGeneralConfig(GeneralConfig::getService)) {
-                case TWITCH:
-                    bot = new TwitchBot();
-                    break;
-                case BEAM:
-                    bot = new BeamBot();
-                    break;
+        switch (Configs.getFromGeneralConfig(GeneralConfig::getService)) {
+            case TWITCH:
+                bot = new TwitchBot();
+                break;
+            case BEAM:
+                bot = new BeamBot();
+                break;
+        }
+        ThreadUtil.getSingleThreadExecutor("Bot").execute(() -> {
+            try {
+                App.logger.info("Bot Started");
+                Control.getBot().startBot();
+                App.logger.info("Bot Stopped");
+            } catch (BotInitException e) {
+                App.logger.catching(e);
             }
-        } catch (BotInitException e) {
-            App.logger.catching(e);
-        }
-        if (bot == NullBot.INSTANCE) {
-            App.logger.error("Failed to start bot");
-            return false;
-        } else {
-            Runnable botRunnable = new BotRunnable();
-            ThreadUtil.getSingleThreadExecutor("Bot").execute(botRunnable);
-            return true;
-        }
+        });
     }
 
     private static void init() {
@@ -246,8 +236,8 @@ public class Control {
     }
 
     public static class StartupException extends Exception {
-        private StartupException(String message) {
-            super(message);
+        private StartupException(String message, Throwable cause) {
+            super(message, cause);
         }
     }
 }
