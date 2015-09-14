@@ -56,14 +56,12 @@ class WarDownload {
 
         if (success) {
             App.logger.info("Successfully downloaded web interface");
-            WebVersion.updateCurrentToLatest();
             cleanupOldVersions();
         } else {
             App.logger.error("Failed to download web interface.");
             App.logger.warn("Please download the web interface yourself from 'https://github.com/OTBProject/OTBWebInterface/releases/latest'," +
                     " and put it in: " + FSUtil.webDir() + File.separator);
         }
-
     }
 
     private static void cleanupTempDownload() {
@@ -83,7 +81,7 @@ class WarDownload {
                 .filter(File::isFile)
                 .filter(file -> file.getName().startsWith(WarDownload.WAR_PREFIX))
                 .filter(file -> file.getName().endsWith(WarDownload.WAR_EXT))
-                .filter(file -> !file.getName().equals(WAR_PREFIX + WebVersion.current() + WAR_EXT))
+                .filter(file -> !file.getName().equals(WAR_PREFIX + WebVersion.latest() + WAR_EXT))
                 .forEach(File::delete);
     }
 
