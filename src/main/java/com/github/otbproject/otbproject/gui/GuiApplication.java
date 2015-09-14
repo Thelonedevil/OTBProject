@@ -29,15 +29,33 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
 import java.util.concurrent.*;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 public class GuiApplication extends Application {
-
-
     private static GuiController controller;
+
+    /**
+     * Variable set to {@code true} when {@code GuiApplication} has
+     * loaded and dereferrencing {@code controller} will not produce
+     * a {@link NullPointerException}
+     */
+    private static volatile boolean ready = false;
+    /**
+     * Not volatile to allow faster access than to {@code ready}
+     * for most of the execution, as this value is not volatile
+     */
+    private static boolean cheapReady = false;
+    static boolean isReady() {
+        return cheapReady || ready;
+    }
+
+    static final Lock READY_LOCK = new ReentrantLock(true);
+    static final BlockingQueue<Runnable> NOT_READY_QUEUE = new LinkedBlockingQueue<>();
 
     /**
      * The main entry point for all JavaFX applications.
@@ -103,6 +121,18 @@ public class GuiApplication extends Application {
                 + " especially if you are using a different JVM. Be careful stopping the bot using this PID.");
         controller.readHistory();
         primaryStage.show();
+
+        // Notify waiting GUI Runnables that ready
+        READY_LOCK.lock();
+        try {
+            cheapReady = true;
+            ready = true;
+            NOT_READY_QUEUE.forEach(Runnable::run);
+            NOT_READY_QUEUE.clear();
+        } finally {
+            READY_LOCK.unlock();
+        }
+
         checkForNewRelease();
     }
 
@@ -167,6 +197,11 @@ public class GuiApplication extends Application {
         }
 
         private void addToConsole() {
+            // Ensure it does not attempt to append text before the GUI is ready
+            if (!isReady()) {
+                return;
+            }
+
             queue.drainTo(buffer);
             if (!buffer.isEmpty()) {
                 String text = buffer.stream().collect(Collectors.joining("\n", "", "\n"));
