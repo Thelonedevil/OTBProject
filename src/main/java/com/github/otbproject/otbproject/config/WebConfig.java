@@ -7,6 +7,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class WebConfig {
     private boolean enabled = true;
+    private boolean updateChecking = true;
     private boolean autoUpdating = true;
     private int portNumber = 22222;
     private String ipBinding = "0.0.0.0";
@@ -22,6 +23,14 @@ public class WebConfig {
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+
+    public boolean isUpdateChecking() {
+        return updateChecking;
+    }
+
+    public void setUpdateChecking(boolean updateChecking) {
+        this.updateChecking = updateChecking;
     }
 
     public boolean isAutoUpdating() {
