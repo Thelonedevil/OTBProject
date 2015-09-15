@@ -54,9 +54,36 @@ public class Versions {
         return true;
     }
 
+    /**
+     * Get the version of the latest release from an OTB repo
+     *
+     * @param otbRepo the name of the repository
+     * @return A {@link String} representing the version of the latest
+     * release, or {@code null} if the version could not be determined
+     */
     public static String lookupLatestGithubVersion(String otbRepo) {
+        return getVersionFromJsonNodeOptional(getJsonForLatestGithubRelease(otbRepo));
+    }
+
+
+    public static String getVersionFromJsonNodeOptional(Optional<JsonNode> optional) {
+        if (optional.isPresent()) {
+            return optional.get().path("tag_name").textValue();
+        }
+        return null;
+    }
+
+    /**
+     * Get the version of the latest release from an OTB repo
+     *
+     * @param otbRepo the name of the repository
+     * @return An {@link Optional} of a {@code JsonNode} of the JSON from the
+     * latest release of the repository, or an empty {@code Optional} if the JSON
+     * could not be fetched
+     */
+    public static Optional<JsonNode> getJsonForLatestGithubRelease(String otbRepo) {
         if (tooFewRequestsRemaining()) {
-            return null;
+            return Optional.empty();
         }
 
         HttpClient httpClient = HttpClientBuilder.create().build();
@@ -77,12 +104,10 @@ public class Versions {
                 App.logger.catching(e);
             }
 
-            // Parse response to get version
-            JsonNode rootNode = JsonHandler.MAPPER.readTree(new BasicResponseHandler().handleResponse(response));
-            return rootNode.path("tag_name").textValue();
+            return Optional.of(JsonHandler.MAPPER.readTree(new BasicResponseHandler().handleResponse(response)));
         } catch (IOException e) {
             App.logger.catching(Level.WARN, e);
-            return null;
+            return Optional.empty();
         }
     }
 
