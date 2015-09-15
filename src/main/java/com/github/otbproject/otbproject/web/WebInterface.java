@@ -16,16 +16,25 @@ import java.net.URI;
 
 public class WebInterface {
     public static void start() {
+        if (Configs.getFromWebConfig(WebConfig::isUpdateChecking)) {
+            checkForNewVersion();
+        }
+        startInterface(Configs.getFromWebConfig(WebConfig::getPortNumber), Configs.getFromWebConfig(WebConfig::getIpBinding));
+    }
+
+    public static void checkForNewVersion() {
         Version current = WebVersion.lookupCurrent().orElse(Version.create(0, 0, Version.Type.RELEASE));
         File path = new File(warPath(current));
         if (App.VERSION.type == Version.Type.SNAPSHOT) {
             App.logger.warn("You are running a dev build of OTB. Please grab the latest build of the web interface and place in \"" +
                     FSUtil.webDir() + File.separator + "\" as \"web-interface-" + WebVersion.latest() +
                     ".war\". Releases will automatically download the latest version of the web interface for you");
-        } else if (!path.exists() || (Configs.getFromWebConfig(WebConfig::isAutoUpdating) && (current.compareTo(WebVersion.latest()) < 0))) {
+        } else if ((App.VERSION.compareTo(WebVersion.requiredAppVersionForLatest()) >= 0)
+                && (!path.exists()
+                || (Configs.getFromWebConfig(WebConfig::isAutoUpdating)
+                && (current.compareTo(WebVersion.latest()) < 0)))) {
             WarDownload.downloadLatest();
         }
-        startInterface(Configs.getFromWebConfig(WebConfig::getPortNumber), Configs.getFromWebConfig(WebConfig::getIpBinding));
     }
 
     private static void startInterface(int port, String address) {

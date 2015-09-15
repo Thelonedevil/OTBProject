@@ -3,12 +3,10 @@ package com.github.otbproject.otbproject.gui;
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.bot.Control;
 import com.github.otbproject.otbproject.config.Configs;
-import com.github.otbproject.otbproject.config.GeneralConfig;
 import com.github.otbproject.otbproject.config.WebConfig;
 import com.github.otbproject.otbproject.fs.FSUtil;
 import com.github.otbproject.otbproject.util.ThreadUtil;
 import com.github.otbproject.otbproject.util.version.AppVersion;
-import com.github.otbproject.otbproject.util.version.Version;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -29,7 +27,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.locks.Lock;
@@ -56,6 +54,8 @@ public class GuiApplication extends Application {
 
     static final Lock READY_LOCK = new ReentrantLock(true);
     static final BlockingQueue<Runnable> NOT_READY_QUEUE = new LinkedBlockingQueue<>();
+
+    private static final ExecutorService DESKTOP_SERVICE = ThreadUtil.getSingleThreadExecutor("Desktop Daemon");
 
     /**
      * The main entry point for all JavaFX applications.
@@ -132,8 +132,6 @@ public class GuiApplication extends Application {
         } finally {
             READY_LOCK.unlock();
         }
-
-        checkForNewRelease();
     }
 
     public static void start(String[] args) {
@@ -223,7 +221,7 @@ public class GuiApplication extends Application {
 
     private void setUpMenus() {
         controller.openBaseDir.setOnAction(event -> {
-            ThreadUtil.getSingleThreadExecutor("file-explorer-%d").execute(() -> {
+            DESKTOP_SERVICE.execute(() -> {
                 try {
                     Desktop.getDesktop().open(new File(FSUtil.getBaseDir()));
                 } catch (IOException e) {
@@ -277,10 +275,8 @@ public class GuiApplication extends Application {
         this.getHostServices().showDocument("http://127.0.0.1:" + Configs.getFromWebConfig(WebConfig::getPortNumber));
     }
 
-    private void checkForNewRelease() {
-        if (Configs.getFromGeneralConfig(GeneralConfig::isUpdateChecking)
-                && (AppVersion.latest().compareTo(App.VERSION) > 0)
-                && (AppVersion.latest().type == Version.Type.RELEASE)) {
+    public static void newReleaseAlert() {
+        GuiUtils.runSafe(() -> {
             String url = "https://github.com/OTBProject/OTBProject/releases/latest";
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("New Release Available");
@@ -303,10 +299,16 @@ public class GuiApplication extends Application {
                 if (buttonType == buttonTypeDontAskAgain) {
                     Configs.editGeneralConfig(config -> config.setUpdateChecking(false));
                 } else if (buttonType == buttonTypeGetRelease) {
-                    this.getHostServices().showDocument(url);
+                    DESKTOP_SERVICE.execute(() -> {
+                        try {
+                            Desktop.getDesktop().browse(new URI(url));
+                        } catch (IOException | URISyntaxException e) {
+                            App.logger.catching(e);
+                        }
+                    });
                 }
             });
-        }
+        });
     }
 
     public static void errorAlert(String title, String header) {
@@ -319,7 +321,7 @@ public class GuiApplication extends Application {
             FlowPane outer = new FlowPane();
             FlowPane inner = new FlowPane();
             Hyperlink link = new Hyperlink("here");
-            link.setOnAction((evt) -> ThreadUtil.getSingleThreadExecutor("open-log-dir").execute(() -> {
+            link.setOnAction((evt) -> DESKTOP_SERVICE.execute(() -> {
                 try {
                     Desktop.getDesktop().open(new File(FSUtil.logsDir()));
                 } catch (IOException e) {
@@ -368,7 +370,7 @@ public class GuiApplication extends Application {
         alert.initStyle(StageStyle.UNDECORATED);
         alert.showAndWait().ifPresent(buttonType -> {
             if (buttonType == buttonTypeReportIssue && Desktop.isDesktopSupported()) {
-                ThreadUtil.getSingleThreadExecutor("report-issue").execute(() -> {
+                DESKTOP_SERVICE.execute(() -> {
                     try {
                         Desktop.getDesktop().browse(new URI(url));
                     } catch (IOException | URISyntaxException e) {
