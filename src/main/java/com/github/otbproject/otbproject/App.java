@@ -157,6 +157,17 @@ public class App {
             GuiApplication.setInputActive();
         }
 
+        // Check for new release, if applicable
+        if (Configs.getFromGeneralConfig(GeneralConfig::isUpdateChecking)
+                && (AppVersion.latest().compareTo(App.VERSION) > 0)
+                && (AppVersion.latest().type == Version.Type.RELEASE)) {
+            logger.info("New release available: OTB version " + AppVersion.latest());
+            logger.info("You can find the new release at: " + "https://github.com/OTBProject/OTBProject/releases/latest");
+            if (Control.Graphics.present()) {
+                GuiApplication.newReleaseAlert();
+            }
+        }
+
         // Delete old logs if applicable
         if (Configs.getFromGeneralConfig(GeneralConfig::getOldLogsRemovedAfter) > 0) {
             LogRemover.removeOldLogs();
