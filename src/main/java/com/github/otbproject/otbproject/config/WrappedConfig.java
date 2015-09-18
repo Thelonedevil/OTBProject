@@ -4,6 +4,7 @@ import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.util.JsonHandler;
 import com.github.otbproject.otbproject.util.ThreadUtil;
 
+import java.util.Optional;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -32,6 +33,7 @@ public class WrappedConfig<T> {
     protected T config;
     protected final Class<T> tClass;
     protected final String path;
+    private boolean needsUpdate = false;
 
     public WrappedConfig (Class<T> tClass, String path, Supplier<T> defaultConfigSupplier) {
         this.tClass = tClass;
@@ -46,6 +48,7 @@ public class WrappedConfig<T> {
 
     public void edit(Consumer<T> consumer) {
         UPDATE_DEQUE.addLast(() -> {
+            updateIfNeeded();
             consumer.accept(config);
             writeToFile();
         });
@@ -53,5 +56,37 @@ public class WrappedConfig<T> {
 
     protected void writeToFile() {
         JsonHandler.writeValue(path, config);
+    }
+
+    public void update() {
+        queueUpdate(false);
+    }
+
+    protected void queueUpdate(boolean logUpdate) {
+        UPDATE_DEQUE.addFirst(() -> {
+            if (!needsUpdate) {
+                needsUpdate = true;
+                UPDATE_DEQUE.addLast(() -> this.updateIfNeeded(logUpdate));
+            }
+        });
+    }
+
+    protected void updateIfNeeded() {
+        updateIfNeeded(true);
+    }
+
+    private void updateIfNeeded(boolean logUpdate) {
+        if (needsUpdate) {
+            needsUpdate = false;
+            if (updateFromFile() && logUpdate) {
+                App.logger.debug("Updated changed file: " + path);
+            }
+        }
+    }
+
+    private boolean updateFromFile() {
+        Optional<T> optional = JsonHandler.readValue(path, tClass);
+        config = optional.orElse(config);
+        return optional.isPresent();
     }
 }

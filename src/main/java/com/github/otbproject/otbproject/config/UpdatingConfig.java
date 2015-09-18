@@ -32,7 +32,6 @@ public class UpdatingConfig<T> extends WrappedConfig<T> {
     }
 
     private volatile boolean monitoring = false;
-    private boolean needsUpdate = false;
     private boolean needsWrite = false;
     private final FileAlterationObserver observer;
 
@@ -67,7 +66,7 @@ public class UpdatingConfig<T> extends WrappedConfig<T> {
         }
         MONITOR.addObserver(observer);
         monitoring = true;
-        queueUpdate(false);
+        update();
         App.logger.debug("Started monitoring file: " + path);
         return true;
     }
@@ -108,35 +107,6 @@ public class UpdatingConfig<T> extends WrappedConfig<T> {
             }
         });
     }
-
-    private void queueUpdate(boolean logUpdate) {
-        UPDATE_DEQUE.addFirst(() -> {
-            if (!needsUpdate) {
-                needsUpdate = true;
-                UPDATE_DEQUE.addLast(() -> this.updateIfNeeded(logUpdate));
-            }
-        });
-    }
-
-    private void updateIfNeeded() {
-        updateIfNeeded(true);
-    }
-
-    private void updateIfNeeded(boolean logUpdate) {
-        if (needsUpdate) {
-            needsUpdate = false;
-            if (updateFromFile() && logUpdate) {
-                App.logger.debug("Updated changed file: " + path);
-            }
-        }
-    }
-
-    private boolean updateFromFile() {
-        Optional<T> optional = JsonHandler.readValue(path, tClass);
-        config = optional.orElse(config);
-        return optional.isPresent();
-    }
-
 
     private void writeIfNeeded() {
         if (needsWrite) {
