@@ -3,10 +3,7 @@ package com.github.otbproject.otbproject;
 import com.github.otbproject.otbproject.bot.Control;
 import com.github.otbproject.otbproject.cli.ArgParser;
 import com.github.otbproject.otbproject.cli.commands.CmdParser;
-import com.github.otbproject.otbproject.config.ConfigManager;
-import com.github.otbproject.otbproject.config.Configs;
-import com.github.otbproject.otbproject.config.GeneralConfig;
-import com.github.otbproject.otbproject.config.WebConfig;
+import com.github.otbproject.otbproject.config.*;
 import com.github.otbproject.otbproject.fs.FSUtil;
 import com.github.otbproject.otbproject.fs.PathBuilder;
 import com.github.otbproject.otbproject.fs.Setup;
@@ -44,7 +41,6 @@ public class App {
     public static final String PID = ManagementFactory.getRuntimeMXBean().getName().split("@")[0];
     public static final Logger logger = LogManager.getLogger();
     public static final Version VERSION = AppVersion.current();
-    public static final ConfigManager configManager = new ConfigManager();
 
     public static void main(String[] args) {
         try {
@@ -113,7 +109,7 @@ public class App {
         }
 
         // Read configs
-        Control.loadConfigs(cmd);
+        setConfigsFromCmdLineOpts(cmd);
 
         // Start GUI if applicable
         if (Control.Graphics.present()) {
@@ -231,4 +227,34 @@ public class App {
         return cmd;
     }
 
+    public static void setConfigsFromCmdLineOpts(CommandLine cmd) {
+        // General config
+        if (cmd.hasOption(ArgParser.Opts.SERVICE)) {
+            String serviceName = cmd.getOptionValue(ArgParser.Opts.SERVICE).toUpperCase();
+            try {
+                Configs.editGeneralConfig(config -> config.setService(Service.valueOf(serviceName)));
+            } catch (IllegalArgumentException e) {
+                logger.fatal("Invalid service name: " + serviceName);
+                ArgParser.printHelp();
+                System.exit(1);
+            }
+        }
+
+        // Account config
+        if (cmd.hasOption(ArgParser.Opts.ACCOUNT_FILE)) {
+            Configs.setAccountFileName(cmd.getOptionValue(ArgParser.Opts.ACCOUNT_FILE));
+        }
+        Configs.reloadAccount();
+        if (cmd.hasOption(ArgParser.Opts.ACCOUNT)) {
+            Configs.editAccount(account -> account.setName(cmd.getOptionValue(ArgParser.Opts.ACCOUNT)));
+        }
+        if (cmd.hasOption(ArgParser.Opts.PASSKEY)) {
+            Configs.editAccount(account -> account.setPasskey(cmd.getOptionValue(ArgParser.Opts.PASSKEY)));
+        }
+
+        // Web Config
+        if (cmd.hasOption(ArgParser.Opts.WEB)) {
+            Configs.editWebConfig(webConfig -> webConfig.setEnabled(Boolean.parseBoolean(cmd.getOptionValue(ArgParser.Opts.WEB))));
+        }
+    }
 }
