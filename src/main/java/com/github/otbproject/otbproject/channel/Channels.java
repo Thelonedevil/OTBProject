@@ -4,6 +4,7 @@ import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.bot.Bot;
 import com.github.otbproject.otbproject.bot.Control;
 import com.github.otbproject.otbproject.config.*;
+import com.github.otbproject.otbproject.fs.FSUtil;
 import com.github.otbproject.otbproject.fs.Setup;
 import com.github.otbproject.otbproject.util.StrUtils;
 
@@ -102,9 +103,10 @@ public class Channels {
             Optional<Channel> optional = get(channelName);
             Channel channel;
             if (!optional.isPresent()) {
-                ChannelConfig channelConfig = Configs.readChannelConfig(channelName);
                 try {
-                    channel = Channel.create(channelName, channelConfig);
+                    UpdatingConfig<ChannelConfig> updatingConfig = UpdatingConfig.create(ChannelConfig.class,
+                            FSUtil.channelDataDir(channelName), FSUtil.ConfigFileNames.CHANNEL_CONFIG, ChannelConfig::new);
+                    channel = Channel.create(channelName, updatingConfig);
                 } catch (ChannelInitException e) {
                     App.logger.catching(e);
                     // Disconnect from channel if failed to create channel object
