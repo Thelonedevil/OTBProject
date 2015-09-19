@@ -1,12 +1,10 @@
 package com.github.otbproject.otbproject.command.parser;
 
-import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.bot.AbstractBot;
 import com.github.otbproject.otbproject.bot.BotInitException;
 import com.github.otbproject.otbproject.bot.Control;
-import com.github.otbproject.otbproject.config.Configs;
-import com.github.otbproject.otbproject.config.GeneralConfig;
-import com.github.otbproject.otbproject.config.Service;
+import com.github.otbproject.otbproject.bot.nullbot.NullBot;
+import com.github.otbproject.otbproject.util.InstallationHelper;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -27,6 +25,7 @@ public class ParserTest {
 
     @BeforeClass
     public static void init() {
+        InstallationHelper.setupTestInstallation();
         Control.setBot(new AbstractBot() {
             @Override
             public boolean isConnected(String channelName) {
@@ -98,15 +97,11 @@ public class ParserTest {
                 return false;
             }
         });
-        GeneralConfig generalConfig = new GeneralConfig();
-        generalConfig.setService(Service.BEAM);
-        App.configManager.setGeneralConfig(generalConfig);
     }
 
     @AfterClass
     public static void cleanup() {
-        Control.setBot(null);
-        App.configManager.setGeneralConfig(null);
+        Control.setBot(NullBot.INSTANCE);
     }
 
     @Test
@@ -548,7 +543,7 @@ public class ParserTest {
     // [[service]]
     public void serviceTest() {
         String parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, new String[0], "[[service]]");
-        assertEquals("Beam", parsed);
+        assertEquals("Twitch", parsed);
     }
 
     @Test
