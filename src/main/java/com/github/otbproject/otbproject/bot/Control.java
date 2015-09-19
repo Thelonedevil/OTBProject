@@ -4,11 +4,9 @@ import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.bot.beam.BeamBot;
 import com.github.otbproject.otbproject.bot.irc.TwitchBot;
 import com.github.otbproject.otbproject.bot.nullbot.NullBot;
-import com.github.otbproject.otbproject.cli.ArgParser;
 import com.github.otbproject.otbproject.command.parser.CommandResponseParser;
 import com.github.otbproject.otbproject.command.parser.TermLoader;
 import com.github.otbproject.otbproject.config.Configs;
-import com.github.otbproject.otbproject.config.GeneralConfig;
 import com.github.otbproject.otbproject.config.Service;
 import com.github.otbproject.otbproject.filter.FilterProcessor;
 import com.github.otbproject.otbproject.fs.groups.Base;
@@ -18,7 +16,6 @@ import com.github.otbproject.otbproject.util.LibsLoader;
 import com.github.otbproject.otbproject.util.ThreadUtil;
 import com.github.otbproject.otbproject.util.preload.LoadStrategy;
 import com.github.otbproject.otbproject.util.preload.PreloadLoader;
-import org.apache.commons.cli.CommandLine;
 
 import java.awt.*;
 
@@ -109,11 +106,12 @@ public class Control {
             return false;
         }
 
+        loadConfigs();
+
         if (firstStart) {
             firstStart = false;
             LibsLoader.load();
         } else {
-            loadConfigs();
             CommandResponseParser.reRegisterTerms();
         }
 
@@ -134,13 +132,16 @@ public class Control {
 
     private static void createBot() throws BotInitException {
         // Connect to service
-        switch (Configs.getFromGeneralConfig(GeneralConfig::getService)) {
+        Service service = Configs.getExactServiceAsOptional().orElseThrow(() -> new BotInitException("Failed to get service"));
+        switch (service) {
             case TWITCH:
                 bot = new TwitchBot();
                 break;
             case BEAM:
                 bot = new BeamBot();
                 break;
+            default:
+                throw new BotInitException("Unknown service: " + service);
         }
         ThreadUtil.getSingleThreadExecutor("Bot").execute(() -> {
             try {
@@ -171,56 +172,8 @@ public class Control {
     }
 
     private static void loadConfigs() {
-        // General config
-        App.configManager.setGeneralConfig(Configs.readGeneralConfig()); // Must be read first for service info
-
-        // Account config
-        App.configManager.setAccount(Configs.readAccount());
-
-        // Web Config
-        App.configManager.setWebConfig(Configs.readWebConfig());
-
-        loadOtherConfigs();
-    }
-
-    public static void loadConfigs(CommandLine cmd) {
-        // General config
-        App.configManager.setGeneralConfig(Configs.readGeneralConfig()); // Must be read first for service info
-        if (cmd.hasOption(ArgParser.Opts.SERVICE)) {
-            String serviceName = cmd.getOptionValue(ArgParser.Opts.SERVICE).toUpperCase();
-            try {
-                Configs.editGeneralConfig(config -> config.setService(Service.valueOf(serviceName)));
-            } catch (IllegalArgumentException e) {
-                App.logger.fatal("Invalid service name: " + serviceName);
-                ArgParser.printHelp();
-                System.exit(1);
-            }
-        }
-
-        // Account config
-        if (cmd.hasOption(ArgParser.Opts.ACCOUNT_FILE)) {
-            Configs.setAccountFileName(cmd.getOptionValue(ArgParser.Opts.ACCOUNT_FILE));
-        }
-        App.configManager.setAccount(Configs.readAccount());
-        if (cmd.hasOption(ArgParser.Opts.ACCOUNT)) {
-            Configs.editAccount(account -> account.setName(cmd.getOptionValue(ArgParser.Opts.ACCOUNT)));
-        }
-        if (cmd.hasOption(ArgParser.Opts.PASSKEY)) {
-            Configs.editAccount(account -> account.setPasskey(cmd.getOptionValue(ArgParser.Opts.PASSKEY)));
-        }
-
-        // Web Config
-        App.configManager.setWebConfig(Configs.readWebConfig());
-        if (cmd.hasOption(ArgParser.Opts.WEB)) {
-            Configs.editWebConfig(webConfig -> webConfig.setEnabled(Boolean.parseBoolean(cmd.getOptionValue(ArgParser.Opts.WEB))));
-        }
-
-        loadOtherConfigs();
-    }
-
-    private static void loadOtherConfigs() {
-        // Bot config
-        App.configManager.setBotConfig(Configs.readBotConfig());
+        Configs.updateGeneralConfig();
+        Configs.reloadAccount();
     }
 
     public static class Graphics {

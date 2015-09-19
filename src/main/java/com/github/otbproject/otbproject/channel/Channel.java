@@ -3,7 +3,7 @@ package com.github.otbproject.otbproject.channel;
 import com.github.otbproject.otbproject.command.scheduler.Scheduler;
 import com.github.otbproject.otbproject.command.scheduler.Schedules;
 import com.github.otbproject.otbproject.config.ChannelConfig;
-import com.github.otbproject.otbproject.config.Configs;
+import com.github.otbproject.otbproject.config.UpdatingConfig;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.database.Databases;
 import com.github.otbproject.otbproject.database.SQLiteQuoteWrapper;
@@ -28,7 +28,7 @@ public class Channel {
     private final ExpiringMap<String, Boolean> commandCooldownSet;
     private final ExpiringMap<String, Boolean> userCooldownSet;
     private final String name;
-    private final ChannelConfig config;
+    public final UpdatingConfig<ChannelConfig> config;
     private final DatabaseWrapper mainDb;
     private final SQLiteQuoteWrapper quoteDb;
     private ChannelMessageSender messageSender;
@@ -41,7 +41,7 @@ public class Channel {
 
     private final ReadWriteLock lock = new ReentrantReadWriteLock(true);
 
-    private Channel(String name, ChannelConfig config) throws ChannelInitException {
+    private Channel(String name, UpdatingConfig<ChannelConfig> config) throws ChannelInitException {
         this.name = name;
         this.config = config;
         inChannel = false;
@@ -73,7 +73,7 @@ public class Channel {
         messageProcessor = new ChannelMessageProcessor(this);
     }
 
-    public static Channel create(String name, ChannelConfig config) throws ChannelInitException {
+    public static Channel create(String name, UpdatingConfig<ChannelConfig> config) throws ChannelInitException {
         Channel channel = new Channel(name, config);
         channel.init();
         return channel;
@@ -85,6 +85,8 @@ public class Channel {
             if (inChannel) {
                 return false;
             }
+
+            config.startMonitoring();
 
             messageSender.start();
             scheduler.start();
@@ -106,6 +108,8 @@ public class Channel {
             }
             inChannel = false;
 
+            config.stopMonitoring();
+
             messageSender.stop();
             scheduler.stop();
             scheduledCommands.clear();
@@ -123,7 +127,7 @@ public class Channel {
     public boolean sendMessage(MessageOut messageOut) {
         lock.readLock().lock();
         try {
-            return inChannel && !config.isSilenced() && messageSender.send(messageOut);
+            return inChannel && !config.get(ChannelConfig::isSilenced) && messageSender.send(messageOut);
         } finally {
             lock.readLock().unlock();
         }
@@ -279,17 +283,12 @@ public class Channel {
         return quoteDb;
     }
 
-    @Deprecated
-    public ChannelConfig getConfig() {
-        return config;
-    }
-
     public <R> R getFromConfig(Function<ChannelConfig, R> function) {
-        return function.apply(config);
+        return config.get(function);
     }
 
     public void editConfig(Consumer<ChannelConfig> consumer) {
-        Configs.doEditChannelConfig(name, config, consumer);
+        config.edit(consumer);
     }
 
     public Scheduler getScheduler() {

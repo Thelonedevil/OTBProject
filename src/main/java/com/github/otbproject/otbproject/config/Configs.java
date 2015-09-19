@@ -5,115 +5,59 @@ import com.github.otbproject.otbproject.channel.Channel;
 import com.github.otbproject.otbproject.channel.ChannelNotFoundException;
 import com.github.otbproject.otbproject.channel.Channels;
 import com.github.otbproject.otbproject.fs.FSUtil;
-import com.github.otbproject.otbproject.util.JsonHandler;
 
 import java.io.File;
+import java.util.Optional;
+import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class Configs {
+
+    private static final String GENERAL_CONFIG_PATH = FSUtil.configDir() + File.separator + FSUtil.ConfigFileNames.GENERAL_CONFIG;
+    private static final String WEB_CONFIG_PATH = FSUtil.configDir() + File.separator + FSUtil.ConfigFileNames.WEB_CONFIG;
+
     private static String accountFileName = "";
+    private static WrappedConfig<Account> account;
 
-    public static final String GENERAL_CONFIG_PATH = FSUtil.configDir() + File.separator + FSUtil.ConfigFileNames.GENERAL_CONFIG;
-    public static final String BOT_CONFIG_PATH = FSUtil.dataDir() + File.separator + FSUtil.DirNames.BOT_CHANNEL + File.separator + FSUtil.ConfigFileNames.BOT_CONFIG;
-    public static final String WEB_CONFIG_PATH = FSUtil.configDir() + File.separator + FSUtil.ConfigFileNames.WEB_CONFIG;
+    private static final WrappedConfig<GeneralConfig> generalConfig = new WrappedConfig<>(GeneralConfig.class, GENERAL_CONFIG_PATH, GeneralConfig::new);
+    private static final WrappedConfig<WebConfig> webConfig = new WrappedConfig<>(WebConfig.class, WEB_CONFIG_PATH, WebConfig::new);
 
-    // Reading
-    public static Account readAccount() {
-        Account account = JsonHandler.readValue(getAccountPath(), Account.class).orElse(new Account());
-        writeAccount(account);
-        return account;
+    private static final UpdatingConfig<BotConfig> botConfig;
+
+    static {
+        botConfig = UpdatingConfig.create(BotConfig.class, FSUtil.configDir(), FSUtil.ConfigFileNames.BOT_CONFIG, BotConfig::new);
+        botConfig.startMonitoring();
     }
 
-    public static WebConfig readWebConfig() {
-        WebConfig config = JsonHandler.readValue(WEB_CONFIG_PATH, WebConfig.class).orElse(new WebConfig());
-        writeWebConfig(config);
-        return config;
+    // Update
+    public static void reloadAccount() { // TODO rename
+        account = new WrappedConfig<>(Account.class, getAccountPath(), Account::new);
     }
 
-    public static GeneralConfig readGeneralConfig() {
-        GeneralConfig config = JsonHandler.readValue(GENERAL_CONFIG_PATH, GeneralConfig.class).orElse(new GeneralConfig());
-        writeGeneralConfig(config);
-        return config;
+    public static void updateGeneralConfig() {
+        generalConfig.update();
     }
 
-    public static BotConfig readBotConfig() {
-        BotConfig config = JsonHandler.readValue(BOT_CONFIG_PATH, BotConfig.class).orElse(new BotConfig());
-        writeBotConfig(config);
-        return config;
-    }
-
-    public static ChannelConfig readChannelConfig(String channel) {
-        ChannelConfig config = JsonHandler.readValue(getChannelPath(channel), ChannelConfig.class).orElse(new ChannelConfig());
-        writeChannelConfig(config, channel);
-        return config;
-    }
-
-    // Writing
-    private static void writeAccount(Account account) {
-        JsonHandler.writeValue(getAccountPath(), account);
-    }
-
-    @Deprecated
-    public static void writeAccount() {
-        writeAccount(doGetAccount());
-    }
-
-    private static void writeGeneralConfig(GeneralConfig config) {
-        JsonHandler.writeValue(GENERAL_CONFIG_PATH, config);
-    }
-
-    @Deprecated
-    public static void writeGeneralConfig() {
-        writeGeneralConfig(doGetGeneralConfig());
-    }
-
-    private static void writeWebConfig(WebConfig config) {
-        JsonHandler.writeValue(WEB_CONFIG_PATH, config);
-    }
-
-    @Deprecated
-    public static void writeWebConfig() {
-        writeWebConfig(doGetWebConfig());
-    }
-
-    private static void writeBotConfig(BotConfig config) {
-        JsonHandler.writeValue(BOT_CONFIG_PATH, config);
-    }
-
-    @Deprecated
-    public static void writeBotConfig() {
-        writeBotConfig(doGetBotConfig());
-    }
-
-    private static void writeChannelConfig(ChannelConfig config, String channel) {
-        JsonHandler.writeValue(getChannelPath(channel), config);
-    }
-
-    @Deprecated
-    public static void writeChannelConfig(String channel) throws ChannelNotFoundException {
-        writeChannelConfig(getChannelConfig(channel), channel);
+    public static void updateWebConfig() {
+        webConfig.update();
     }
 
     // Edit wrappers
     public static void editAccount(Consumer<Account> consumer) {
-        consumer.accept(doGetAccount());
-        writeAccount(doGetAccount());
+        account.edit(consumer);
     }
 
     public static void editGeneralConfig(Consumer<GeneralConfig> consumer) {
-        consumer.accept(doGetGeneralConfig());
-        writeGeneralConfig(doGetGeneralConfig());
+        generalConfig.edit(consumer);
     }
 
     public static void editWebConfig(Consumer<WebConfig> consumer) {
-        consumer.accept(doGetWebConfig());
-        writeWebConfig(doGetWebConfig());
+        webConfig.edit(consumer);
     }
 
     public static void editBotConfig(Consumer<BotConfig> consumer) {
-        consumer.accept(doGetBotConfig());
-        writeBotConfig(doGetBotConfig());
+        botConfig.edit(consumer);
     }
 
     public static void editChannelConfig(String channel, Consumer<ChannelConfig> consumer) throws ChannelNotFoundException {
@@ -124,26 +68,61 @@ public class Configs {
         channel.editConfig(consumer);
     }
 
-    public static void doEditChannelConfig(String channel, ChannelConfig config, Consumer<ChannelConfig> consumer) {
-        consumer.accept(config);
-        writeChannelConfig(config, channel);
-    }
-
     // Get wrappers
     public static <R> R getFromAccount(Function<Account, R> function) {
-        return function.apply(doGetAccount());
+        return account.get(function);
     }
 
     public static <R> R getFromGeneralConfig(Function<GeneralConfig, R> function) {
-        return function.apply(doGetGeneralConfig());
+        return generalConfig.get(function);
+    }
+
+    /**
+     * Method to get service if must get exact service as it is in
+     * the config, and cannot be out of date.
+     *
+     * Method is slow and inefficient, and should only be used if
+     * exact value is required.
+     *
+     * @return {@link Service} currently set in {@link GeneralConfig}
+     * @throws ExecutionException if encountered Exception when
+     * getting the value
+     * @throws InterruptedException if thread was interrupted
+     * when getting the value
+     */
+    public static Service getExactService() throws ExecutionException, InterruptedException {
+        return generalConfig.get(GeneralConfig::getService);
+    }
+
+    /**
+     * Method to get service if must get exact service as it is in
+     * the config, and cannot be out of date.
+     *
+     * Method is slow and inefficient, and should only be used if
+     * exact value is required.
+     *
+     * @return {@link Optional} containing the {@link Service}, or
+     * an empty {@code Optional} if it encountered an Exception or
+     * was interrupted
+     */
+    public static Optional<Service> getExactServiceAsOptional() {
+        try {
+            return Optional.of(getExactService());
+        } catch (InterruptedException e) {
+            App.logger.catching(e);
+            Thread.currentThread().interrupt();
+        } catch (ExecutionException e) {
+            App.logger.catching(e);
+        }
+        return Optional.empty();
     }
 
     public static <R> R getFromWebConfig(Function<WebConfig, R> function) {
-        return function.apply(doGetWebConfig());
+        return webConfig.get(function);
     }
 
     public static <R> R getFromBotConfig(Function<BotConfig, R> function) {
-        return function.apply(doGetBotConfig());
+        return botConfig.get(function);
     }
 
     public static <R> R getFromChannelConfig(String channel, Function<ChannelConfig, R> function) throws ChannelNotFoundException {
@@ -154,61 +133,19 @@ public class Configs {
         return channel.getFromConfig(function);
     }
 
-    // Private getters
-    // TODO refactor 'do' out of name once deprecated methods are removed
-    private static Account doGetAccount() {
-        return App.configManager.getAccount();
-    }
-
-    private static GeneralConfig doGetGeneralConfig() {
-        return App.configManager.getGeneralConfig();
-    }
-
-    private static WebConfig doGetWebConfig() {
-        return App.configManager.getWebConfig();
-    }
-
-    private static BotConfig doGetBotConfig() {
-        return App.configManager.getBotConfig();
-    }
-
-    // Deprecated public getters
-    @Deprecated
-    public static Account getAccount() {
-        return doGetAccount();
-    }
-
-    @Deprecated
-    public static GeneralConfig getGeneralConfig() {
-        return doGetGeneralConfig();
-    }
-
-    @Deprecated
-    public static WebConfig getWebConfig() {
-        return doGetWebConfig();
-    }
-
-    @Deprecated
-    public static BotConfig getBotConfig() {
-        return doGetBotConfig();
-    }
-
-    @Deprecated
-    public static ChannelConfig getChannelConfig(String channel) throws ChannelNotFoundException {
-        return Channels.getOrThrow(channel).getConfig();
-    }
-
     // Misc
     private static String getAccountFileName() {
         if (!accountFileName.equals("")) {
             return accountFileName;
         }
 
-        Service service = doGetGeneralConfig().getService();
-        if (service == Service.BEAM) {
-            return FSUtil.ConfigFileNames.ACCOUNT_BEAM;
-        } else { // Defaults to Twitch
-            return FSUtil.ConfigFileNames.ACCOUNT_TWITCH;
+        Service service = generalConfig.get(GeneralConfig::getService);
+        switch (service) {
+            case BEAM:
+                return FSUtil.ConfigFileNames.ACCOUNT_BEAM;
+            case TWITCH:
+            default:
+                return FSUtil.ConfigFileNames.ACCOUNT_TWITCH;
         }
     }
 
@@ -218,9 +155,5 @@ public class Configs {
 
     private static String getAccountPath() {
         return FSUtil.configDir() + File.separator + getAccountFileName();
-    }
-
-    private static String getChannelPath(String channel) {
-        return FSUtil.dataDir() + File.separator + FSUtil.DirNames.CHANNELS + File.separator + channel + File.separator + FSUtil.ConfigFileNames.CHANNEL_CONFIG;
     }
 }

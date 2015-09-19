@@ -55,6 +55,10 @@ public class FSUtil {
         return baseDir + File.separator + DATA_DIR_NAME;
     }
 
+    public static String channelDataDir(String channel) {
+        return dataDir() + File.separator + DirNames.CHANNELS + File.separator + channel;
+    }
+
     private static String filtersBaseDir() {
         return baseDir + File.separator + FILTERS_DIR_NAME;
     }
