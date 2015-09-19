@@ -1,6 +1,7 @@
 package com.github.otbproject.otbproject.database;
 
 import com.github.otbproject.otbproject.fs.FSUtil;
+import com.github.otbproject.otbproject.util.InstallationHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.junit.AfterClass;
@@ -30,8 +31,7 @@ public class SQLiteWrapperTest {
 
     @BeforeClass
     public static void initialise() {
-        System.setProperty("OTBCONF", "./logs/");
-        System.setProperty("OTBDEBUG","false");
+        InstallationHelper.setupTestInstallation();
         fields.put(fieldName, DataTypes.STRING);
         fields.put(fieldName2, DataTypes.INTEGER);
         HashSet<String> primaryKeys = new HashSet<>();
