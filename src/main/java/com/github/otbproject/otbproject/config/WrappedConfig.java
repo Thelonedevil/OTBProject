@@ -5,9 +5,7 @@ import com.github.otbproject.otbproject.util.JsonHandler;
 import com.github.otbproject.otbproject.util.ThreadUtil;
 
 import java.util.Optional;
-import java.util.concurrent.BlockingDeque;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -44,6 +42,12 @@ public class WrappedConfig<T> {
 
     public <R> R get(Function<T, R> function) {
         return function.apply(config);
+    }
+
+    public <R> R getExactly(Function<T, R> function) throws ExecutionException, InterruptedException {
+        FutureTask<R> futureTask = new FutureTask<>(() -> function.apply(config));
+        UPDATE_DEQUE.addLast(futureTask);
+        return futureTask.get();
     }
 
     public void edit(Consumer<T> consumer) {

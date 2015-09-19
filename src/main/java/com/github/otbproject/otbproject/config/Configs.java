@@ -1,11 +1,14 @@
 package com.github.otbproject.otbproject.config;
 
+import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.channel.Channel;
 import com.github.otbproject.otbproject.channel.ChannelNotFoundException;
 import com.github.otbproject.otbproject.channel.Channels;
 import com.github.otbproject.otbproject.fs.FSUtil;
 
 import java.io.File;
+import java.util.Optional;
+import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -72,6 +75,46 @@ public class Configs {
 
     public static <R> R getFromGeneralConfig(Function<GeneralConfig, R> function) {
         return generalConfig.get(function);
+    }
+
+    /**
+     * Method to get service if must get exact service as it is in
+     * the config, and cannot be out of date.
+     *
+     * Method is slow and inefficient, and should only be used if
+     * exact value is required.
+     *
+     * @return {@link Service} currently set in {@link GeneralConfig}
+     * @throws ExecutionException if encountered Exception when
+     * getting the value
+     * @throws InterruptedException if thread was interrupted
+     * when getting the value
+     */
+    public static Service getExactService() throws ExecutionException, InterruptedException {
+        return generalConfig.get(GeneralConfig::getService);
+    }
+
+    /**
+     * Method to get service if must get exact service as it is in
+     * the config, and cannot be out of date.
+     *
+     * Method is slow and inefficient, and should only be used if
+     * exact value is required.
+     *
+     * @return {@link Optional} containing the {@link Service}, or
+     * an empty {@code Optional} if it encountered an Exception or
+     * was interrupted
+     */
+    public static Optional<Service> getExactServiceAsOptional() {
+        try {
+            return Optional.of(getExactService());
+        } catch (InterruptedException e) {
+            App.logger.catching(e);
+            Thread.currentThread().interrupt();
+        } catch (ExecutionException e) {
+            App.logger.catching(e);
+        }
+        return Optional.empty();
     }
 
     public static <R> R getFromWebConfig(Function<WebConfig, R> function) {
