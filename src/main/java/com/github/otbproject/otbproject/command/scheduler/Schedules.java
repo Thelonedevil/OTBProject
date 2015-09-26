@@ -10,11 +10,11 @@ import java.util.concurrent.TimeUnit;
 
 public class Schedules {
     public static void scheduleCommandInSeconds(String channel, String command, long delay, long period, boolean hourReset) {
-        scheduleCommand(channel, command, delay, period, hourReset, TimeUnit.SECONDS);
+        scheduleCommand(channel, command, TimeUnit.SECONDS.toMillis(delay), TimeUnit.SECONDS.toMillis(period), hourReset, TimeUnit.MILLISECONDS);
     }
 
     public static void scheduleCommandInMinutes(String channel, String command, long delay, long period, boolean hourReset) {
-        scheduleCommand(channel, command, (TimeUnit.MINUTES.toSeconds(delay)), (TimeUnit.MINUTES.toSeconds(period)), hourReset, TimeUnit.SECONDS);
+        scheduleCommand(channel, command, TimeUnit.MINUTES.toMillis(delay), TimeUnit.MINUTES.toMillis(period), hourReset, TimeUnit.MILLISECONDS);
     }
 
     public static void scheduleCommandInHours(String channel, String command, long delay, long period) {
@@ -40,21 +40,22 @@ public class Schedules {
     }
 
     static boolean unScheduleCommand(Channel channel, String command) {
-        boolean success = removeFromDatabase(channel, command);
-        channel.removeCommandFuture(command);
-        channel.removeResetFuture(command);
-        return success;
+        if (removeFromDatabase(channel, command)) {
+            channel.removeCommandFuture(command);
+            channel.removeResetFuture(command);
+            App.logger.debug("Unscheduled command '" + command + "' in channel: " + channel.getName());
+            return true;
+        }
+        return false;
     }
 
-    public static long getSecondsSinceTheHour() {
+    private static long getMillisSinceTheHour() {
         Date date = new Date();
         Calendar calendar = GregorianCalendar.getInstance();
         calendar.setTime(date);
-        return TimeUnit.MINUTES.toSeconds(calendar.get(Calendar.MINUTE)) + calendar.get(Calendar.SECOND);
-    }
-
-    public static long getSecondsTillTheHour() {
-        return TimeUnit.HOURS.toSeconds(1) - getSecondsSinceTheHour();
+        return TimeUnit.MINUTES.toMillis(calendar.get(Calendar.MINUTE))
+                + TimeUnit.SECONDS.toMillis(calendar.get(Calendar.SECOND))
+                + calendar.get(Calendar.MILLISECOND);
     }
 
     private static boolean scheduleCommand(String channelName, String command, long delay, long period, boolean hourReset, TimeUnit timeUnit) {
@@ -66,8 +67,11 @@ public class Schedules {
             return false;
         }
         Channel channel = optional.get();
-        doScheduleCommand(channel, command, delay, period, hourReset, timeUnit);
-        return addToDatabase(channel, command, delay, period, hourReset, timeUnit);
+        if (addToDatabase(channel, command, delay, period, hourReset, timeUnit)) {
+            doScheduleCommand(channel, command, delay, period, hourReset, timeUnit);
+            return true;
+        }
+        return false;
     }
 
     // Channel should not be null
@@ -76,20 +80,26 @@ public class Schedules {
         if (!hourReset) {
             scheduleTask(channel, command, task, ((delay == 0) ? period : delay), period, timeUnit);
         } else {
-            long result = getSecondsSinceTheHour() - delay;
+            // Setup reset
+            long millisSinceHour = getMillisSinceTheHour();
+            long millisTillHour = TimeUnit.HOURS.toMillis(1) - millisSinceHour;
+            Runnable reset = new ResetTask(channel, command, delay, period, timeUnit);
+            try {
+                channel.putResetFuture(command, channel.getScheduler().schedule(reset, millisTillHour, TimeUnit.HOURS.toMillis(1), TimeUnit.MILLISECONDS));
+            } catch (SchedulingException e) {
+                App.logger.error(e.getMessage());
+                App.logger.error("Failed to schedule ResetTask for command: " + command);
+                return; // Don't try to schedule command if scheduling ResetTask failed
+            }
+
+            long result = millisSinceHour - delay;
             if (result < 0) {
                 scheduleTask(channel, command, task, (-1 * result), period, timeUnit);
             } else {
                 // This gets the correct delay. Trust me
                 scheduleTask(channel, command, task, (period - (result % period)), period, timeUnit);
             }
-            // Setup reset
-            Runnable reset = new ResetTask(channel, command, delay, period, timeUnit);
-            try {
-                channel.putResetFuture(command, channel.getScheduler().schedule(reset, getSecondsTillTheHour(), TimeUnit.HOURS.toSeconds(1), TimeUnit.SECONDS));
-            } catch (SchedulingException e) {
-                App.logger.catching(e);
-            }
+
         }
     }
 
@@ -137,6 +147,11 @@ public class Schedules {
                         long period = rs.getLong(SchedulerFields.PERIOD);
                         boolean hourReset = Boolean.parseBoolean(rs.getString(SchedulerFields.RESET));
                         TimeUnit timeUnit = TimeUnit.valueOf(rs.getString(SchedulerFields.TYPE));
+                        if (hourReset) {
+                            delay = timeUnit.toMillis(delay);
+                            period = timeUnit.toMillis(period);
+                            timeUnit = TimeUnit.MILLISECONDS;
+                        }
                         doScheduleCommand(channel, command, delay, period, hourReset, timeUnit);
                     }
                     return null;
