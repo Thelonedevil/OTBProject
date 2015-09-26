@@ -27,7 +27,8 @@ public class ResetTask implements Runnable {
     public void run() {
         channel.removeCommandFuture(command);
         try {
-            channel.getScheduler().schedule(scheduledCommand, delay, period, timeUnit);
+            channel.putCommandFuture(command, channel.getScheduler().schedule(scheduledCommand, delay, period, timeUnit));
+            App.logger.debug("Reset timing of scheduled command '" + command + "' for the beginning of the hour");
         } catch (SchedulingException e) {
             App.logger.catching(e);
             App.logger.error("Removing ResetTask for command that could not be scheduled: " + command);
