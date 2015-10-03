@@ -140,11 +140,11 @@
     <distributionManagement>
         <snapshotRepository>
             <id>snapshots</id>
-            <url>http://ts.tldcode.uk:8081/nexus/content/repositories/snapshots/</url>
+            <url>http://maven.tldcode.uk:8081/content/repositories/snapshots/</url>
         </snapshotRepository>
         <repository>
             <id>release</id>
-            <url>http://ts.tldcode.uk:8081/nexus/content/repositories/releases</url>
+            <url>http://maven.tldcode.uk:8081/content/repositories/releases</url>
         </repository>
     </distributionManagement>
     <build>
