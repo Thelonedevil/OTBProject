@@ -10,7 +10,9 @@ import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.messages.internal.InternalMessageSender;
 import com.github.otbproject.otbproject.messages.send.MessageOut;
 import com.github.otbproject.otbproject.messages.send.MessagePriority;
-import com.github.otbproject.otbproject.proc.*;
+import com.github.otbproject.otbproject.proc.CommandProcessor;
+import com.github.otbproject.otbproject.proc.CommandScriptProcessor;
+import com.github.otbproject.otbproject.proc.ProcessedCommand;
 import com.github.otbproject.otbproject.user.UserLevel;
 
 import java.util.Optional;
@@ -59,11 +61,6 @@ public class ChannelMessageProcessor {
             }
         }
 
-        // Pre-check if user is on cooldown (skip if internal)
-        if (!internal && destChannel.isUserCooldown(user)) {
-            return;
-        }
-
         // Process commands not as bot channel
         DatabaseWrapper db = channel.getMainDatabaseWrapper();
         UserLevel ul = packagedMessage.userLevel;
@@ -73,11 +70,16 @@ public class ChannelMessageProcessor {
         }
         ProcessedCommand processedCmd = CommandProcessor.process(db, packagedMessage.message, channelName, user, ul, debug);
 
-        // Check if bot is enabled
-        if (channel.getFromConfig(ChannelConfig::isEnabled)
-                || Configs.getFromGeneralConfig(GeneralConfig::getPermanentlyEnabledCommands).contains(processedCmd.commandName)) {
-            // Check if empty message, and then if command is on cooldown (skip cooldown check if internal)
-            if ((processedCmd.isScript || !processedCmd.response.isEmpty()) && (internal || !destChannel.isCommandCooldown(processedCmd.commandName))) {
+        // Check if bot is enabled or command is permanently enabled, and if command is a script or non-empty
+        if ((channel.getFromConfig(ChannelConfig::isEnabled)
+                || Configs.getFromGeneralConfig(GeneralConfig::getPermanentlyEnabledCommands).contains(processedCmd.commandName))
+                && (processedCmd.isScript || !processedCmd.response.isEmpty())) {
+            // Check if command or user is on cooldown (skip cooldown check if internal)
+            if (!internal && destChannel.isCommandCooldown(processedCmd.commandName)) {
+                App.logger.debug("Skipping command on cooldown: " + processedCmd.commandName);
+            } else if (!internal && destChannel.isUserCooldown(user)) {
+                App.logger.debug("Skipping user on cooldown: " + user);
+            } else {
                 doResponse(db, processedCmd, channelName, destChannelName, destChannel, user, ul, packagedMessage.messagePriority, internal);
             }
         }
