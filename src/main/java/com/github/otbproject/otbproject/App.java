@@ -32,6 +32,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.lang.management.ManagementFactory;
+import java.nio.file.InvalidPathException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -205,11 +206,9 @@ public class App {
 
         if (cmd.hasOption(ArgParser.Opts.BASE_DIR)) {
             String path = cmd.getOptionValue(ArgParser.Opts.BASE_DIR);
-            if (new File(path).isDirectory()) {
-                if (path.endsWith(File.separator)) {
-                    path = path.substring(0, path.length() - 1);
-                }
-                FSUtil.setBaseDirPath(path);
+            File pathFile = new File(path);
+            if (pathFile.isDirectory()) {
+                FSUtil.setBaseDirPath(pathFile.getAbsolutePath());
             } else {
                 System.out.println("Error setting base directory.");
                 System.out.println("The path:\t" + path);
