@@ -108,6 +108,9 @@ public class App {
             VersionCompatHelper.urgentCompatFixes(version);
         }
 
+        // Shutdown hook
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> Control.shutdown(false)));
+
         // Read configs
         setConfigsFromCmdLineOpts(cmd);
 
