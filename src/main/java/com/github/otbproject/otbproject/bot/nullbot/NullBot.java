@@ -4,6 +4,7 @@ import com.github.otbproject.otbproject.bot.Bot;
 import com.github.otbproject.otbproject.bot.BotInitException;
 import com.github.otbproject.otbproject.channel.Channel;
 import com.github.otbproject.otbproject.channel.ChannelManager;
+import com.github.otbproject.otbproject.channel.ChannelProxy;
 import com.github.otbproject.otbproject.channel.ProxiedChannel;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.messages.receive.MessageHandler;
@@ -119,7 +120,7 @@ public class NullBot implements Bot {
     }
 
     @Override
-    public void invokeMessageHandlers(Channel channel, PackagedMessage message, boolean timedOut) {
+    public void invokeMessageHandlers(ChannelProxy channel, PackagedMessage message, boolean timedOut) {
         // NO-OP
     }
 }

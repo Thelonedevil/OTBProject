@@ -14,71 +14,34 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-public class ChannelProxy {
-    private final Channel channel;
+public interface ChannelProxy {
+    boolean sendMessage(MessageOut messageOut);
 
-    public ChannelProxy(Channel channel) {
-        this.channel = channel;
-    }
+    void clearSendQueue();
 
-    public boolean sendMessage(MessageOut messageOut) {
-        return channel.sendMessage(messageOut);
-    }
+    boolean receiveMessage(PackagedMessage packagedMessage);
 
-    public void clearSendQueue() {
-        channel.clearSendQueue();
-    }
+    String getName();
 
-    public boolean receiveMessage(PackagedMessage packagedMessage) {
-        return channel.receiveMessage(packagedMessage);
-    }
+    boolean isInChannel();
 
-    public String getName() {
-        return channel.getName();
-    }
+    CooldownManager userCooldowns();
 
-    public boolean isInChannel() {
-        return channel.isInChannel();
-    }
+    CooldownManager commandCooldowns();
 
-    public CooldownManager userCooldowns() {
-        return channel.userCooldowns();
-    }
+    Set<String> getScheduledCommands();
 
-    public CooldownManager commandCooldowns() {
-        return channel.commandCooldowns();
-    }
+    ChannelScheduleManager getScheduleManager();
 
-    public Set<String> getScheduledCommands() {
-        return channel.getScheduledCommands();
-    }
+    DatabaseWrapper getMainDatabaseWrapper();
 
-    public ChannelScheduleManager getScheduleManager() {
-        return channel.getScheduleManager();
-    }
+    SQLiteQuoteWrapper getQuoteDatabaseWrapper();
 
-    public DatabaseWrapper getMainDatabaseWrapper() {
-        return channel.getMainDatabaseWrapper();
-    }
+    <R> R getFromConfig(Function<ChannelConfig, R> function);
 
-    public SQLiteQuoteWrapper getQuoteDatabaseWrapper() {
-        return channel.getQuoteDatabaseWrapper();
-    }
+    void editConfig(Consumer<ChannelConfig> consumer);
 
-    public <R> R getFromConfig(Function<ChannelConfig, R> function) {
-        return channel.getFromConfig(function);
-    }
+    Scheduler getScheduler();
 
-    public void editConfig(Consumer<ChannelConfig> consumer) {
-        channel.editConfig(consumer);
-    }
-
-    public Scheduler getScheduler() {
-        return channel.getScheduler();
-    }
-
-    public ConcurrentMap<String, GroupFilterSet> getFilterMap() {
-        return channel.getFilterMap();
-    }
-
+    ConcurrentMap<String, GroupFilterSet> getFilterMap();
 }

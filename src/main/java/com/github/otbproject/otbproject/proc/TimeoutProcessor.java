@@ -1,7 +1,7 @@
 package com.github.otbproject.otbproject.proc;
 
 import com.github.otbproject.otbproject.bot.Control;
-import com.github.otbproject.otbproject.channel.Channel;
+import com.github.otbproject.otbproject.channel.ChannelProxy;
 import com.github.otbproject.otbproject.filter.FilterAction;
 import com.github.otbproject.otbproject.filter.FilterGroup;
 import com.github.otbproject.otbproject.filter.FilterProcessor;
@@ -12,7 +12,7 @@ import com.github.otbproject.otbproject.user.UserLevel;
 import java.util.Optional;
 
 public class TimeoutProcessor {
-    public static boolean doTimeouts(Channel channel, PackagedMessage packagedMessage) {
+    public static boolean doTimeouts(ChannelProxy channel, PackagedMessage packagedMessage) {
         // TODO implement and remove if statement
         if (false) { // So I can work on an implementation without changing behaviour
             Optional<FilterGroup> optional = FilterProcessor.process(channel.getFilterMap(), packagedMessage.message, packagedMessage.userLevel);
@@ -47,7 +47,7 @@ public class TimeoutProcessor {
         }
     }
 
-    private static void sendFilterMessage(Channel channel, PackagedMessage incomingMessage, FilterGroup filterGroup) {
+    private static void sendFilterMessage(ChannelProxy channel, PackagedMessage incomingMessage, FilterGroup filterGroup) {
         // TODO handle message for timeout
         String responseCommand = "";
         switch (filterGroup.getAction()) {

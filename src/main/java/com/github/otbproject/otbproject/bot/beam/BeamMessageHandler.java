@@ -3,9 +3,7 @@ package com.github.otbproject.otbproject.bot.beam;
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.bot.BotUtil;
 import com.github.otbproject.otbproject.bot.Control;
-import com.github.otbproject.otbproject.channel.Channel;
-import com.github.otbproject.otbproject.channel.ChannelNotFoundException;
-import com.github.otbproject.otbproject.channel.Channels;
+import com.github.otbproject.otbproject.channel.*;
 import com.github.otbproject.otbproject.messages.receive.PackagedMessage;
 import com.github.otbproject.otbproject.messages.send.MessagePriority;
 import com.github.otbproject.otbproject.proc.TimeoutProcessor;
@@ -79,9 +77,9 @@ public class BeamMessageHandler implements EventHandler<IncomingMessageEvent> {
                 return;
             }
 
-            Optional<Channel> optional = Channels.get(channelName);
+            Optional<ChannelProxy> optional = bot.channelManager().get(channelName);
             if (optional.isPresent()) {
-                Channel channel = optional.get();
+                ChannelProxy channel = optional.get();
                 UserLevel userLevel = UserLevels.getUserLevel(channel.getMainDatabaseWrapper(), channelName, data.user_name.toLowerCase());
                 PackagedMessage packagedMessage = new PackagedMessage(message, data.user_name.toLowerCase(), channelName, userLevel, MessagePriority.DEFAULT);
                 bot.invokeMessageHandlers(channel, packagedMessage, TimeoutProcessor.doTimeouts(channel, packagedMessage));

@@ -1,9 +1,9 @@
 package com.github.otbproject.otbproject.config;
 
 import com.github.otbproject.otbproject.App;
-import com.github.otbproject.otbproject.channel.Channel;
+import com.github.otbproject.otbproject.bot.Control;
 import com.github.otbproject.otbproject.channel.ChannelNotFoundException;
-import com.github.otbproject.otbproject.channel.Channels;
+import com.github.otbproject.otbproject.channel.ChannelProxy;
 import com.github.otbproject.otbproject.fs.FSUtil;
 
 import java.io.File;
@@ -61,10 +61,10 @@ public class Configs {
     }
 
     public static void editChannelConfig(String channel, Consumer<ChannelConfig> consumer) throws ChannelNotFoundException {
-        Channels.getOrThrow(channel).editConfig(consumer);
+        Control.getBot().channelManager().getOrThrow(channel).editConfig(consumer);
     }
 
-    public static void editChannelConfig(Channel channel, Consumer<ChannelConfig> consumer) {
+    public static void editChannelConfig(ChannelProxy channel, Consumer<ChannelConfig> consumer) {
         channel.editConfig(consumer);
     }
 
@@ -126,10 +126,10 @@ public class Configs {
     }
 
     public static <R> R getFromChannelConfig(String channel, Function<ChannelConfig, R> function) throws ChannelNotFoundException {
-        return Channels.getOrThrow(channel).getFromConfig(function);
+        return Control.getBot().channelManager().getOrThrow(channel).getFromConfig(function);
     }
 
-    public static <R> R getFromChannelConfig(Channel channel, Function<ChannelConfig, R> function) {
+    public static <R> R getFromChannelConfig(ChannelProxy channel, Function<ChannelConfig, R> function) {
         return channel.getFromConfig(function);
     }
 

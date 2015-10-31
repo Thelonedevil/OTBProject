@@ -25,7 +25,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-public class Channel {
+public class Channel implements ChannelProxy {
     private CooldownManager commandCooldownManager;
     private CooldownManager userCooldownManager;
     private final String name;
@@ -296,7 +296,7 @@ public class Channel {
         return channel.equalsIgnoreCase(Control.getBot().getUserName());
     }
 
-    public static boolean isBotChannel(Channel channel) {
+    public static boolean isBotChannel(ChannelProxy channel) {
         return isBotChannel(channel.getName());
     }
 }

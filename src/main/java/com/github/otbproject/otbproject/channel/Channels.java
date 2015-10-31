@@ -43,5 +43,4 @@ public class Channels {
     public static boolean isBotChannel(Channel channel) {
         return isBotChannel(channel.getName());
     }
-
 }

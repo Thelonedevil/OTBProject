@@ -6,7 +6,7 @@ public class ProxiedChannel {
 
     public ProxiedChannel(Channel channel) {
         this.channel = channel;
-        proxy = new ChannelProxy(channel);
+        proxy = new ChannelProxyImpl(channel);
     }
 
     public Channel channel() {

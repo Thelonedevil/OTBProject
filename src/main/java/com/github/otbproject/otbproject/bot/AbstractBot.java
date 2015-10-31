@@ -3,6 +3,7 @@ package com.github.otbproject.otbproject.bot;
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.channel.Channel;
 import com.github.otbproject.otbproject.channel.ChannelManager;
+import com.github.otbproject.otbproject.channel.ChannelProxy;
 import com.github.otbproject.otbproject.channel.ProxiedChannel;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.database.Databases;
@@ -68,7 +69,7 @@ public abstract class AbstractBot implements Bot {
     }
 
     @Override
-    public void invokeMessageHandlers(Channel channel, PackagedMessage message, boolean timedOut) {
+    public void invokeMessageHandlers(ChannelProxy channel, PackagedMessage message, boolean timedOut) {
         messageHandlers.onMessage(channel, message, timedOut);
     }
 }
