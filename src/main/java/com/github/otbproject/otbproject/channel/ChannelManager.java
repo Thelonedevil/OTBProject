@@ -29,7 +29,8 @@ public final class ChannelManager {
     }
 
     public Optional<ChannelProxy> get(String channel) {
-        return Optional.ofNullable(channels.get(channel).proxy());
+        ProxiedChannel proxiedChannel = channels.get(channel);
+        return (proxiedChannel == null) ? Optional.empty() : Optional.of(channels.get(channel).proxy());
     }
 
     public ChannelProxy getOrThrow(String channel) throws ChannelNotFoundException {
