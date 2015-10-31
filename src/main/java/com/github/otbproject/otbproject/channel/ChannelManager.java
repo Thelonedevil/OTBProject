@@ -13,6 +13,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.stream.Stream;
 
 public final class ChannelManager {
     private final Lock lock = new ReentrantLock();
@@ -159,4 +160,7 @@ public final class ChannelManager {
         return Collections.unmodifiableSet(channels.keySet());
     }
 
+    public Stream<ChannelProxy> proxyStream() {
+        return channels.values().stream().map(ProxiedChannel::proxy);
+    }
 }

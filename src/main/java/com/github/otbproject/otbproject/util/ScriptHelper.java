@@ -2,6 +2,7 @@ package com.github.otbproject.otbproject.util;
 
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.channel.ChannelNotFoundException;
+import com.github.otbproject.otbproject.channel.ChannelProxy;
 import com.github.otbproject.otbproject.channel.Channels;
 import com.github.otbproject.otbproject.messages.internal.InternalMessageSender;
 import com.github.otbproject.otbproject.messages.receive.PackagedMessage;
@@ -23,5 +24,9 @@ public class ScriptHelper {
             MessageOut messageOut = new MessageOut(message, priority);
             Channels.getOrThrow(channelName).sendMessage(messageOut);
         }
+    }
+
+    public static void sendMessage(ChannelProxy channelProxy, String message, MessagePriority priority) throws ChannelNotFoundException {
+        channelProxy.sendMessage(new MessageOut(message, priority));
     }
 }

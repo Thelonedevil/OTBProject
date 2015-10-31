@@ -45,6 +45,10 @@ public abstract class AbstractBot implements Bot {
         return botDB;
     }
 
+    /**
+     * Any class extending this one which overrides this method SHOULD call
+     * this method at the end of the body of the overriding method
+     */
     @Override
     public void shutdown() {
         channels.values().forEach(proxiedChannel -> proxiedChannel.channel().leave());
