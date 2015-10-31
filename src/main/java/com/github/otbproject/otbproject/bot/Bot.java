@@ -1,6 +1,7 @@
 package com.github.otbproject.otbproject.bot;
 
 import com.github.otbproject.otbproject.channel.Channel;
+import com.github.otbproject.otbproject.channel.ChannelManager;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.messages.receive.PackagedMessage;
 import com.github.otbproject.otbproject.messages.receive.MessageHandler;
@@ -12,7 +13,10 @@ public interface Bot {
 
     boolean isConnected();
 
-    ConcurrentMap<String, Channel> getChannels();
+    @Deprecated
+    ConcurrentMap<String, Channel> getChannels(); // TODO remove
+
+    ChannelManager channelManager();
 
     boolean isChannel(String channelName);
 

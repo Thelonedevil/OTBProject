@@ -2,16 +2,21 @@ package com.github.otbproject.otbproject.bot;
 
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.channel.Channel;
+import com.github.otbproject.otbproject.channel.ChannelManager;
+import com.github.otbproject.otbproject.channel.ProxiedChannel;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.database.Databases;
 import com.github.otbproject.otbproject.messages.receive.PackagedMessage;
 import com.github.otbproject.otbproject.messages.receive.MessageHandler;
 
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.stream.Collectors;
 
 public abstract class AbstractBot implements Bot {
-    protected final ConcurrentMap<String, Channel> channels = new ConcurrentHashMap<>();
+    private final ConcurrentMap<String, ProxiedChannel> channels;
+    private final ChannelManager channelManager;
     protected final DatabaseWrapper botDB = Databases.createBotDbWrapper();
     protected MessageHandler messageHandlers = (channel, packagedMessage, timedOut) -> {};
 
@@ -21,11 +26,18 @@ public abstract class AbstractBot implements Bot {
                 channel.receiveMessage(packagedMessage);
             }
         });
+        channels = new ConcurrentHashMap<>();
+        channelManager = new ChannelManager(channels);
     }
 
     @Override
     public ConcurrentMap<String, Channel> getChannels() {
-        return channels;
+        return channels.entrySet().stream().collect(Collectors.toConcurrentMap(Map.Entry::getKey, entry -> entry.getValue().channel()));
+    }
+
+    @Override
+    public ChannelManager channelManager() {
+        return channelManager;
     }
 
     @Override
@@ -35,7 +47,8 @@ public abstract class AbstractBot implements Bot {
 
     @Override
     public void shutdown() {
-        channels.values().forEach(Channel::leave);
+        channels.values().forEach(proxiedChannel -> proxiedChannel.channel().leave());
+        channels.clear();
     }
 
     @Override

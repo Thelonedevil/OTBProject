@@ -15,6 +15,7 @@ import com.github.otbproject.otbproject.messages.receive.PackagedMessage;
 import com.github.otbproject.otbproject.messages.send.ChannelMessageSender;
 import com.github.otbproject.otbproject.messages.send.MessageOut;
 
+import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -202,7 +203,7 @@ public class Channel {
     }
 
     public Set<String> getScheduledCommands() {
-        return scheduledCommands.keySet();
+        return Collections.unmodifiableSet(scheduledCommands.keySet());
     }
 
     public ChannelScheduleManager getScheduleManager() {
