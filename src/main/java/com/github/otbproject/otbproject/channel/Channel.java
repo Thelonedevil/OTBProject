@@ -1,5 +1,7 @@
 package com.github.otbproject.otbproject.channel;
 
+import com.github.otbproject.otbproject.bot.Control;
+import com.github.otbproject.otbproject.command.scheduler.ChannelScheduleManager;
 import com.github.otbproject.otbproject.command.scheduler.Scheduler;
 import com.github.otbproject.otbproject.command.scheduler.Schedules;
 import com.github.otbproject.otbproject.config.ChannelConfig;
@@ -12,21 +14,19 @@ import com.github.otbproject.otbproject.messages.receive.ChannelMessageProcessor
 import com.github.otbproject.otbproject.messages.receive.PackagedMessage;
 import com.github.otbproject.otbproject.messages.send.ChannelMessageSender;
 import com.github.otbproject.otbproject.messages.send.MessageOut;
-import net.jodah.expiringmap.ExpiringMap;
 
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class Channel {
-    private final ExpiringMap<String, Boolean> commandCooldownSet;
-    private final ExpiringMap<String, Boolean> userCooldownSet;
+    private CooldownManager commandCooldownManager;
+    private CooldownManager userCooldownManager;
     private final String name;
     public final UpdatingConfig<ChannelConfig> config;
     private final DatabaseWrapper mainDb;
@@ -40,6 +40,7 @@ public class Channel {
     private boolean inChannel;
 
     private final ReadWriteLock lock = new ReentrantReadWriteLock(true);
+    private final ChannelScheduleManager scheduleManager = new ChannelScheduleManager(scheduledCommands, hourlyResetSchedules, lock);
 
     private Channel(String name, UpdatingConfig<ChannelConfig> config) throws ChannelInitException {
         this.name = name;
@@ -56,21 +57,14 @@ public class Channel {
             throw new ChannelInitException(name, "Unable to get quote database");
         }
 
-        commandCooldownSet = ExpiringMap.builder()
-                .variableExpiration()
-                .expirationPolicy(ExpiringMap.ExpirationPolicy.CREATED)
-                .build();
-        userCooldownSet = ExpiringMap.builder()
-                .variableExpiration()
-                .expirationPolicy(ExpiringMap.ExpirationPolicy.CREATED)
-                .build();
-
         //filterMap = GroupFilterSet.createGroupFilterSetMap(FilterGroups.getFilterGroups(mainDb), Filters.getAllFilters(mainDb));
     }
 
     private void init() {
         messageSender = new ChannelMessageSender(this);
         messageProcessor = new ChannelMessageProcessor(this);
+        commandCooldownManager = new CooldownManager(this, lock);
+        userCooldownManager = new CooldownManager(this, lock);
     }
 
     public static Channel create(String name, UpdatingConfig<ChannelConfig> config) throws ChannelInitException {
@@ -115,8 +109,8 @@ public class Channel {
             scheduledCommands.clear();
             hourlyResetSchedules.clear();
 
-            commandCooldownSet.clear();
-            userCooldownSet.clear();
+            commandCooldownManager.clearCooldowns();
+            userCooldownManager.clearCooldowns();
 
             return true;
         } finally {
@@ -179,54 +173,43 @@ public class Channel {
         }
     }
 
+    public CooldownManager userCooldowns() {
+        return userCooldownManager;
+    }
+
+    public CooldownManager commandCooldowns() {
+        return commandCooldownManager;
+    }
+
+    @Deprecated
     public boolean isUserCooldown(String user) {
-        lock.readLock().lock();
-        try {
-            return userCooldownSet.containsKey(user);
-        } finally {
-            lock.readLock().unlock();
-        }
+        return userCooldownManager.isOnCooldown(user);
     }
 
+    @Deprecated
     public boolean addUserCooldown(String user, int time) {
-        lock.readLock().lock();
-        try {
-            if (inChannel) {
-                userCooldownSet.put(user, Boolean.TRUE, time, TimeUnit.SECONDS);
-                return true;
-            }
-            return false;
-        } finally {
-            lock.readLock().unlock();
-        }
+        return userCooldownManager.addCooldown(user, time);
     }
 
+    @Deprecated
     public boolean isCommandCooldown(String user) {
-        lock.readLock().lock();
-        try {
-            return commandCooldownSet.containsKey(user);
-        } finally {
-            lock.readLock().unlock();
-        }
+        return commandCooldownManager.isOnCooldown(user);
     }
 
+    @Deprecated
     public boolean addCommandCooldown(String user, int time) {
-        lock.readLock().lock();
-        try {
-            if (inChannel) {
-                commandCooldownSet.put(user, Boolean.TRUE, time, TimeUnit.SECONDS);
-                return true;
-            }
-            return false;
-        } finally {
-            lock.readLock().unlock();
-        }
+        return commandCooldownManager.addCooldown(user, time);
     }
 
     public Set<String> getScheduledCommands() {
         return scheduledCommands.keySet();
     }
 
+    public ChannelScheduleManager getScheduleManager() {
+        return scheduleManager;
+    }
+
+    @Deprecated
     public void putCommandFuture(String command, ScheduledFuture<?> future) {
         lock.readLock().lock();
         try {
@@ -236,10 +219,12 @@ public class Channel {
         }
     }
 
+    @Deprecated
     public boolean hasCommandFuture(String command) {
         return scheduledCommands.containsKey(command);
     }
 
+    @Deprecated
     public boolean removeCommandFuture(String command) {
         ScheduledFuture<?> future;
         lock.readLock().lock();
@@ -251,6 +236,7 @@ public class Channel {
         return (future != null) && future.cancel(true);
     }
 
+    @Deprecated
     public void putResetFuture(String command, ScheduledFuture<?> future) {
         lock.readLock().lock();
         try {
@@ -260,10 +246,12 @@ public class Channel {
         }
     }
 
+    @Deprecated
     public boolean hasResetFuture(String command) {
         return hourlyResetSchedules.containsKey(command);
     }
 
+    @Deprecated
     public boolean removeResetFuture(String command) {
         ScheduledFuture<?> future;
         lock.readLock().lock();
@@ -301,5 +289,13 @@ public class Channel {
 
     public void setFilterMap(ConcurrentMap<String, GroupFilterSet> filterMap) {
         this.filterMap = filterMap;
+    }
+
+    public static boolean isBotChannel(String channel) {
+        return channel.equalsIgnoreCase(Control.getBot().getUserName());
+    }
+
+    public static boolean isBotChannel(Channel channel) {
+        return isBotChannel(channel.getName());
     }
 }
