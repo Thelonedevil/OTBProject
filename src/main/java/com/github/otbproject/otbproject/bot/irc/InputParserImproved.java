@@ -27,7 +27,7 @@ class InputParserImproved extends InputParser {
             throw new NullPointerException("rawLine");
         } else {
             String line = CharMatcher.WHITESPACE.trimFrom(rawLine);
-            com.google.common.collect.ImmutableMap.Builder tags = ImmutableMap.builder();
+            com.google.common.collect.ImmutableMap.Builder<String, String> tags = ImmutableMap.builder();
             String command;
             if (line.startsWith("@")) {
                 String parsedLine = line.substring(1, line.indexOf(" "));
@@ -45,22 +45,22 @@ class InputParserImproved extends InputParser {
                 }
             }
 
-            List parsedLine1 = Utils.tokenizeLine(line);
+            List<String> parsedLine1 = Utils.tokenizeLine(line);
             String sourceRaw1 = "";
-            if (((String) parsedLine1.get(0)).charAt(0) == 58) {
-                sourceRaw1 = (String) parsedLine1.remove(0);
+            if (parsedLine1.get(0).charAt(0) == 58) {
+                sourceRaw1 = parsedLine1.remove(0);
             }
 
-            command = ((String) parsedLine1.remove(0)).toUpperCase(this.configuration.getLocale());
+            command = parsedLine1.remove(0).toUpperCase(this.configuration.getLocale());
             if (!command.equals("PING")) {
                 App.logger.info(rawLine);
             }
             if (command.equals("PING")) {
-                this.configuration.getListenerManager().onEvent(new ServerPingEvent(this.bot, (String) parsedLine1.get(0)));
+                this.configuration.getListenerManager().onEvent(new ServerPingEvent(this.bot, parsedLine1.get(0)));
             } else if (command.startsWith("ERROR")) {
                 this.bot.close();
             } else {
-                String target1 = parsedLine1.isEmpty() ? "" : (String) parsedLine1.get(0);
+                String target1 = parsedLine1.isEmpty() ? "" : parsedLine1.get(0);
                 if (target1.startsWith(":")) {
                     target1 = target1.substring(1);
                 }
