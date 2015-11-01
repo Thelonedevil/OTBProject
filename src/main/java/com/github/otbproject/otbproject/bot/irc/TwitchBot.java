@@ -6,6 +6,7 @@ import com.github.otbproject.otbproject.bot.BotInitException;
 import com.github.otbproject.otbproject.bot.BotUtil;
 import com.github.otbproject.otbproject.channel.ChannelNotFoundException;
 import com.github.otbproject.otbproject.serviceapi.ApiRequest;
+import com.github.otbproject.otbproject.util.ThreadUtil;
 import com.github.otbproject.otbproject.util.Watcher;
 import com.google.common.collect.Multimaps;
 import com.google.common.collect.SetMultimap;
@@ -19,12 +20,12 @@ import org.pircbotx.exception.IrcException;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 public class TwitchBot extends AbstractBot {
-    IRCBot ircBot = new IRCBot();
+    private final IRCBot ircBot;
 
     // Should take slightly more than 30 seconds to refill 99 tokens adding 1
     // token every 304 milliseconds
@@ -34,6 +35,12 @@ public class TwitchBot extends AbstractBot {
 
     public TwitchBot() throws BotInitException {
         super();
+        try {
+            ircBot = new IRCBot();
+        } catch (InterruptedException | ExecutionException e) {
+            ThreadUtil.interruptIfInterruptedException(e);
+            throw new BotInitException(e);
+        }
         Class c = ircBot.getClass().getSuperclass();
         Field input;
         try {

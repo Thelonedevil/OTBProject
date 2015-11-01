@@ -3,6 +3,7 @@ package com.github.otbproject.otbproject.channel;
 import com.github.otbproject.otbproject.command.scheduler.ChannelScheduleManager;
 import com.github.otbproject.otbproject.command.scheduler.Scheduler;
 import com.github.otbproject.otbproject.config.ChannelConfig;
+import com.github.otbproject.otbproject.config.WrappedConfig;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.database.SQLiteQuoteWrapper;
 import com.github.otbproject.otbproject.filter.GroupFilterSet;
@@ -77,13 +78,8 @@ class ChannelProxyImpl implements ChannelProxy {
     }
 
     @Override
-    public <R> R getFromConfig(Function<ChannelConfig, R> function) {
-        return channel.getFromConfig(function);
-    }
-
-    @Override
-    public void editConfig(Consumer<ChannelConfig> consumer) {
-        channel.editConfig(consumer);
+    public WrappedConfig<ChannelConfig> getConfig() {
+        return channel.getConfig();
     }
 
     @Override

@@ -53,7 +53,7 @@ public class ChannelMessageProcessor {
         if (inBotChannel) {
             DatabaseWrapper db = Control.getBot().getBotDB();
             UserLevel ul = packagedMessage.userLevel;
-            ProcessedCommand processedCmd = CommandProcessor.process(db, packagedMessage.message, channelName, user, ul, Configs.getFromBotConfig(BotConfig::isBotChannelDebug));
+            ProcessedCommand processedCmd = CommandProcessor.process(db, packagedMessage.message, channelName, user, ul, Configs.getBotConfig().get(BotConfig::isBotChannelDebug));
             if (processedCmd.isScript || !processedCmd.response.isEmpty()) {
                 doResponse(db, processedCmd, channelName, destChannelName, destChannel, user, ul, packagedMessage.messagePriority, internal);
                 // Don't process response as regular channel if done as bot channel
@@ -64,15 +64,15 @@ public class ChannelMessageProcessor {
         // Process commands not as bot channel
         DatabaseWrapper db = channel.getMainDatabaseWrapper();
         UserLevel ul = packagedMessage.userLevel;
-        boolean debug = channel.getFromConfig(ChannelConfig::isDebug);
+        boolean debug = channel.getConfig().get(ChannelConfig::isDebug);
         if (inBotChannel) {
-            debug = (debug || Configs.getFromBotConfig(BotConfig::isBotChannelDebug));
+            debug = (debug || Configs.getBotConfig().get(BotConfig::isBotChannelDebug));
         }
         ProcessedCommand processedCmd = CommandProcessor.process(db, packagedMessage.message, channelName, user, ul, debug);
 
         // Check if bot is enabled or command is permanently enabled, and if command is a script or non-empty
-        if ((channel.getFromConfig(ChannelConfig::isEnabled)
-                || Configs.getFromGeneralConfig(GeneralConfig::getPermanentlyEnabledCommands).contains(processedCmd.commandName))
+        if ((channel.getConfig().get(ChannelConfig::isEnabled)
+                || Configs.getGeneralConfig().get(GeneralConfig::getPermanentlyEnabledCommands).contains(processedCmd.commandName))
                 && (processedCmd.isScript || !processedCmd.response.isEmpty())) {
             // Check if command or user is on cooldown (skip cooldown check if internal)
             if (!internal && destChannel.commandCooldowns().isOnCooldown(processedCmd.commandName)) {
@@ -136,7 +136,7 @@ public class ChannelMessageProcessor {
         }
 
         // Handles command cooldowns
-        int commandCooldown = channel.getFromConfig(ChannelConfig::getCommandCooldown);
+        int commandCooldown = channel.getConfig().get(ChannelConfig::getCommandCooldown);
         if (commandCooldown > 0) {
             destChannel.commandCooldowns().addCooldown(command, commandCooldown);
         }

@@ -67,7 +67,7 @@ class IrcListener extends ListenerAdapter {
         // Join bot channel
         channelManager.join(Control.getBot().getUserName(), EnumSet.of(JoinCheck.WHITELIST, JoinCheck.BLACKLIST));
         // Join channels
-        Configs.getFromBotConfig(BotConfig::getCurrentChannels).forEach(channel -> channelManager.join(channel, EnumSet.of(JoinCheck.WHITELIST, JoinCheck.BLACKLIST)));
+        Configs.getBotConfig().get(BotConfig::getCurrentChannels).forEach(channel -> channelManager.join(channel, EnumSet.of(JoinCheck.WHITELIST, JoinCheck.BLACKLIST)));
     }
 
 }

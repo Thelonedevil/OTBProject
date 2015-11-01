@@ -272,7 +272,7 @@ public class GuiApplication extends Application {
     }
 
     private void openWebInterfaceInBrowser() {
-        this.getHostServices().showDocument("http://127.0.0.1:" + Configs.getFromWebConfig(WebConfig::getPortNumber));
+        this.getHostServices().showDocument("http://127.0.0.1:" + Configs.getWebConfig().get(WebConfig::getPortNumber));
     }
 
     public static void newReleaseAlert() {
@@ -297,7 +297,7 @@ public class GuiApplication extends Application {
             alert.initStyle(StageStyle.UNDECORATED);
             alert.showAndWait().ifPresent(buttonType -> {
                 if (buttonType == buttonTypeDontAskAgain) {
-                    Configs.editGeneralConfig(config -> config.setUpdateChecking(false));
+                    Configs.getGeneralConfig().edit(config -> config.setUpdateChecking(false));
                 } else if (buttonType == buttonTypeGetRelease) {
                     DESKTOP_SERVICE.execute(() -> {
                         try {

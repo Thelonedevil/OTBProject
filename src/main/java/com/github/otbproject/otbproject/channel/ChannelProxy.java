@@ -3,6 +3,7 @@ package com.github.otbproject.otbproject.channel;
 import com.github.otbproject.otbproject.command.scheduler.ChannelScheduleManager;
 import com.github.otbproject.otbproject.command.scheduler.Scheduler;
 import com.github.otbproject.otbproject.config.ChannelConfig;
+import com.github.otbproject.otbproject.config.WrappedConfig;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.database.SQLiteQuoteWrapper;
 import com.github.otbproject.otbproject.filter.GroupFilterSet;
@@ -37,9 +38,7 @@ public interface ChannelProxy {
 
     SQLiteQuoteWrapper getQuoteDatabaseWrapper();
 
-    <R> R getFromConfig(Function<ChannelConfig, R> function);
-
-    void editConfig(Consumer<ChannelConfig> consumer);
+    WrappedConfig<ChannelConfig> getConfig();
 
     Scheduler getScheduler();
 

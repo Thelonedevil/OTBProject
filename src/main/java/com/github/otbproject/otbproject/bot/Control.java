@@ -7,6 +7,7 @@ import com.github.otbproject.otbproject.bot.nullbot.NullBot;
 import com.github.otbproject.otbproject.command.parser.CommandResponseParser;
 import com.github.otbproject.otbproject.command.parser.TermLoader;
 import com.github.otbproject.otbproject.config.Configs;
+import com.github.otbproject.otbproject.config.GeneralConfig;
 import com.github.otbproject.otbproject.config.Service;
 import com.github.otbproject.otbproject.filter.FilterProcessor;
 import com.github.otbproject.otbproject.fs.groups.Base;
@@ -131,7 +132,8 @@ public class Control {
 
     private static void createBot() throws BotInitException {
         // Connect to service
-        Service service = Configs.getExactServiceAsOptional().orElseThrow(() -> new BotInitException("Failed to get service"));
+        Service service = Configs.getGeneralConfig().getExactlyAsOptional(GeneralConfig::getService)
+                .orElseThrow(() -> new BotInitException("Failed to get service"));
         switch (service) {
             case TWITCH:
                 bot = new TwitchBot();
@@ -171,7 +173,7 @@ public class Control {
     }
 
     private static void loadConfigs() {
-        Configs.updateGeneralConfig();
+        Configs.getGeneralConfig().update();
         Configs.reloadAccount();
     }
 

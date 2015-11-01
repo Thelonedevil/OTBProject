@@ -66,11 +66,11 @@ public class ChannelMessageSender {
         int limit = -1;
 
         if (priority == MessagePriority.HIGH) {
-            limit = channel.getFromConfig(config -> config.queueLimits.getHighPriorityLimit());
+            limit = channel.getConfig().get(config -> config.queueLimits.getHighPriorityLimit());
         } else if (priority == MessagePriority.DEFAULT) {
-            limit = channel.getFromConfig(config -> config.queueLimits.getDefaultPriorityLimit());
+            limit = channel.getConfig().get(config -> config.queueLimits.getDefaultPriorityLimit());
         } else if (priority == MessagePriority.LOW) {
-            limit = channel.getFromConfig(config -> config.queueLimits.getLowPriorityLimit());
+            limit = channel.getConfig().get(config -> config.queueLimits.getLowPriorityLimit());
         }
 
         // Yes, I am aware that this can be simplified, but it ends up being just
@@ -91,7 +91,7 @@ public class ChannelMessageSender {
         try {
             Thread.currentThread().setName(channel.getName() + " Message Sender");
             MessageOut message;
-            int sleepTime = Configs.getFromBotConfig(BotConfig::getMessageSendDelayInMilliseconds);
+            int sleepTime = Configs.getBotConfig().get(BotConfig::getMessageSendDelayInMilliseconds);
 
             while (true) {
                 message = queue.take();

@@ -11,13 +11,14 @@ import org.pircbotx.output.OutputRaw;
 import java.io.InterruptedIOException;
 import java.net.SocketException;
 import java.nio.charset.Charset;
+import java.util.concurrent.ExecutionException;
 
 class IRCBot extends PircBotX {
     private final OutputRaw newOutputRaw;
 
-    public IRCBot() {
+    public IRCBot() throws ExecutionException, InterruptedException {
         super(new Configuration.Builder()
-                .setName(Configs.getFromAccount(Account::getName))
+                .setName(Configs.getAccount().getExactly(Account::getName))
                 .setAutoNickChange(false) //Twitch doesn't support multiple users
                 .setOnJoinWhoEnabled(false) //Twitch doesn't support WHO command
                 .setCapEnabled(true)
@@ -25,7 +26,7 @@ class IRCBot extends PircBotX {
                 .addCapHandler((new EnableCapHandler("twitch.tv/tags")))
                 .addListener(new IrcListener())
                 .addServer("irc.twitch.tv", 6667)
-                .setServerPassword(Configs.getFromAccount(Account::getPasskey))
+                .setServerPassword(Configs.getAccount().getExactly(Account::getPasskey))
                 .setEncoding(Charset.forName("UTF-8"))
                 .buildConfiguration());
         App.logger.info("Bot configuration built");

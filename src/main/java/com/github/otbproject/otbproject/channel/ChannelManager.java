@@ -60,21 +60,21 @@ public final class ChannelManager {
 
             // Check if bot is connected
             if (!bot.isConnected()) {
-                App.logger.warn("Not connected to " + StrUtils.capitalizeFully(Configs.getFromGeneralConfig(GeneralConfig::getService).toString()));
+                App.logger.warn("Not connected to " + StrUtils.capitalizeFully(Configs.getGeneralConfig().get(GeneralConfig::getService).toString()));
                 return false;
             }
 
             // Check whitelist/blacklist
-            ChannelJoinSetting channelJoinSetting = Configs.getFromBotConfig(BotConfig::getChannelJoinSetting);
+            ChannelJoinSetting channelJoinSetting = Configs.getBotConfig().get(BotConfig::getChannelJoinSetting);
             if (!isBotChannel) {
                 if (checks.contains(JoinCheck.WHITELIST)
                         && (channelJoinSetting == ChannelJoinSetting.WHITELIST)
-                        && !Configs.getFromBotConfig(BotConfig::getWhitelist).contains(channelName)) {
+                        && !Configs.getBotConfig().get(BotConfig::getWhitelist).contains(channelName)) {
                     App.logger.info("Failed to join channel: " + channelName + ". Not whitelisted.");
                     return false;
                 } else if (checks.contains(JoinCheck.BLACKLIST)
                         && (channelJoinSetting == ChannelJoinSetting.BLACKLIST)
-                        && Configs.getFromBotConfig(BotConfig::getBlacklist).contains(channelName)) {
+                        && Configs.getBotConfig().get(BotConfig::getBlacklist).contains(channelName)) {
                     App.logger.info("Failed to join channel: " + channelName + ". Blacklisted.");
                     return false;
                 }
@@ -127,7 +127,7 @@ public final class ChannelManager {
 
             // Add channel to list of channels bot is in in config (if not bot channel)
             if (!isBotChannel) {
-                Configs.editBotConfig(config -> config.getCurrentChannels().add(channelName));
+                Configs.getBotConfig().edit(config -> config.getCurrentChannels().add(channelName));
             }
         } finally {
             lock.unlock();
@@ -149,7 +149,7 @@ public final class ChannelManager {
             }
             App.logger.info("Leaving channel: " + channel);
             Optional.ofNullable(channels.remove(channel)).ifPresent(proxiedChannel -> proxiedChannel.channel().leave());
-            Configs.editBotConfig(config -> config.getCurrentChannels().remove(channel));
+            Configs.getBotConfig().edit(config -> config.getCurrentChannels().remove(channel));
             Control.getBot().leave(channel);
         } finally {
             lock.unlock();

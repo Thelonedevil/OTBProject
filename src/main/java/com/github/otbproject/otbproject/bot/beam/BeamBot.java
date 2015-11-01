@@ -42,7 +42,7 @@ public class BeamBot extends AbstractBot {
                 .build();
 
         try {
-            beamUser = beam.use(UsersService.class).login(Configs.getFromAccount(Account::getName), Configs.getFromAccount(Account::getPasskey)).get();
+            beamUser = beam.use(UsersService.class).login(Configs.getAccount().getExactly(Account::getName), Configs.getAccount().getExactly(Account::getPasskey)).get();
         } catch (InterruptedException | ExecutionException e) {
             ThreadUtil.interruptIfInterruptedException(e);
             throw new BotInitException("Unable to connect bot to Beam", e);
@@ -115,7 +115,7 @@ public class BeamBot extends AbstractBot {
     @Override
     public void startBot() {
         channelManager().join(getUserName(), EnumSet.of(JoinCheck.WHITELIST, JoinCheck.BLACKLIST));
-        Configs.getFromBotConfig(BotConfig::getCurrentChannels).forEach(channel -> channelManager().join(channel, EnumSet.of(JoinCheck.WHITELIST, JoinCheck.BLACKLIST)));
+        Configs.getBotConfig().get(BotConfig::getCurrentChannels).forEach(channel -> channelManager().join(channel, EnumSet.of(JoinCheck.WHITELIST, JoinCheck.BLACKLIST)));
         while (!beamChannels.isEmpty()) {
             try {
                 Thread.sleep(200);

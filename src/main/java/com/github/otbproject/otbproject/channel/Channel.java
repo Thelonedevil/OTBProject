@@ -6,6 +6,7 @@ import com.github.otbproject.otbproject.command.scheduler.Scheduler;
 import com.github.otbproject.otbproject.command.scheduler.Schedules;
 import com.github.otbproject.otbproject.config.ChannelConfig;
 import com.github.otbproject.otbproject.config.UpdatingConfig;
+import com.github.otbproject.otbproject.config.WrappedConfig;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.database.Databases;
 import com.github.otbproject.otbproject.database.SQLiteQuoteWrapper;
@@ -22,14 +23,13 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import java.util.function.Consumer;
-import java.util.function.Function;
 
 public class Channel implements ChannelProxy {
     private CooldownManager commandCooldownManager;
     private CooldownManager userCooldownManager;
     private final String name;
-    public final UpdatingConfig<ChannelConfig> config;
+    private final UpdatingConfig<ChannelConfig> config;
+    private final WrappedConfig<ChannelConfig> configProxy;
     private final DatabaseWrapper mainDb;
     private final SQLiteQuoteWrapper quoteDb;
     private ChannelMessageSender messageSender;
@@ -46,6 +46,7 @@ public class Channel implements ChannelProxy {
     private Channel(String name, UpdatingConfig<ChannelConfig> config) throws ChannelInitException {
         this.name = name;
         this.config = config;
+        configProxy = config.asWrappedConfig();
         inChannel = false;
         scheduler = new Scheduler(name);
 
@@ -119,6 +120,7 @@ public class Channel implements ChannelProxy {
         }
     }
 
+    @Override
     public boolean sendMessage(MessageOut messageOut) {
         lock.readLock().lock();
         try {
@@ -128,6 +130,7 @@ public class Channel implements ChannelProxy {
         }
     }
 
+    @Override
     public void clearSendQueue() {
         lock.readLock().lock();
         try {
@@ -152,6 +155,7 @@ public class Channel implements ChannelProxy {
      * @return A boolean stating whether it is likely that the message was processed
      * successfully. Should not be relied upon to be accurate
      */
+    @Override
     public boolean receiveMessage(PackagedMessage packagedMessage) {
         if (inChannel) {
             messageProcessor.process(packagedMessage);
@@ -161,10 +165,12 @@ public class Channel implements ChannelProxy {
         return inChannel;
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public boolean isInChannel() {
         lock.readLock().lock();
         try {
@@ -174,10 +180,12 @@ public class Channel implements ChannelProxy {
         }
     }
 
+    @Override
     public CooldownManager userCooldowns() {
         return userCooldownManager;
     }
 
+    @Override
     public CooldownManager commandCooldowns() {
         return commandCooldownManager;
     }
@@ -202,10 +210,12 @@ public class Channel implements ChannelProxy {
         return commandCooldownManager.addCooldown(user, time);
     }
 
+    @Override
     public Set<String> getScheduledCommands() {
         return Collections.unmodifiableSet(scheduledCommands.keySet());
     }
 
+    @Override
     public ChannelScheduleManager getScheduleManager() {
         return scheduleManager;
     }
@@ -264,26 +274,27 @@ public class Channel implements ChannelProxy {
         return (future != null) && future.cancel(true);
     }
 
+    @Override
     public DatabaseWrapper getMainDatabaseWrapper() {
         return mainDb;
     }
 
+    @Override
     public SQLiteQuoteWrapper getQuoteDatabaseWrapper() {
         return quoteDb;
     }
 
-    public <R> R getFromConfig(Function<ChannelConfig, R> function) {
-        return config.get(function);
+    @Override
+    public WrappedConfig<ChannelConfig> getConfig() {
+        return configProxy;
     }
 
-    public void editConfig(Consumer<ChannelConfig> consumer) {
-        config.edit(consumer);
-    }
-
+    @Override
     public Scheduler getScheduler() {
         return scheduler;
     }
 
+    @Override
     public ConcurrentMap<String, GroupFilterSet> getFilterMap() {
         return filterMap;
     }

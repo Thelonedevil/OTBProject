@@ -32,6 +32,7 @@ public abstract class AbstractBot implements Bot {
     }
 
     @Override
+    @Deprecated
     public ConcurrentMap<String, Channel> getChannels() {
         return channels.entrySet().stream().collect(Collectors.toConcurrentMap(Map.Entry::getKey, entry -> entry.getValue().channel()));
     }

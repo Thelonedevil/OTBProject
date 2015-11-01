@@ -146,7 +146,7 @@ public class App {
         FatalChecker.checkForPreviousFatalCrashes();
 
         // Start web interface
-        if (Configs.getFromWebConfig(WebConfig::isEnabled)) {
+        if (Configs.getWebConfig().get(WebConfig::isEnabled)) {
             WebInterface.start();
             logger.info("Web Interface Started");
         }
@@ -157,7 +157,7 @@ public class App {
         }
 
         // Check for new release, if applicable
-        if (Configs.getFromGeneralConfig(GeneralConfig::isUpdateChecking)
+        if (Configs.getGeneralConfig().get(GeneralConfig::isUpdateChecking)
                 && (AppVersion.latest().compareTo(App.VERSION) > 0)
                 && (AppVersion.latest().type == Version.Type.RELEASE)) {
             logger.info("New release available: OTB version " + AppVersion.latest());
@@ -168,7 +168,7 @@ public class App {
         }
 
         // Delete old logs if applicable
-        if (Configs.getFromGeneralConfig(GeneralConfig::getOldLogsRemovedAfter) > 0) {
+        if (Configs.getGeneralConfig().get(GeneralConfig::getOldLogsRemovedAfter) > 0) {
             LogRemover.removeOldLogs();
         }
 
@@ -233,7 +233,7 @@ public class App {
         if (cmd.hasOption(ArgParser.Opts.SERVICE)) {
             String serviceName = cmd.getOptionValue(ArgParser.Opts.SERVICE).toUpperCase();
             try {
-                Configs.editGeneralConfig(config -> config.setService(Service.valueOf(serviceName)));
+                Configs.getGeneralConfig().edit(config -> config.setService(Service.valueOf(serviceName)));
             } catch (IllegalArgumentException e) {
                 logger.fatal("Invalid service name: " + serviceName);
                 ArgParser.printHelp();
@@ -247,15 +247,15 @@ public class App {
         }
         Configs.reloadAccount();
         if (cmd.hasOption(ArgParser.Opts.ACCOUNT)) {
-            Configs.editAccount(account -> account.setName(cmd.getOptionValue(ArgParser.Opts.ACCOUNT)));
+            Configs.getAccount().edit(account -> account.setName(cmd.getOptionValue(ArgParser.Opts.ACCOUNT)));
         }
         if (cmd.hasOption(ArgParser.Opts.PASSKEY)) {
-            Configs.editAccount(account -> account.setPasskey(cmd.getOptionValue(ArgParser.Opts.PASSKEY)));
+            Configs.getAccount().edit(account -> account.setPasskey(cmd.getOptionValue(ArgParser.Opts.PASSKEY)));
         }
 
         // Web Config
         if (cmd.hasOption(ArgParser.Opts.WEB)) {
-            Configs.editWebConfig(webConfig -> webConfig.setEnabled(Boolean.parseBoolean(cmd.getOptionValue(ArgParser.Opts.WEB))));
+            Configs.getWebConfig().edit(webConfig -> webConfig.setEnabled(Boolean.parseBoolean(cmd.getOptionValue(ArgParser.Opts.WEB))));
         }
     }
 }
