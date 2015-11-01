@@ -303,11 +303,90 @@ public class Channel implements ChannelProxy {
         this.filterMap = filterMap;
     }
 
+    public ChannelProxy asProxy() {
+        return new Proxy();
+    }
+
     public static boolean isBotChannel(String channel) {
         return channel.equalsIgnoreCase(Control.getBot().getUserName());
     }
 
     public static boolean isBotChannel(ChannelProxy channel) {
         return isBotChannel(channel.getName());
+    }
+
+    private class Proxy implements ChannelProxy {
+        private Proxy() {
+        }
+
+        @Override
+        public boolean sendMessage(MessageOut messageOut) {
+            return Channel.this.sendMessage(messageOut);
+        }
+
+        @Override
+        public void clearSendQueue() {
+            Channel.this.clearSendQueue();
+        }
+
+        @Override
+        public boolean receiveMessage(PackagedMessage packagedMessage) {
+            return Channel.this.receiveMessage(packagedMessage);
+        }
+
+        @Override
+        public String getName() {
+            return Channel.this.getName();
+        }
+
+        @Override
+        public boolean isInChannel() {
+            return Channel.this.isInChannel();
+        }
+
+        @Override
+        public CooldownManager userCooldowns() {
+            return Channel.this.userCooldowns();
+        }
+
+        @Override
+        public CooldownManager commandCooldowns() {
+            return Channel.this.commandCooldowns();
+        }
+
+        @Override
+        public Set<String> getScheduledCommands() {
+            return Channel.this.getScheduledCommands();
+        }
+
+        @Override
+        public ChannelScheduleManager getScheduleManager() {
+            return Channel.this.getScheduleManager();
+        }
+
+        @Override
+        public DatabaseWrapper getMainDatabaseWrapper() {
+            return Channel.this.getMainDatabaseWrapper();
+        }
+
+        @Override
+        public SQLiteQuoteWrapper getQuoteDatabaseWrapper() {
+            return Channel.this.getQuoteDatabaseWrapper();
+        }
+
+        @Override
+        public WrappedConfig<ChannelConfig> getConfig() {
+            return Channel.this.getConfig();
+        }
+
+        @Override
+        public Scheduler getScheduler() {
+            return Channel.this.getScheduler();
+        }
+
+        @Override
+        public ConcurrentMap<String, GroupFilterSet> getFilterMap() {
+            return Channel.this.getFilterMap();
+        }
     }
 }
