@@ -22,7 +22,7 @@ public class Schedules {
     }
 
     public static boolean isScheduled(String channelName, String command) {
-        Optional<ChannelProxy> optional = Control.getBot().channelManager().get(channelName);
+        Optional<ChannelProxy> optional = Control.bot().channelManager().get(channelName);
         if (!optional.isPresent()) {
             App.logger.error("Cannot check scheduled commands for channel '" + channelName + "' - channel is null.");
             return false;
@@ -31,7 +31,7 @@ public class Schedules {
     }
 
     public static boolean unScheduleCommand(String channelName, String command) {
-        Optional<ChannelProxy> optional = Control.getBot().channelManager().get(channelName);
+        Optional<ChannelProxy> optional = Control.bot().channelManager().get(channelName);
         if (!optional.isPresent()) {
             App.logger.error("Cannot unschedule command for channel '" + channelName + "' - channel is null.");
             return false;
@@ -61,7 +61,7 @@ public class Schedules {
     private static boolean scheduleCommand(String channelName, String command, long delay, long period, boolean hourReset, TimeUnit timeUnit) {
         App.logger.debug("Attempting to schedule command for channel '" + channelName + "' with period=" + period
                 + ", offset=" + delay + " in " + timeUnit.name().toLowerCase() + ", and hourly reset: " + hourReset);
-        Optional<ChannelProxy> optional = Control.getBot().channelManager().get(channelName);
+        Optional<ChannelProxy> optional = Control.bot().channelManager().get(channelName);
         if (!optional.isPresent()) {
             App.logger.error("Cannot schedule command for channel '" + channelName + "' - channel is null.");
             return false;
@@ -130,7 +130,7 @@ public class Schedules {
     }
 
     public static void loadFromDatabase(String channelName) {
-        Optional<ChannelProxy> optional = Control.getBot().channelManager().get(channelName);
+        Optional<ChannelProxy> optional = Control.bot().channelManager().get(channelName);
         if (!optional.isPresent()) {
             return;
         }
@@ -164,7 +164,7 @@ public class Schedules {
     }
 
     public static Set<String> getScheduledCommands(String channelName) {
-        Optional<ChannelProxy> optional = Control.getBot().channelManager().get(channelName);
+        Optional<ChannelProxy> optional = Control.bot().channelManager().get(channelName);
         if (!optional.isPresent()) {
             return Collections.<String>emptySet();
         }

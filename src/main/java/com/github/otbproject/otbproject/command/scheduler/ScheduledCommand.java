@@ -17,7 +17,7 @@ public class ScheduledCommand implements Runnable {
     public ScheduledCommand(ChannelProxy channel, String command) {
         Objects.requireNonNull(channel, command);
         this.channel = channel;
-        packagedMessage = new PackagedMessage(command, Control.getBot().getUserName(), channel.getName(), UserLevel.INTERNAL, MessagePriority.DEFAULT);
+        packagedMessage = new PackagedMessage(command, Control.bot().getUserName(), channel.getName(), UserLevel.INTERNAL, MessagePriority.DEFAULT);
     }
 
     @Override

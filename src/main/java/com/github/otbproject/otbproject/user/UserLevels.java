@@ -27,13 +27,13 @@ public class UserLevels {
         if (ul == UserLevel.SUPER_MODERATOR) {
             return ul;
         }
-        if (Control.getBot().isUserMod(channel, user)) {
+        if (Control.bot().isUserMod(channel, user)) {
             return UserLevel.MODERATOR;
         }
         if ((ul == UserLevel.REGULAR) || ul == UserLevel.IGNORED) {
             return ul;
         }
-        if (Control.getBot().isUserSubscriber(channel, user)) {
+        if (Control.bot().isUserSubscriber(channel, user)) {
             return UserLevel.SUBSCRIBER;
         }
 

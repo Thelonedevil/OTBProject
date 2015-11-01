@@ -124,10 +124,10 @@ public class GuiController {
                             break;
                         case CmdParser.EXEC:
                         case CmdParser.RESET:
-                            tabComplete(parts, 1, Control.getBot().channelManager().list());
+                            tabComplete(parts, 1, Control.bot().channelManager().list());
                             break;
                         case CmdParser.LEAVECHANNEL:
-                            tabComplete(parts, 1, Control.getBot().channelManager().list(), s -> !Channel.isBotChannel(s));
+                            tabComplete(parts, 1, Control.bot().channelManager().list(), s -> !Channel.isBotChannel(s));
                             break;
                         case CmdParser.HELP:
                             tabComplete(parts, 1, CmdParser.getCommands());
@@ -136,7 +136,7 @@ public class GuiController {
                             // defaults to no tab completion for first argument
                     }
                 } else if (parts.size() == 3 && parts.get(0).equals(CmdParser.EXEC)) {
-                    Bot bot = Control.getBot();
+                    Bot bot = Control.bot();
                     Optional<ChannelProxy> optional = bot.channelManager().get(parts.get(1));
                     if (optional.isPresent() && optional.get().isInChannel()) {
                         ChannelProxy channel = optional.get();
@@ -144,8 +144,8 @@ public class GuiController {
                         list = (list == null) ? new ArrayList<>() : list;
                         addIfNotNull(list, Aliases.getAliases(channel.getMainDatabaseWrapper()));
                         if (Channel.isBotChannel(channel.getName())) {
-                            addIfNotNull(list, Commands.getCommands(Control.getBot().getBotDB()));
-                            addIfNotNull(list, Aliases.getAliases(Control.getBot().getBotDB()));
+                            addIfNotNull(list, Commands.getCommands(Control.bot().getBotDB()));
+                            addIfNotNull(list, Aliases.getAliases(Control.bot().getBotDB()));
                         }
                         tabComplete(parts, 2, list);
                     }

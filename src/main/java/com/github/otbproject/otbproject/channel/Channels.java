@@ -9,11 +9,11 @@ import java.util.Set;
 @Deprecated
 public class Channels {
     public static boolean in(String channelName) {
-        return Control.getBot().channelManager().in(channelName);
+        return Control.bot().channelManager().in(channelName);
     }
 
     public static Optional<Channel> get(String channel) {
-        return Optional.ofNullable(Control.getBot().getChannels().get(channel));
+        return Optional.ofNullable(Control.bot().getChannels().get(channel));
     }
 
     public static Channel getOrThrow(String channel) throws ChannelNotFoundException {
@@ -21,23 +21,23 @@ public class Channels {
     }
 
     public static boolean join(String channelName) {
-        return Control.getBot().channelManager().join(channelName);
+        return Control.bot().channelManager().join(channelName);
     }
 
     public static boolean join(String channelName, EnumSet<JoinCheck> checks) {
-        return Control.getBot().channelManager().join(channelName, checks);
+        return Control.bot().channelManager().join(channelName, checks);
     }
 
     public static boolean leave(String channelName) {
-        return Control.getBot().channelManager().leave(channelName);
+        return Control.bot().channelManager().leave(channelName);
     }
 
     public static Set<String> list() {
-        return Control.getBot().channelManager().list();
+        return Control.bot().channelManager().list();
     }
 
     public static boolean isBotChannel(String channel) {
-        return channel.equalsIgnoreCase(Control.getBot().getUserName());
+        return channel.equalsIgnoreCase(Control.bot().getUserName());
     }
 
     public static boolean isBotChannel(Channel channel) {

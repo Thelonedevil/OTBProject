@@ -536,7 +536,7 @@ public class ParserTest {
     // [[bot]]
     public void botTest() {
         String parsed = CommandResponseParser.parse(USER, CHANNEL, COUNT, new String[0], "[[bot]]");
-        assertEquals(Control.getBot().getUserName(), parsed);
+        assertEquals(Control.bot().getUserName(), parsed);
     }
 
     @Test

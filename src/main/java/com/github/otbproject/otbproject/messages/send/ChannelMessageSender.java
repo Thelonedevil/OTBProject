@@ -95,7 +95,7 @@ public class ChannelMessageSender {
 
             while (true) {
                 message = queue.take();
-                Control.getBot().sendMessage(channel.getName(), message.message);
+                Control.bot().sendMessage(channel.getName(), message.message);
                 Thread.sleep(sleepTime);
             }
         } catch (InterruptedException e) {

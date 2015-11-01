@@ -50,7 +50,7 @@ public class Configs {
     }
 
     public static WrappedConfig<ChannelConfig> getChannelConfig(String channel) throws ChannelNotFoundException {
-        return Control.getBot().channelManager().getOrThrow(channel).getConfig();
+        return Control.bot().channelManager().getOrThrow(channel).getConfig();
     }
 
     public static WrappedConfig<ChannelConfig> getChannelConfig(ChannelProxy channel) {
