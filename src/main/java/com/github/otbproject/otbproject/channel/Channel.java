@@ -23,8 +23,6 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import java.util.function.Consumer;
-import java.util.function.Function;
 
 public class Channel implements ChannelProxy {
     private CooldownManager commandCooldownManager;
@@ -122,6 +120,7 @@ public class Channel implements ChannelProxy {
         }
     }
 
+    @Override
     public boolean sendMessage(MessageOut messageOut) {
         lock.readLock().lock();
         try {
@@ -131,6 +130,7 @@ public class Channel implements ChannelProxy {
         }
     }
 
+    @Override
     public void clearSendQueue() {
         lock.readLock().lock();
         try {
@@ -155,6 +155,7 @@ public class Channel implements ChannelProxy {
      * @return A boolean stating whether it is likely that the message was processed
      * successfully. Should not be relied upon to be accurate
      */
+    @Override
     public boolean receiveMessage(PackagedMessage packagedMessage) {
         if (inChannel) {
             messageProcessor.process(packagedMessage);
@@ -164,10 +165,12 @@ public class Channel implements ChannelProxy {
         return inChannel;
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public boolean isInChannel() {
         lock.readLock().lock();
         try {
@@ -177,10 +180,12 @@ public class Channel implements ChannelProxy {
         }
     }
 
+    @Override
     public CooldownManager userCooldowns() {
         return userCooldownManager;
     }
 
+    @Override
     public CooldownManager commandCooldowns() {
         return commandCooldownManager;
     }
@@ -205,10 +210,12 @@ public class Channel implements ChannelProxy {
         return commandCooldownManager.addCooldown(user, time);
     }
 
+    @Override
     public Set<String> getScheduledCommands() {
         return Collections.unmodifiableSet(scheduledCommands.keySet());
     }
 
+    @Override
     public ChannelScheduleManager getScheduleManager() {
         return scheduleManager;
     }
@@ -267,10 +274,12 @@ public class Channel implements ChannelProxy {
         return (future != null) && future.cancel(true);
     }
 
+    @Override
     public DatabaseWrapper getMainDatabaseWrapper() {
         return mainDb;
     }
 
+    @Override
     public SQLiteQuoteWrapper getQuoteDatabaseWrapper() {
         return quoteDb;
     }
@@ -280,18 +289,12 @@ public class Channel implements ChannelProxy {
         return configProxy;
     }
 
-    public <R> R getFromConfig(Function<ChannelConfig, R> function) {
-        return config.get(function);
-    }
-
-    public void editConfig(Consumer<ChannelConfig> consumer) {
-        config.edit(consumer);
-    }
-
+    @Override
     public Scheduler getScheduler() {
         return scheduler;
     }
 
+    @Override
     public ConcurrentMap<String, GroupFilterSet> getFilterMap() {
         return filterMap;
     }

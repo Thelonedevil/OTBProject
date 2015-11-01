@@ -40,12 +40,6 @@ public interface ChannelProxy {
 
     WrappedConfig<ChannelConfig> getConfig();
 
-    @Deprecated
-    <R> R getFromConfig(Function<ChannelConfig, R> function);
-
-    @Deprecated
-    void editConfig(Consumer<ChannelConfig> consumer);
-
     Scheduler getScheduler();
 
     ConcurrentMap<String, GroupFilterSet> getFilterMap();

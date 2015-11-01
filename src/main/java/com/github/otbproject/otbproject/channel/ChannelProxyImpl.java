@@ -83,16 +83,6 @@ class ChannelProxyImpl implements ChannelProxy {
     }
 
     @Override
-    public <R> R getFromConfig(Function<ChannelConfig, R> function) {
-        return channel.getFromConfig(function);
-    }
-
-    @Override
-    public void editConfig(Consumer<ChannelConfig> consumer) {
-        channel.editConfig(consumer);
-    }
-
-    @Override
     public Scheduler getScheduler() {
         return channel.getScheduler();
     }

@@ -16,10 +16,10 @@ import java.net.URI;
 
 public class WebInterface {
     public static void start() {
-        if (Configs.getFromWebConfig(WebConfig::isUpdateChecking)) {
+        if (Configs.getWebConfig().get(WebConfig::isUpdateChecking)) {
             checkForNewVersion();
         }
-        startInterface(Configs.getFromWebConfig(WebConfig::getPortNumber), Configs.getFromWebConfig(WebConfig::getIpBinding));
+        startInterface(Configs.getWebConfig().get(WebConfig::getPortNumber), Configs.getWebConfig().get(WebConfig::getIpBinding));
     }
 
     public static void checkForNewVersion() {
@@ -31,7 +31,7 @@ public class WebInterface {
                     ".war\". Releases will automatically download the latest version of the web interface for you");
         } else if ((App.VERSION.compareTo(WebVersion.requiredAppVersionForLatest()) >= 0)
                 && (!path.exists()
-                || (Configs.getFromWebConfig(WebConfig::isAutoUpdating)
+                || (Configs.getWebConfig().get(WebConfig::isAutoUpdating)
                 && (current.compareTo(WebVersion.latest()) < 0)))) {
             WarDownload.downloadLatest();
         }
@@ -63,7 +63,7 @@ public class WebInterface {
     public static void openInBrowser() {
         if (Desktop.isDesktopSupported()) {
             try {
-                Desktop.getDesktop().browse(URI.create("http://127.0.0.1:" + Configs.getFromWebConfig(WebConfig::getPortNumber)));
+                Desktop.getDesktop().browse(URI.create("http://127.0.0.1:" + Configs.getWebConfig().get(WebConfig::getPortNumber)));
             } catch (IOException e) {
                 App.logger.catching(e);
             }

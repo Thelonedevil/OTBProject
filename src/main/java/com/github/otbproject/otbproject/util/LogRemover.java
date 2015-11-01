@@ -17,7 +17,7 @@ public class LogRemover {
     public static void removeOldLogs() {
         final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         final long now = System.currentTimeMillis();
-        final long removeAfter = Configs.getFromGeneralConfig(GeneralConfig::getOldLogsRemovedAfter);
+        final long removeAfter = Configs.getGeneralConfig().get(GeneralConfig::getOldLogsRemovedAfter);
 
         final Pattern filePattern = Pattern.compile("(app|web)-\\d{4}-\\d{2}-\\d{2}-\\d+\\.log");
         final Pattern endPattern = Pattern.compile("-\\d+\\.log");

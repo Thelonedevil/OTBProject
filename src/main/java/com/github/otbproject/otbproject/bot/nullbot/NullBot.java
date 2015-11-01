@@ -35,6 +35,7 @@ public class NullBot implements Bot {
     }
 
     @Override
+    @Deprecated
     public ConcurrentMap<String, Channel> getChannels() {
         return DEPRECATED_CHANNELS;
     }
