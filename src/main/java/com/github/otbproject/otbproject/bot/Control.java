@@ -147,7 +147,7 @@ public class Control {
         ThreadUtil.getSingleThreadExecutor("Bot").execute(() -> {
             try {
                 App.logger.info("Bot Started");
-                Control.bot().startBot();
+                bot.startBot();
                 App.logger.info("Bot Stopped");
             } catch (BotInitException e) {
                 App.logger.catching(e);
