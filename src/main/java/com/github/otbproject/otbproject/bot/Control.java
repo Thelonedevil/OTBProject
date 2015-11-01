@@ -60,7 +60,7 @@ public class Control {
     /**
      * Does what it says on the tin
      */
-    public static synchronized void shutdownAndExit() {
+    public static void shutdownAndExit() {
         shutdown(false);
         App.logger.info("Process stopped");
         System.exit(0);
