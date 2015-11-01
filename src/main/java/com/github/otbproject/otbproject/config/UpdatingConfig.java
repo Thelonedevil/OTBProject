@@ -1,7 +1,6 @@
 package com.github.otbproject.otbproject.config;
 
 import com.github.otbproject.otbproject.App;
-import com.github.otbproject.otbproject.util.JsonHandler;
 import com.github.otbproject.otbproject.util.ThreadUtil;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import org.apache.commons.io.monitor.FileAlterationListenerAdaptor;
@@ -10,10 +9,12 @@ import org.apache.commons.io.monitor.FileAlterationObserver;
 
 import java.io.File;
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class UpdatingConfig<T> extends WrappedConfig<T> {
+public class UpdatingConfig<T> extends WrappedConfigImpl<T> {
     private static final FileAlterationMonitor MONITOR;
 
     static {
@@ -116,6 +117,10 @@ public class UpdatingConfig<T> extends WrappedConfig<T> {
         }
     }
 
+    public WrappedConfig<T> asWrappedConfig() {
+        return new Proxy();
+    }
+
     private static class CustomFileAlterationListener<T> extends FileAlterationListenerAdaptor {
         private final UpdatingConfig<T> updatingConfig;
 
@@ -131,6 +136,36 @@ public class UpdatingConfig<T> extends WrappedConfig<T> {
         @Override
         public void onFileDelete(File file) {
             updatingConfig.onFileDelete();
+        }
+    }
+
+    private class Proxy implements WrappedConfig<T> {
+        private Proxy() {
+        }
+
+        @Override
+        public <R> R get(Function<T, R> function) {
+            return UpdatingConfig.this.get(function);
+        }
+
+        @Override
+        public <R> R getExactly(Function<T, R> function) throws ExecutionException, InterruptedException {
+            return UpdatingConfig.this.getExactly(function);
+        }
+
+        @Override
+        public <R> Optional<R> getExactlyAsOptional(Function<T, R> function) {
+            return UpdatingConfig.this.getExactlyAsOptional(function);
+        }
+
+        @Override
+        public void edit(Consumer<T> consumer) {
+            UpdatingConfig.this.edit(consumer);
+        }
+
+        @Override
+        public void update() {
+            UpdatingConfig.this.update();
         }
     }
 }

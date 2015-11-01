@@ -6,6 +6,7 @@ import com.github.otbproject.otbproject.command.scheduler.Scheduler;
 import com.github.otbproject.otbproject.command.scheduler.Schedules;
 import com.github.otbproject.otbproject.config.ChannelConfig;
 import com.github.otbproject.otbproject.config.UpdatingConfig;
+import com.github.otbproject.otbproject.config.WrappedConfig;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.database.Databases;
 import com.github.otbproject.otbproject.database.SQLiteQuoteWrapper;
@@ -29,7 +30,8 @@ public class Channel implements ChannelProxy {
     private CooldownManager commandCooldownManager;
     private CooldownManager userCooldownManager;
     private final String name;
-    public final UpdatingConfig<ChannelConfig> config;
+    private final UpdatingConfig<ChannelConfig> config;
+    private final WrappedConfig<ChannelConfig> configProxy;
     private final DatabaseWrapper mainDb;
     private final SQLiteQuoteWrapper quoteDb;
     private ChannelMessageSender messageSender;
@@ -46,6 +48,7 @@ public class Channel implements ChannelProxy {
     private Channel(String name, UpdatingConfig<ChannelConfig> config) throws ChannelInitException {
         this.name = name;
         this.config = config;
+        configProxy = config.asWrappedConfig();
         inChannel = false;
         scheduler = new Scheduler(name);
 
@@ -270,6 +273,11 @@ public class Channel implements ChannelProxy {
 
     public SQLiteQuoteWrapper getQuoteDatabaseWrapper() {
         return quoteDb;
+    }
+
+    @Override
+    public WrappedConfig<ChannelConfig> getConfig() {
+        return configProxy;
     }
 
     public <R> R getFromConfig(Function<ChannelConfig, R> function) {
