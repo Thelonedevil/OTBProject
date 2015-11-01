@@ -1,8 +1,9 @@
 package com.github.otbproject.otbproject.gui;
 
+import com.github.otbproject.otbproject.bot.Bot;
 import com.github.otbproject.otbproject.bot.Control;
 import com.github.otbproject.otbproject.channel.Channel;
-import com.github.otbproject.otbproject.channel.Channels;
+import com.github.otbproject.otbproject.channel.ChannelProxy;
 import com.github.otbproject.otbproject.cli.commands.CmdParser;
 import com.github.otbproject.otbproject.command.Aliases;
 import com.github.otbproject.otbproject.command.Commands;
@@ -123,10 +124,10 @@ public class GuiController {
                             break;
                         case CmdParser.EXEC:
                         case CmdParser.RESET:
-                            tabComplete(parts, 1, Channels.list());
+                            tabComplete(parts, 1, Control.getBot().channelManager().list());
                             break;
                         case CmdParser.LEAVECHANNEL:
-                            tabComplete(parts, 1, Channels.list(), s -> !Channels.isBotChannel(s));
+                            tabComplete(parts, 1, Control.getBot().channelManager().list(), s -> !Channel.isBotChannel(s));
                             break;
                         case CmdParser.HELP:
                             tabComplete(parts, 1, CmdParser.getCommands());
@@ -135,13 +136,14 @@ public class GuiController {
                             // defaults to no tab completion for first argument
                     }
                 } else if (parts.size() == 3 && parts.get(0).equals(CmdParser.EXEC)) {
-                    Optional<Channel> optional = Channels.get(parts.get(1));
+                    Bot bot = Control.getBot();
+                    Optional<ChannelProxy> optional = bot.channelManager().get(parts.get(1));
                     if (optional.isPresent() && optional.get().isInChannel()) {
-                        Channel channel = optional.get();
+                        ChannelProxy channel = optional.get();
                         List<String> list = Commands.getCommands(channel.getMainDatabaseWrapper());
                         list = (list == null) ? new ArrayList<>() : list;
                         addIfNotNull(list, Aliases.getAliases(channel.getMainDatabaseWrapper()));
-                        if (Channels.isBotChannel(channel)) {
+                        if (Channel.isBotChannel(channel.getName())) {
                             addIfNotNull(list, Commands.getCommands(Control.getBot().getBotDB()));
                             addIfNotNull(list, Aliases.getAliases(Control.getBot().getBotDB()));
                         }

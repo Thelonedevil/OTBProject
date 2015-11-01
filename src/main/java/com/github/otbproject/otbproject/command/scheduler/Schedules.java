@@ -1,8 +1,8 @@
 package com.github.otbproject.otbproject.command.scheduler;
 
 import com.github.otbproject.otbproject.App;
-import com.github.otbproject.otbproject.channel.Channel;
-import com.github.otbproject.otbproject.channel.Channels;
+import com.github.otbproject.otbproject.bot.Control;
+import com.github.otbproject.otbproject.channel.ChannelProxy;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 
 import java.util.*;
@@ -22,16 +22,16 @@ public class Schedules {
     }
 
     public static boolean isScheduled(String channelName, String command) {
-        Optional<Channel> optional = Channels.get(channelName);
+        Optional<ChannelProxy> optional = Control.getBot().channelManager().get(channelName);
         if (!optional.isPresent()) {
             App.logger.error("Cannot check scheduled commands for channel '" + channelName + "' - channel is null.");
             return false;
         }
-        return optional.get().hasCommandFuture(command);
+        return optional.get().getScheduleManager().hasCommandFuture(command);
     }
 
     public static boolean unScheduleCommand(String channelName, String command) {
-        Optional<Channel> optional = Channels.get(channelName);
+        Optional<ChannelProxy> optional = Control.getBot().channelManager().get(channelName);
         if (!optional.isPresent()) {
             App.logger.error("Cannot unschedule command for channel '" + channelName + "' - channel is null.");
             return false;
@@ -39,10 +39,10 @@ public class Schedules {
         return unScheduleCommand(optional.get(), command);
     }
 
-    static boolean unScheduleCommand(Channel channel, String command) {
+    static boolean unScheduleCommand(ChannelProxy channel, String command) {
         if (removeFromDatabase(channel, command)) {
-            channel.removeCommandFuture(command);
-            channel.removeResetFuture(command);
+            channel.getScheduleManager().removeCommandFuture(command);
+            channel.getScheduleManager().removeResetFuture(command);
             App.logger.debug("Unscheduled command '" + command + "' in channel: " + channel.getName());
             return true;
         }
@@ -61,12 +61,12 @@ public class Schedules {
     private static boolean scheduleCommand(String channelName, String command, long delay, long period, boolean hourReset, TimeUnit timeUnit) {
         App.logger.debug("Attempting to schedule command for channel '" + channelName + "' with period=" + period
                 + ", offset=" + delay + " in " + timeUnit.name().toLowerCase() + ", and hourly reset: " + hourReset);
-        Optional<Channel> optional = Channels.get(channelName);
+        Optional<ChannelProxy> optional = Control.getBot().channelManager().get(channelName);
         if (!optional.isPresent()) {
             App.logger.error("Cannot schedule command for channel '" + channelName + "' - channel is null.");
             return false;
         }
-        Channel channel = optional.get();
+        ChannelProxy channel = optional.get();
         if (addToDatabase(channel, command, delay, period, hourReset, timeUnit)) {
             doScheduleCommand(channel, command, delay, period, hourReset, timeUnit);
             return true;
@@ -75,7 +75,7 @@ public class Schedules {
     }
 
     // Channel should not be null
-    static void doScheduleCommand(Channel channel, String command, long delay, long period, boolean hourReset, TimeUnit timeUnit) {
+    static void doScheduleCommand(ChannelProxy channel, String command, long delay, long period, boolean hourReset, TimeUnit timeUnit) {
         Runnable task = new ScheduledCommand(channel, command);
         if (!hourReset) {
             scheduleTask(channel, command, task, ((delay == 0) ? period : delay), period, timeUnit);
@@ -85,7 +85,7 @@ public class Schedules {
             long millisTillHour = TimeUnit.HOURS.toMillis(1) - millisSinceHour;
             Runnable reset = new ResetTask(channel, command, delay, period, timeUnit);
             try {
-                channel.putResetFuture(command, channel.getScheduler().schedule(reset, millisTillHour, TimeUnit.HOURS.toMillis(1), TimeUnit.MILLISECONDS));
+                channel.getScheduleManager().putResetFuture(command, channel.getScheduler().schedule(reset, millisTillHour, TimeUnit.HOURS.toMillis(1), TimeUnit.MILLISECONDS));
             } catch (SchedulingException e) {
                 App.logger.error(e.getMessage());
                 App.logger.error("Failed to schedule ResetTask for command: " + command);
@@ -104,9 +104,9 @@ public class Schedules {
     }
 
     // Channel should not be null
-    private static boolean scheduleTask(Channel channel, String command, Runnable task, long delay, long period, TimeUnit timeUnit) {
+    private static boolean scheduleTask(ChannelProxy channel, String command, Runnable task, long delay, long period, TimeUnit timeUnit) {
         try {
-            channel.putCommandFuture(command, channel.getScheduler().schedule(task, delay, period, timeUnit));
+            channel.getScheduleManager().putCommandFuture(command, channel.getScheduler().schedule(task, delay, period, timeUnit));
         } catch (SchedulingException e) {
             App.logger.catching(e);
             return false;
@@ -115,7 +115,7 @@ public class Schedules {
         return true;
     }
 
-    private static boolean addToDatabase(Channel channel, String command, long delay, long period, boolean hourReset, TimeUnit timeUnit) {
+    private static boolean addToDatabase(ChannelProxy channel, String command, long delay, long period, boolean hourReset, TimeUnit timeUnit) {
         DatabaseWrapper db = channel.getMainDatabaseWrapper();
         if (db.exists(SchedulerFields.TABLE_NAME, command, SchedulerFields.COMMAND)) {
             return false;
@@ -130,14 +130,14 @@ public class Schedules {
     }
 
     public static void loadFromDatabase(String channelName) {
-        Optional<Channel> optional = Channels.get(channelName);
+        Optional<ChannelProxy> optional = Control.getBot().channelManager().get(channelName);
         if (!optional.isPresent()) {
             return;
         }
         loadFromDatabase(optional.get());
     }
 
-    public static void loadFromDatabase(Channel channel) {
+    public static void loadFromDatabase(ChannelProxy channel) {
         DatabaseWrapper db = channel.getMainDatabaseWrapper();
         db.tableDump(SchedulerFields.TABLE_NAME,
                 rs -> {
@@ -158,13 +158,13 @@ public class Schedules {
                 });
     }
 
-    private static boolean removeFromDatabase(Channel channel, String command) {
+    private static boolean removeFromDatabase(ChannelProxy channel, String command) {
         DatabaseWrapper db = channel.getMainDatabaseWrapper();
         return db.removeRecord(SchedulerFields.TABLE_NAME, command, SchedulerFields.COMMAND);
     }
 
     public static Set<String> getScheduledCommands(String channelName) {
-        Optional<Channel> optional = Channels.get(channelName);
+        Optional<ChannelProxy> optional = Control.getBot().channelManager().get(channelName);
         if (!optional.isPresent()) {
             return Collections.<String>emptySet();
         }

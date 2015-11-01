@@ -2,8 +2,8 @@ package com.github.otbproject.otbproject.bot.irc;
 
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.bot.Control;
-import com.github.otbproject.otbproject.channel.Channel;
-import com.github.otbproject.otbproject.channel.Channels;
+import com.github.otbproject.otbproject.channel.ChannelManager;
+import com.github.otbproject.otbproject.channel.ChannelProxy;
 import com.github.otbproject.otbproject.channel.JoinCheck;
 import com.github.otbproject.otbproject.config.BotConfig;
 import com.github.otbproject.otbproject.config.Configs;
@@ -23,12 +23,12 @@ class IrcListener extends ListenerAdapter {
     @Override
     public void onMessage(MessageEvent event) throws Exception {
         String channelName = IRCHelper.getInternalChannelName(event.getChannel().getName());
-        Optional<Channel> optional = Channels.get(channelName);
+        Optional<ChannelProxy> optional = Control.getBot().channelManager().get(channelName);
         if (!optional.isPresent()) {
             App.logger.error("The channel '" + channelName + "' really shouldn't be null here. Something has gone terribly wrong.");
             return;
         }
-        Channel channel = optional.get();
+        ChannelProxy channel = optional.get();
 
         String user = event.getUser().getNick().toLowerCase();
 
@@ -63,10 +63,11 @@ class IrcListener extends ListenerAdapter {
 
     @Override
     public void onConnect(ConnectEvent event) {
+        ChannelManager channelManager = Control.getBot().channelManager();
         // Join bot channel
-        Channels.join(Control.getBot().getUserName(), EnumSet.of(JoinCheck.WHITELIST, JoinCheck.BLACKLIST));
+        channelManager.join(Control.getBot().getUserName(), EnumSet.of(JoinCheck.WHITELIST, JoinCheck.BLACKLIST));
         // Join channels
-        Configs.getFromBotConfig(BotConfig::getCurrentChannels).forEach(channel -> Channels.join(channel, EnumSet.of(JoinCheck.WHITELIST, JoinCheck.BLACKLIST)));
+        Configs.getFromBotConfig(BotConfig::getCurrentChannels).forEach(channel -> channelManager.join(channel, EnumSet.of(JoinCheck.WHITELIST, JoinCheck.BLACKLIST)));
     }
 
 }

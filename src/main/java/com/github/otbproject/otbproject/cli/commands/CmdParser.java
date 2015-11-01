@@ -2,8 +2,7 @@ package com.github.otbproject.otbproject.cli.commands;
 
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.bot.Control;
-import com.github.otbproject.otbproject.channel.ChannelNotFoundException;
-import com.github.otbproject.otbproject.channel.Channels;
+import com.github.otbproject.otbproject.channel.ChannelProxy;
 import com.github.otbproject.otbproject.channel.JoinCheck;
 import com.github.otbproject.otbproject.config.BotConfig;
 import com.github.otbproject.otbproject.config.ChannelJoinSetting;
@@ -176,7 +175,8 @@ public class CmdParser {
                         return "Not enough args for '" + EXEC + "'";
                     }
                     String channelName = args.get(0).toLowerCase();
-                    if (!Channels.in(channelName)) {
+                    Optional<ChannelProxy> optional = Control.getBot().channelManager().get(channelName);
+                    if (!optional.isPresent()) {
                         return "Not in channel: " + channelName;
                     }
                     UserLevel ul = UserLevel.INTERNAL;
@@ -187,13 +187,8 @@ public class CmdParser {
                     }
                     String destinationChannel = InternalMessageSender.DESTINATION_PREFIX + source;
                     PackagedMessage packagedMessage = new PackagedMessage(command, destinationChannel, channelName, destinationChannel, ul, MessagePriority.DEFAULT);
-                    try {
-                        Channels.getOrThrow(channelName).receiveMessage(packagedMessage);
-                        return "Command output above.";
-                    } catch (ChannelNotFoundException e) {
-                        App.logger.catching(e);
-                        return "";
-                    }
+                    optional.get().receiveMessage(packagedMessage);
+                    return "Command output above.";
                 });
         map.put(EXEC, commandBuilder.create());
     }
@@ -204,7 +199,7 @@ public class CmdParser {
                 .withAction(() -> {
                     if (args.size() > 0) {
                         String channel  = args.get(0).toLowerCase();
-                        boolean success = Channels.join(channel, EnumSet.of(JoinCheck.IS_CHANNEL));
+                        boolean success = Control.getBot().channelManager().join(channel, EnumSet.of(JoinCheck.IS_CHANNEL));
                         if (success) {
                             ChannelJoinSetting channelJoinSetting = Configs.getFromBotConfig(BotConfig::getChannelJoinSetting);
                             if (channelJoinSetting == ChannelJoinSetting.WHITELIST) {
@@ -227,7 +222,7 @@ public class CmdParser {
                 .withLongHelp("Makes the bot leave the channel denoted by CHANNEL")
                 .withAction(() -> {
                     if (args.size() > 0) {
-                        boolean success = Channels.leave(args.get(0).toLowerCase());
+                        boolean success = Control.getBot().channelManager().leave(args.get(0).toLowerCase());
                         String string = success ? "Successfully left" : "Failed to leave";
                         return string + " channel: " + args.get(0).toLowerCase();
                     } else {

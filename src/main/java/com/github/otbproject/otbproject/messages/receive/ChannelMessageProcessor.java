@@ -3,7 +3,7 @@ package com.github.otbproject.otbproject.messages.receive;
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.bot.Control;
 import com.github.otbproject.otbproject.channel.Channel;
-import com.github.otbproject.otbproject.channel.Channels;
+import com.github.otbproject.otbproject.channel.ChannelProxy;
 import com.github.otbproject.otbproject.command.Commands;
 import com.github.otbproject.otbproject.config.*;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
@@ -36,12 +36,12 @@ public class ChannelMessageProcessor {
         String user = packagedMessage.user;
 
         String destChannelName = packagedMessage.destinationChannel;
-        Channel destChannel = null;
+        ChannelProxy destChannel = null;
         if (packagedMessage.destinationChannel.startsWith(InternalMessageSender.DESTINATION_PREFIX)) {
             internal = true;
         } else {
             internal = false;
-            Optional<Channel> optional = Channels.get(packagedMessage.destinationChannel);
+            Optional<ChannelProxy> optional = Control.getBot().channelManager().get(packagedMessage.destinationChannel);
             if (!optional.isPresent() || !optional.get().isInChannel()) {
                 App.logger.warn("Attempted to process message to be sent in channel in which bot is not listening: " + destChannelName);
                 return;
@@ -75,9 +75,9 @@ public class ChannelMessageProcessor {
                 || Configs.getFromGeneralConfig(GeneralConfig::getPermanentlyEnabledCommands).contains(processedCmd.commandName))
                 && (processedCmd.isScript || !processedCmd.response.isEmpty())) {
             // Check if command or user is on cooldown (skip cooldown check if internal)
-            if (!internal && destChannel.isCommandCooldown(processedCmd.commandName)) {
+            if (!internal && destChannel.commandCooldowns().isOnCooldown(processedCmd.commandName)) {
                 App.logger.debug("Skipping command on cooldown: " + processedCmd.commandName);
-            } else if (!internal && destChannel.isUserCooldown(user)) {
+            } else if (!internal && destChannel.userCooldowns().isOnCooldown(user)) {
                 App.logger.debug("Skipping user on cooldown: " + user);
             } else {
                 doResponse(db, processedCmd, channelName, destChannelName, destChannel, user, ul, packagedMessage.messagePriority, internal);
@@ -85,7 +85,7 @@ public class ChannelMessageProcessor {
         }
     }
 
-    private void doResponse(DatabaseWrapper db, ProcessedCommand processedCmd, String channelName, String destChannelName, Channel destChannel, String user, UserLevel ul, MessagePriority priority, boolean internal) {
+    private void doResponse(DatabaseWrapper db, ProcessedCommand processedCmd, String channelName, String destChannelName, ChannelProxy destChannel, String user, UserLevel ul, MessagePriority priority, boolean internal) {
         String message = processedCmd.response;
         String command = processedCmd.commandName;
 
@@ -125,7 +125,7 @@ public class ChannelMessageProcessor {
         }
     }
 
-    private boolean postResponse(String destChannelName, Channel destChannel, String command, String user, UserLevel ul, boolean internal, boolean success) {
+    private boolean postResponse(String destChannelName, ChannelProxy destChannel, String command, String user, UserLevel ul, boolean internal, boolean success) {
         if (!success) {
             return false;
         }
@@ -138,12 +138,12 @@ public class ChannelMessageProcessor {
         // Handles command cooldowns
         int commandCooldown = channel.getFromConfig(ChannelConfig::getCommandCooldown);
         if (commandCooldown > 0) {
-            destChannel.addCommandCooldown(command, commandCooldown);
+            destChannel.commandCooldowns().addCooldown(command, commandCooldown);
         }
         // Handles user cooldowns
         int userCooldown = ChannelConfigHelper.getCooldown(channel, ul);
         if (userCooldown > 0) {
-            destChannel.addUserCooldown(user, userCooldown);
+            destChannel.userCooldowns().addCooldown(user, userCooldown);
         }
 
         return true;

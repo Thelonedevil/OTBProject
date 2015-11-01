@@ -1,8 +1,7 @@
 package com.github.otbproject.otbproject.command.parser;
 
 import com.github.otbproject.otbproject.bot.Control;
-import com.github.otbproject.otbproject.channel.Channel;
-import com.github.otbproject.otbproject.channel.Channels;
+import com.github.otbproject.otbproject.channel.ChannelProxy;
 import com.github.otbproject.otbproject.command.Command;
 import com.github.otbproject.otbproject.command.Commands;
 import com.github.otbproject.otbproject.config.Configs;
@@ -53,7 +52,7 @@ public class CommandResponseParser {
         // [[countof{{command}}]] - get count of another command without incrementing the other command's count
         registerTerm("countof", ((userNick, channel, count, args, term) -> {
             String commandName = getEmbeddedString(term, 1);
-            Optional<Channel> channelOptional = Channels.get(channel);
+            Optional<ChannelProxy> channelOptional = Control.getBot().channelManager().get(channel);
             if (channelOptional.isPresent()) {
                 Optional<Command> commandOptional = Commands.get(channelOptional.get().getMainDatabaseWrapper(), commandName);
                 if (commandOptional.isPresent()) {
@@ -66,7 +65,7 @@ public class CommandResponseParser {
         // [[quote.modifier]] - can have a modifier, but it's unclear why you want one
         registerTerm("quote", (userNick, channel, count, args, term) -> {
             String quoteNumStr = getEmbeddedString(term, 1);
-            Optional<Channel> channelOptional = Channels.get(channel);
+            Optional<ChannelProxy> channelOptional = Control.getBot().channelManager().get(channel);
             Optional<Quote> quoteOptional = Optional.empty();
             if (quoteNumStr.isEmpty()) {
                 if (channelOptional.isPresent()) {

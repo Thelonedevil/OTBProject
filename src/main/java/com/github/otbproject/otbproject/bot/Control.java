@@ -91,7 +91,6 @@ public class Control {
 
     private static void shutdownCleanup(Bot bot) {
         clearCaches();
-        bot.getChannels().clear();
         // TODO unload libs?
     }
 

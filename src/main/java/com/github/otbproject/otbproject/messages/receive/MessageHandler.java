@@ -1,10 +1,10 @@
 package com.github.otbproject.otbproject.messages.receive;
 
-import com.github.otbproject.otbproject.channel.Channel;
+import com.github.otbproject.otbproject.channel.ChannelProxy;
 
 @FunctionalInterface
 public interface MessageHandler {
-    void onMessage(Channel channel, PackagedMessage packagedMessage, boolean timedOut);
+    void onMessage(ChannelProxy channel, PackagedMessage packagedMessage, boolean timedOut);
 
     default MessageHandler andThen(MessageHandler after) {
         return (channel, packagedMessage, timedOut) -> {

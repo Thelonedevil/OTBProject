@@ -1,6 +1,8 @@
 package com.github.otbproject.otbproject.bot;
 
 import com.github.otbproject.otbproject.channel.Channel;
+import com.github.otbproject.otbproject.channel.ChannelManager;
+import com.github.otbproject.otbproject.channel.ChannelProxy;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.messages.receive.PackagedMessage;
 import com.github.otbproject.otbproject.messages.receive.MessageHandler;
@@ -12,7 +14,10 @@ public interface Bot {
 
     boolean isConnected();
 
+    @Deprecated
     ConcurrentMap<String, Channel> getChannels();
+
+    ChannelManager channelManager();
 
     boolean isChannel(String channelName);
 
@@ -44,5 +49,5 @@ public interface Bot {
 
     void onMessage(MessageHandler messageHandler);
 
-    void invokeMessageHandlers(Channel channel, PackagedMessage message, boolean timedOut);
+    void invokeMessageHandlers(ChannelProxy channel, PackagedMessage message, boolean timedOut);
 }
