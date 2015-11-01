@@ -48,7 +48,7 @@ public class BeamMessageHandler implements EventHandler<IncomingMessageEvent> {
             App.logger.info("<" + channelName + "> " + data.user_name + ": " + getMessage(data));
             beamChatChannel.userRoles.put(data.user_name.toLowerCase(), Collections.unmodifiableList(data.user_roles));
 
-            BeamBot bot = (BeamBot) Control.getBot();
+            BeamBot bot = (BeamBot) Control.bot();
 
             // Check if user is in timeout set
             if (beamChatChannel.timeoutSet.containsKey(data.user_name.toLowerCase())) {
@@ -72,7 +72,7 @@ public class BeamMessageHandler implements EventHandler<IncomingMessageEvent> {
             String message = getMessage(data);
 
             // Check if message is from bot and sent by bot
-            if (data.user_name.equalsIgnoreCase(Control.getBot().getUserName()) && (bot.sentMessageCache.containsKey(message))) {
+            if (data.user_name.equalsIgnoreCase(Control.bot().getUserName()) && (bot.sentMessageCache.containsKey(message))) {
                 App.logger.debug("Ignoring message sent by bot");
                 return;
             }

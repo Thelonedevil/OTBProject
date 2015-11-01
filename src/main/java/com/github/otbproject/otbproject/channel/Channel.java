@@ -308,7 +308,7 @@ public class Channel implements ChannelProxy {
     }
 
     public static boolean isBotChannel(String channel) {
-        return channel.equalsIgnoreCase(Control.getBot().getUserName());
+        return channel.equalsIgnoreCase(Control.bot().getUserName());
     }
 
     public static boolean isBotChannel(ChannelProxy channel) {

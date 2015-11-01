@@ -25,7 +25,7 @@ public class Control {
     private static volatile boolean running = false;
     private static volatile Bot bot = NullBot.INSTANCE;
 
-    public static Bot getBot() {
+    public static Bot bot() {
         return bot;
     }
 
@@ -147,7 +147,7 @@ public class Control {
         ThreadUtil.getSingleThreadExecutor("Bot").execute(() -> {
             try {
                 App.logger.info("Bot Started");
-                Control.getBot().startBot();
+                Control.bot().startBot();
                 App.logger.info("Bot Stopped");
             } catch (BotInitException e) {
                 App.logger.catching(e);

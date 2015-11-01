@@ -23,7 +23,7 @@ class IrcListener extends ListenerAdapter {
     @Override
     public void onMessage(MessageEvent event) throws Exception {
         String channelName = IRCHelper.getInternalChannelName(event.getChannel().getName());
-        Optional<ChannelProxy> optional = Control.getBot().channelManager().get(channelName);
+        Optional<ChannelProxy> optional = Control.bot().channelManager().get(channelName);
         if (!optional.isPresent()) {
             App.logger.error("The channel '" + channelName + "' really shouldn't be null here. Something has gone terribly wrong.");
             return;
@@ -33,7 +33,7 @@ class IrcListener extends ListenerAdapter {
         String user = event.getUser().getNick().toLowerCase();
 
         String message = event.getMessage();
-        TwitchBot bot = (TwitchBot) Control.getBot();
+        TwitchBot bot = (TwitchBot) Control.bot();
         if(event.getTags().get("subscriber") != null && event.getTags().get("subscriber").equalsIgnoreCase("1")){
             bot.subscriberStorage.put(channelName,user);
         }
@@ -45,14 +45,14 @@ class IrcListener extends ListenerAdapter {
     @Override
     public void onJoin(JoinEvent event) {
         if(event.getUser().equals(event.getBot().getUserBot())) {
-            ((TwitchBot) Control.getBot()).addJoined(IRCHelper.getInternalChannelName(event.getChannel().getName()),event.getChannel());
+            ((TwitchBot) Control.bot()).addJoined(IRCHelper.getInternalChannelName(event.getChannel().getName()),event.getChannel());
         }
     }
 
     @Override
     public void onPart(PartEvent event) {
         if(event.getUser().equals(event.getBot().getUserBot())) {
-            ((TwitchBot) Control.getBot()).removeJoined(IRCHelper.getInternalChannelName(event.getChannel().getName()));
+            ((TwitchBot) Control.bot()).removeJoined(IRCHelper.getInternalChannelName(event.getChannel().getName()));
         }
     }
 
@@ -63,9 +63,9 @@ class IrcListener extends ListenerAdapter {
 
     @Override
     public void onConnect(ConnectEvent event) {
-        ChannelManager channelManager = Control.getBot().channelManager();
+        ChannelManager channelManager = Control.bot().channelManager();
         // Join bot channel
-        channelManager.join(Control.getBot().getUserName(), EnumSet.of(JoinCheck.WHITELIST, JoinCheck.BLACKLIST));
+        channelManager.join(Control.bot().getUserName(), EnumSet.of(JoinCheck.WHITELIST, JoinCheck.BLACKLIST));
         // Join channels
         Configs.getBotConfig().get(BotConfig::getCurrentChannels).forEach(channel -> channelManager.join(channel, EnumSet.of(JoinCheck.WHITELIST, JoinCheck.BLACKLIST)));
     }

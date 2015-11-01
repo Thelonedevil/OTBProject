@@ -52,7 +52,7 @@ public class CommandResponseParser {
         // [[countof{{command}}]] - get count of another command without incrementing the other command's count
         registerTerm("countof", ((userNick, channel, count, args, term) -> {
             String commandName = getEmbeddedString(term, 1);
-            Optional<ChannelProxy> channelOptional = Control.getBot().channelManager().get(channel);
+            Optional<ChannelProxy> channelOptional = Control.bot().channelManager().get(channel);
             if (channelOptional.isPresent()) {
                 Optional<Command> commandOptional = Commands.get(channelOptional.get().getMainDatabaseWrapper(), commandName);
                 if (commandOptional.isPresent()) {
@@ -65,7 +65,7 @@ public class CommandResponseParser {
         // [[quote.modifier]] - can have a modifier, but it's unclear why you want one
         registerTerm("quote", (userNick, channel, count, args, term) -> {
             String quoteNumStr = getEmbeddedString(term, 1);
-            Optional<ChannelProxy> channelOptional = Control.getBot().channelManager().get(channel);
+            Optional<ChannelProxy> channelOptional = Control.bot().channelManager().get(channel);
             Optional<Quote> quoteOptional = Optional.empty();
             if (quoteNumStr.isEmpty()) {
                 if (channelOptional.isPresent()) {
@@ -173,7 +173,7 @@ public class CommandResponseParser {
                 doModifier(StrUtils.capitalizeFully(Configs.getGeneralConfig().get(GeneralConfig::getService).toString()), term));
 
         // [[bot]]
-        registerTerm("bot", (userNick, channel, count, args, term) -> doModifier(Control.getBot().getUserName(), term));
+        registerTerm("bot", (userNick, channel, count, args, term) -> doModifier(Control.bot().getUserName(), term));
     }
 
     public static String parse(String userNick, String channel, int count, String[] args, String rawResponse) {

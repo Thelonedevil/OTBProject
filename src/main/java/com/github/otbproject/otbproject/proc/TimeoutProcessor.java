@@ -31,16 +31,16 @@ public class TimeoutProcessor {
     private static void performFilterAction(PackagedMessage packagedMessage, FilterAction action) {
         switch (action) {
             case BAN:
-                Control.getBot().ban(packagedMessage.channel, packagedMessage.user);
+                Control.bot().ban(packagedMessage.channel, packagedMessage.user);
                 break;
             case TIMEOUT:
-                Control.getBot().timeout(packagedMessage.channel, packagedMessage.user, 600); // TODO get actual time from somewhere (config?)
+                Control.bot().timeout(packagedMessage.channel, packagedMessage.user, 600); // TODO get actual time from somewhere (config?)
                 break;
             case STRIKE:
                 // TODO handle strike number
                 break;
             case PURGE:
-                Control.getBot().timeout(packagedMessage.channel, packagedMessage.user, 1);
+                Control.bot().timeout(packagedMessage.channel, packagedMessage.user, 1);
                 break;
             default:
                 // No action to perform by default

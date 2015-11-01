@@ -28,7 +28,7 @@ public class ChannelMessageProcessor {
     public ChannelMessageProcessor(Channel channel) {
         this.channel = channel;
         channelName = channel.getName();
-        inBotChannel = this.channel.getName().equals(Control.getBot().getUserName());
+        inBotChannel = this.channel.getName().equals(Control.bot().getUserName());
     }
 
     public void process(PackagedMessage packagedMessage) {
@@ -41,7 +41,7 @@ public class ChannelMessageProcessor {
             internal = true;
         } else {
             internal = false;
-            Optional<ChannelProxy> optional = Control.getBot().channelManager().get(packagedMessage.destinationChannel);
+            Optional<ChannelProxy> optional = Control.bot().channelManager().get(packagedMessage.destinationChannel);
             if (!optional.isPresent() || !optional.get().isInChannel()) {
                 App.logger.warn("Attempted to process message to be sent in channel in which bot is not listening: " + destChannelName);
                 return;
@@ -51,7 +51,7 @@ public class ChannelMessageProcessor {
 
         // Process commands for bot channel
         if (inBotChannel) {
-            DatabaseWrapper db = Control.getBot().getBotDB();
+            DatabaseWrapper db = Control.bot().getBotDB();
             UserLevel ul = packagedMessage.userLevel;
             ProcessedCommand processedCmd = CommandProcessor.process(db, packagedMessage.message, channelName, user, ul, Configs.getBotConfig().get(BotConfig::isBotChannelDebug));
             if (processedCmd.isScript || !processedCmd.response.isEmpty()) {
@@ -131,7 +131,7 @@ public class ChannelMessageProcessor {
         }
 
         // Skip cooldowns if in or sending to bot channel, or internal
-        if (inBotChannel || destChannelName.equals(Control.getBot().getUserName()) || internal) {
+        if (inBotChannel || destChannelName.equals(Control.bot().getUserName()) || internal) {
             return false;
         }
 

@@ -14,7 +14,7 @@ public class ScriptHelper {
     public static void runCommand(String message, String user, String channelName, String destinationChannel, MessagePriority priority) throws ChannelNotFoundException {
         App.logger.debug("Processing message as command: " + message);
         PackagedMessage packagedMessage = new PackagedMessage(message, user, channelName, destinationChannel, UserLevel.INTERNAL, priority);
-        Control.getBot().channelManager().getOrThrow(channelName).receiveMessage(packagedMessage);
+        Control.bot().channelManager().getOrThrow(channelName).receiveMessage(packagedMessage);
     }
 
     public static void sendMessage(String channelName, String message, MessagePriority priority) throws ChannelNotFoundException {
@@ -22,7 +22,7 @@ public class ScriptHelper {
             InternalMessageSender.send(channelName.substring(InternalMessageSender.DESTINATION_PREFIX.length()), message, "CmdExec");
         } else {
             MessageOut messageOut = new MessageOut(message, priority);
-            Control.getBot().channelManager().getOrThrow(channelName).sendMessage(messageOut);
+            Control.bot().channelManager().getOrThrow(channelName).sendMessage(messageOut);
         }
     }
 

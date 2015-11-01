@@ -56,7 +56,7 @@ public final class ChannelManager {
             }
 
             boolean isBotChannel = Channel.isBotChannel(channelName);
-            Bot bot = Control.getBot();
+            Bot bot = Control.bot();
 
             // Check if bot is connected
             if (!bot.isConnected()) {
@@ -143,14 +143,14 @@ public final class ChannelManager {
             if (!in(channel)) {
                 App.logger.info("Not leaving channel '" + channel + "' - not in channel");
                 return false;
-            } else if (channel.equals(Control.getBot().getUserName())) {
+            } else if (channel.equals(Control.bot().getUserName())) {
                 App.logger.info("Not leaving channel '" + channel + "' - cannot leave bot channel");
                 return false;
             }
             App.logger.info("Leaving channel: " + channel);
             Optional.ofNullable(channels.remove(channel)).ifPresent(proxiedChannel -> proxiedChannel.channel().leave());
             Configs.getBotConfig().edit(config -> config.getCurrentChannels().remove(channel));
-            Control.getBot().leave(channel);
+            Control.bot().leave(channel);
         } finally {
             lock.unlock();
         }

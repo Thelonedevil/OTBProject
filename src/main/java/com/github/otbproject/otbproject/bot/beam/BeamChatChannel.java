@@ -73,7 +73,7 @@ public class BeamChatChannel {
                 })
                 .build();
 
-        beamBot = ((BeamBot) Control.getBot());
+        beamBot = ((BeamBot) Control.bot());
         try {
             BeamUser beamUser = beamBot.beam.use(UsersService.class).search(channelName).get().stream()
                     .filter(user -> user.username.equalsIgnoreCase(channelName))
@@ -104,7 +104,7 @@ public class BeamChatChannel {
         try {
             HashMap<String, Object> map = new HashMap<>();
             map.put("limit", USER_LIST_MAX_SIZE);
-            BeamChatUser[] users = ((BeamBot) Control.getBot()).beam.http.get(path, BeamChatUser[].class, map).get(USER_LIST_TIMEOUT, TimeUnit.SECONDS);
+            BeamChatUser[] users = ((BeamBot) Control.bot()).beam.http.get(path, BeamChatUser[].class, map).get(USER_LIST_TIMEOUT, TimeUnit.SECONDS);
             Map<String, List<BeamUser.Role>> roleMap =
                     Stream.of(users).collect(Collectors.toMap(user -> user.getUserName().toLowerCase(),
                             user -> Collections.unmodifiableList(user.getUserRoles())));
