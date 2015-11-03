@@ -9,6 +9,7 @@ import com.github.otbproject.otbproject.channel.ProxiedChannel;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.messages.receive.MessageHandler;
 import com.github.otbproject.otbproject.messages.receive.PackagedMessage;
+import com.google.common.eventbus.EventBus;
 
 import java.util.concurrent.ConcurrentMap;
 
@@ -16,6 +17,22 @@ public class NullBot implements Bot {
     private static final ConcurrentMap<String, ProxiedChannel> CHANNELS = new EmptyConcurrentMap<>();
     private static final ChannelManager channelManager = new ChannelManager(CHANNELS);
     private static final DatabaseWrapper DATABASE_WRAPPER = new EmptyDatabaseWrapper();
+    private static final EventBus NULL_EVENT_BUS = new EventBus("null-bus") {
+        @Override
+        public void post(Object event) {
+            // NO-OP
+        }
+
+        @Override
+        public void register(Object object) {
+            // NO-OP
+        }
+
+        @Override
+        public void unregister(Object object) {
+            //NO-OP
+        }
+    };
     public static final NullBot INSTANCE = new NullBot();
 
     @Deprecated // TODO REMOVE
@@ -116,12 +133,7 @@ public class NullBot implements Bot {
     }
 
     @Override
-    public void onMessage(MessageHandler messageHandler) {
-        // NO-OP
-    }
-
-    @Override
-    public void invokeMessageHandlers(ChannelProxy channel, PackagedMessage message, boolean timedOut) {
-        // NO-OP
+    public EventBus eventBus() {
+        return NULL_EVENT_BUS;
     }
 }

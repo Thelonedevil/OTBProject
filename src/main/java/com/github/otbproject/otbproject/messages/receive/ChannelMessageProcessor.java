@@ -33,15 +33,15 @@ public class ChannelMessageProcessor {
 
     public void process(PackagedMessage packagedMessage) {
         boolean internal;
-        String user = packagedMessage.user;
+        String user = packagedMessage.getUser();
 
-        String destChannelName = packagedMessage.destinationChannel;
+        String destChannelName = packagedMessage.getDestinationChannel();
         ChannelProxy destChannel = null;
-        if (packagedMessage.destinationChannel.startsWith(InternalMessageSender.DESTINATION_PREFIX)) {
+        if (packagedMessage.getDestinationChannel().startsWith(InternalMessageSender.DESTINATION_PREFIX)) {
             internal = true;
         } else {
             internal = false;
-            Optional<ChannelProxy> optional = Control.bot().channelManager().get(packagedMessage.destinationChannel);
+            Optional<ChannelProxy> optional = Control.bot().channelManager().get(packagedMessage.getDestinationChannel());
             if (!optional.isPresent() || !optional.get().isInChannel()) {
                 App.logger.warn("Attempted to process message to be sent in channel in which bot is not listening: " + destChannelName);
                 return;
@@ -52,10 +52,10 @@ public class ChannelMessageProcessor {
         // Process commands for bot channel
         if (inBotChannel) {
             DatabaseWrapper db = Control.bot().getBotDB();
-            UserLevel ul = packagedMessage.userLevel;
-            ProcessedCommand processedCmd = CommandProcessor.process(db, packagedMessage.message, channelName, user, ul, Configs.getBotConfig().get(BotConfig::isBotChannelDebug));
+            UserLevel ul = packagedMessage.getUserLevel();
+            ProcessedCommand processedCmd = CommandProcessor.process(db, packagedMessage.getMessage(), channelName, user, ul, Configs.getBotConfig().get(BotConfig::isBotChannelDebug));
             if (processedCmd.isScript || !processedCmd.response.isEmpty()) {
-                doResponse(db, processedCmd, channelName, destChannelName, destChannel, user, ul, packagedMessage.messagePriority, internal);
+                doResponse(db, processedCmd, channelName, destChannelName, destChannel, user, ul, packagedMessage.getMessagePriority(), internal);
                 // Don't process response as regular channel if done as bot channel
                 return;
             }
@@ -63,12 +63,12 @@ public class ChannelMessageProcessor {
 
         // Process commands not as bot channel
         DatabaseWrapper db = channel.getMainDatabaseWrapper();
-        UserLevel ul = packagedMessage.userLevel;
+        UserLevel ul = packagedMessage.getUserLevel();
         boolean debug = channel.getConfig().get(ChannelConfig::isDebug);
         if (inBotChannel) {
             debug = (debug || Configs.getBotConfig().get(BotConfig::isBotChannelDebug));
         }
-        ProcessedCommand processedCmd = CommandProcessor.process(db, packagedMessage.message, channelName, user, ul, debug);
+        ProcessedCommand processedCmd = CommandProcessor.process(db, packagedMessage.getMessage(), channelName, user, ul, debug);
 
         // Check if bot is enabled or command is permanently enabled, and if command is a script or non-empty
         if ((channel.getConfig().get(ChannelConfig::isEnabled)
@@ -80,7 +80,7 @@ public class ChannelMessageProcessor {
             } else if (!internal && destChannel.userCooldowns().isOnCooldown(user)) {
                 App.logger.debug("Skipping user on cooldown: " + user);
             } else {
-                doResponse(db, processedCmd, channelName, destChannelName, destChannel, user, ul, packagedMessage.messagePriority, internal);
+                doResponse(db, processedCmd, channelName, destChannelName, destChannel, user, ul, packagedMessage.getMessagePriority(), internal);
             }
         }
     }

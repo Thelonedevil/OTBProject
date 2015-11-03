@@ -7,6 +7,7 @@ import com.github.otbproject.otbproject.channel.ChannelProxy;
 import com.github.otbproject.otbproject.channel.JoinCheck;
 import com.github.otbproject.otbproject.config.BotConfig;
 import com.github.otbproject.otbproject.config.Configs;
+import com.github.otbproject.otbproject.event.ChannelMessageEvent;
 import com.github.otbproject.otbproject.messages.receive.PackagedMessage;
 import com.github.otbproject.otbproject.messages.send.MessagePriority;
 import com.github.otbproject.otbproject.proc.TimeoutProcessor;
@@ -34,24 +35,24 @@ class IrcListener extends ListenerAdapter {
 
         String message = event.getMessage();
         TwitchBot bot = (TwitchBot) Control.bot();
-        if(event.getTags().get("subscriber") != null && event.getTags().get("subscriber").equalsIgnoreCase("1")){
-            bot.subscriberStorage.put(channelName,user);
+        if (event.getTags().get("subscriber") != null && event.getTags().get("subscriber").equalsIgnoreCase("1")) {
+            bot.subscriberStorage.put(channelName, user);
         }
         UserLevel userLevel = UserLevels.getUserLevel(channel.getMainDatabaseWrapper(), channelName, user);
         PackagedMessage packagedMessage = new PackagedMessage(message, user, channelName, userLevel, MessagePriority.DEFAULT);
-        bot.invokeMessageHandlers(channel, packagedMessage, TimeoutProcessor.doTimeouts(channel, packagedMessage));
+        bot.eventBus().post(new ChannelMessageEvent(channel, packagedMessage, TimeoutProcessor.doTimeouts(channel, packagedMessage)));
     }
 
     @Override
     public void onJoin(JoinEvent event) {
-        if(event.getUser().equals(event.getBot().getUserBot())) {
-            ((TwitchBot) Control.bot()).addJoined(IRCHelper.getInternalChannelName(event.getChannel().getName()),event.getChannel());
+        if (event.getUser().equals(event.getBot().getUserBot())) {
+            ((TwitchBot) Control.bot()).addJoined(IRCHelper.getInternalChannelName(event.getChannel().getName()), event.getChannel());
         }
     }
 
     @Override
     public void onPart(PartEvent event) {
-        if(event.getUser().equals(event.getBot().getUserBot())) {
+        if (event.getUser().equals(event.getBot().getUserBot())) {
             ((TwitchBot) Control.bot()).removeJoined(IRCHelper.getInternalChannelName(event.getChannel().getName()));
         }
     }
