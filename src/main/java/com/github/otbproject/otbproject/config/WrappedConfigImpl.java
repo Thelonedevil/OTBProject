@@ -79,15 +79,31 @@ class WrappedConfigImpl<T> implements WrappedConfig<T> {
     }
 
     @Override
-    public void update() {
+    public void updateLater() {
         queueUpdate(false);
+    }
+
+    @Override
+    public void updateAndAwait() {
+        final FutureTask<Void> task = new FutureTask<>(() -> {
+            updateIfNeeded(false);
+            return null;
+        });
+        UPDATE_DEQUE.addFirst(() -> needsUpdate = true);
+        UPDATE_DEQUE.addLast(task);
+        try {
+            task.get();
+        } catch (InterruptedException | ExecutionException e) {
+            App.logger.catching(e);
+            ThreadUtil.interruptIfInterruptedException(e);
+        }
     }
 
     protected void queueUpdate(boolean logUpdate) {
         UPDATE_DEQUE.addFirst(() -> {
             if (!needsUpdate) {
                 needsUpdate = true;
-                UPDATE_DEQUE.addLast(() -> this.updateIfNeeded(logUpdate));
+                UPDATE_DEQUE.addLast(() -> updateIfNeeded(logUpdate));
             }
         });
     }

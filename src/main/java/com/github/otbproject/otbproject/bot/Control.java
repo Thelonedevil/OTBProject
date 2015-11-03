@@ -173,7 +173,7 @@ public class Control {
     }
 
     private static void loadConfigs() {
-        Configs.getGeneralConfig().update();
+        Configs.getGeneralConfig().updateAndAwait();
         Configs.reloadAccount();
     }
 
