@@ -4,7 +4,7 @@ jdk: oraclejdk8
 install: true
 after_success:
  - echo "<settings><servers><server><id>snapshots</id><username>\${env.OSSRH_USER}</username><password>\${env.OSSRH_PASS}</password></server><server><id>release</id><username>\${env.OSSRH_USER}</username><password>\${env.OSSRH_PASS}</password></server></servers></settings>" > ~/settings.xml
- - "[[ $TRAVIS_PULL_REQUEST == false ]] && [[ $TRAVIS_REPO_SLUG == OTBProject/OTBProject ]] && ( [[ $TRAVIS_BRANCH == master ]] || [[ $TRAVIS_BRANCH == v1.1.4 ]] ) && mvn deploy --settings ~/settings.xml"
+ - "[[ $TRAVIS_PULL_REQUEST == false ]] && [[ $TRAVIS_REPO_SLUG == OTBProject/OTBProject ]] && ( [[ $TRAVIS_BRANCH == master ]] || [[ $TRAVIS_BRANCH == v1.1.x ]] ) && mvn deploy --settings ~/settings.xml"
 
 script:
   - sudo apt-get update && sudo apt-get install oracle-java8-installer
