@@ -19,7 +19,6 @@ import java.util.Collections;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.stream.Collectors;
 
 public class BeamMessageHandler implements EventHandler<IncomingMessageEvent> {
     private static final ExecutorService EXECUTOR_SERVICE;
@@ -45,21 +44,24 @@ public class BeamMessageHandler implements EventHandler<IncomingMessageEvent> {
     public void onEvent(IncomingMessageEvent event) {
         EXECUTOR_SERVICE.execute(() -> {
             IncomingMessageData data = event.data;
-            App.logger.info("<" + channelName + "> " + data.user_name + ": " + getMessage(data));
-            beamChatChannel.userRoles.put(data.user_name.toLowerCase(), Collections.unmodifiableList(data.user_roles));
+            String message = (data.message.meta.me ? "/me " : "") + data.asString();
+            String userNameLower = data.userName.toLowerCase();
+
+            App.logger.info("<" + channelName + "> " + data.userName + ": " + message);
+            beamChatChannel.userRoles.put(userNameLower, Collections.unmodifiableList(data.userRoles));
 
             BeamBot bot = (BeamBot) Control.bot();
 
             // Check if user is in timeout set
-            if (beamChatChannel.timeoutSet.containsKey(data.user_name.toLowerCase())) {
+            if (beamChatChannel.timeoutSet.containsKey(userNameLower)) {
                 // Check if user has user level mod or higher
                 try {
-                    if (BotUtil.isModOrHigher(channelName, data.user_name.toLowerCase())) {
-                        bot.removeTimeout(channelName, data.user_name.toLowerCase());
+                    if (BotUtil.isModOrHigher(channelName, userNameLower)) {
+                        bot.removeTimeout(channelName, userNameLower);
                     } else {
                         // Delete message
                         beamChatChannel.beamChatConnectable.delete(data);
-                        App.logger.info("Deleted message in channel <" + channelName + "> from user: " + data.user_name);
+                        App.logger.info("Deleted message in channel <" + channelName + "> from user: " + data.userName);
                         return;
                     }
                 } catch (ChannelNotFoundException e) {
@@ -69,10 +71,9 @@ public class BeamMessageHandler implements EventHandler<IncomingMessageEvent> {
             }
             beamChatChannel.cacheMessage(data);
 
-            String message = getMessage(data);
 
             // Check if message is from bot and sent by bot
-            if (data.user_name.equalsIgnoreCase(Control.bot().getUserName()) && (bot.sentMessageCache.containsKey(message))) {
+            if (data.userName.equalsIgnoreCase(Control.bot().getUserName()) && (bot.sentMessageCache.containsKey(message))) {
                 App.logger.debug("Ignoring message sent by bot");
                 return;
             }
@@ -80,33 +81,12 @@ public class BeamMessageHandler implements EventHandler<IncomingMessageEvent> {
             Optional<ChannelProxy> optional = bot.channelManager().get(channelName);
             if (optional.isPresent()) {
                 ChannelProxy channel = optional.get();
-                UserLevel userLevel = UserLevels.getUserLevel(channel.getMainDatabaseWrapper(), channelName, data.user_name.toLowerCase());
-                PackagedMessage packagedMessage = new PackagedMessage(message, data.user_name.toLowerCase(), channelName, userLevel, MessagePriority.DEFAULT);
+                UserLevel userLevel = UserLevels.getUserLevel(channel.getMainDatabaseWrapper(), channelName, userNameLower);
+                PackagedMessage packagedMessage = new PackagedMessage(message, userNameLower, channelName, userLevel, MessagePriority.DEFAULT);
                 bot.invokeMessageHandlers(channel, packagedMessage, TimeoutProcessor.doTimeouts(channel, packagedMessage));
             } else {
                 App.logger.error("Channel: " + channelName + " appears not to exist");
             }
         });
-    }
-
-    // Modified version of Beam's default method to join message parts
-    // Does not insert a space between different parts like Beam's method does, and gets
-    //  plaintext of emoticons
-    private static String getMessage(IncomingMessageData data) {
-        return data.message.stream()
-                .map(part -> {
-                    switch (part.type) {
-                        case ME:
-                            return "/me " + part.text;
-                        case EMOTICON:
-                            return part.text;
-                        case LINK:
-                            return part.url;
-                        case TEXT:
-                        default:
-                            return part.data;
-                    }
-                })
-                .collect(Collectors.joining(""));
     }
 }
