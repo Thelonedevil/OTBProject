@@ -67,7 +67,7 @@ public class BeamChatChannel {
                     public void onRemoval(RemovalNotification<String, IncomingMessageData> notification) {
                         IncomingMessageData data = notification.getValue();
                         if (data != null) {
-                            cacheLookup.remove(notification.getValue().user_name.toLowerCase(), notification.getKey());
+                            cacheLookup.remove(notification.getValue().userName.toLowerCase(), notification.getKey());
                         }
                     }
                 })
@@ -134,7 +134,7 @@ public class BeamChatChannel {
         if (data == null) {
             return;
         }
-        cacheLookup.put(data.user_name.toLowerCase(), data.id);
+        cacheLookup.put(data.userName.toLowerCase(), data.id);
         messageCache.put(data.id, data);
     }
 
