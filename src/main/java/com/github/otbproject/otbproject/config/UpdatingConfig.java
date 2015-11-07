@@ -67,7 +67,7 @@ public class UpdatingConfig<T> extends WrappedConfigImpl<T> {
         }
         MONITOR.addObserver(observer);
         monitoring = true;
-        update();
+        updateLater();
         App.logger.debug("Started monitoring file: " + path);
         return true;
     }
@@ -164,8 +164,13 @@ public class UpdatingConfig<T> extends WrappedConfigImpl<T> {
         }
 
         @Override
-        public void update() {
-            UpdatingConfig.this.update();
+        public void updateLater() {
+            UpdatingConfig.this.updateLater();
+        }
+
+        @Override
+        public void updateAndAwait() {
+            UpdatingConfig.this.updateAndAwait();
         }
     }
 }

@@ -15,7 +15,9 @@ public interface WrappedConfig<T> {
 
     void edit(Consumer<T> consumer);
 
-    void update();
+    void updateLater();
+
+    void updateAndAwait();
 
     static <T> WrappedConfig<T> of(Class<T> tClass, String path, Supplier<T> defaultConfigSupplier) {
         return new WrappedConfigImpl<>(tClass, path, defaultConfigSupplier);
