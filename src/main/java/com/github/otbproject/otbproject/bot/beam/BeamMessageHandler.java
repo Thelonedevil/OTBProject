@@ -4,6 +4,7 @@ import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.bot.BotUtil;
 import com.github.otbproject.otbproject.bot.Control;
 import com.github.otbproject.otbproject.channel.*;
+import com.github.otbproject.otbproject.event.ChannelMessageEvent;
 import com.github.otbproject.otbproject.messages.receive.PackagedMessage;
 import com.github.otbproject.otbproject.messages.send.MessagePriority;
 import com.github.otbproject.otbproject.proc.TimeoutProcessor;
@@ -83,7 +84,7 @@ public class BeamMessageHandler implements EventHandler<IncomingMessageEvent> {
                 ChannelProxy channel = optional.get();
                 UserLevel userLevel = UserLevels.getUserLevel(channel.getMainDatabaseWrapper(), channelName, userNameLower);
                 PackagedMessage packagedMessage = new PackagedMessage(message, userNameLower, channelName, userLevel, MessagePriority.DEFAULT);
-                bot.invokeMessageHandlers(channel, packagedMessage, TimeoutProcessor.doTimeouts(channel, packagedMessage));
+                bot.eventBus().post(new ChannelMessageEvent(channel, packagedMessage, TimeoutProcessor.doTimeouts(channel, packagedMessage)));
             } else {
                 App.logger.error("Channel: " + channelName + " appears not to exist");
             }

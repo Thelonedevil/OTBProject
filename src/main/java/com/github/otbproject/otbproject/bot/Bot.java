@@ -6,6 +6,7 @@ import com.github.otbproject.otbproject.channel.ChannelProxy;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.messages.receive.PackagedMessage;
 import com.github.otbproject.otbproject.messages.receive.MessageHandler;
+import com.google.common.eventbus.EventBus;
 
 import java.util.concurrent.ConcurrentMap;
 
@@ -47,7 +48,5 @@ public interface Bot {
 
     boolean removeTimeout(String channelName, String user);
 
-    void onMessage(MessageHandler messageHandler);
-
-    void invokeMessageHandlers(ChannelProxy channel, PackagedMessage message, boolean timedOut);
+    EventBus eventBus();
 }

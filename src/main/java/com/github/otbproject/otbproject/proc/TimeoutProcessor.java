@@ -15,7 +15,7 @@ public class TimeoutProcessor {
     public static boolean doTimeouts(ChannelProxy channel, PackagedMessage packagedMessage) {
         // TODO implement and remove if statement
         if (false) { // So I can work on an implementation without changing behaviour
-            Optional<FilterGroup> optional = FilterProcessor.process(channel.getFilterMap(), packagedMessage.message, packagedMessage.userLevel);
+            Optional<FilterGroup> optional = FilterProcessor.process(channel.getFilterMap(), packagedMessage.getMessage(), packagedMessage.getUserLevel());
             if (optional.isPresent()) {
                 FilterGroup filterGroup = optional.get();
                 performFilterAction(packagedMessage, filterGroup.getAction());
@@ -31,16 +31,16 @@ public class TimeoutProcessor {
     private static void performFilterAction(PackagedMessage packagedMessage, FilterAction action) {
         switch (action) {
             case BAN:
-                Control.bot().ban(packagedMessage.channel, packagedMessage.user);
+                Control.bot().ban(packagedMessage.getChannel(), packagedMessage.getUser());
                 break;
             case TIMEOUT:
-                Control.bot().timeout(packagedMessage.channel, packagedMessage.user, 600); // TODO get actual time from somewhere (config?)
+                Control.bot().timeout(packagedMessage.getChannel(), packagedMessage.getUser(), 600); // TODO get actual time from somewhere (config?)
                 break;
             case STRIKE:
                 // TODO handle strike number
                 break;
             case PURGE:
-                Control.bot().timeout(packagedMessage.channel, packagedMessage.user, 1);
+                Control.bot().timeout(packagedMessage.getChannel(), packagedMessage.getUser(), 1);
                 break;
             default:
                 // No action to perform by default
@@ -61,7 +61,7 @@ public class TimeoutProcessor {
                 // TODO handle strike number
                 break;
         }
-        PackagedMessage responseMessage = new PackagedMessage(responseCommand, incomingMessage.user, incomingMessage.channel, incomingMessage.destinationChannel, UserLevel.INTERNAL, MessagePriority.LOW);
+        PackagedMessage responseMessage = new PackagedMessage(responseCommand, incomingMessage.getUser(), incomingMessage.getChannel(), incomingMessage.getDestinationChannel(), UserLevel.INTERNAL, MessagePriority.LOW);
         channel.receiveMessage(responseMessage);
     }
 }

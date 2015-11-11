@@ -3,12 +3,13 @@ package com.github.otbproject.otbproject.bot;
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.channel.Channel;
 import com.github.otbproject.otbproject.channel.ChannelManager;
-import com.github.otbproject.otbproject.channel.ChannelProxy;
 import com.github.otbproject.otbproject.channel.ProxiedChannel;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.database.Databases;
-import com.github.otbproject.otbproject.messages.receive.PackagedMessage;
-import com.github.otbproject.otbproject.messages.receive.MessageHandler;
+import com.github.otbproject.otbproject.event.ChannelMessageEvent;
+import com.github.otbproject.otbproject.util.Watcher;
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -19,14 +20,15 @@ public abstract class AbstractBot implements Bot {
     private final ConcurrentMap<String, ProxiedChannel> channels;
     private final ChannelManager channelManager;
     protected final DatabaseWrapper botDB = Databases.createBotDbWrapper();
-    protected MessageHandler messageHandlers = (channel, packagedMessage, timedOut) -> {};
+    private final EventBus eventBus;
 
     public AbstractBot() {
-        onMessage((channel, packagedMessage, timedOut) -> {
-            if (!timedOut) {
-                channel.receiveMessage(packagedMessage);
-            }
+        eventBus = new EventBus((exception, context) -> {
+            App.logger.catching(exception);
+            Watcher.logException();
         });
+
+        eventBus.register(new MessageEventHandler());
         channels = new ConcurrentHashMap<>();
         channelManager = new ChannelManager(channels);
     }
@@ -58,19 +60,16 @@ public abstract class AbstractBot implements Bot {
     }
 
     @Override
-    public void onMessage(MessageHandler messageHandler) {
-        messageHandlers = messageHandlers.andThen((channel, packagedMessage, timedOut) -> {
-            // In try/catch block so that one handler can't crash others (unless it Errors)
-            try {
-                messageHandler.onMessage(channel, packagedMessage, timedOut);
-            } catch (Exception e) {
-                App.logger.catching(e);
-            }
-        });
+    public EventBus eventBus() {
+        return eventBus;
     }
 
-    @Override
-    public void invokeMessageHandlers(ChannelProxy channel, PackagedMessage message, boolean timedOut) {
-        messageHandlers.onMessage(channel, message, timedOut);
+    private static class MessageEventHandler {
+        @Subscribe
+        public void receiveMessage(ChannelMessageEvent event) {
+            if (!event.isFiltered()) {
+                event.getChannel().receiveMessage(event.getMessage());
+            }
+        }
     }
 }
