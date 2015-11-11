@@ -4,7 +4,7 @@ import com.github.otbproject.otbproject.event.ChannelStateChangeEvent;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-public class AbstractServiceChannel {
+public abstract class AbstractServiceChannel {
     protected final AtomicReference<ChannelState> state = new AtomicReference<>(ChannelState.DEAD);
 
     protected void updateChannelState(ChannelState newState) {
