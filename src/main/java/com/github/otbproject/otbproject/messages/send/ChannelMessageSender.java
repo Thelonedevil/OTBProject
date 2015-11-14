@@ -6,27 +6,21 @@ import com.github.otbproject.otbproject.channel.Channel;
 import com.github.otbproject.otbproject.config.BotConfig;
 import com.github.otbproject.otbproject.config.Configs;
 import com.github.otbproject.otbproject.util.ThreadUtil;
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.PriorityBlockingQueue;
 
 // This class is not in general thread-safe. Thread safety should be enforced by the
 // class using this one
 public class ChannelMessageSender {
-    private static final ExecutorService EXECUTOR_SERVICE;
+    private static final ExecutorService EXECUTOR_SERVICE = ThreadUtil.newCachedThreadPool();
 
     private final Channel channel;
     private final PriorityBlockingQueue<MessageOut> queue =
             new PriorityBlockingQueue<>(11, MessageOut.PRIORITY_COMPARATOR);
     private Future<?> future;
     private volatile boolean active = false;
-
-    static {
-        EXECUTOR_SERVICE = ThreadUtil.newCachedThreadPool();
-    }
 
     public ChannelMessageSender(Channel channel) {
         this.channel = channel;
