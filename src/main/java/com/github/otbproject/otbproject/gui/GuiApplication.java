@@ -182,12 +182,8 @@ public class GuiApplication extends Application {
         private final ScheduledFuture<?> scheduledFuture;
 
         public CustomTailerListenerAdapter() {
-            scheduledFuture = Executors.newSingleThreadScheduledExecutor(
-                    new ThreadFactoryBuilder()
-                            .setNameFormat("GUI-console-daemon")
-                            .setUncaughtExceptionHandler(ThreadUtil.UNCAUGHT_EXCEPTION_HANDLER)
-                            .build()
-            ).scheduleWithFixedDelay(this::addToConsole, 0, 100, TimeUnit.MILLISECONDS);
+            scheduledFuture = Executors.newSingleThreadScheduledExecutor(ThreadUtil.newThreadFactory("GUI-console-daemon"))
+                    .scheduleWithFixedDelay(this::addToConsole, 0, 100, TimeUnit.MILLISECONDS);
         }
 
         void stop() {

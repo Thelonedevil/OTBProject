@@ -19,11 +19,7 @@ public class UpdatingConfig<T> extends WrappedConfigImpl<T> {
 
     static {
         MONITOR = new FileAlterationMonitor(200); // 5 times per second
-        MONITOR.setThreadFactory(new ThreadFactoryBuilder()
-                .setNameFormat("file-alteration-monitor")
-                .setUncaughtExceptionHandler(ThreadUtil.UNCAUGHT_EXCEPTION_HANDLER)
-                .build()
-        );
+        MONITOR.setThreadFactory(ThreadUtil.newThreadFactory("file-alteration-monitor"));
         try {
             MONITOR.start();
         } catch (Exception e) {

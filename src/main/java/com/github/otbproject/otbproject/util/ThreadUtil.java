@@ -35,13 +35,13 @@ public class ThreadUtil {
         return Executors.newCachedThreadPool(newThreadFactory(nameFormat));
     }
 
-    private static ThreadFactory newThreadFactory() {
+    public static ThreadFactory newThreadFactory() {
         return new ThreadFactoryBuilder()
                 .setUncaughtExceptionHandler(UNCAUGHT_EXCEPTION_HANDLER)
                 .build();
     }
 
-    private static ThreadFactory newThreadFactory(String nameFormat) {
+    public static ThreadFactory newThreadFactory(String nameFormat) {
         return new ThreadFactoryBuilder()
                 .setNameFormat(nameFormat)
                 .setUncaughtExceptionHandler(UNCAUGHT_EXCEPTION_HANDLER)
