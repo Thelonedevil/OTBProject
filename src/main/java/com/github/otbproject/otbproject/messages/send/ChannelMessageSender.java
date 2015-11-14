@@ -25,11 +25,7 @@ public class ChannelMessageSender {
     private volatile boolean active = false;
 
     static {
-        EXECUTOR_SERVICE = Executors.newCachedThreadPool(
-                new ThreadFactoryBuilder()
-                        .setUncaughtExceptionHandler(ThreadUtil.UNCAUGHT_EXCEPTION_HANDLER)
-                        .build()
-        );
+        EXECUTOR_SERVICE = ThreadUtil.newCachedThreadPool();
     }
 
     public ChannelMessageSender(Channel channel) {

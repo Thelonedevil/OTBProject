@@ -5,6 +5,7 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 
 public class ThreadUtil {
     public static final Thread.UncaughtExceptionHandler UNCAUGHT_EXCEPTION_HANDLER;
@@ -19,20 +20,32 @@ public class ThreadUtil {
     }
 
     public static ExecutorService getSingleThreadExecutor() {
-        return Executors.newSingleThreadExecutor(
-                new ThreadFactoryBuilder()
-                        .setUncaughtExceptionHandler(UNCAUGHT_EXCEPTION_HANDLER)
-                        .build()
-        );
+        return Executors.newSingleThreadExecutor(newThreadFactory());
     }
 
     public static ExecutorService getSingleThreadExecutor(String nameFormat) {
-        return Executors.newSingleThreadExecutor(
-                new ThreadFactoryBuilder()
-                        .setNameFormat(nameFormat)
-                        .setUncaughtExceptionHandler(UNCAUGHT_EXCEPTION_HANDLER)
-                        .build()
-        );
+        return Executors.newSingleThreadExecutor(newThreadFactory(nameFormat));
+    }
+
+    public static ExecutorService newCachedThreadPool() {
+        return Executors.newCachedThreadPool(newThreadFactory());
+    }
+
+    public static ExecutorService newCachedThreadPool(String nameFormat) {
+        return Executors.newCachedThreadPool(newThreadFactory(nameFormat));
+    }
+
+    private static ThreadFactory newThreadFactory() {
+        return new ThreadFactoryBuilder()
+                .setUncaughtExceptionHandler(UNCAUGHT_EXCEPTION_HANDLER)
+                .build();
+    }
+
+    private static ThreadFactory newThreadFactory(String nameFormat) {
+        return new ThreadFactoryBuilder()
+                .setNameFormat(nameFormat)
+                .setUncaughtExceptionHandler(UNCAUGHT_EXCEPTION_HANDLER)
+                .build();
     }
 
     public static void interruptIfInterruptedException(Exception e) {

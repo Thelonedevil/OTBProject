@@ -25,12 +25,7 @@ public class BeamMessageHandler implements EventHandler<IncomingMessageEvent> {
     private static final ExecutorService EXECUTOR_SERVICE;
 
     static {
-        EXECUTOR_SERVICE = Executors.newCachedThreadPool(
-                new ThreadFactoryBuilder()
-                        .setNameFormat("Beam-in-%d")
-                        .setUncaughtExceptionHandler(ThreadUtil.UNCAUGHT_EXCEPTION_HANDLER)
-                        .build()
-        );
+        EXECUTOR_SERVICE = ThreadUtil.newCachedThreadPool("Beam-in-%d");
     }
 
     private final String channelName;
