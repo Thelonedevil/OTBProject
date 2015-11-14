@@ -19,7 +19,7 @@ class WarDownload {
     private static final String DL_EXT = ".download";
 
     public static void downloadLatest() {
-        ExecutorService executor = ThreadUtil.getSingleThreadExecutor("War Download");
+        ExecutorService executor = ThreadUtil.newSingleThreadExecutor("War Download");
         App.logger.info("Downloading web interface version " + WebVersion.latest());
 
         boolean success = false;

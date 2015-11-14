@@ -55,7 +55,7 @@ public class GuiApplication extends Application {
     static final Lock READY_LOCK = new ReentrantLock(true);
     static final BlockingQueue<Runnable> NOT_READY_QUEUE = new LinkedBlockingQueue<>();
 
-    private static final ExecutorService DESKTOP_SERVICE = ThreadUtil.getSingleThreadExecutor("Desktop Daemon");
+    private static final ExecutorService DESKTOP_SERVICE = ThreadUtil.newSingleThreadExecutor("Desktop Daemon");
 
     /**
      * The main entry point for all JavaFX applications.

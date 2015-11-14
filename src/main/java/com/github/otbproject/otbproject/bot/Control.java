@@ -144,7 +144,7 @@ public class Control {
             default:
                 throw new BotInitException("Unknown service: " + service);
         }
-        ThreadUtil.getSingleThreadExecutor("Bot").execute(() -> {
+        ThreadUtil.newSingleThreadExecutor("Bot").execute(() -> {
             try {
                 App.logger.info("Bot Started");
                 bot.startBot();

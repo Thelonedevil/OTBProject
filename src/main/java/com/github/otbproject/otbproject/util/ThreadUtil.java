@@ -19,11 +19,11 @@ public class ThreadUtil {
         Thread.setDefaultUncaughtExceptionHandler(UNCAUGHT_EXCEPTION_HANDLER);
     }
 
-    public static ExecutorService getSingleThreadExecutor() {
+    public static ExecutorService newSingleThreadExecutor() {
         return Executors.newSingleThreadExecutor(newThreadFactory());
     }
 
-    public static ExecutorService getSingleThreadExecutor(String nameFormat) {
+    public static ExecutorService newSingleThreadExecutor(String nameFormat) {
         return Executors.newSingleThreadExecutor(newThreadFactory(nameFormat));
     }
 
