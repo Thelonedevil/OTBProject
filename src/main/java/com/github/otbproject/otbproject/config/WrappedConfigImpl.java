@@ -12,6 +12,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 class WrappedConfigImpl<T> implements WrappedConfig<T> {
+    private static final long TIMEOUT_SECONDS = 5;
     protected static final BlockingDeque<Runnable> UPDATE_DEQUE = new LinkedBlockingDeque<>();
     protected static final ExecutorService UPDATE_SERVICE;
 
@@ -45,10 +46,14 @@ class WrappedConfigImpl<T> implements WrappedConfig<T> {
     }
 
     @Override
-    public <R> R getExactly(Function<T, R> function) throws ExecutionException, InterruptedException {
+    public <R> R getExactly(Function<T, R> function) throws ExecutionException, InterruptedException, TimeoutException {
         FutureTask<R> futureTask = new FutureTask<>(() -> function.apply(config));
         UPDATE_DEQUE.addLast(futureTask);
-        return futureTask.get();
+        try {
+            return futureTask.get(TIMEOUT_SECONDS, TimeUnit.SECONDS);
+        } catch (TimeoutException e) {
+            throw new TimeoutException("Took too long to get value from config");
+        }
     }
 
     @Override
@@ -58,7 +63,7 @@ class WrappedConfigImpl<T> implements WrappedConfig<T> {
         } catch (InterruptedException e) {
             App.logger.catching(e);
             Thread.currentThread().interrupt();
-        } catch (ExecutionException e) {
+        } catch (ExecutionException | TimeoutException e) {
             App.logger.catching(e);
         }
         return Optional.empty();
@@ -91,8 +96,11 @@ class WrappedConfigImpl<T> implements WrappedConfig<T> {
         UPDATE_DEQUE.addFirst(() -> needsUpdate = true);
         UPDATE_DEQUE.addLast(task);
         try {
-            Uninterruptibles.getUninterruptibly(task);
+            Uninterruptibles.getUninterruptibly(task, TIMEOUT_SECONDS, TimeUnit.SECONDS);
         } catch (ExecutionException e) {
+            App.logger.catching(e);
+        } catch (TimeoutException e) {
+            App.logger.error("Took too long for config to update");
             App.logger.catching(e);
         }
     }

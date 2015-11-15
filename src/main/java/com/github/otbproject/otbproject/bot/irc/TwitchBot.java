@@ -22,6 +22,7 @@ import java.lang.reflect.Field;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 public class TwitchBot extends AbstractBot {
     private final IRCBot ircBot;
@@ -36,7 +37,7 @@ public class TwitchBot extends AbstractBot {
         super();
         try {
             ircBot = new IRCBot();
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
             ThreadUtil.interruptIfInterruptedException(e);
             throw new BotInitException(e);
         }
