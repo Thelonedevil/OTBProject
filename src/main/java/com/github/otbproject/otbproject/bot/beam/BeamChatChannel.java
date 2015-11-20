@@ -48,7 +48,10 @@ class BeamChatChannel {
 
     private static final int CACHE_EXPIRATION_MIN = 5;
     private static final int CACHE_MAX_SIZE = 200;
-    private final SetMultimap<String, String> cacheLookup = Multimaps.newSetMultimap(new ConcurrentHashMap<>(), ConcurrentHashMap::newKeySet);
+    private final SetMultimap<String, String> cacheLookup =
+            Multimaps.synchronizedSetMultimap(
+                    Multimaps.newSetMultimap(new ConcurrentHashMap<>(), ConcurrentHashMap::newKeySet)
+            );
     final Cache<String, IncomingMessageData> messageCache;
 
 
