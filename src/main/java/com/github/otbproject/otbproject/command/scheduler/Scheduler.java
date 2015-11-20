@@ -1,5 +1,6 @@
 package com.github.otbproject.otbproject.command.scheduler;
 
+import com.github.otbproject.otbproject.util.ThreadUtil;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 import java.util.concurrent.Executors;
@@ -20,11 +21,7 @@ public class Scheduler {
     }
 
     private ScheduledExecutorService getService() {
-        return Executors.newSingleThreadScheduledExecutor(
-                new ThreadFactoryBuilder()
-                        .setNameFormat(channel + "-scheduler")
-                        .build()
-        );
+        return Executors.newSingleThreadScheduledExecutor(ThreadUtil.newThreadFactory(channel + "-scheduler"));
     }
 
     public boolean start() {

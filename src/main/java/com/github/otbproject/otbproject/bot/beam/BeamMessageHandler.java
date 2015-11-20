@@ -22,16 +22,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class BeamMessageHandler implements EventHandler<IncomingMessageEvent> {
-    private static final ExecutorService EXECUTOR_SERVICE;
-
-    static {
-        EXECUTOR_SERVICE = Executors.newCachedThreadPool(
-                new ThreadFactoryBuilder()
-                        .setNameFormat("Beam-in-%d")
-                        .setUncaughtExceptionHandler(ThreadUtil.UNCAUGHT_EXCEPTION_HANDLER)
-                        .build()
-        );
-    }
+    private static final ExecutorService EXECUTOR_SERVICE = ThreadUtil.newCachedThreadPool("Beam-in-%d");
 
     private final String channelName;
     private final BeamChatChannel beamChatChannel;

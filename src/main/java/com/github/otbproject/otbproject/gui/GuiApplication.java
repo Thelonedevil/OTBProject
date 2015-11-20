@@ -55,7 +55,7 @@ public class GuiApplication extends Application {
     static final Lock READY_LOCK = new ReentrantLock(true);
     static final BlockingQueue<Runnable> NOT_READY_QUEUE = new LinkedBlockingQueue<>();
 
-    private static final ExecutorService DESKTOP_SERVICE = ThreadUtil.getSingleThreadExecutor("Desktop Daemon");
+    private static final ExecutorService DESKTOP_SERVICE = ThreadUtil.newSingleThreadExecutor("Desktop Daemon");
 
     /**
      * The main entry point for all JavaFX applications.
@@ -182,12 +182,8 @@ public class GuiApplication extends Application {
         private final ScheduledFuture<?> scheduledFuture;
 
         public CustomTailerListenerAdapter() {
-            scheduledFuture = Executors.newSingleThreadScheduledExecutor(
-                    new ThreadFactoryBuilder()
-                            .setNameFormat("GUI-console-daemon")
-                            .setUncaughtExceptionHandler(ThreadUtil.UNCAUGHT_EXCEPTION_HANDLER)
-                            .build()
-            ).scheduleWithFixedDelay(this::addToConsole, 0, 100, TimeUnit.MILLISECONDS);
+            scheduledFuture = Executors.newSingleThreadScheduledExecutor(ThreadUtil.newThreadFactory("GUI-console-daemon"))
+                    .scheduleWithFixedDelay(this::addToConsole, 0, 100, TimeUnit.MILLISECONDS);
         }
 
         void stop() {

@@ -7,7 +7,9 @@ import com.github.otbproject.otbproject.channel.ProxiedChannel;
 import com.github.otbproject.otbproject.database.DatabaseWrapper;
 import com.github.otbproject.otbproject.database.Databases;
 import com.github.otbproject.otbproject.event.ChannelMessageEvent;
+import com.github.otbproject.otbproject.util.ThreadUtil;
 import com.github.otbproject.otbproject.util.Watcher;
+import com.google.common.eventbus.AsyncEventBus;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
@@ -23,10 +25,13 @@ public abstract class AbstractBot implements Bot {
     private final EventBus eventBus;
 
     public AbstractBot() {
-        eventBus = new EventBus((exception, context) -> {
-            App.logger.catching(exception);
-            Watcher.logException();
-        });
+        eventBus = new AsyncEventBus(
+                ThreadUtil.newCachedThreadPool("event-dispatcher-%d"),
+                (exception, context) -> {
+                    App.logger.catching(exception);
+                    Watcher.logException();
+                }
+        );
 
         eventBus.register(new MessageEventHandler());
         channels = new ConcurrentHashMap<>();

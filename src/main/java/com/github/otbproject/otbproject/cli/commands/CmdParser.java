@@ -40,7 +40,7 @@ public class CmdParser {
     public static final String HELP = "help";
     private static final HashMap<String, CliCommand> map = new HashMap<>();
     private static final CliCommand.Builder commandBuilder = new CliCommand.Builder();
-    private static final ExecutorService EXECUTOR_SERVICE = ThreadUtil.getSingleThreadExecutor("CLI Command Processor");
+    private static final ExecutorService EXECUTOR_SERVICE = ThreadUtil.newSingleThreadExecutor("CLI Command Processor");
     private static List<String> args;
     private static String source = "";
 

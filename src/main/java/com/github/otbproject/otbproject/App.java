@@ -116,7 +116,7 @@ public class App {
 
         // Start GUI if applicable
         if (Control.Graphics.present()) {
-            ThreadUtil.getSingleThreadExecutor().execute(() -> GuiApplication.start(args));
+            ThreadUtil.newSingleThreadExecutor().execute(() -> GuiApplication.start(args));
         }
 
         // Fix other compatibility issues

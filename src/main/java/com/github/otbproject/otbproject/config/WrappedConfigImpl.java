@@ -15,7 +15,7 @@ class WrappedConfigImpl<T> implements WrappedConfig<T> {
     protected static final ExecutorService UPDATE_SERVICE;
 
     static {
-        UPDATE_SERVICE = ThreadUtil.getSingleThreadExecutor("config-updater");
+        UPDATE_SERVICE = ThreadUtil.newSingleThreadExecutor("config-updater");
         UPDATE_SERVICE.execute(() -> {
             try {
                 while (true) {
