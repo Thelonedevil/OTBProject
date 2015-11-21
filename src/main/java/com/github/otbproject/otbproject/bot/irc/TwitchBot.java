@@ -47,6 +47,7 @@ public class TwitchBot extends AbstractBot {
             input = c.getDeclaredField("inputParser");
             input.setAccessible(true);
             input.set(ircBot, new InputParserImproved(ircBot));
+            input.setAccessible(false);
         } catch (NoSuchFieldException | IllegalAccessException e) {
             Watcher.logException();
             throw new BotInitException(e);
