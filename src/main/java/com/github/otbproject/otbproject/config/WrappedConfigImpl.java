@@ -3,6 +3,7 @@ package com.github.otbproject.otbproject.config;
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.util.JsonHandler;
 import com.github.otbproject.otbproject.util.ThreadUtil;
+import com.google.common.util.concurrent.Uninterruptibles;
 
 import java.util.Optional;
 import java.util.concurrent.*;
@@ -11,19 +12,18 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 class WrappedConfigImpl<T> implements WrappedConfig<T> {
+    private static final long TIMEOUT_SECONDS = 5;
     protected static final BlockingDeque<Runnable> UPDATE_DEQUE = new LinkedBlockingDeque<>();
     protected static final ExecutorService UPDATE_SERVICE;
 
     static {
         UPDATE_SERVICE = ThreadUtil.newSingleThreadExecutor("config-updater");
         UPDATE_SERVICE.execute(() -> {
-            try {
-                while (true) {
-                    UPDATE_DEQUE.takeFirst().run();
-                }
-            } catch (InterruptedException e) {
-                App.logger.error("Interrupted config updater service. Configs can no longer be modified. This is probably not what you wanted to do.");
-                Thread.currentThread().interrupt();
+            // Loops forever, because there is not currently any scenario in which it
+            // is sensible to interrupt it (as that would prevent all further updates
+            // and edits)
+            while (true) {
+                Uninterruptibles.takeUninterruptibly(UPDATE_DEQUE).run();
             }
         });
     }
@@ -46,10 +46,14 @@ class WrappedConfigImpl<T> implements WrappedConfig<T> {
     }
 
     @Override
-    public <R> R getExactly(Function<T, R> function) throws ExecutionException, InterruptedException {
+    public <R> R getExactly(Function<T, R> function) throws ExecutionException, InterruptedException, TimeoutException {
         FutureTask<R> futureTask = new FutureTask<>(() -> function.apply(config));
         UPDATE_DEQUE.addLast(futureTask);
-        return futureTask.get();
+        try {
+            return futureTask.get(TIMEOUT_SECONDS, TimeUnit.SECONDS);
+        } catch (TimeoutException e) {
+            throw new TimeoutException("Took too long to get value from config");
+        }
     }
 
     @Override
@@ -59,7 +63,7 @@ class WrappedConfigImpl<T> implements WrappedConfig<T> {
         } catch (InterruptedException e) {
             App.logger.catching(e);
             Thread.currentThread().interrupt();
-        } catch (ExecutionException e) {
+        } catch (ExecutionException | TimeoutException e) {
             App.logger.catching(e);
         }
         return Optional.empty();
@@ -92,10 +96,12 @@ class WrappedConfigImpl<T> implements WrappedConfig<T> {
         UPDATE_DEQUE.addFirst(() -> needsUpdate = true);
         UPDATE_DEQUE.addLast(task);
         try {
-            task.get();
-        } catch (InterruptedException | ExecutionException e) {
+            Uninterruptibles.getUninterruptibly(task, TIMEOUT_SECONDS, TimeUnit.SECONDS);
+        } catch (ExecutionException e) {
             App.logger.catching(e);
-            ThreadUtil.interruptIfInterruptedException(e);
+        } catch (TimeoutException e) {
+            App.logger.error("Took too long for config to update");
+            App.logger.catching(e);
         }
     }
 

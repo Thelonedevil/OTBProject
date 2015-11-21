@@ -12,11 +12,12 @@ import java.io.InterruptedIOException;
 import java.net.SocketException;
 import java.nio.charset.Charset;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 
 class IRCBot extends PircBotX {
     private final OutputRaw newOutputRaw;
 
-    public IRCBot() throws ExecutionException, InterruptedException {
+    public IRCBot() throws ExecutionException, InterruptedException, TimeoutException {
         super(new Configuration.Builder()
                 .setName(Configs.getAccount().getExactly(Account::getName))
                 .setAutoNickChange(false) //Twitch doesn't support multiple users

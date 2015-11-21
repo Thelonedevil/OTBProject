@@ -5,7 +5,6 @@ import com.github.otbproject.otbproject.bot.AbstractBot;
 import com.github.otbproject.otbproject.bot.BotInitException;
 import com.github.otbproject.otbproject.bot.BotUtil;
 import com.github.otbproject.otbproject.channel.ChannelNotFoundException;
-import com.github.otbproject.otbproject.serviceapi.ApiRequest;
 import com.github.otbproject.otbproject.util.ThreadUtil;
 import com.github.otbproject.otbproject.util.Watcher;
 import com.google.common.collect.Multimaps;
@@ -23,6 +22,7 @@ import java.lang.reflect.Field;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 public class TwitchBot extends AbstractBot {
     private final IRCBot ircBot;
@@ -37,7 +37,7 @@ public class TwitchBot extends AbstractBot {
         super();
         try {
             ircBot = new IRCBot();
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
             ThreadUtil.interruptIfInterruptedException(e);
             throw new BotInitException(e);
         }
@@ -47,6 +47,7 @@ public class TwitchBot extends AbstractBot {
             input = c.getDeclaredField("inputParser");
             input.setAccessible(true);
             input.set(ircBot, new InputParserImproved(ircBot));
+            input.setAccessible(false);
         } catch (NoSuchFieldException | IllegalAccessException e) {
             Watcher.logException();
             throw new BotInitException(e);

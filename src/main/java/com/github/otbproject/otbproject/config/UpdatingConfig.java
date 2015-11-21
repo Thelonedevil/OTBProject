@@ -10,6 +10,7 @@ import org.apache.commons.io.monitor.FileAlterationObserver;
 import java.io.File;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -145,7 +146,7 @@ public class UpdatingConfig<T> extends WrappedConfigImpl<T> {
         }
 
         @Override
-        public <R> R getExactly(Function<T, R> function) throws ExecutionException, InterruptedException {
+        public <R> R getExactly(Function<T, R> function) throws ExecutionException, InterruptedException, TimeoutException {
             return UpdatingConfig.this.getExactly(function);
         }
 

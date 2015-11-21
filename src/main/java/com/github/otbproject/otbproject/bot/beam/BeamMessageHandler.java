@@ -11,7 +11,6 @@ import com.github.otbproject.otbproject.proc.TimeoutProcessor;
 import com.github.otbproject.otbproject.user.UserLevel;
 import com.github.otbproject.otbproject.user.UserLevels;
 import com.github.otbproject.otbproject.util.ThreadUtil;
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import pro.beam.api.resource.chat.events.EventHandler;
 import pro.beam.api.resource.chat.events.IncomingMessageEvent;
 import pro.beam.api.resource.chat.events.data.IncomingMessageData;
@@ -19,9 +18,8 @@ import pro.beam.api.resource.chat.events.data.IncomingMessageData;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
-public class BeamMessageHandler implements EventHandler<IncomingMessageEvent> {
+class BeamMessageHandler implements EventHandler<IncomingMessageEvent> {
     private static final ExecutorService EXECUTOR_SERVICE = ThreadUtil.newCachedThreadPool("Beam-in-%d");
 
     private final String channelName;

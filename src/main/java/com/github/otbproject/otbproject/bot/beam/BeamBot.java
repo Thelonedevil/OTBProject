@@ -43,7 +43,7 @@ public class BeamBot extends AbstractBot {
 
         try {
             beamUser = beam.use(UsersService.class).login(Configs.getAccount().getExactly(Account::getName), Configs.getAccount().getExactly(Account::getPasskey)).get();
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
             ThreadUtil.interruptIfInterruptedException(e);
             throw new BotInitException("Unable to connect bot to Beam", e);
         }
