@@ -154,7 +154,14 @@ public class Control {
             } catch (BotInitException e) {
                 App.logger.catching(e);
             }
+            handlePossibleFailedStartup();
         });
+    }
+
+    private static synchronized void handlePossibleFailedStartup() {
+        if (!bot.isConnected()) {
+            shutdown(true);
+        }
     }
 
     private static void init() {
