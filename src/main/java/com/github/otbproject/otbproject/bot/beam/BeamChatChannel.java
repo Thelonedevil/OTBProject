@@ -103,7 +103,7 @@ class BeamChatChannel {
         Uninterruptibles.sleepUninterruptibly(200, TimeUnit.MILLISECONDS); // needed to allow the authentication
 
         // Get list of users and roles
-        String path = BeamAPI.BASE_PATH.resolve("chats/" + channel.id + "/users").toString();
+        String path = beamBot.beam.basePath.resolve("chats/" + channel.id + "/users").toString();
         try {
             HashMap<String, Object> map = new HashMap<>();
             map.put("limit", USER_LIST_MAX_SIZE);
