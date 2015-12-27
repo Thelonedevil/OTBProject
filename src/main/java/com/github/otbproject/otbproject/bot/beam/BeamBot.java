@@ -242,7 +242,7 @@ public class BeamBot extends AbstractBot {
             return false;
         }
 
-        String path = BeamAPI.BASE_PATH.resolve("channels/" + beamChatChannel.channel.id + "/users/" + user.toLowerCase()).toString();
+        String path = beam.basePath.resolve("channels/" + beamChatChannel.channel.id + "/users/" + user.toLowerCase()).toString();
         HashMap<String, Object> map = new HashMap<>();
         map.put(param, new String[]{"Banned"});
         try {
