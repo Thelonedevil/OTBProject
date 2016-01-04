@@ -1,8 +1,13 @@
 package com.github.otbproject.otbproject.util.version;
 
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import java.lang.reflect.Type;
 import java.util.Optional;
 
 public class Version implements Comparable<Version> {
@@ -206,6 +211,13 @@ public class Version implements Comparable<Version> {
                     && ((minor < 0) || (minor == version.minor))
                     && ((patch < 0) || (patch == version.patch))
                     && ((type == null) || (type == version.type));
+        }
+    }
+
+    public static class Deserializer implements JsonDeserializer<Version> {
+        @Override
+        public Version deserialize(JsonElement json, java.lang.reflect.Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+            return parseAsOptional(json.getAsJsonPrimitive().getAsString()).orElse(create(0, 0, 0, Type.RELEASE));
         }
     }
 }
