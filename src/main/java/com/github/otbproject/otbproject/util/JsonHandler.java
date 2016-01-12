@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.util.version.Version;
 import com.google.common.collect.ImmutableList;
+import com.google.common.reflect.TypeParameter;
+import com.google.common.reflect.TypeToken;
 import com.google.gson.*;
 
 import javax.validation.ConstraintViolation;
@@ -12,6 +14,7 @@ import javax.validation.Validator;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -86,12 +89,25 @@ public class JsonHandler {
                 .collect(Collectors.joining(", ", "[", "]"));
     }
 
-    // TODO: 1/4/16 Check that works with generics
     private static class ImmutableListDeserializer implements JsonDeserializer<ImmutableList<?>> {
         @Override
         public ImmutableList<?> deserialize(JsonElement json, Type type, JsonDeserializationContext context) throws JsonParseException {
-            List<?> list = context.deserialize(json, ArrayList.class);
+            final Type[] typeArguments = ((ParameterizedType) type).getActualTypeArguments();
+            final Type parameterizedType = listOf( typeArguments[0] ).getType();
+            List<?> list = context.deserialize(json, parameterizedType);
             return ImmutableList.copyOf(list);
         }
     }
+
+    /*
+    This ought to be safe and work properly, according to StackOverflow
+    https://stackoverflow.com/a/21677349/5101123
+     */
+    @SuppressWarnings("unchecked")
+    private static <E> TypeToken<List<E>> listOf(final Type arg) {
+        return new TypeToken<List<E>>() {}
+                .where(new TypeParameter<E>() {}, (TypeToken<E>) TypeToken.of(arg));
+    }
+
+
 }
