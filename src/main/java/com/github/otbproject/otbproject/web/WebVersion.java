@@ -1,35 +1,53 @@
 package com.github.otbproject.otbproject.web;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.github.otbproject.otbproject.fs.FSUtil;
+import com.github.otbproject.otbproject.util.version.AddonReleaseData;
 import com.github.otbproject.otbproject.util.version.Version;
-import com.github.otbproject.otbproject.util.version.Versions;
+import com.google.common.collect.ImmutableList;
 
 import java.io.File;
 import java.util.Optional;
 
 public class WebVersion {
-    private static class LatestVersionHolder {
-        private static final Version WEB_VERSION;
+    private static class ReleaseDataHolder {
+        private static final ImmutableList<AddonReleaseData> RELEASE_DATA;
+        private static final Optional<AddonReleaseData> LATEST_RELEASE_DATA_OPTIONAL;
+        private static final Version LATEST_VERSION;
         private static final Version REQUIRED_APP_VERSION;
 
         static {
-            Optional<JsonNode> optional = Versions.getJsonForLatestGithubRelease("otbwebinterface");
-            WEB_VERSION = Version.parseAsOptional(Versions.getVersionFromJsonNodeOptional(optional))
-                    .orElse(Version.create(0, 0, Version.Type.RELEASE));
-            REQUIRED_APP_VERSION = Version.parseAsOptional(getRequiredAppVersion(optional))
-                    .orElse(Version.create(0, 0, Version.Type.RELEASE));
+            RELEASE_DATA = AddonReleaseData.fetchData("https://otbproject.github.io/release-data/web-interface");
+
+            LATEST_RELEASE_DATA_OPTIONAL = RELEASE_DATA.stream()
+                    .max((o1, o2) -> o1.getVersion().compareTo(o2.getVersion()));
+
+            if (LATEST_RELEASE_DATA_OPTIONAL.isPresent()) {
+                AddonReleaseData latestReleaseData = LATEST_RELEASE_DATA_OPTIONAL.get();
+                LATEST_VERSION = latestReleaseData.getVersion();
+                REQUIRED_APP_VERSION = latestReleaseData.getMinimumAppVersion();
+            } else {
+                LATEST_VERSION = Version.create(0, 0, Version.Type.RELEASE);
+                REQUIRED_APP_VERSION = Version.create(0, 0, 0, Version.Type.RELEASE);
+            }
         }
     }
 
     private WebVersion() {}
 
     public static Version latest() {
-        return LatestVersionHolder.WEB_VERSION;
+        return ReleaseDataHolder.LATEST_VERSION;
     }
 
     public static Version requiredAppVersionForLatest() {
-        return LatestVersionHolder.REQUIRED_APP_VERSION;
+        return ReleaseDataHolder.REQUIRED_APP_VERSION;
+    }
+
+    public static ImmutableList<AddonReleaseData> getReleaseData() {
+        return ReleaseDataHolder.RELEASE_DATA;
+    }
+
+    public static Optional<AddonReleaseData> getLatestReleaseData() {
+        return ReleaseDataHolder.LATEST_RELEASE_DATA_OPTIONAL;
     }
 
     static Optional<Version> lookupCurrent() {
@@ -44,13 +62,5 @@ public class WebVersion {
                 })
                 .filter(version -> version != null)
                 .max(Version::compareTo);
-    }
-
-    private static String getRequiredAppVersion(Optional<JsonNode> optional) {
-        if (optional.isPresent()) {
-            String bodyText = optional.get().path("body").textValue();
-            return bodyText.substring("Minimum Required App Version: ".length()).split("\\s", 2)[0];
-        }
-        return null;
     }
 }
