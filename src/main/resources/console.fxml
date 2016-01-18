@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="520.0" prefWidth="1200.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.github.otbproject.otbproject.gui.GuiController">
+<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="520.0" prefWidth="1200.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.github.otbproject.otbproject.gui.GuiController">
     <columnConstraints>
         <ColumnConstraints hgrow="SOMETIMES" maxWidth="20.0" minWidth="20.0" prefWidth="20.0" />
         <ColumnConstraints hgrow="SOMETIMES" maxWidth="750.0" minWidth="10.0" prefWidth="750.0" />
@@ -24,11 +24,6 @@
         <RowConstraints maxHeight="15.0" minHeight="15.0" prefHeight="15.0" vgrow="SOMETIMES" />
     </rowConstraints>
     <children>
-        <TextArea fx:id="logOutput" editable="false" focusTraversable="false" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="2" GridPane.rowSpan="5">
-            <font>
-                <Font name="Ubuntu Mono" size="16.0" />
-            </font>
-        </TextArea>
         <TextField fx:id="commandsInput" onKeyPressed="#command" prefHeight="30.0" promptText="Starting up, please wait..." GridPane.columnIndex="3" GridPane.rowIndex="6">
             <font>
                 <Font name="Ubuntu Mono" size="16.0" />
@@ -81,5 +76,8 @@
             </Menu>
          </menus>
       </MenuBar>
+      <ListView id="logOutput" fx:id="logOutput" prefHeight="458.0" prefWidth="750.0" GridPane.columnIndex="1" GridPane.rowIndex="2" GridPane.rowSpan="3" >
+
+      </ListView>
     </children>
 </GridPane>

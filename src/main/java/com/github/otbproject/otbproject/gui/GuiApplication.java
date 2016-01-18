@@ -7,7 +7,6 @@ import com.github.otbproject.otbproject.config.WebConfig;
 import com.github.otbproject.otbproject.fs.FSUtil;
 import com.github.otbproject.otbproject.util.ThreadUtil;
 import com.github.otbproject.otbproject.util.version.AppVersion;
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -16,7 +15,9 @@ import javafx.scene.control.*;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.layout.FlowPane;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import org.apache.commons.io.input.Tailer;
@@ -48,6 +49,7 @@ public class GuiApplication extends Application {
      * for most of the execution, as this value is not volatile
      */
     private static boolean cheapReady = false;
+
     static boolean notReady() {
         return !cheapReady && !ready;
     }
@@ -114,10 +116,11 @@ public class GuiApplication extends Application {
         });
         controller = loader.<GuiController>getController();
         setUpMenus();
+        controller.logOutput.setCellFactory(list -> new LogCell());
         controller.cliOutput.appendText(">  ");
         controller.commandsInput.setEditable(false);
         controller.commandsOutput.appendText("Type \"help\" for a list of commands.\nThe PID of the bot is probably "
-                + App.PID  + " if you are using an Oracle JVM, but it may be different,"
+                + App.PID + " if you are using an Oracle JVM, but it may be different,"
                 + " especially if you are using a different JVM. Be careful stopping the bot using this PID.");
         controller.readHistory();
         primaryStage.show();
@@ -131,6 +134,58 @@ public class GuiApplication extends Application {
             NOT_READY_QUEUE.clear();
         } finally {
             READY_LOCK.unlock();
+        }
+    }
+
+    static class LogCell extends ListCell<String> {
+        Color color = Color.WHITESMOKE;
+
+        @Override
+        public void updateItem(String item, boolean empty) {
+            super.updateItem(item, empty);
+            if (empty) {
+                setText(null);
+                setGraphic(null);
+            } else {
+                String line;
+                setWrapText(true);
+                if (item != null) {
+                    if (item.startsWith("{{")) {
+                        line = item.substring(item.indexOf("}}") + 2, item.length());
+                    } else {
+                        line = item;
+                    }
+                    line = line.trim();
+                    Text text = new Text(line);
+
+                    int first = item.indexOf("{{") + 1;
+                    if (first != -1) {
+                        int last = item.indexOf("}}");
+                        if (last != -1) {
+                            String level = item.substring(first + 1, last);
+                            switch (level.toUpperCase()) {
+                                case "ERROR":
+                                    color = Color.RED;
+                                    break;
+                                case "WARN":
+                                    color = Color.YELLOW;
+                                    break;
+                                case "INFO":
+                                    color = Color.WHITESMOKE;
+                                    break;
+                                case "DEBUG":
+                                    break;
+                                case "TRACE":
+                                    break;
+                            }
+
+                        }
+                    }
+                    text.setFill(color);
+                    text.setWrappingWidth(controller.logOutput.getWidth() - 25);
+                    setGraphic(text);
+                }
+            }
         }
     }
 
@@ -157,7 +212,7 @@ public class GuiApplication extends Application {
     }
 
     public static void clearLog() {
-        GuiUtils.runSafe(controller.logOutput::clear);
+        GuiUtils.runSafe(controller.logOutput.getItems()::clear);
     }
 
     public static void clearInfo() {
@@ -199,7 +254,29 @@ public class GuiApplication extends Application {
             queue.drainTo(buffer);
             if (!buffer.isEmpty()) {
                 String text = buffer.stream().collect(Collectors.joining("\n", "", "\n"));
-                GuiUtils.runSafe(() -> controller.logOutput.appendText(text));
+                /*GuiUtils.runSafe(()->controller.logOutput.getItems().addAll(buffer));*/
+
+                String stackTrace = "";
+                String lastLevel = "";
+
+                for (String line : buffer) {
+                    if (line.startsWith("{{")) {
+                        if (!stackTrace.isEmpty()) {
+                            final String newLine = stackTrace;
+                            GuiUtils.runSafe(() -> controller.logOutput.getItems().add(newLine));
+                            stackTrace = "";
+                        }
+                        GuiUtils.runSafe(() -> controller.logOutput.getItems().add(line));
+                        lastLevel = "" + line.substring(0, line.indexOf("}}") + 2);
+
+                    } else {
+                        if (stackTrace.isEmpty()) {
+                            stackTrace += lastLevel;
+                        }
+                        stackTrace += line + "\n";
+                    }
+                }
+               /* GuiUtils.runSafe(() -> controller.logOutput.getItems().add(text));*/
                 buffer.clear();
             }
         }

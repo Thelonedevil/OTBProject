@@ -11,6 +11,7 @@ import com.github.otbproject.otbproject.fs.FSUtil;
 import com.github.otbproject.otbproject.messages.internal.InternalMessageSender;
 import com.github.otbproject.otbproject.util.JsonHandler;
 import javafx.fxml.FXML;
+import javafx.scene.control.ListView;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -26,7 +27,7 @@ import java.util.stream.Stream;
 public class GuiController {
 
     @FXML
-    public TextArea logOutput;
+    public ListView logOutput;
     @FXML
     public TextArea commandsOutput;
     @FXML
