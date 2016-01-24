@@ -4,6 +4,7 @@ import com.github.otbproject.otbproject.App;
 import com.github.otbproject.otbproject.config.Configs;
 import com.github.otbproject.otbproject.config.WebConfig;
 import com.github.otbproject.otbproject.fs.FSUtil;
+import com.github.otbproject.otbproject.util.version.AddonReleaseData;
 import com.github.otbproject.otbproject.util.version.Version;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
@@ -13,6 +14,7 @@ import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.util.Optional;
 
 public class WebInterface {
     private WebInterface() {}
@@ -31,11 +33,18 @@ public class WebInterface {
             App.logger.warn("You are running a dev build of OTB. Please grab the latest build of the web interface and place in \"" +
                     FSUtil.webDir() + File.separator + "\" as \"web-interface-" + WebVersion.latest() +
                     ".war\". Releases will automatically download the latest version of the web interface for you");
-        } else if ((App.VERSION.compareTo(WebVersion.requiredAppVersionForLatest()) >= 0)
-                && (!path.exists()
-                || (Configs.getWebConfig().get(WebConfig::isAutoUpdating)
-                && (current.compareTo(WebVersion.latest()) < 0)))) {
-            WarDownload.downloadLatest();
+        } else {
+            Optional<AddonReleaseData> optional = WebVersion.getReleaseData().stream()
+                    .filter(addonReleaseData -> App.VERSION.compareTo(addonReleaseData.getMinimumAppVersion()) >= 0)
+                    .max(((o1, o2) -> o1.getVersion().compareTo(o2.getVersion())));
+            if (optional.isPresent()) {
+                AddonReleaseData latestReleaseData = optional.get();
+                if (!path.exists()
+                        || (Configs.getWebConfig().get(WebConfig::isAutoUpdating)
+                        && (current.compareTo(latestReleaseData.getVersion()) < 0))) {
+                    WarDownload.downloadRelease(latestReleaseData);
+                }
+            }
         }
     }
 

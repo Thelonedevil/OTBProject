@@ -55,6 +55,16 @@
             <version>2.5.0</version>
         </dependency>
         <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.5</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>19.0</version>
+        </dependency>
+        <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
             <version>2.3</version>
@@ -101,6 +111,8 @@
             <artifactId>expiringmap</artifactId>
             <version>0.4.3</version>
         </dependency>
+
+        <!-- javax validation dependencies -->
         <dependency>
             <groupId>javax.validation</groupId>
             <artifactId>validation-api</artifactId>
@@ -126,6 +138,8 @@
             <artifactId>hibernate-validator-cdi</artifactId>
             <version>5.1.3.Final</version>
         </dependency>
+        <!-- END javax validation dependencies -->
+
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-server</artifactId>
