@@ -73,7 +73,7 @@ public class BeamBot extends AbstractBot {
 
     @Override
     public synchronized void shutdown() {
-        beamChannels.values().forEach(beamChatChannel -> beamChatChannel.beamChatConnectable.close());
+        beamChannels.values().forEach(beamChatChannel -> beamChatChannel.beamChatConnectable.disconnect());
         beamChannels.clear();
         super.shutdown();
     }
@@ -144,7 +144,7 @@ public class BeamBot extends AbstractBot {
         if (channel == null) {
             return false;
         }
-        channel.beamChatConnectable.close();
+        channel.beamChatConnectable.disconnect();
         return true;
     }
 

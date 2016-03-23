@@ -12,11 +12,10 @@ import com.google.common.collect.Multimaps;
 import com.google.common.collect.SetMultimap;
 import com.google.common.util.concurrent.Uninterruptibles;
 import net.jodah.expiringmap.ExpiringMap;
-import pro.beam.api.BeamAPI;
 import pro.beam.api.resource.BeamUser;
 import pro.beam.api.resource.channel.BeamChannel;
 import pro.beam.api.resource.chat.BeamChat;
-import pro.beam.api.resource.chat.BeamChatConnectable;
+import pro.beam.api.resource.chat.ws.BeamChatConnectable;
 import pro.beam.api.resource.chat.events.DeleteMessageEvent;
 import pro.beam.api.resource.chat.events.IncomingMessageEvent;
 import pro.beam.api.resource.chat.events.UserJoinEvent;
@@ -87,15 +86,8 @@ class BeamChatChannel {
             ThreadUtil.interruptIfInterruptedException(e);
             throw new ChannelInitException(channelName, ERR_MSG, e);
         }
-        beamChatConnectable = beamChat.makeConnectable(beamBot.beam);
-        boolean connected;
-        try {
-            connected = beamChatConnectable.connectBlocking();
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ChannelInitException(channelName, ERR_MSG, e);
-        }
-        if (!connected) {
+        beamChatConnectable = beamChat.connectable(beamBot.beam);
+        if (!beamChatConnectable.connect()) {
             throw new ChannelInitException(channelName, ERR_MSG);
         }
 
