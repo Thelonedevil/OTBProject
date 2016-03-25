@@ -5,7 +5,8 @@ import io.github.otbproject.otb.plugin.content.PluginDataMap
 
 import scala.collection.immutable.ListSet
 
-final class StaticChannelData private[otb](primaryData: PluginDataMap, readExecData: ListSet[Data])
-    extends Data[StaticChannel](primaryData) {
+final class StaticChannelData private[otb](pluginDataSupplier: StaticChannel => PluginDataMap, staticChannel: StaticChannel,
+                                           readExecDataSupplier: () => ListSet[StaticChannelData])
+    extends Data[StaticChannel](pluginDataSupplier, staticChannel) {
 
 }
