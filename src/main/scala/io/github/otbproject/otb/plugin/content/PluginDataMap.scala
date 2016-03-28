@@ -5,8 +5,9 @@ import scala.collection.mutable
 final class PluginDataMap private(map: Map[PluginDataTypeIdentifier[_], _ <: PluginData]) {
     private val dataMap: Map[PluginDataTypeIdentifier[_], _ <: PluginData] = map
 
-    private[plugin] def get[T <: PluginData](plugin: ContentPlugin, tClass: Class[T]): Option[T] = {
-        Option(tClass.cast(dataMap.get(PluginDataTypeIdentifier(plugin, tClass))))
+    private[plugin] def get[T <: PluginData](plugin: ContentPlugin[_ <: PluginDataFactory[_, _, _, _, _]],
+                                             tClass: Class[T]): Option[T] = {
+        Option(tClass.cast(dataMap.get(new PluginDataTypeIdentifier(plugin, tClass))))
     }
 }
 
@@ -17,8 +18,9 @@ object PluginDataMap {
         val mutableMap = new mutable.HashMap[PluginDataTypeIdentifier[_], PluginData]()
 
         @throws[IllegalArgumentException]
-        def put[T <: PluginData](plugin: ContentPlugin, tClass: Class[T], data: T) = {
-            val identifier: PluginDataTypeIdentifier[T] = PluginDataTypeIdentifier(plugin, tClass)
+        def put[T <: PluginData](plugin: ContentPlugin[_ <: PluginDataFactory[_, _, _, _, _]],
+                                 tClass: Class[T], data: T) = {
+            val identifier: PluginDataTypeIdentifier[T] = new PluginDataTypeIdentifier(plugin, tClass)
             if (mutableMap contains identifier) {
                 throw new IllegalArgumentException("Plugin-Class mapping already present: " + identifier)
             }
@@ -29,3 +31,6 @@ object PluginDataMap {
     }
 
 }
+
+final case class PluginDataTypeIdentifier[T <: PluginData] private[content]
+(plugin: ContentPlugin[_ <: PluginDataFactory[_, _, _, _, _]], tClass: Class[T])

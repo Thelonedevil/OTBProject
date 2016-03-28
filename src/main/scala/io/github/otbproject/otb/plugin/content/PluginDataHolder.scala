@@ -1,5 +1,5 @@
 package io.github.otbproject.otb.plugin.content
 
-trait PluginDataHolder {
+private[otb] trait PluginDataHolder[T] {
     def getPluginData: PluginDataMap
 }
