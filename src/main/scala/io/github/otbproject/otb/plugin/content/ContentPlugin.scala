@@ -8,4 +8,4 @@ trait ContentPlugin[F <: PluginDataFactory[_, _, _, _, _]] extends Plugin {
     final def getDataFactory: F = pluginDataFactory
 }
 
-private[otb] trait AnyPlugin extends ContentPlugin[PluginDataFactory[_, _, _, _, _]]
+private[content] trait AnyPlugin extends ContentPlugin[PluginDataFactory[_, _, _, _, _]]

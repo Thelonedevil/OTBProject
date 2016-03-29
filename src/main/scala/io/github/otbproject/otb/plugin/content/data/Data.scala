@@ -1,9 +1,14 @@
-package io.github.otbproject.otb.core.data
+package io.github.otbproject.otb.plugin.content.data
 
 import io.github.otbproject.otb.plugin.content._
 
-import scala.collection.immutable.ListSet
-
+/**
+  *
+  * @param factoryProvider
+  * @param plugins see [[PluginSet]] for recommended Set type
+  * @param t
+  * @tparam T
+  */
 abstract class Data[T] private[data](factoryProvider: FactoryProvider[T], plugins: PluginSet,
                                      t: T) extends PluginDataHolder[T] {
     private lazy val pluginData = supplyData(t, plugins)
@@ -37,4 +42,7 @@ abstract class Data[T] private[data](factoryProvider: FactoryProvider[T], plugin
 // For parameter and import convenience
 private[data] trait FactoryProvider[T] extends (PluginDataFactory[_, _, _, _, _] => DataFactory[T, _ <: PluginData])
 
-private[data] trait PluginSet extends ListSet[AnyPlugin]
+/**
+  * SHOULD BE A [[scala.collection.immutable.ListSet]]
+  */
+private[data] sealed trait PluginSet extends Set[AnyPlugin]

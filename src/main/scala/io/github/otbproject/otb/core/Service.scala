@@ -1,6 +1,6 @@
 package io.github.otbproject.otb.core
 
-import io.github.otbproject.otb.core.data.ServiceData
+import io.github.otbproject.otb.plugin.content.data.ServiceData
 import io.github.otbproject.otb.misc.CredentialPair
 
 trait Service {

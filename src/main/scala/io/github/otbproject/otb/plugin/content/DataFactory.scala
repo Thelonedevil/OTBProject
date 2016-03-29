@@ -8,15 +8,15 @@ import io.github.otbproject.otb.misc.LambdaUtil
 sealed class DataFactory[T, P <: PluginData] private[content]
 (plugin: ContentPlugin[_ <: PluginDataFactory[_, _, _, _, _]], initializer: T => P, pClass: Class[P]) {
     val safeInitializer: SafeInitializer[T, P] = new SafeInitializer(initializer)
-    private[otb] def provideData(initData: T, builder: PluginDataMap.Builder) {
+    private[content] def provideData(initData: T, builder: PluginDataMap.Builder) {
         builder.put(plugin, pClass, Objects.requireNonNull(safeInitializer(initData)))
     }
 
-    private[otb] def resetInitializer() {
+    private[content] def resetInitializer() {
         safeInitializer.reset()
     }
 
-    private[plugin] def getData(holder: PluginDataHolder[T]): P = holder.getPluginData.get(plugin, pClass).get
+    private[content] def getData(holder: PluginDataHolder[T]): P = holder.getPluginData.get(plugin, pClass).get
 }
 
 object DataFactory {

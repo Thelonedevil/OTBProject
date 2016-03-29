@@ -1,6 +1,6 @@
 package io.github.otbproject.otb.core
 
-import io.github.otbproject.otb.core.data.ServiceBotData
+import io.github.otbproject.otb.plugin.content.data.ServiceBotData
 
 trait ServiceBot {
     def getStatic: StaticBot

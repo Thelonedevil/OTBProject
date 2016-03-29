@@ -1,4 +1,4 @@
-package io.github.otbproject.otb.core.data
+package io.github.otbproject.otb.plugin.content.data
 
 import java.nio.file.Path
 

@@ -1,7 +1,7 @@
 package io.github.otbproject.otb.plugin.content
 
 import io.github.otbproject.otb.core._
-import io.github.otbproject.otb.core.data._
+import io.github.otbproject.otb.plugin.content.data._
 
 abstract class PluginDataFactory[A <: PluginData, B <: PluginData, C <: PluginData, D <: PluginData, E <: PluginData](plugin: ContentPlugin[_]) {
     protected val serviceDataFactory: DataFactory[Service, A]

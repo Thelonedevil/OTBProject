@@ -2,7 +2,7 @@ package io.github.otbproject.otb.core
 
 import java.nio.file.Path
 
-import io.github.otbproject.otb.core.data.StaticChannelData
+import io.github.otbproject.otb.plugin.content.data.StaticChannelData
 import io.github.otbproject.otb.core.fs.FileSystemObject
 
 final class StaticChannel extends FileSystemObject {
