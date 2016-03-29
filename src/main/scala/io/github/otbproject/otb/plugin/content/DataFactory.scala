@@ -7,8 +7,9 @@ import io.github.otbproject.otb.misc.LambdaUtil
 
 sealed class DataFactory[T, P <: PluginData] private[content]
 (plugin: ContentPlugin[_ <: PluginDataFactory[_, _, _, _, _]], initializer: T => P, pClass: Class[P]) {
+    val safeInitializer: SafeInitializer[T, P] = new SafeInitializer(initializer)
     private[plugin] def provideData(initData: T, builder: PluginDataMap.Builder) {
-        builder.put(plugin, pClass, Objects.requireNonNull(initializer.apply(initData)))
+        builder.put(plugin, pClass, Objects.requireNonNull(safeInitializer(initData)))
     }
 
     private[plugin] def getData(holder: PluginDataHolder[T]): P = holder.getPluginData.get(plugin, pClass).get
@@ -31,16 +32,18 @@ object DataFactory {
     /**
       *
       *
-      * @param plugin something which extends ContentPlugin. Ignore the horrible looking
-      *               type parameter - it's necessary, but long and confusing to look at.
+      * @param plugin      something which extends ContentPlugin. Ignore the horrible looking
+      *                    type parameter - it's necessary, but long and confusing to look at.
       * @param initializer a function which takes an object of type T and uses it to
       *                    generate some PluginData of type P
-      * @param pClass the class of the object returned by the initializer
+      * @param pClass      the class of the object returned by the initializer
       * @tparam T the type from which to generate some PluginData
       * @tparam P the (sub)type of the PluginData returned by the initializer
+      * @throws NullPointerException if any of the parameters are null
       * @return a DataFactory which can be used to generate some P data based on a T, or
       *         retrieve a P from a [[PluginDataHolder]]
       */
+    @throws[NullPointerException]
     def of[T, P <: PluginData](plugin: ContentPlugin[_ <: PluginDataFactory[_, _, _, _, _]],
                                initializer: T => P, pClass: Class[P]): DataFactory[T, P] = {
         Objects.requireNonNull(plugin)
@@ -49,6 +52,17 @@ object DataFactory {
         new DataFactory(plugin, initializer, pClass)
     }
 
+    /**
+      *
+      * @param plugin
+      * @param initializer
+      * @param pClass
+      * @tparam T
+      * @tparam P
+      * @throws NullPointerException if any of the parameters are null
+      * @return
+      */
+    @throws[NullPointerException]
     def of[T, P <: PluginData](plugin: ContentPlugin[_ <: PluginDataFactory[_, _, _, _, _]],
                                initializer: Function[T, P], pClass: Class[P]): DataFactory[T, P] = {
         Objects.requireNonNull(initializer)
