@@ -23,6 +23,16 @@ abstract class PluginDataFactory[A <: PluginData, B <: PluginData, C <: PluginDa
     final def getServiceChannelData(data: ServiceChannelData): D = serviceChannelDataFactory.getData(data)
 
     final def getStaticChannelData(data: StaticChannelData): E = staticChannelDataFactory.getData(data)
+
+    private[plugin] final def getServiceDataFactory: DataFactory[Service, A] = serviceDataFactory
+
+    private[plugin] final def getServiceBotDataFactory: DataFactory[ServiceBot, B] = serviceBotDataFactory
+
+    private[plugin] final def getStaticBotDataFactory: DataFactory[StaticBot, C] = staticBotDataFactory
+
+    private[plugin] final def getServiceChannelDataFactory: DataFactory[ServiceChannel, D] = serviceChannelDataFactory
+
+    private[plugin] final def getStaticChannelDataFactory: DataFactory[StaticChannel, E] = staticChannelDataFactory
 }
 
 object EmptyPluginDataFactory extends PluginDataFactory[PluginData, PluginData, PluginData, PluginData, PluginData](null) {
