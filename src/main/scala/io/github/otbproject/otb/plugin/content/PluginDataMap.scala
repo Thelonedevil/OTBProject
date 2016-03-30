@@ -2,25 +2,24 @@ package io.github.otbproject.otb.plugin.content
 
 import scala.collection.mutable
 
-final class PluginDataMap private(map: Map[PluginDataTypeIdentifier[_], _ <: PluginData]) {
+private[content] final class PluginDataMap private(map: Map[PluginDataTypeIdentifier[_], _ <: PluginData]) {
     private val dataMap: Map[PluginDataTypeIdentifier[_], _ <: PluginData] = map
 
-    private[plugin] def get[T <: PluginData](plugin: ContentPlugin[_ <: PluginDataFactory[_, _, _, _, _]],
-                                             tClass: Class[T]): Option[T] = {
-        Option(tClass.cast(dataMap.get(new PluginDataTypeIdentifier(plugin, tClass))))
+    def get[T <: PluginData](identifier: PluginDataTypeIdentifier[T]): T = {
+        // Cast never fails because it is constrained that a type T object only gets
+        // inserted with a PluginDataTypeIdentifier[T] as its key
+        identifier.tClass.cast(dataMap.get(identifier))
     }
 }
 
-object PluginDataMap {
+private[content] object PluginDataMap {
     def newBuilder: Builder = new Builder
 
     final class Builder {
-        val mutableMap = new mutable.HashMap[PluginDataTypeIdentifier[_], PluginData]()
+        private val mutableMap = new mutable.HashMap[PluginDataTypeIdentifier[_], PluginData]()
 
         @throws[IllegalArgumentException]
-        def put[T <: PluginData](plugin: ContentPlugin[_ <: PluginDataFactory[_, _, _, _, _]],
-                                 tClass: Class[T], data: T) = {
-            val identifier: PluginDataTypeIdentifier[T] = new PluginDataTypeIdentifier(plugin, tClass)
+        def put[T <: PluginData](identifier: PluginDataTypeIdentifier[T], data: T) = {
             if (mutableMap contains identifier) {
                 throw new IllegalArgumentException("Plugin-Class mapping already present: " + identifier)
             }
@@ -32,5 +31,5 @@ object PluginDataMap {
 
 }
 
-final case class PluginDataTypeIdentifier[T <: PluginData] private[content]
+private[content] final case class PluginDataTypeIdentifier[T <: PluginData]
 (plugin: ContentPlugin[_ <: PluginDataFactory[_, _, _, _, _]], tClass: Class[T])
