@@ -31,5 +31,4 @@ private[content] object PluginDataMap {
 
 }
 
-private[content] final case class PluginDataTypeIdentifier[T <: PluginData]
-(plugin: ContentPlugin[_ <: PluginDataFactory[_, _, _, _, _]], tClass: Class[T])
+private[content] final case class PluginDataTypeIdentifier[T <: PluginData](plugin: ContentPlugin, tClass: Class[T])

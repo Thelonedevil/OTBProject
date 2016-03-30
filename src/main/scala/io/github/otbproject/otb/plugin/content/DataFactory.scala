@@ -5,8 +5,7 @@ import java.util.function.Function
 
 import io.github.otbproject.otb.misc.LambdaUtil
 
-sealed class DataFactory[T, P <: PluginData] private[content]
-(plugin: ContentPlugin[_ <: PluginDataFactory[_, _, _, _, _]], initializer: T => P, pClass: Class[P]) {
+sealed class DataFactory[T, P <: PluginData] private[content](plugin: ContentPlugin, initializer: T => P, pClass: Class[P]) {
     private val safeInitializer: SafeInitializer[T, P] = new SafeInitializer(initializer)
     private val identifier: PluginDataTypeIdentifier[P] = new PluginDataTypeIdentifier(plugin, pClass)
 
@@ -50,8 +49,7 @@ object DataFactory {
       *         retrieve a P from a [[PluginDataHolder]]
       */
     @throws[NullPointerException]
-    def of[T, P <: PluginData](plugin: ContentPlugin[_ <: PluginDataFactory[_, _, _, _, _]],
-                               initializer: T => P, pClass: Class[P]): DataFactory[T, P] = {
+    def of[T, P <: PluginData](plugin: ContentPlugin, initializer: T => P, pClass: Class[P]): DataFactory[T, P] = {
         Objects.requireNonNull(plugin)
         Objects.requireNonNull(initializer)
         Objects.requireNonNull(pClass)
@@ -69,8 +67,7 @@ object DataFactory {
       * @return
       */
     @throws[NullPointerException]
-    def of[T, P <: PluginData](plugin: ContentPlugin[_ <: PluginDataFactory[_, _, _, _, _]],
-                               initializer: Function[T, P], pClass: Class[P]): DataFactory[T, P] = {
+    def of[T, P <: PluginData](plugin: ContentPlugin, initializer: Function[T, P], pClass: Class[P]): DataFactory[T, P] = {
         Objects.requireNonNull(initializer)
         of(plugin, LambdaUtil.j2sFunction(initializer), pClass)
     }

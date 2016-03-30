@@ -2,10 +2,10 @@ package io.github.otbproject.otb.plugin.content
 
 import io.github.otbproject.otb.plugin.Plugin
 
-trait ContentPlugin[F <: PluginDataFactory[_, _, _, _, _]] extends Plugin {
+trait ContentPlugin extends Plugin {
+    type F <: PluginDataFactory
+
     protected val pluginDataFactory: F
 
     final def getDataFactory: F = pluginDataFactory
 }
-
-private[content] trait AnyPlugin extends ContentPlugin[PluginDataFactory[_, _, _, _, _]]
