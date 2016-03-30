@@ -4,14 +4,13 @@ import io.github.otbproject.otb.plugin.content._
 
 /**
   *
-  * @param provider
   * @param plugins see [[PluginSet]] for recommended Set type
   * @param t
   * @tparam T
   */
-abstract class Data[T] private[data](provider: PluginDataFactory => DataFactory[T, _ <: PluginData],
+private[data] abstract class Data[T](provider: PluginDataFactory => DataFactory[T, _ <: PluginData],
                                      plugins: PluginSet, t: T) extends PluginDataHolder[T] {
-    private lazy val pluginData = supplyData(t, plugins)
+    private lazy val pluginData: PluginDataMap = supplyData(t, plugins)
 
     final def getPluginData: PluginDataMap = pluginData
 
@@ -19,7 +18,8 @@ abstract class Data[T] private[data](provider: PluginDataFactory => DataFactory[
         val builder = PluginDataMap.newBuilder
         val m = plugins.map((plugin: ContentPlugin) => provider(plugin.getDataFactory))
 
-        // I think this prevents repeated initializations
+        // I think this prevents repeated initializations, assuming a
+        // consistent iteration order
         m.takeWhile((factory: DataFactory[T, _ <: PluginData]) => {
             try {
                 factory.provideData(t, builder)
@@ -28,12 +28,13 @@ abstract class Data[T] private[data](provider: PluginDataFactory => DataFactory[
                 case e: InitializationLoopException =>
                     ??? // TODO: Log/warn
                     false
-                case e: Exception => ??? // TODO: Log/warn
+                case e: Exception =>
+                    ??? // TODO: Log/warn
                     true
             }
         })
 
-        m.foreach((factory: DataFactory[T, _ <: PluginData]) => factory.resetInitializer())
+        m.foreach(_.resetInitializer())
 
         builder.build
     }
