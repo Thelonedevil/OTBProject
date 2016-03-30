@@ -10,10 +10,10 @@ private[data] abstract class Data[T](provider: PluginDataFactory => DataFactory[
 
     private def supplyData(t: T, plugins: Set[ContentPlugin]): PluginDataMap = {
         val builder = PluginDataMap.newBuilder
+        // TODO: ensure maps in a consistent order
         val m = plugins.map((plugin: ContentPlugin) => provider(plugin.getDataFactory))
 
-        // I think this prevents repeated initializations, assuming a
-        // consistent iteration order
+        // Prevents repeated initializations, assuming a consistent iteration order
         m.takeWhile((factory: DataFactory[T, _ <: PluginData]) => {
             try {
                 factory.provideData(t, builder)
