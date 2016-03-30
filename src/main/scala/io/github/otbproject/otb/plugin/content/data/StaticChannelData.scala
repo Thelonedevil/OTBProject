@@ -7,5 +7,5 @@ import scala.collection.immutable.ListSet
 
 final class StaticChannelData private[otb](plugins: Set[ContentPlugin], staticChannel: StaticChannel,
                                            readExecDataSupplier: () => ListSet[StaticChannelData])
-    extends Data[StaticChannel](_.getStaticChannelDataFactory, plugins, staticChannel) {
+    extends Data[StaticChannel](_.staticChannelDF, plugins, staticChannel) {
 }

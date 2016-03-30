@@ -4,45 +4,45 @@ import io.github.otbproject.otb.core._
 import io.github.otbproject.otb.plugin.content.data._
 
 abstract class PluginDataFactory(plugin: ContentPlugin) {
-    type ServiceDataType <: PluginData
-    type ServiceBotDataType <: PluginData
-    type StaticBotDataType <: PluginData
-    type ServiceChannelDataType <: PluginData
-    type StaticChannelDataType <: PluginData
+    type ServicePluginData <: PluginData
+    type ServiceBotPluginData <: PluginData
+    type StaticBotPluginData <: PluginData
+    type ServiceChannelPluginData <: PluginData
+    type StaticChannelPluginData <: PluginData
 
-    protected val serviceDataFactory: DataFactory[Service, ServiceDataType]
-    protected val serviceBotDataFactory: DataFactory[ServiceBot, ServiceBotDataType]
-    protected val staticBotDataFactory: DataFactory[StaticBot, StaticBotDataType]
-    protected val serviceChannelDataFactory: DataFactory[ServiceChannel, ServiceChannelDataType]
-    protected val staticChannelDataFactory: DataFactory[StaticChannel, StaticChannelDataType]
+    protected val serviceDataFactory: DataFactory[Service, ServicePluginData]
+    protected val serviceBotDataFactory: DataFactory[ServiceBot, ServiceBotPluginData]
+    protected val staticBotDataFactory: DataFactory[StaticBot, StaticBotPluginData]
+    protected val serviceChannelDataFactory: DataFactory[ServiceChannel, ServiceChannelPluginData]
+    protected val staticChannelDataFactory: DataFactory[StaticChannel, StaticChannelPluginData]
 
-    final def getServiceData(data: ServiceData): ServiceDataType = serviceDataFactory.getData(data)
+    final def getServiceData(data: ServiceData): ServicePluginData = serviceDataFactory.getData(data)
 
-    final def getServiceBotData(data: ServiceBotData): ServiceBotDataType = serviceBotDataFactory.getData(data)
+    final def getServiceBotData(data: ServiceBotData): ServiceBotPluginData = serviceBotDataFactory.getData(data)
 
-    final def getStaticBotData(data: StaticBotData): StaticBotDataType = staticBotDataFactory.getData(data)
+    final def getStaticBotData(data: StaticBotData): StaticBotPluginData = staticBotDataFactory.getData(data)
 
-    final def getServiceChannelData(data: ServiceChannelData): ServiceChannelDataType = serviceChannelDataFactory.getData(data)
+    final def getServiceChannelData(data: ServiceChannelData): ServiceChannelPluginData = serviceChannelDataFactory.getData(data)
 
-    final def getStaticChannelData(data: StaticChannelData): StaticChannelDataType = staticChannelDataFactory.getData(data)
+    final def getStaticChannelData(data: StaticChannelData): StaticChannelPluginData = staticChannelDataFactory.getData(data)
 
-    private[plugin] final def getServiceDataFactory: DataFactory[Service, ServiceDataType] = serviceDataFactory
+    private[content] final def serviceDF: DataFactory[Service, ServicePluginData] = serviceDataFactory
 
-    private[plugin] final def getServiceBotDataFactory: DataFactory[ServiceBot, ServiceBotDataType] = serviceBotDataFactory
+    private[content] final def serviceBotDF: DataFactory[ServiceBot, ServiceBotPluginData] = serviceBotDataFactory
 
-    private[plugin] final def getStaticBotDataFactory: DataFactory[StaticBot, StaticBotDataType] = staticBotDataFactory
+    private[content] final def staticBotDF: DataFactory[StaticBot, StaticBotPluginData] = staticBotDataFactory
 
-    private[plugin] final def getServiceChannelDataFactory: DataFactory[ServiceChannel, ServiceChannelDataType] = serviceChannelDataFactory
+    private[content] final def serviceChannelDF: DataFactory[ServiceChannel, ServiceChannelPluginData] = serviceChannelDataFactory
 
-    private[plugin] final def getStaticChannelDataFactory: DataFactory[StaticChannel, StaticChannelDataType] = staticChannelDataFactory
+    private[content] final def staticChannelDF: DataFactory[StaticChannel, StaticChannelPluginData] = staticChannelDataFactory
 }
 
 object EmptyPluginDataFactory extends PluginDataFactory(null) {
-    override type ServiceDataType = PluginData
-    override type ServiceBotDataType = PluginData
-    override type StaticBotDataType = PluginData
-    override type ServiceChannelDataType = PluginData
-    override type StaticChannelDataType = PluginData
+    override type ServicePluginData = PluginData
+    override type ServiceBotPluginData = PluginData
+    override type StaticBotPluginData = PluginData
+    override type ServiceChannelPluginData = PluginData
+    override type StaticChannelPluginData = PluginData
 
     override val serviceDataFactory: DataFactory[Service, PluginData] = DataFactory.empty
     override val staticBotDataFactory: DataFactory[StaticBot, PluginData] = DataFactory.empty
