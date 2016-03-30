@@ -6,7 +6,7 @@ private[data] abstract class Data[T](provider: PluginDataFactory => DataFactory[
                                      plugins: Set[ContentPlugin], t: T) extends PluginDataHolder[T] {
     private lazy val pluginData: PluginDataMap = supplyData(t, plugins)
 
-    final def getPluginData: PluginDataMap = pluginData
+    private[content] final def getPluginData: PluginDataMap = pluginData
 
     private def supplyData(t: T, plugins: Set[ContentPlugin]): PluginDataMap = {
         val builder = PluginDataMap.newBuilder
