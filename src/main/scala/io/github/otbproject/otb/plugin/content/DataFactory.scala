@@ -6,15 +6,10 @@ import java.util.function.Function
 import io.github.otbproject.otb.misc.JLambda
 
 sealed class DataFactory[T, P <: PluginData] private[content](plugin: ContentPlugin, initializer: T => P, pClass: Class[P]) {
-    private val safeInitializer: SafeInitializer[T, P] = new SafeInitializer(initializer)
     private val identifier: PluginDataTypeIdentifier[P] = new PluginDataTypeIdentifier(plugin, pClass)
 
     private[content] def provideData(initData: T, builder: PluginDataMap.Builder) {
-        builder.put(identifier, Objects.requireNonNull(safeInitializer(initData)))
-    }
-
-    private[content] def resetInitializer() {
-        safeInitializer.reset()
+        builder.put(identifier, Objects.requireNonNull(initializer(initData)))
     }
 
     private[content] def getData(holder: PluginDataHolder[T]): P = holder.getPluginData.get(identifier)
