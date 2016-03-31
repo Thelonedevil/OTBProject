@@ -1,10 +1,10 @@
 package io.github.otbproject.otb.plugin.content
 
-import io.github.otbproject.otb.misc.LambdaUtil
+import io.github.otbproject.otb.misc.SLambda
 
 private[content] final class SafeInitializer[T, P <: PluginData](initializer: T => P) {
     val state: ThreadLocal[State] =
-        ThreadLocal.withInitial(LambdaUtil.s2jSupplier(() => READY))
+        ThreadLocal.withInitial(SLambda.toSupplier(() => READY))
 
     def reset() = {
         state.set(READY)
@@ -23,13 +23,13 @@ private[content] final class SafeInitializer[T, P <: PluginData](initializer: T 
         }
     }
 
-    trait State
+    sealed trait State
 
-    private object READY extends State
+    private case object READY extends State
 
-    private object INITIALIZING extends State
+    private case object INITIALIZING extends State
 
-    private object FINISHED extends State
+    private case object FINISHED extends State
 
 }
 

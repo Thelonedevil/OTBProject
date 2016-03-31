@@ -3,7 +3,7 @@ package io.github.otbproject.otb.plugin.content
 import java.util.Objects
 import java.util.function.Function
 
-import io.github.otbproject.otb.misc.LambdaUtil
+import io.github.otbproject.otb.misc.JLambda
 
 sealed class DataFactory[T, P <: PluginData] private[content](plugin: ContentPlugin, initializer: T => P, pClass: Class[P]) {
     private val safeInitializer: SafeInitializer[T, P] = new SafeInitializer(initializer)
@@ -69,7 +69,7 @@ object DataFactory {
     @throws[NullPointerException]
     def of[T, P <: PluginData](plugin: ContentPlugin, initializer: Function[T, P], pClass: Class[P]): DataFactory[T, P] = {
         Objects.requireNonNull(initializer)
-        of(plugin, LambdaUtil.j2sFunction(initializer), pClass)
+        of(plugin, JLambda.toFunction(initializer), pClass)
     }
 }
 
