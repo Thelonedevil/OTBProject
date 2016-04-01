@@ -5,9 +5,10 @@ import java.util.function.Function
 
 import io.github.otbproject.otb.misc.JLambda
 
-sealed class DataFactory[T, P <: PluginData] private[content](plugin: ContentPlugin, initializer: T => P, pClass:
-Class[P]) {
-  private val identifier: PluginDataTypeIdentifier[P] = new PluginDataTypeIdentifier(plugin, pClass)
+sealed class DataFactory[T, P <: PluginData] private[content](plugin: ContentPlugin,
+                                                              initializer: T => P,
+                                                              pClass: Class[P]) {
+  private val identifier = new PluginDataTypeIdentifier(plugin, pClass)
 
   private[content] def provideData(initData: T, builder: PluginDataMap.Builder) {
     builder.put(identifier, Objects.requireNonNull(initializer(initData)))
@@ -27,7 +28,7 @@ object DataFactory {
   def empty[T]: DataFactory[T, PluginData] = {
     // Because both methods in EmptyDataFactory ignore the parameters
     // passed to them, this is safe for any value of T
-    EmptyDataFactory.asInstanceOf[DataFactory[T, PluginData]]
+    EmptyFactory.asInstanceOf[DataFactory[T, PluginData]]
   }
 
   /**
@@ -71,10 +72,10 @@ object DataFactory {
     Objects.requireNonNull(pClass)
     new DataFactory(plugin, initializer, pClass)
   }
-}
 
-private object EmptyDataFactory extends DataFactory[Any, PluginData](null, null, null) {
-  override def provideData(initData: Any, builder: PluginDataMap.Builder) {}
+  private object EmptyFactory extends DataFactory[Any, PluginData](null, null, null) {
+    override def provideData(initData: Any, builder: PluginDataMap.Builder) {}
 
-  override def getData(holder: PluginDataHolder[Any]) = EmptyPluginData
+    override def getData(holder: PluginDataHolder[Any]) = EmptyPluginData
+  }
 }
