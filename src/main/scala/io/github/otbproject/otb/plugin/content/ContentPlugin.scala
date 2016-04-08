@@ -1,11 +1,9 @@
 package io.github.otbproject.otb.plugin.content
 
-import io.github.otbproject.otb.plugin.Plugin
+import io.github.otbproject.otb.plugin.base.{Plugin, PluginInitializer}
 
-trait ContentPlugin extends Plugin {
-  type F <: PluginDataFactory
+abstract class ContentPlugin(initializer: PluginInitializer) extends Plugin(initializer) {
+  type Factory <: PluginDataFactory
 
-  protected val pluginDataFactory: F
-
-  final def getDataFactory: F = pluginDataFactory
+  val dataFactory: Factory
 }
