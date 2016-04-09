@@ -22,7 +22,7 @@ private[data] abstract class Data[T](provider: PluginDataFactory => DataFactory[
     val builder = PluginDataMap.newBuilder
 
     plugins.toStream
-      .map((plugin: ContentPlugin) => provider(plugin.getDataFactory))
+      .map((plugin: ContentPlugin) => provider(plugin.dataFactory))
       .foreach((factory: DataFactory[T, _ <: PluginData]) => {
         try {
           factory.provideData(t, builder)
