@@ -13,4 +13,10 @@ final case class Dependency[P <: Plugin](identifier: PluginIdentifier[P],
 
   def this(identifier: PluginIdentifier[P], minVersion: CoreVersion) =
     this(identifier, minVersion, minVersion.major + 1)
+
+  private[plugin] def satisfiedBy(info: PluginInfo): Boolean = {
+    (identifier == info.identifier) &&
+      (minVersion <= info.version) &&
+      (info.version.major < maxMajorVersion)
+  }
 }
