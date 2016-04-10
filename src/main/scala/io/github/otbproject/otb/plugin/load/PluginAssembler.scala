@@ -13,7 +13,7 @@ import org.jgrapht.traverse.TopologicalOrderIterator
 
 import scala.annotation.tailrec
 import scala.collection.mutable.ListBuffer
-import scala.collection.{JavaConversions, breakOut, mutable}
+import scala.collection.{JavaConversions, mutable}
 
 private[load] final class PluginAssembler {
   private val logger = Core.core.logger
@@ -131,12 +131,12 @@ private[load] final class PluginAssembler {
   }
 
   private def mapIdentifiers(infoSet: mutable.Set[PluginInfo]): Map[PluginIdentifier[_], PluginInfo] = {
-    infoSet.map(e => (e.identifier, e))(breakOut)
+    infoSet.map(e => (e.identifier, e)).toMap
   }
 
-  private def assemblePlugins(infoSet: mutable.Set[PluginInfo]): List[_ <: Plugin] = {
+  private def assemblePlugins(infoSet: mutable.Set[PluginInfo]): List[Plugin] = {
     val identifierMap = mapIdentifiers(infoSet)
-    val plugins = ListBuffer[_ <: Plugin]()
+    val plugins = ListBuffer[Plugin]()
 
     logger.info("Building dependency tree")
 
@@ -150,9 +150,9 @@ private[load] final class PluginAssembler {
         val info = identifierMap.get(identifier).get
         plugins += info.createPlugin(getPluginInitializer(info))
       } catch {
-        case _: Throwable =>
+        case e: Throwable =>
           logger.error("Error instantiating plugin: " + identifier)
-          logger.catching(_)
+          logger.catching(e)
           infoSet.remove(identifierMap.get(identifier).get)
           failed = true
       }
