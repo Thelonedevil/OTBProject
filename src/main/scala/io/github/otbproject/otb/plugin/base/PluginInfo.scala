@@ -2,6 +2,9 @@ package io.github.otbproject.otb.plugin.base
 
 import io.github.otbproject.otb.misc.CoreVersion
 
+/**
+  * Should have no arg constructor
+  */
 trait PluginInfo {
   type P <: Plugin
 

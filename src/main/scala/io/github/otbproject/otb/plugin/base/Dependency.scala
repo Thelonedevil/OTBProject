@@ -2,6 +2,13 @@ package io.github.otbproject.otb.plugin.base
 
 import io.github.otbproject.otb.misc.CoreVersion
 
+/**
+  *
+  * @param identifier
+  * @param minVersion minimum version which is acceptable
+  * @param maxMajorVersion first major version which is not acceptable
+  * @tparam P
+  */
 @throws[IllegalArgumentException]
 final case class Dependency[P <: Plugin](identifier: PluginIdentifier[P],
                                          minVersion: CoreVersion,
